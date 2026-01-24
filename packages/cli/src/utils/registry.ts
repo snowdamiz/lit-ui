@@ -1,7 +1,5 @@
-import { createRequire } from 'module';
-
-const require = createRequire(import.meta.url);
-const registryData = require('../registry/registry.json');
+// Import registry data - tsup bundles JSON files inline
+import registryData from '../registry/registry.json';
 
 /**
  * Registry file entry

@@ -1,5 +1,7 @@
 import { defineCommand, runMain } from 'citty';
 import { createRequire } from 'node:module';
+import { init } from './commands/init';
+import { add } from './commands/add';
 
 const require = createRequire(import.meta.url);
 const { version } = require('../package.json') as { version: string };
@@ -10,7 +12,10 @@ const main = defineCommand({
     version,
     description: 'Add lit-ui components to your project',
   },
-  subCommands: {},
+  subCommands: {
+    init,
+    add,
+  },
 });
 
 runMain(main);

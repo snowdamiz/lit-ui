@@ -1,6 +1,8 @@
-import { readJson, writeJson, pathExists } from 'fs-extra';
+import fsExtra from 'fs-extra';
 import { resolve } from 'pathe';
 import { defu } from 'defu';
+
+const { readJson, writeJson, pathExists } = fsExtra;
 
 /**
  * Configuration for a lit-ui project.

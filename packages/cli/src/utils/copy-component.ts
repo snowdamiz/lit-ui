@@ -1,8 +1,10 @@
-import { writeFile, pathExists, ensureDir, readFile } from 'fs-extra';
+import fsExtra from 'fs-extra';
 import { consola } from 'consola';
 import { resolve, dirname, basename } from 'pathe';
 import type { RegistryFile } from './registry';
 import type { LitUIConfig } from './config';
+
+const { writeFile, pathExists, ensureDir, readFile } = fsExtra;
 
 /**
  * Options for copying component files

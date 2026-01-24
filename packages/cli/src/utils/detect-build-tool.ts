@@ -1,6 +1,8 @@
 import { existsSync } from 'node:fs';
 import { resolve } from 'pathe';
-import { readJson } from 'fs-extra';
+import fsExtra from 'fs-extra';
+
+const { readJson } = fsExtra;
 
 export type BuildToolName = 'vite' | 'webpack' | 'esbuild' | 'unknown';
 

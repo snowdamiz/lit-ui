@@ -1,8 +1,10 @@
 import { defineCommand } from 'citty';
 import { existsSync } from 'node:fs';
-import { ensureDir, writeFile, pathExists } from 'fs-extra';
+import fsExtra from 'fs-extra';
 import { resolve, dirname, join } from 'pathe';
 import { consola } from 'consola';
+
+const { ensureDir, writeFile } = fsExtra;
 
 import {
   configExists,
