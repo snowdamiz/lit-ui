@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-24)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** v1.1 Documentation Site - Phase 6 (Docs Foundation)
+**Current focus:** v1.1 Documentation Site - Phase 6 Complete
 
 ## Current Position
 
 Phase: 6 of 12 (Docs Foundation)
-Plan: 2 of ? in phase
-Status: In progress
-Last activity: 2026-01-24 - Completed 06-02-PLAN.md (layout and navigation)
+Plan: 3 of 3 in phase (COMPLETE)
+Status: Phase complete
+Last activity: 2026-01-24 - Completed 06-03-PLAN.md (routing and verification)
 
-Progress: v1.0 SHIPPED | v1.1 [##-----] 2/7+ plans
+Progress: v1.0 SHIPPED | v1.1 [###----] 3/7+ plans
 
 ## Performance Metrics
 
@@ -24,8 +24,8 @@ Progress: v1.0 SHIPPED | v1.1 [##-----] 2/7+ plans
 - Total execution time: ~65 min
 
 **v1.1 Velocity:**
-- Plans completed: 2
-- Total execution time: 4 min
+- Plans completed: 3
+- Total execution time: 5 min
 
 **By Phase:**
 
@@ -36,7 +36,7 @@ Progress: v1.0 SHIPPED | v1.1 [##-----] 2/7+ plans
 | 03-dialog-component | 4 | 5.9 min | 1.5 min |
 | 04-cli | 6 | 20.5 min | 3.4 min |
 | 05-framework-verification | 4 | 16 min | 4.0 min |
-| 06-docs-foundation | 2 | 4 min | 2.0 min |
+| 06-docs-foundation | 3 | 5 min | 1.7 min |
 
 ## Accumulated Context
 
@@ -50,6 +50,7 @@ Key decisions are logged in PROJECT.md Key Decisions table.
 - Navigation data in separate nav.ts for easy modification
 - First section (Getting Started) defaults open for discoverability
 - Mobile sheet closes on route change via useLocation effect
+- Docs app runs at / (not /docs) for simpler URLs
 
 ### Pending Todos
 
@@ -62,9 +63,11 @@ None.
 ## Session Continuity
 
 Last session: 2026-01-24
-Stopped at: Completed 06-02-PLAN.md (layout and navigation)
+Stopped at: Completed Phase 6 (Docs Foundation) - all 3 plans
 Resume file: None
 
 ## Next Steps
 
-Continue with Phase 6 plans for routing setup and documentation pages.
+Phase 6 complete. Ready for:
+- Phase 7: Getting Started documentation
+- Phase 8: Component documentation (Button, Dialog)
