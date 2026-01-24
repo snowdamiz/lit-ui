@@ -1,0 +1,13 @@
+/**
+ * Minimal styles for ui-dialog preview in docs
+ *
+ * These CSS custom properties are read by the ui-dialog component
+ * from the light DOM. The dialog uses Shadow DOM with inline styles,
+ * so these variables just need to be available for the component to read.
+ */
+
+ui-dialog {
+  --color-card: white;
+  --color-card-foreground: rgb(17 24 39);
+  --color-muted-foreground: rgb(75 85 99);
+}
