@@ -9,9 +9,9 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Foundation
 
-- [ ] **FNDN-01**: Tailwind + Shadow DOM integration using constructable stylesheets
-- [ ] **FNDN-02**: Full TypeScript support with strict type definitions
-- [ ] **FNDN-03**: Design token system with primitive → semantic → component layers
+- [x] **FNDN-01**: Tailwind + Shadow DOM integration using constructable stylesheets
+- [x] **FNDN-02**: Full TypeScript support with strict type definitions
+- [x] **FNDN-03**: Design token system with primitive → semantic → component layers
 
 ### Button
 
@@ -97,9 +97,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| FNDN-01 | Phase 1 | Pending |
-| FNDN-02 | Phase 1 | Pending |
-| FNDN-03 | Phase 1 | Pending |
+| FNDN-01 | Phase 1 | Complete |
+| FNDN-02 | Phase 1 | Complete |
+| FNDN-03 | Phase 1 | Complete |
 | BTN-01 | Phase 2 | Pending |
 | BTN-02 | Phase 2 | Pending |
 | BTN-03 | Phase 2 | Pending |
@@ -133,4 +133,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-01-23*
-*Last updated: 2026-01-23 after roadmap creation*
+*Last updated: 2026-01-24 after Phase 1 completion*

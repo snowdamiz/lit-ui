@@ -12,7 +12,7 @@ This roadmap delivers a framework-agnostic component library built on Lit.js wit
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Foundation** - Shadow DOM + Tailwind integration, TypeScript setup, design token system
+- [x] **Phase 1: Foundation** - Shadow DOM + Tailwind integration, TypeScript setup, design token system
 - [ ] **Phase 2: Button Component** - Full-featured button with variants, states, accessibility, form participation
 - [ ] **Phase 3: Dialog Component** - Modal dialog with focus trap, ARIA, keyboard navigation, animations
 - [ ] **Phase 4: CLI** - Distribution tool with init, add, registry, build tool detection
@@ -32,10 +32,10 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 4 plans
 
 Plans:
-- [ ] 01-01-PLAN.md — Project setup with TypeScript, Vite, and dependencies
-- [ ] 01-02-PLAN.md — Design token system with Tailwind v4 @theme and dark mode
-- [ ] 01-03-PLAN.md — TailwindElement base class with Shadow DOM CSS injection
-- [ ] 01-04-PLAN.md — Demo component and dev server validation
+- [x] 01-01-PLAN.md — Project setup with TypeScript, Vite, and dependencies
+- [x] 01-02-PLAN.md — Design token system with Tailwind v4 @theme and dark mode
+- [x] 01-03-PLAN.md — TailwindElement base class with Shadow DOM CSS injection
+- [x] 01-04-PLAN.md — Demo component and dev server validation
 
 ### Phase 2: Button Component
 **Goal**: A production-ready button component that validates styling patterns, state management, form participation, and basic accessibility
@@ -102,7 +102,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 0/4 | Not started | - |
+| 1. Foundation | 4/4 | Complete | 2026-01-24 |
 | 2. Button Component | 0/? | Not started | - |
 | 3. Dialog Component | 0/? | Not started | - |
 | 4. CLI | 0/? | Not started | - |
