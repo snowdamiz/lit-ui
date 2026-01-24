@@ -9,9 +9,9 @@ Requirements for the documentation site milestone.
 
 ### Infrastructure
 
-- [ ] **INFRA-01**: Docs app in `/docs` folder with same stack as landing (React, Tailwind v4, Vite)
-- [ ] **INFRA-02**: Sidebar navigation with collapsible sections
-- [ ] **INFRA-03**: Mobile-responsive layout with hamburger menu
+- [x] **INFRA-01**: Docs app in `/docs` folder with same stack as landing (React, Tailwind v4, Vite)
+- [x] **INFRA-02**: Sidebar navigation with collapsible sections
+- [x] **INFRA-03**: Mobile-responsive layout with hamburger menu
 - [ ] **INFRA-04**: Search functionality or comprehensive anchor links
 - [ ] **INFRA-05**: Link from landing page header to docs
 
@@ -60,9 +60,9 @@ Requirements for the documentation site milestone.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| INFRA-01 | Phase 6 | Pending |
-| INFRA-02 | Phase 6 | Pending |
-| INFRA-03 | Phase 6 | Pending |
+| INFRA-01 | Phase 6 | Complete |
+| INFRA-02 | Phase 6 | Complete |
+| INFRA-03 | Phase 6 | Complete |
 | INFRA-04 | Phase 12 | Pending |
 | INFRA-05 | Phase 12 | Pending |
 | START-01 | Phase 7 | Pending |
