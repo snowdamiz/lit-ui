@@ -1,0 +1,49 @@
+{
+  "name": "lit-ui",
+  "version": "0.0.1",
+  "description": "Add lit-ui components to your project",
+  "type": "module",
+  "bin": {
+    "lit-ui": "./dist/index.js"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch"
+  },
+  "keywords": [
+    "lit",
+    "cli",
+    "components",
+    "web-components"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "citty": "^0.1.6",
+    "consola": "^3.4.0",
+    "defu": "^6.1.4",
+    "execa": "^9.5.2",
+    "fs-extra": "^11.3.0",
+    "ora": "^8.2.0",
+    "package-manager-detector": "^0.2.9",
+    "pathe": "^2.0.2",
+    "picocolors": "^1.1.1"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "tsup": "^8.3.6",
+    "typescript": "^5.9.3"
+  }
+}
