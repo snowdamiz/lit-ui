@@ -10,8 +10,16 @@
  * - Named slots for title, content, and footer
  * - Smooth enter/exit animations with reduced-motion support
  * - Focus restoration to trigger element on close
+ * - Nested dialogs supported via browser's top layer stack
+ * - Optional close button via show-close-button attribute
  *
- * @example
+ * @slot title - Dialog title content
+ * @slot - Default slot for dialog body
+ * @slot footer - Dialog footer (typically action buttons)
+ *
+ * @fires close - When dialog closes, detail: { reason: 'escape' | 'backdrop' | 'programmatic' }
+ *
+ * @example Basic usage
  * ```html
  * <ui-dialog open>
  *   <span slot="title">Dialog Title</span>
@@ -21,9 +29,19 @@
  *   </div>
  * </ui-dialog>
  * ```
+ *
+ * @example Nested dialogs
+ * To prevent parent dialogs from receiving close events from nested dialogs,
+ * use stopPropagation on the close event:
+ * ```html
+ * <ui-dialog id="parent">
+ *   <ui-dialog id="child" @close=${(e) => e.stopPropagation()}>
+ *   </ui-dialog>
+ * </ui-dialog>
+ * ```
  */
 
-import { html, css } from 'lit';
+import { html, css, nothing } from 'lit';
 import { customElement, property, query } from 'lit/decorators.js';
 import { TailwindElement } from '../../base/tailwind-element';
 
@@ -74,6 +92,13 @@ export class Dialog extends TailwindElement {
    */
   @property({ type: Boolean })
   dismissible = true;
+
+  /**
+   * Whether to show an X close button in the top-right corner.
+   * @default false
+   */
+  @property({ type: Boolean, attribute: 'show-close-button' })
+  showCloseButton = false;
 
   /**
    * Reference to the native dialog element.
@@ -263,9 +288,32 @@ export class Dialog extends TailwindElement {
         aria-describedby="dialog-description"
       >
         <div
-          class="dialog-content ${this.getSizeClasses()} bg-card text-card-foreground rounded-lg shadow-lg p-6"
+          class="dialog-content ${this.getSizeClasses()} bg-card text-card-foreground rounded-lg shadow-lg p-6 relative"
           @click=${(e: Event) => e.stopPropagation()}
         >
+          ${this.showCloseButton
+            ? html`
+                <button
+                  class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                  @click=${() => this.close('programmatic')}
+                  aria-label="Close dialog"
+                >
+                  <svg
+                    class="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              `
+            : nothing}
           <header id="dialog-title" class="text-lg font-semibold mb-4">
             <slot name="title"></slot>
           </header>
