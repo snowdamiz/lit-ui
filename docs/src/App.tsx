@@ -2,6 +2,8 @@ import { BrowserRouter, Routes, Route } from 'react-router'
 import { DocsLayout } from './layouts/DocsLayout'
 import { GettingStarted } from './pages/GettingStarted'
 import { Placeholder } from './pages/Placeholder'
+import { ButtonPage } from './pages/components/ButtonPage'
+import { DialogPage } from './pages/components/DialogPage'
 
 export default function App() {
   return (
@@ -15,8 +17,8 @@ export default function App() {
           <Route path="getting-started" element={<GettingStarted />} />
 
           {/* Components */}
-          <Route path="components/button" element={<Placeholder />} />
-          <Route path="components/dialog" element={<Placeholder />} />
+          <Route path="components/button" element={<ButtonPage />} />
+          <Route path="components/dialog" element={<DialogPage />} />
 
           {/* Guides */}
           <Route path="guides/react" element={<Placeholder />} />
