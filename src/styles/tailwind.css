@@ -148,10 +148,11 @@
 
 /* ==========================================================================
  * DARK MODE
- * Class-based dark theme using .dark selector.
+ * Class-based dark theme using :host-context(.dark) selector.
+ * This allows Shadow DOM components to respond to .dark class on ancestors.
  * User controls by adding/removing .dark class on html/body.
  * ========================================================================== */
-.dark {
+:host-context(.dark) {
   /* Primary */
   --color-primary: var(--color-brand-400);
   --color-primary-foreground: var(--color-gray-950);
