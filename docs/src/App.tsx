@@ -4,7 +4,7 @@ import { Placeholder } from './pages/Placeholder'
 
 export default function App() {
   return (
-    <BrowserRouter basename="/docs">
+    <BrowserRouter>
       <Routes>
         <Route element={<DocsLayout />}>
           {/* Index route */}
