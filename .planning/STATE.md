@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-24)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** v1.1 Documentation Site - Phase 8 In Progress
+**Current focus:** v1.1 Documentation Site - Phase 8 Complete
 
 ## Current Position
 
 Phase: 8 of 12 (Component Documentation)
-Plan: 2 of 4 in phase (08-01 and 08-02 complete)
-Status: In progress
-Last activity: 2026-01-24 - Completed 08-01-PLAN.md (Documentation Infrastructure)
+Plan: 4 of 4 in phase (all plans complete)
+Status: Phase complete
+Last activity: 2026-01-24 - Completed 08-04-PLAN.md (Dialog Documentation)
 
-Progress: v1.0 SHIPPED | v1.1 [#######] 7/7+ plans
+Progress: v1.0 SHIPPED | v1.1 [#########] 9/9+ plans
 
 ## Performance Metrics
 
@@ -24,8 +24,8 @@ Progress: v1.0 SHIPPED | v1.1 [#######] 7/7+ plans
 - Total execution time: ~65 min
 
 **v1.1 Velocity:**
-- Plans completed: 7
-- Total execution time: 12 min
+- Plans completed: 9
+- Total execution time: 22 min
 
 **By Phase:**
 
@@ -38,7 +38,7 @@ Progress: v1.0 SHIPPED | v1.1 [#######] 7/7+ plans
 | 05-framework-verification | 4 | 16 min | 4.0 min |
 | 06-docs-foundation | 3 | 5 min | 1.7 min |
 | 07-getting-started | 2 | 4 min | 2.0 min |
-| 08-component-documentation | 2 | 3 min | 1.5 min |
+| 08-component-documentation | 4 | 10 min | 2.5 min |
 
 ## Accumulated Context
 
@@ -70,6 +70,8 @@ Key decisions are logged in PROJECT.md Key Decisions table.
 - Try/catch pattern for context detection in FrameworkTabs (backward compatibility)
 - HTML tab hidden when html prop not provided (graceful degradation)
 - ExampleBlock uses lg:flex-row for responsive side-by-side layout
+- useEffect with ref for dialog close event listener (React doesn't support custom events on JSX)
+- Centralized ui-button types in LivePreview.tsx to avoid duplicate declarations
 
 ### Pending Todos
 
@@ -82,11 +84,14 @@ None.
 ## Session Continuity
 
 Last session: 2026-01-24
-Stopped at: Completed 08-01-PLAN.md (Documentation Infrastructure)
+Stopped at: Completed 08-04-PLAN.md (Dialog Documentation)
 Resume file: None
 
 ## Next Steps
 
-Phase 8 in progress (2/4 complete). Continue with:
-- 08-03: Button documentation page
-- 08-04: Dialog documentation page
+Phase 8 complete. All component documentation pages functional:
+- Getting Started page with installation and quick start
+- Button page with variants, sizes, loading, icons, disabled states
+- Dialog page with basic and confirmation examples
+
+Continue with Phase 9 (Framework Guides) or later phases.
