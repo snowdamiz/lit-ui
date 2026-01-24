@@ -37,12 +37,29 @@ export type ButtonVariant =
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
 /**
+ * Button type for form behavior
+ */
+export type ButtonType = 'button' | 'submit' | 'reset';
+
+/**
  * A customizable button component with multiple variants and sizes.
+ * Supports form participation via ElementInternals for submit/reset behavior.
  *
  * @slot - Default slot for button text content
  */
 @customElement('ui-button')
 export class Button extends TailwindElement {
+  /**
+   * Enable form association for this custom element.
+   * This allows the button to participate in form submission/reset.
+   */
+  static formAssociated = true;
+
+  /**
+   * ElementInternals for form participation and ARIA.
+   */
+  private internals: ElementInternals;
+
   /**
    * The visual style variant of the button.
    * @default 'primary'
@@ -56,6 +73,16 @@ export class Button extends TailwindElement {
    */
   @property({ type: String })
   size: ButtonSize = 'md';
+
+  /**
+   * The button type for form behavior.
+   * - 'button': No form action (default)
+   * - 'submit': Submits the containing form
+   * - 'reset': Resets the containing form
+   * @default 'button'
+   */
+  @property({ type: String })
+  type: ButtonType = 'button';
 
   /**
    * Whether the button is disabled.
@@ -72,6 +99,11 @@ export class Button extends TailwindElement {
    */
   @property({ type: Boolean, reflect: true })
   loading = false;
+
+  constructor() {
+    super();
+    this.internals = this.attachInternals();
+  }
 
   /**
    * Static styles for focus ring (inner glow) and loading spinner
@@ -189,12 +221,20 @@ export class Button extends TailwindElement {
   /**
    * Handle click events.
    * Prevents action when disabled or loading.
+   * Triggers form submission or reset based on button type.
    */
   private handleClick(e: MouseEvent) {
     if (this.disabled || this.loading) {
       e.preventDefault();
       e.stopPropagation();
       return;
+    }
+
+    // Handle form actions via ElementInternals
+    if (this.type === 'submit' && this.internals.form) {
+      this.internals.form.requestSubmit();
+    } else if (this.type === 'reset' && this.internals.form) {
+      this.internals.form.reset();
     }
   }
 
