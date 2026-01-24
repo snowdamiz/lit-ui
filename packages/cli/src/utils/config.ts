@@ -61,7 +61,7 @@ export async function getConfig(cwd: string): Promise<LitUIConfig | null> {
   try {
     const userConfig = await readJson(configPath) as Partial<LitUIConfig>;
     // Merge user config with defaults (user values take precedence)
-    return defu(userConfig, DEFAULT_CONFIG);
+    return defu(userConfig, DEFAULT_CONFIG) as LitUIConfig;
   } catch {
     return null;
   }
@@ -77,10 +77,13 @@ export async function writeConfig(
 ): Promise<void> {
   const configPath = resolve(cwd, CONFIG_FILE);
 
-  // Merge with defaults and add schema
-  const fullConfig: LitUIConfig = {
+  // Merge with defaults
+  const merged = defu(config, DEFAULT_CONFIG) as LitUIConfig;
+
+  // Add schema field
+  const fullConfig = {
     $schema: 'https://lit-ui.dev/schema.json',
-    ...defu(config, DEFAULT_CONFIG),
+    ...merged,
   };
 
   await writeJson(configPath, fullConfig, { spaces: 2 });
