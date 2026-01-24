@@ -29,10 +29,13 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. TypeScript compiles with strict mode and Lit 3 decorators work correctly
   3. CSS custom properties (design tokens) defined at :root cascade into Shadow DOM via :host
   4. A minimal test component using TailwindElement renders with Tailwind utility classes visible
-**Plans**: TBD
+**Plans**: 4 plans
 
 Plans:
-- [ ] 01-01: TBD
+- [ ] 01-01-PLAN.md — Project setup with TypeScript, Vite, and dependencies
+- [ ] 01-02-PLAN.md — Design token system with Tailwind v4 @theme and dark mode
+- [ ] 01-03-PLAN.md — TailwindElement base class with Shadow DOM CSS injection
+- [ ] 01-04-PLAN.md — Demo component and dev server validation
 
 ### Phase 2: Button Component
 **Goal**: A production-ready button component that validates styling patterns, state management, form participation, and basic accessibility
@@ -99,7 +102,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 0/? | Not started | - |
+| 1. Foundation | 0/4 | Not started | - |
 | 2. Button Component | 0/? | Not started | - |
 | 3. Dialog Component | 0/? | Not started | - |
 | 4. CLI | 0/? | Not started | - |
