@@ -186,3 +186,18 @@
   --color-card: var(--color-gray-900);
   --color-card-foreground: var(--color-gray-50);
 }
+
+/* ==========================================================================
+ * GLOBAL UTILITIES
+ * Page-level CSS rules that affect the document.
+ * ========================================================================== */
+
+/* Prevent layout shift when scrollbar appears/disappears */
+html {
+  scrollbar-gutter: stable;
+}
+
+/* Dialog scroll lock - prevents background scrolling when dialog is open */
+body:has(dialog[open]) {
+  overflow: hidden;
+}
