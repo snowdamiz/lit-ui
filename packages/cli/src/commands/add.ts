@@ -1,6 +1,5 @@
 import { defineCommand } from 'citty';
-import { resolve, dirname } from 'pathe';
-import { fileURLToPath } from 'node:url';
+import { resolve } from 'pathe';
 import { consola } from 'consola';
 import pc from 'picocolors';
 import { getConfig } from '../utils/config';
@@ -10,17 +9,6 @@ import {
   type RegistryComponent,
 } from '../utils/registry';
 import { copyComponentFiles, type CopyResult } from '../utils/copy-component';
-
-/**
- * Get the source root directory for component files.
- * In development, this is the monorepo src/ directory.
- */
-function getSourceRoot(): string {
-  // Navigate from packages/cli/src/commands/add.ts to src/
-  // packages/cli/src/commands -> packages/cli/src -> packages/cli -> packages -> root -> src
-  const __dirname = dirname(fileURLToPath(import.meta.url));
-  return resolve(__dirname, '../../../../src');
-}
 
 /**
  * Add command - adds a component to the user's project
@@ -111,7 +99,6 @@ export const add = defineCommand({
     }
 
     // Step 5: Copy component files
-    const srcRoot = getSourceRoot();
     const allResults: CopyResult[] = [];
     const addedComponents: string[] = [];
 
@@ -119,9 +106,9 @@ export const add = defineCommand({
       consola.start(`Adding ${pc.cyan(comp.name)}...`);
 
       const results = await copyComponentFiles(
+        comp.name,
         comp.files,
         config,
-        srcRoot,
         cwd,
         { overwrite: args.overwrite, yes: args.yes }
       );

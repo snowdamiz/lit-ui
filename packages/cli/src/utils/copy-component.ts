@@ -3,8 +3,9 @@ import { consola } from 'consola';
 import { resolve, dirname, basename } from 'pathe';
 import type { RegistryFile } from './registry';
 import type { LitUIConfig } from './config';
+import { getComponentTemplate } from '../templates';
 
-const { writeFile, pathExists, ensureDir, readFile } = fsExtra;
+const { writeFile, pathExists, ensureDir } = fsExtra;
 
 /**
  * Options for copying component files
@@ -70,36 +71,20 @@ export async function copyComponent(
 }
 
 /**
- * Get the source content for a registry file.
- * For MVP, reads from the monorepo src/ directory.
+ * Get the source content for a component file.
+ * Uses embedded templates for MVP.
  *
- * @param file - The registry file entry
- * @param srcRoot - Root path to source files (monorepo src/)
+ * @param componentName - The component name (e.g., 'button', 'dialog')
  * @returns The file content
  */
-export async function getFileContent(
-  file: RegistryFile,
-  srcRoot: string
-): Promise<string> {
-  const sourcePath = resolve(srcRoot, file.path);
+export function getComponentContent(componentName: string): string {
+  const template = getComponentTemplate(componentName);
 
-  if (!(await pathExists(sourcePath))) {
-    throw new Error(`Source file not found: ${sourcePath}`);
+  if (!template) {
+    throw new Error(`Component template not found: ${componentName}`);
   }
 
-  const content = await readFile(sourcePath, 'utf-8');
-
-  // Adjust import paths based on file type
-  // Components import from '../../base/tailwind-element' -> adjust to lib path
-  if (file.type === 'component') {
-    // Replace relative import to TailwindElement with the user's lib path
-    return content.replace(
-      /from ['"]\.\.\/\.\.\/base\/tailwind-element['"]/g,
-      `from '../../lib/lit-ui/tailwind-element'`
-    );
-  }
-
-  return content;
+  return template;
 }
 
 /**
@@ -132,27 +117,29 @@ export function getTargetPath(
 }
 
 /**
- * Copy multiple component files to the user's project.
+ * Copy a component's files to the user's project.
  *
+ * @param componentName - The component name (e.g., 'button', 'dialog')
  * @param files - Array of registry file entries
  * @param config - The lit-ui config
- * @param srcRoot - Root path to source files
  * @param cwd - Working directory
  * @param options - Copy options
  * @returns Array of copy results
  */
 export async function copyComponentFiles(
+  componentName: string,
   files: RegistryFile[],
   config: LitUIConfig,
-  srcRoot: string,
   cwd: string,
   options: CopyOptions
 ): Promise<CopyResult[]> {
   const results: CopyResult[] = [];
 
+  // Get the embedded template for this component
+  const content = getComponentContent(componentName);
+
   for (const file of files) {
     const targetPath = getTargetPath(file, config, cwd);
-    const content = await getFileContent(file, srcRoot);
     const copied = await copyComponent(content, targetPath, options);
 
     results.push({
