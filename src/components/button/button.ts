@@ -4,16 +4,19 @@
  * Features:
  * - Five visual variants: primary, secondary, outline, ghost, destructive
  * - Three sizes: sm, md, lg
- * - Disabled state with proper accessibility (aria-disabled)
+ * - Form participation via ElementInternals (submit/reset)
+ * - Disabled state with proper accessibility (aria-disabled, remains in tab order)
  * - Loading state with pulsing dots spinner (aria-busy)
  * - Icon slots (icon-start, icon-end) for icon placement
  * - Inner glow focus ring for visibility across all variants
+ * - Keyboard accessible (Enter/Space via native button)
  *
  * @example
  * ```html
  * <ui-button variant="primary" size="md">Click me</ui-button>
  * <ui-button variant="destructive" disabled>Delete</ui-button>
  * <ui-button loading>Saving...</ui-button>
+ * <ui-button type="submit">Submit Form</ui-button>
  * ```
  */
 
