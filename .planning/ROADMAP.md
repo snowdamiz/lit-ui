@@ -78,10 +78,10 @@ Plans:
 **Plans**: 4 plans
 
 Plans:
-- [ ] 08-01-PLAN.md — Shared infrastructure (FrameworkContext, ExampleBlock, updated FrameworkTabs)
-- [ ] 08-02-PLAN.md — API reference tables (PropsTable, SlotsTable, EventsTable) and PrevNextNav
-- [ ] 08-03-PLAN.md — Button documentation page with examples and API reference
-- [ ] 08-04-PLAN.md — Dialog documentation page with examples and API reference
+- [x] 08-01-PLAN.md — Shared infrastructure (FrameworkContext, ExampleBlock, updated FrameworkTabs)
+- [x] 08-02-PLAN.md — API reference tables (PropsTable, SlotsTable, EventsTable) and PrevNextNav
+- [x] 08-03-PLAN.md — Button documentation page with examples and API reference
+- [x] 08-04-PLAN.md — Dialog documentation page with examples and API reference
 
 #### Phase 9: Framework Guides
 **Goal**: Developers know how to use components in their framework
@@ -148,7 +148,7 @@ Phases execute in numeric order: 6 -> 7 -> 8 -> 9 -> 10 -> 11 -> 12
 | 5. Verification | v1.0 | 4/4 | Complete | 2026-01-24 |
 | 6. Docs Foundation | v1.1 | 3/3 | Complete | 2026-01-24 |
 | 7. Getting Started | v1.1 | 2/2 | Complete | 2026-01-24 |
-| 8. Component Docs | v1.1 | 0/4 | Planned | - |
+| 8. Component Docs | v1.1 | 4/4 | Complete | 2026-01-24 |
 | 9. Framework Guides | v1.1 | 0/? | Not started | - |
 | 10. Theming Docs | v1.1 | 0/? | Not started | - |
 | 11. Accessibility Docs | v1.1 | 0/? | Not started | - |

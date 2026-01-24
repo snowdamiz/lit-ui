@@ -23,10 +23,10 @@ Requirements for the documentation site milestone.
 
 ### Component Documentation
 
-- [ ] **COMP-01**: Button API reference (props, slots, events)
-- [ ] **COMP-02**: Button live examples (all variants, sizes, states)
-- [ ] **COMP-03**: Dialog API reference (props, slots, events)
-- [ ] **COMP-04**: Dialog live examples (basic, nested, dismissible)
+- [x] **COMP-01**: Button API reference (props, slots, events)
+- [x] **COMP-02**: Button live examples (all variants, sizes, states)
+- [x] **COMP-03**: Dialog API reference (props, slots, events)
+- [x] **COMP-04**: Dialog live examples (basic, nested, dismissible)
 
 ### Framework Guides
 
@@ -68,10 +68,10 @@ Requirements for the documentation site milestone.
 | START-01 | Phase 7 | Complete |
 | START-02 | Phase 7 | Complete |
 | START-03 | Phase 7 | Complete |
-| COMP-01 | Phase 8 | Pending |
-| COMP-02 | Phase 8 | Pending |
-| COMP-03 | Phase 8 | Pending |
-| COMP-04 | Phase 8 | Pending |
+| COMP-01 | Phase 8 | Complete |
+| COMP-02 | Phase 8 | Complete |
+| COMP-03 | Phase 8 | Complete |
+| COMP-04 | Phase 8 | Complete |
 | FRAME-01 | Phase 9 | Pending |
 | FRAME-02 | Phase 9 | Pending |
 | FRAME-03 | Phase 9 | Pending |
