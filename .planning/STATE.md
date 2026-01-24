@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-24)
 ## Current Position
 
 Phase: 8 of 12 (Component Documentation)
-Plan: 2 of 4 in phase
+Plan: 2 of 4 in phase (08-01 and 08-02 complete)
 Status: In progress
-Last activity: 2026-01-24 - Completed 08-02-PLAN.md (API Table Components)
+Last activity: 2026-01-24 - Completed 08-01-PLAN.md (Documentation Infrastructure)
 
-Progress: v1.0 SHIPPED | v1.1 [######-] 6/7+ plans
+Progress: v1.0 SHIPPED | v1.1 [#######] 7/7+ plans
 
 ## Performance Metrics
 
@@ -24,8 +24,8 @@ Progress: v1.0 SHIPPED | v1.1 [######-] 6/7+ plans
 - Total execution time: ~65 min
 
 **v1.1 Velocity:**
-- Plans completed: 6
-- Total execution time: 10 min
+- Plans completed: 7
+- Total execution time: 12 min
 
 **By Phase:**
 
@@ -38,7 +38,7 @@ Progress: v1.0 SHIPPED | v1.1 [######-] 6/7+ plans
 | 05-framework-verification | 4 | 16 min | 4.0 min |
 | 06-docs-foundation | 3 | 5 min | 1.7 min |
 | 07-getting-started | 2 | 4 min | 2.0 min |
-| 08-component-documentation | 1 | 1 min | 1.0 min |
+| 08-component-documentation | 2 | 3 min | 1.5 min |
 
 ## Accumulated Context
 
@@ -67,6 +67,9 @@ Key decisions are logged in PROJECT.md Key Decisions table.
 - Tables use simple HTML table elements with Tailwind styling
 - Default values show em dash when undefined for clear visual indicator
 - Empty div elements for flex spacing in PrevNextNav
+- Try/catch pattern for context detection in FrameworkTabs (backward compatibility)
+- HTML tab hidden when html prop not provided (graceful degradation)
+- ExampleBlock uses lg:flex-row for responsive side-by-side layout
 
 ### Pending Todos
 
@@ -79,11 +82,11 @@ None.
 ## Session Continuity
 
 Last session: 2026-01-24
-Stopped at: Completed 08-02-PLAN.md (API Table Components)
+Stopped at: Completed 08-01-PLAN.md (Documentation Infrastructure)
 Resume file: None
 
 ## Next Steps
 
-Phase 8 in progress. Continue with:
+Phase 8 in progress (2/4 complete). Continue with:
 - 08-03: Button documentation page
 - 08-04: Dialog documentation page
