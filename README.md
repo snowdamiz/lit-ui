@@ -126,14 +126,27 @@ import 'lit-ui/button';
 
 ## Theming
 
-Customize with CSS custom properties:
+**CSS custom properties** for global theming:
 
 ```css
 :root {
   --color-primary: oklch(0.55 0.2 250);
-  --color-background: oklch(0.99 0.005 250);
   --radius-md: 0.5rem;
 }
+```
+
+**`::part()` selectors** for targeted styling:
+
+```css
+ui-button::part(base) {
+  font-weight: 600;
+}
+```
+
+**Tailwind class passthrough** for one-off customization:
+
+```html
+<ui-button class="shadow-lg">Elevated</ui-button>
 ```
 
 ## Roadmap
