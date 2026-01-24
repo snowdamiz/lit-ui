@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-23)
 ## Current Position
 
 Phase: 4 of 5 (CLI)
-Plan: 3 of 6 in current phase
+Plan: 4 of 6 in current phase
 Status: In progress
-Last activity: 2026-01-24 - Completed 04-02-PLAN.md (Utility Layer)
+Last activity: 2026-01-24 - Completed 04-04-PLAN.md (Init Command)
 
-Progress: [███████████████░░░░░░░░░] 62% (15/24 plans)
+Progress: [████████████████░░░░░░░░] 67% (16/24 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 15
-- Average duration: 2.3 min
-- Total execution time: 35.1 min
+- Total plans completed: 16
+- Average duration: 2.5 min
+- Total execution time: 39.2 min
 
 **By Phase:**
 
@@ -30,11 +30,11 @@ Progress: [███████████████░░░░░░░░
 | 01-foundation | 4 | 14.0 min | 3.5 min |
 | 02-button-component | 4 | 8.3 min | 2.1 min |
 | 03-dialog-component | 4 | 5.9 min | 1.5 min |
-| 04-cli | 3 | 6.9 min | 2.3 min |
+| 04-cli | 4 | 11.0 min | 2.8 min |
 
 **Recent Trend:**
-- Last 5 plans: 03-04 (3.0 min), 04-01 (1.5 min), 04-02 (3.2 min), 04-03 (2.2 min)
-- Trend: Utility layer and registry complete - ready for CLI commands
+- Last 5 plans: 04-01 (1.5 min), 04-02 (3.2 min), 04-03 (2.2 min), 04-04 (4.1 min)
+- Trend: Init command complete - ESM compatibility required fixes
 
 *Updated after each plan completion*
 
@@ -75,6 +75,9 @@ Recent decisions affecting current work:
 - Components have no registryDependencies (dialog independent of button)
 - defu for deep merge of user config with defaults
 - Sync and async build tool detection for flexibility
+- Embed base file templates in init command (Option C for MVP)
+- ESM default import with destructuring for fs-extra CJS module
+- ESM import for registry.json (tsup bundles inline)
 
 ### Pending Todos
 
@@ -87,5 +90,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-01-24
-Stopped at: Completed 04-02-PLAN.md (Utility Layer)
+Stopped at: Completed 04-04-PLAN.md (Init Command)
 Resume file: None
