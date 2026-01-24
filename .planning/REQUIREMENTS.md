@@ -17,9 +17,9 @@ Requirements for the documentation site milestone.
 
 ### Getting Started
 
-- [ ] **START-01**: Installation page covering `npx lit-ui init`
-- [ ] **START-02**: Quick start guide (add first component)
-- [ ] **START-03**: Project structure explanation
+- [x] **START-01**: Installation page covering `npx lit-ui init`
+- [x] **START-02**: Quick start guide (add first component)
+- [x] **START-03**: Project structure explanation
 
 ### Component Documentation
 
@@ -65,9 +65,9 @@ Requirements for the documentation site milestone.
 | INFRA-03 | Phase 6 | Complete |
 | INFRA-04 | Phase 12 | Pending |
 | INFRA-05 | Phase 12 | Pending |
-| START-01 | Phase 7 | Pending |
-| START-02 | Phase 7 | Pending |
-| START-03 | Phase 7 | Pending |
+| START-01 | Phase 7 | Complete |
+| START-02 | Phase 7 | Complete |
+| START-03 | Phase 7 | Complete |
 | COMP-01 | Phase 8 | Pending |
 | COMP-02 | Phase 8 | Pending |
 | COMP-03 | Phase 8 | Pending |
