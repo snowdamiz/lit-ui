@@ -38,11 +38,11 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### CLI
 
-- [ ] **CLI-01**: `npx lit-ui init` command for project setup
-- [ ] **CLI-02**: `npx lit-ui add <component>` command to copy source
-- [ ] **CLI-03**: Build tool detection (Vite, Webpack, esbuild)
-- [ ] **CLI-04**: Component registry/list command
-- [ ] **CLI-05**: Tailwind v4 CSS-based support (not config file based)
+- [x] **CLI-01**: `npx lit-ui init` command for project setup
+- [x] **CLI-02**: `npx lit-ui add <component>` command to copy source
+- [x] **CLI-03**: Build tool detection (Vite, Webpack, esbuild)
+- [x] **CLI-04**: Component registry/list command
+- [x] **CLI-05**: Tailwind v4 CSS-based support (not config file based)
 
 ### Framework Verification
 
@@ -117,11 +117,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DLG-07 | Phase 3 | Complete |
 | DLG-08 | Phase 3 | Complete |
 | DLG-09 | Phase 3 | Complete |
-| CLI-01 | Phase 4 | Pending |
-| CLI-02 | Phase 4 | Pending |
-| CLI-03 | Phase 4 | Pending |
-| CLI-04 | Phase 4 | Pending |
-| CLI-05 | Phase 4 | Pending |
+| CLI-01 | Phase 4 | Complete |
+| CLI-02 | Phase 4 | Complete |
+| CLI-03 | Phase 4 | Complete |
+| CLI-04 | Phase 4 | Complete |
+| CLI-05 | Phase 4 | Complete |
 | FWK-01 | Phase 5 | Pending |
 | FWK-02 | Phase 5 | Pending |
 | FWK-03 | Phase 5 | Pending |
@@ -133,4 +133,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-01-23*
-*Last updated: 2026-01-24 after Phase 3 completion*
+*Last updated: 2026-01-24 after Phase 4 completion*
