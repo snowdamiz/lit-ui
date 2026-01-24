@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-24)
 ## Current Position
 
 Phase: 6 of 12 (Docs Foundation)
-Plan: 1 of ? in phase
+Plan: 2 of ? in phase
 Status: In progress
-Last activity: 2026-01-24 - Completed 06-01-PLAN.md (docs app scaffold)
+Last activity: 2026-01-24 - Completed 06-02-PLAN.md (layout and navigation)
 
-Progress: v1.0 SHIPPED | v1.1 [#------] 1/7+ plans
+Progress: v1.0 SHIPPED | v1.1 [##-----] 2/7+ plans
 
 ## Performance Metrics
 
@@ -24,8 +24,8 @@ Progress: v1.0 SHIPPED | v1.1 [#------] 1/7+ plans
 - Total execution time: ~65 min
 
 **v1.1 Velocity:**
-- Plans completed: 1
-- Total execution time: 2 min
+- Plans completed: 2
+- Total execution time: 4 min
 
 **By Phase:**
 
@@ -36,7 +36,7 @@ Progress: v1.0 SHIPPED | v1.1 [#------] 1/7+ plans
 | 03-dialog-component | 4 | 5.9 min | 1.5 min |
 | 04-cli | 6 | 20.5 min | 3.4 min |
 | 05-framework-verification | 4 | 16 min | 4.0 min |
-| 06-docs-foundation | 1 | 2 min | 2.0 min |
+| 06-docs-foundation | 2 | 4 min | 2.0 min |
 
 ## Accumulated Context
 
@@ -47,6 +47,9 @@ Key decisions are logged in PROJECT.md Key Decisions table.
 **Phase 6 Decisions:**
 - Used react-router v7 (single package import, not react-router-dom)
 - Copied landing page theme variables for visual consistency
+- Navigation data in separate nav.ts for easy modification
+- First section (Getting Started) defaults open for discoverability
+- Mobile sheet closes on route change via useLocation effect
 
 ### Pending Todos
 
@@ -59,9 +62,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-01-24
-Stopped at: Completed 06-01-PLAN.md (docs app scaffold)
+Stopped at: Completed 06-02-PLAN.md (layout and navigation)
 Resume file: None
 
 ## Next Steps
 
-Continue with Phase 6 plans for docs layout and navigation.
+Continue with Phase 6 plans for routing setup and documentation pages.
