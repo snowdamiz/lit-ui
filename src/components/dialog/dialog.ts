@@ -128,6 +128,7 @@ export class Dialog extends TailwindElement {
       background: transparent;
       max-height: 85vh;
       max-width: 90vw;
+      margin: auto;
 
       /* Animation styles */
       opacity: 0;
