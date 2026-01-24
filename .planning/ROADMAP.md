@@ -60,10 +60,11 @@ Plans:
   1. User finds installation instructions for `npx lit-ui init`
   2. User can follow quick start to add first component
   3. User understands project structure after running init
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 07-01: TBD
+- [ ] 07-01-PLAN.md — CodeBlock and FrameworkTabs components for code display
+- [ ] 07-02-PLAN.md — Getting Started page with installation, quick start, project structure, and live preview
 
 #### Phase 8: Component Documentation
 **Goal**: Complete API reference and examples for Button and Dialog
@@ -144,7 +145,7 @@ Phases execute in numeric order: 6 -> 7 -> 8 -> 9 -> 10 -> 11 -> 12
 | 4. CLI | v1.0 | 6/6 | Complete | 2026-01-24 |
 | 5. Verification | v1.0 | 4/4 | Complete | 2026-01-24 |
 | 6. Docs Foundation | v1.1 | 3/3 | Complete | 2026-01-24 |
-| 7. Getting Started | v1.1 | 0/? | Not started | - |
+| 7. Getting Started | v1.1 | 0/2 | Not started | - |
 | 8. Component Docs | v1.1 | 0/? | Not started | - |
 | 9. Framework Guides | v1.1 | 0/? | Not started | - |
 | 10. Theming Docs | v1.1 | 0/? | Not started | - |
