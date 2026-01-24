@@ -192,6 +192,86 @@ body {
 .token-value { color: oklch(0.72 0.08 150); }
 .token-punctuation { color: oklch(0.55 0 0); }
 
+/* Collapsible animations */
+.CollapsibleContent[data-state='open'] {
+  animation: slideDown 150ms ease-out;
+}
+
+.CollapsibleContent[data-state='closed'] {
+  animation: slideUp 150ms ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-collapsible-content-height);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    height: var(--radix-collapsible-content-height);
+  }
+  to {
+    height: 0;
+  }
+}
+
+/* Sheet overlay and content animations */
+.SheetOverlay[data-state='open'] {
+  animation: fadeIn 150ms ease-out;
+}
+
+.SheetOverlay[data-state='closed'] {
+  animation: fadeOut 150ms ease-out;
+}
+
+.SheetContent[data-state='open'] {
+  animation: slideInLeft 200ms ease-out;
+}
+
+.SheetContent[data-state='closed'] {
+  animation: slideOutLeft 200ms ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideOutLeft {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
 /* Smooth scroll behavior for reduced motion preference */
 @media (prefers-reduced-motion: reduce) {
   html {
