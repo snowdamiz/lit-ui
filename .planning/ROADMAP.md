@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation** - Shadow DOM + Tailwind integration, TypeScript setup, design token system
 - [x] **Phase 2: Button Component** - Full-featured button with variants, states, accessibility, form participation
-- [ ] **Phase 3: Dialog Component** - Modal dialog with focus trap, ARIA, keyboard navigation, animations
+- [x] **Phase 3: Dialog Component** - Modal dialog with focus trap, ARIA, keyboard navigation, animations
 - [ ] **Phase 4: CLI** - Distribution tool with init, add, registry, build tool detection
 - [ ] **Phase 5: Framework Verification** - Verify components work in React 19+, Vue 3, Svelte 5
 
@@ -68,10 +68,10 @@ Plans:
 **Plans**: 4 plans
 
 Plans:
-- [ ] 03-01-PLAN.md — Core dialog with native `<dialog>`, open/close, focus trap, ARIA
-- [ ] 03-02-PLAN.md — Focus return, backdrop click, close event with reason
-- [ ] 03-03-PLAN.md — Enter/exit animations, reduced motion, body scroll lock
-- [ ] 03-04-PLAN.md — Nested dialogs, demo page, visual verification
+- [x] 03-01-PLAN.md — Core dialog with native `<dialog>`, open/close, focus trap, ARIA
+- [x] 03-02-PLAN.md — Focus return, backdrop click, close event with reason
+- [x] 03-03-PLAN.md — Enter/exit animations, reduced motion, body scroll lock
+- [x] 03-04-PLAN.md — Nested dialogs, demo page, visual verification
 
 ### Phase 4: CLI
 **Goal**: A distribution tool that lets users install components via `npx lit-ui add <component>` with build tool detection and Tailwind v4 support
@@ -110,7 +110,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 |-------|----------------|--------|-----------|
 | 1. Foundation | 4/4 | Complete | 2026-01-24 |
 | 2. Button Component | 4/4 | Complete | 2026-01-24 |
-| 3. Dialog Component | 0/4 | Not started | - |
+| 3. Dialog Component | 4/4 | Complete | 2026-01-24 |
 | 4. CLI | 0/? | Not started | - |
 | 5. Framework Verification | 0/? | Not started | - |
 
