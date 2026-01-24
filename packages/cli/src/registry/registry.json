@@ -1,0 +1,32 @@
+{
+  "$schema": "./registry-schema.json",
+  "name": "lit-ui",
+  "base": {
+    "files": [
+      { "path": "base/tailwind-element.ts", "type": "base" },
+      { "path": "styles/tailwind.css", "type": "style" },
+      { "path": "styles/host-defaults.css", "type": "style" }
+    ],
+    "dependencies": ["lit"]
+  },
+  "components": [
+    {
+      "name": "button",
+      "description": "A customizable button with variants, sizes, loading state, and form participation",
+      "files": [
+        { "path": "components/button/button.ts", "type": "component" }
+      ],
+      "dependencies": [],
+      "registryDependencies": []
+    },
+    {
+      "name": "dialog",
+      "description": "Accessible modal dialog with focus trapping, animations, and nested dialog support",
+      "files": [
+        { "path": "components/dialog/dialog.ts", "type": "component" }
+      ],
+      "dependencies": [],
+      "registryDependencies": []
+    }
+  ]
+}
