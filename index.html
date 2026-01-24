@@ -231,8 +231,137 @@
     <p style="font-size: 0.875rem; color: #666;">Press Enter or Space to activate the focused button</p>
   </div>
 
+  <!-- Dialog Demo Section -->
+  <h2>Dialog Component Demo</h2>
+
+  <div class="demo-section">
+    <h3>Basic Dialog (DLG-01, DLG-02, DLG-03)</h3>
+    <p>Click the button to open a basic dialog. Press Escape or click outside to close.</p>
+    <div class="demo-row">
+      <ui-button id="basic-dialog-trigger" variant="primary" onclick="openBasicDialog()">Open Basic Dialog</ui-button>
+    </div>
+    <ui-dialog id="basic-dialog">
+      <span slot="title">Basic Dialog</span>
+      <p>This is a basic dialog with title, content, and footer.</p>
+      <p>You can close it by pressing <strong>Escape</strong>, clicking the <strong>backdrop</strong>, or clicking the <strong>Close</strong> button.</p>
+      <div slot="footer">
+        <ui-button variant="secondary" onclick="closeBasicDialog()">Cancel</ui-button>
+        <ui-button variant="primary" onclick="closeBasicDialog()">Close</ui-button>
+      </div>
+    </ui-dialog>
+  </div>
+
+  <div class="demo-section">
+    <h3>Size Variants (DLG-04)</h3>
+    <p>Dialogs come in three sizes: small, medium, and large.</p>
+    <div class="demo-row">
+      <ui-button variant="outline" onclick="openSizeDialog('sm')">Small Dialog</ui-button>
+      <ui-button variant="outline" onclick="openSizeDialog('md')">Medium Dialog</ui-button>
+      <ui-button variant="outline" onclick="openSizeDialog('lg')">Large Dialog</ui-button>
+    </div>
+    <ui-dialog id="size-dialog-sm" size="sm">
+      <span slot="title">Small Dialog</span>
+      <p>This is a small dialog (max-width: 24rem).</p>
+      <div slot="footer">
+        <ui-button variant="primary" onclick="closeSizeDialog('sm')">Close</ui-button>
+      </div>
+    </ui-dialog>
+    <ui-dialog id="size-dialog-md" size="md">
+      <span slot="title">Medium Dialog</span>
+      <p>This is a medium dialog (max-width: 28rem). This is the default size.</p>
+      <div slot="footer">
+        <ui-button variant="primary" onclick="closeSizeDialog('md')">Close</ui-button>
+      </div>
+    </ui-dialog>
+    <ui-dialog id="size-dialog-lg" size="lg">
+      <span slot="title">Large Dialog</span>
+      <p>This is a large dialog (max-width: 32rem). Use this for more complex content.</p>
+      <div slot="footer">
+        <ui-button variant="primary" onclick="closeSizeDialog('lg')">Close</ui-button>
+      </div>
+    </ui-dialog>
+  </div>
+
+  <div class="demo-section">
+    <h3>Non-Dismissible Dialog (DLG-05)</h3>
+    <p>This dialog cannot be closed via Escape or backdrop click. Only the button works.</p>
+    <div class="demo-row">
+      <ui-button variant="destructive" onclick="openNonDismissibleDialog()">Open Non-Dismissible Dialog</ui-button>
+    </div>
+    <ui-dialog id="non-dismissible-dialog" dismissible="false">
+      <span slot="title">Confirm Action</span>
+      <p>This dialog is <strong>non-dismissible</strong>. You must click one of the buttons below to close it.</p>
+      <p>Try pressing Escape or clicking outside - it won't close.</p>
+      <div slot="footer">
+        <ui-button variant="secondary" onclick="closeNonDismissibleDialog()">Cancel</ui-button>
+        <ui-button variant="destructive" onclick="closeNonDismissibleDialog()">Confirm Delete</ui-button>
+      </div>
+    </ui-dialog>
+  </div>
+
+  <div class="demo-section">
+    <h3>Nested Dialogs (DLG-06)</h3>
+    <p>Open a dialog from within another dialog. Each closes independently.</p>
+    <div class="demo-row">
+      <ui-button variant="primary" onclick="openParentDialog()">Open Parent Dialog</ui-button>
+    </div>
+    <ui-dialog id="parent-dialog" size="lg">
+      <span slot="title">Parent Dialog</span>
+      <p>This is the parent dialog. Click the button below to open a nested child dialog.</p>
+      <p>When you close the child dialog, this parent dialog should remain open.</p>
+      <div style="margin-top: 1rem;">
+        <ui-button variant="secondary" onclick="openChildDialog()">Open Child Dialog</ui-button>
+      </div>
+      <div slot="footer">
+        <ui-button variant="primary" onclick="closeParentDialog()">Close Parent</ui-button>
+      </div>
+    </ui-dialog>
+    <ui-dialog id="child-dialog">
+      <span slot="title">Child Dialog</span>
+      <p>This is the nested child dialog. It appears on top of the parent.</p>
+      <p>Closing this will return focus to the parent dialog's trigger element.</p>
+      <div slot="footer">
+        <ui-button variant="primary" onclick="closeChildDialog()">Close Child</ui-button>
+      </div>
+    </ui-dialog>
+  </div>
+
+  <div class="demo-section">
+    <h3>With Close Button (DLG-07)</h3>
+    <p>Dialog with an X close button in the corner.</p>
+    <div class="demo-row">
+      <ui-button variant="outline" onclick="openCloseButtonDialog()">Open Dialog with Close Button</ui-button>
+    </div>
+    <ui-dialog id="close-button-dialog" show-close-button>
+      <span slot="title">Close Button Demo</span>
+      <p>This dialog has an X button in the top-right corner.</p>
+      <p>You can close it via the X button, Escape, backdrop click, or the footer button.</p>
+      <div slot="footer">
+        <ui-button variant="primary" onclick="closeCloseButtonDialog()">Got it</ui-button>
+      </div>
+    </ui-dialog>
+  </div>
+
+  <div class="demo-section">
+    <h3>Animations & Reduced Motion (DLG-08, DLG-09)</h3>
+    <p>Dialogs animate in/out with a fade + scale effect. Enable "Reduce motion" in your OS accessibility settings to disable animations.</p>
+    <p style="font-size: 0.875rem; color: #666;">Open any dialog above to see the animations.</p>
+  </div>
+
+  <div class="demo-section">
+    <h3>Body Scroll Lock (DLG-10)</h3>
+    <p>When a dialog is open, the page body cannot scroll. This prevents confusing scroll behavior.</p>
+    <div style="height: 200px; overflow: auto; border: 1px solid #ddd; padding: 1rem; margin-top: 1rem;">
+      <p>This is some long content to demonstrate scroll behavior:</p>
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+      <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+      <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+      <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+    </div>
+  </div>
+
   <div class="checklist">
-    <h3>Verification Checklist</h3>
+    <h3>Button Verification Checklist</h3>
     <ul>
       <li><input type="checkbox"> All 5 variants render with distinct colors (primary=blue, secondary=gray, outline=bordered, ghost=transparent, destructive=red)</li>
       <li><input type="checkbox"> All 3 sizes have different padding/font (sm &lt; md &lt; lg)</li>
@@ -247,12 +376,81 @@
     </ul>
   </div>
 
+  <div class="checklist">
+    <h3>Dialog Verification Checklist</h3>
+    <ul>
+      <li><input type="checkbox"> Basic dialog opens with fade+scale animation</li>
+      <li><input type="checkbox"> Escape key closes dismissible dialogs</li>
+      <li><input type="checkbox"> Backdrop click closes dismissible dialogs</li>
+      <li><input type="checkbox"> Focus returns to trigger button after close</li>
+      <li><input type="checkbox"> All three sizes (sm, md, lg) have different widths</li>
+      <li><input type="checkbox"> Non-dismissible dialog ignores Escape and backdrop click</li>
+      <li><input type="checkbox"> Nested dialogs: child closes independently of parent</li>
+      <li><input type="checkbox"> Dialog with close button shows X in top-right corner</li>
+      <li><input type="checkbox"> Animations respect "Reduce motion" OS setting</li>
+      <li><input type="checkbox"> Body scroll is locked when dialog is open</li>
+      <li><input type="checkbox"> Dark mode styling works correctly</li>
+    </ul>
+  </div>
+
   <script type="module" src="/src/index.ts"></script>
   <script>
     function toggleLoading() {
       const loadingBtn = document.querySelector('#loading-demo');
       loadingBtn.loading = !loadingBtn.loading;
     }
+
+    // Dialog demo functions
+    function openBasicDialog() {
+      document.querySelector('#basic-dialog').show();
+    }
+    function closeBasicDialog() {
+      document.querySelector('#basic-dialog').open = false;
+    }
+
+    function openSizeDialog(size) {
+      document.querySelector('#size-dialog-' + size).show();
+    }
+    function closeSizeDialog(size) {
+      document.querySelector('#size-dialog-' + size).open = false;
+    }
+
+    function openNonDismissibleDialog() {
+      document.querySelector('#non-dismissible-dialog').show();
+    }
+    function closeNonDismissibleDialog() {
+      document.querySelector('#non-dismissible-dialog').open = false;
+    }
+
+    function openParentDialog() {
+      document.querySelector('#parent-dialog').show();
+    }
+    function closeParentDialog() {
+      document.querySelector('#parent-dialog').open = false;
+    }
+    function openChildDialog() {
+      document.querySelector('#child-dialog').show();
+    }
+    function closeChildDialog() {
+      document.querySelector('#child-dialog').open = false;
+    }
+
+    function openCloseButtonDialog() {
+      document.querySelector('#close-button-dialog').show();
+    }
+    function closeCloseButtonDialog() {
+      document.querySelector('#close-button-dialog').open = false;
+    }
+
+    // Add event listener to handle child dialog close event stop propagation
+    document.addEventListener('DOMContentLoaded', () => {
+      const childDialog = document.querySelector('#child-dialog');
+      if (childDialog) {
+        childDialog.addEventListener('close', (e) => {
+          e.stopPropagation();
+        });
+      }
+    });
   </script>
 </body>
 </html>
