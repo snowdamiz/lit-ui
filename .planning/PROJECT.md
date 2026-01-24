@@ -25,9 +25,18 @@ Developers can use polished, accessible UI components in any framework without l
 
 ### Active
 
-- [ ] NPM package mode (in addition to copy-source)
-- [ ] SSR compatibility (Declarative Shadow DOM)
-- [ ] Auto-update mechanism for installed components
+- [ ] Full documentation site with landing page theme
+- [ ] Getting Started guide (installation, setup, first component)
+- [ ] Component API reference with live examples (Button, Dialog)
+- [ ] Framework integration guides (React, Vue, Svelte)
+- [ ] Theming documentation (design tokens, customization)
+- [ ] Accessibility documentation (WCAG patterns, keyboard navigation)
+
+### Deferred (v2+)
+
+- NPM package mode (in addition to copy-source)
+- SSR compatibility (Declarative Shadow DOM)
+- Auto-update mechanism for installed components
 
 ### Out of Scope
 
@@ -77,5 +86,16 @@ Developers can use polished, accessible UI components in any framework without l
 | ESM-only library output | Modern standard, tree-shaking | ✓ Good — clean imports |
 | :host-context(.dark) for dark mode | Shadow DOM can't see .dark class | ✓ Good — solves dark mode in WC |
 
+## Current Milestone: v1.1 Documentation Site
+
+**Goal:** Create a comprehensive documentation site that matches the landing page theme, enabling developers to learn lit-ui through clear guides, API reference, and live examples.
+
+**Target features:**
+- Getting Started guide with installation and first component setup
+- Button and Dialog API reference with interactive examples
+- Framework-specific guides for React, Vue, and Svelte
+- Theming documentation covering design tokens and customization
+- Accessibility documentation for WCAG compliance
+
 ---
-*Last updated: 2026-01-24 after v1.0 milestone*
+*Last updated: 2026-01-24 after milestone v1.1 started*
