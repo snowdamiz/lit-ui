@@ -97,40 +97,40 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| FNDN-01 | — | Pending |
-| FNDN-02 | — | Pending |
-| FNDN-03 | — | Pending |
-| BTN-01 | — | Pending |
-| BTN-02 | — | Pending |
-| BTN-03 | — | Pending |
-| BTN-04 | — | Pending |
-| BTN-05 | — | Pending |
-| BTN-06 | — | Pending |
-| BTN-07 | — | Pending |
-| BTN-08 | — | Pending |
-| DLG-01 | — | Pending |
-| DLG-02 | — | Pending |
-| DLG-03 | — | Pending |
-| DLG-04 | — | Pending |
-| DLG-05 | — | Pending |
-| DLG-06 | — | Pending |
-| DLG-07 | — | Pending |
-| DLG-08 | — | Pending |
-| DLG-09 | — | Pending |
-| CLI-01 | — | Pending |
-| CLI-02 | — | Pending |
-| CLI-03 | — | Pending |
-| CLI-04 | — | Pending |
-| CLI-05 | — | Pending |
-| FWK-01 | — | Pending |
-| FWK-02 | — | Pending |
-| FWK-03 | — | Pending |
+| FNDN-01 | Phase 1 | Pending |
+| FNDN-02 | Phase 1 | Pending |
+| FNDN-03 | Phase 1 | Pending |
+| BTN-01 | Phase 2 | Pending |
+| BTN-02 | Phase 2 | Pending |
+| BTN-03 | Phase 2 | Pending |
+| BTN-04 | Phase 2 | Pending |
+| BTN-05 | Phase 2 | Pending |
+| BTN-06 | Phase 2 | Pending |
+| BTN-07 | Phase 2 | Pending |
+| BTN-08 | Phase 2 | Pending |
+| DLG-01 | Phase 3 | Pending |
+| DLG-02 | Phase 3 | Pending |
+| DLG-03 | Phase 3 | Pending |
+| DLG-04 | Phase 3 | Pending |
+| DLG-05 | Phase 3 | Pending |
+| DLG-06 | Phase 3 | Pending |
+| DLG-07 | Phase 3 | Pending |
+| DLG-08 | Phase 3 | Pending |
+| DLG-09 | Phase 3 | Pending |
+| CLI-01 | Phase 4 | Pending |
+| CLI-02 | Phase 4 | Pending |
+| CLI-03 | Phase 4 | Pending |
+| CLI-04 | Phase 4 | Pending |
+| CLI-05 | Phase 4 | Pending |
+| FWK-01 | Phase 5 | Pending |
+| FWK-02 | Phase 5 | Pending |
+| FWK-03 | Phase 5 | Pending |
 
 **Coverage:**
 - v1 requirements: 28 total
-- Mapped to phases: 0
-- Unmapped: 28 ⚠️
+- Mapped to phases: 28
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-01-23*
-*Last updated: 2026-01-23 after initial definition*
+*Last updated: 2026-01-23 after roadmap creation*
