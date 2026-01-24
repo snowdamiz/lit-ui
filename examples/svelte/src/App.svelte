@@ -5,202 +5,264 @@
   // Svelte 5 runes for reactive state
   let dialogOpen = $state(false);
   let loading = $state(false);
-  let clickCount = $state(0);
+  let lastEvent = $state('None');
 
-  function handleButtonClick() {
-    clickCount++;
-    console.log('Button clicked, count:', clickCount);
-  }
-
-  function handleOpenDialog() {
-    console.log('Opening dialog');
-    dialogOpen = true;
+  function handleButtonClick(variant: string) {
+    console.log(`Button clicked: ${variant}`);
+    lastEvent = `Button clicked: ${variant}`;
   }
 
   function handleDialogClose(e: CustomEvent<{ reason: string }>) {
     console.log('Dialog closed with reason:', e.detail.reason);
+    lastEvent = `Dialog closed: ${e.detail.reason}`;
     dialogOpen = false;
   }
 
   function handleLoadingClick() {
+    console.log('Loading button clicked');
     loading = true;
-    console.log('Loading started');
+    lastEvent = 'Loading started...';
     setTimeout(() => {
       loading = false;
-      console.log('Loading finished');
+      lastEvent = 'Loading complete';
     }, 2000);
   }
 
   function handleFormSubmit(e: Event) {
     e.preventDefault();
-    console.log('Form submitted via ui-button type="submit"');
+    console.log('Form submitted');
+    lastEvent = 'Form submitted via ui-button type="submit"';
+  }
+
+  function handleOpenDialog() {
+    dialogOpen = true;
+    lastEvent = 'Dialog opened';
   }
 </script>
 
-<main class="container mx-auto p-8 max-w-4xl">
-  <h1 class="text-3xl font-bold mb-8 text-center">lit-ui Svelte 5 Example</h1>
+<div class="container">
+  <header class="header">
+    <h1>lit-ui Component Test</h1>
+    <span class="badge">Svelte 5</span>
+  </header>
+  <p class="subtitle">Testing lit-ui web components in Svelte 5 with TypeScript</p>
 
-  <!-- Button Variants Section -->
-  <section class="mb-12">
-    <h2 class="text-2xl font-semibold mb-4">Button Variants</h2>
-    <p class="text-gray-600 mb-4">All 5 button variants demonstrating visual styling.</p>
-    <div class="flex flex-wrap gap-4">
-      <ui-button variant="primary" onclick={handleButtonClick}>Primary</ui-button>
-      <ui-button variant="secondary" onclick={handleButtonClick}>Secondary</ui-button>
-      <ui-button variant="outline" onclick={handleButtonClick}>Outline</ui-button>
-      <ui-button variant="ghost" onclick={handleButtonClick}>Ghost</ui-button>
-      <ui-button variant="destructive" onclick={handleButtonClick}>Destructive</ui-button>
-    </div>
-    <p class="mt-4 text-sm text-gray-500">Click count: {clickCount}</p>
-  </section>
+  <!-- Event Log -->
+  <div class="event-log">
+    <strong>Last Event:</strong> {lastEvent}
+  </div>
 
-  <!-- Button Sizes Section -->
-  <section class="mb-12">
-    <h2 class="text-2xl font-semibold mb-4">Button Sizes</h2>
-    <p class="text-gray-600 mb-4">All 3 button sizes: small, medium, large.</p>
-    <div class="flex flex-wrap items-center gap-4">
-      <ui-button variant="primary" size="sm">Small</ui-button>
-      <ui-button variant="primary" size="md">Medium</ui-button>
-      <ui-button variant="primary" size="lg">Large</ui-button>
+  <!-- Button Variants -->
+  <section class="section">
+    <h2>Button Variants</h2>
+    <p class="description">All 5 button variants: primary, secondary, outline, ghost, destructive</p>
+    <div class="button-row">
+      <ui-button variant="primary" onclick={() => handleButtonClick('primary')}>Primary</ui-button>
+      <ui-button variant="secondary" onclick={() => handleButtonClick('secondary')}>Secondary</ui-button>
+      <ui-button variant="outline" onclick={() => handleButtonClick('outline')}>Outline</ui-button>
+      <ui-button variant="ghost" onclick={() => handleButtonClick('ghost')}>Ghost</ui-button>
+      <ui-button variant="destructive" onclick={() => handleButtonClick('destructive')}>Destructive</ui-button>
     </div>
   </section>
 
-  <!-- Button States Section -->
-  <section class="mb-12">
-    <h2 class="text-2xl font-semibold mb-4">Button States</h2>
-    <p class="text-gray-600 mb-4">Disabled and loading states.</p>
-    <div class="flex flex-wrap gap-4">
-      <ui-button variant="primary" disabled>Disabled</ui-button>
-      <ui-button variant="primary" loading={loading} onclick={handleLoadingClick}>
+  <!-- Button Sizes -->
+  <section class="section">
+    <h2>Button Sizes</h2>
+    <p class="description">All 3 button sizes: small, medium, large</p>
+    <div class="button-row">
+      <ui-button size="sm" onclick={() => handleButtonClick('sm')}>Small</ui-button>
+      <ui-button size="md" onclick={() => handleButtonClick('md')}>Medium</ui-button>
+      <ui-button size="lg" onclick={() => handleButtonClick('lg')}>Large</ui-button>
+    </div>
+  </section>
+
+  <!-- Button States -->
+  <section class="section">
+    <h2>Button States</h2>
+    <p class="description">Disabled and loading states</p>
+    <div class="button-row">
+      <ui-button variant="destructive" disabled>Disabled</ui-button>
+      <ui-button loading={loading} onclick={handleLoadingClick}>
         {loading ? 'Loading...' : 'Click to Load'}
       </ui-button>
     </div>
   </section>
 
-  <!-- Button with Icons Section -->
-  <section class="mb-12">
-    <h2 class="text-2xl font-semibold mb-4">Button with Icons</h2>
-    <p class="text-gray-600 mb-4">Using icon-start and icon-end slots.</p>
-    <div class="flex flex-wrap gap-4">
-      <ui-button variant="primary">
-        <svg slot="icon-start" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+  <!-- Button with Icons -->
+  <section class="section">
+    <h2>Button with Icons</h2>
+    <p class="description">Using icon-start and icon-end slots</p>
+    <div class="button-row">
+      <ui-button onclick={() => handleButtonClick('icon-start')}>
+        <svg slot="icon-start" viewBox="0 0 20 20" fill="currentColor">
           <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
         </svg>
-        Icon Start
+        With Start Icon
       </ui-button>
-      <ui-button variant="secondary">
-        Icon End
-        <svg slot="icon-end" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+      <ui-button variant="secondary" onclick={() => handleButtonClick('icon-end')}>
+        With End Icon
+        <svg slot="icon-end" viewBox="0 0 20 20" fill="currentColor">
           <path fill-rule="evenodd" d="M3 10a.75.75 0 01.75-.75h10.638L10.23 5.29a.75.75 0 111.04-1.08l5.5 5.25a.75.75 0 010 1.08l-5.5 5.25a.75.75 0 11-1.04-1.08l4.158-3.96H3.75A.75.75 0 013 10z" clip-rule="evenodd" />
         </svg>
       </ui-button>
-      <ui-button variant="outline">
-        <svg slot="icon-start" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-          <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
-        </svg>
-        Both Icons
-        <svg slot="icon-end" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M5.22 14.78a.75.75 0 001.06 0l7.22-7.22v5.69a.75.75 0 001.5 0v-7.5a.75.75 0 00-.75-.75h-7.5a.75.75 0 000 1.5h5.69l-7.22 7.22a.75.75 0 000 1.06z" clip-rule="evenodd" />
-        </svg>
-      </ui-button>
     </div>
   </section>
 
-  <!-- Dialog Section -->
-  <section class="mb-12">
-    <h2 class="text-2xl font-semibold mb-4">Dialog Component</h2>
-    <p class="text-gray-600 mb-4">Modal dialog with open/close via $state binding.</p>
-    <ui-button variant="primary" onclick={handleOpenDialog}>Open Dialog</ui-button>
-
-    <ui-dialog open={dialogOpen} onclose={handleDialogClose}>
-      <span slot="title">Dialog Title</span>
-      <p>This is the dialog content. It demonstrates:</p>
-      <ul class="list-disc ml-6 mt-2">
-        <li>open property bound to Svelte $state</li>
-        <li>onclose event handler with reason in detail</li>
-        <li>Named slots for title, content, and footer</li>
-        <li>Press Escape or click backdrop to close</li>
-      </ul>
-      <div slot="footer">
-        <ui-button variant="ghost" onclick={() => dialogOpen = false}>Cancel</ui-button>
-        <ui-button variant="primary" onclick={() => dialogOpen = false}>Confirm</ui-button>
-      </div>
-    </ui-dialog>
+  <!-- Dialog -->
+  <section class="section">
+    <h2>Dialog Component</h2>
+    <p class="description">Modal dialog with open/close via state binding</p>
+    <ui-button onclick={handleOpenDialog}>Open Dialog</ui-button>
   </section>
 
-  <!-- Dialog Sizes Section -->
-  <section class="mb-12">
-    <h2 class="text-2xl font-semibold mb-4">Dialog Sizes</h2>
-    <p class="text-gray-600 mb-4">Dialogs support sm, md, lg sizes.</p>
-    <div class="flex gap-4">
-      <ui-button variant="outline" onclick={() => {
-        const dialog = document.querySelector('#dialog-sm') as any;
-        if (dialog) dialog.show();
-      }}>Small Dialog</ui-button>
-      <ui-button variant="outline" onclick={() => {
-        const dialog = document.querySelector('#dialog-md') as any;
-        if (dialog) dialog.show();
-      }}>Medium Dialog</ui-button>
-      <ui-button variant="outline" onclick={() => {
-        const dialog = document.querySelector('#dialog-lg') as any;
-        if (dialog) dialog.show();
-      }}>Large Dialog</ui-button>
-    </div>
-
-    <ui-dialog id="dialog-sm" size="sm" show-close-button>
-      <span slot="title">Small Dialog</span>
-      <p>This is a small dialog (max-w-sm).</p>
-      <div slot="footer">
-        <ui-button variant="primary" onclick={(e: Event) => ((e.target as HTMLElement).closest('ui-dialog') as any)?.close()}>Close</ui-button>
+  <!-- Form Participation -->
+  <section class="section">
+    <h2>Form Participation</h2>
+    <p class="description">Button with type="submit" participates in form submission</p>
+    <form class="form" onsubmit={handleFormSubmit}>
+      <div class="form-group">
+        <label for="name">Name:</label>
+        <input id="name" type="text" placeholder="Enter your name" />
       </div>
-    </ui-dialog>
-
-    <ui-dialog id="dialog-md" size="md" show-close-button>
-      <span slot="title">Medium Dialog</span>
-      <p>This is a medium dialog (max-w-md). This is the default size.</p>
-      <div slot="footer">
-        <ui-button variant="primary" onclick={(e: Event) => ((e.target as HTMLElement).closest('ui-dialog') as any)?.close()}>Close</ui-button>
+      <div class="button-row">
+        <ui-button type="submit" variant="primary">Submit Form</ui-button>
+        <ui-button type="reset" variant="outline">Reset Form</ui-button>
       </div>
-    </ui-dialog>
-
-    <ui-dialog id="dialog-lg" size="lg" show-close-button>
-      <span slot="title">Large Dialog</span>
-      <p>This is a large dialog (max-w-lg). Good for forms or more content.</p>
-      <div slot="footer">
-        <ui-button variant="primary" onclick={(e: Event) => ((e.target as HTMLElement).closest('ui-dialog') as any)?.close()}>Close</ui-button>
-      </div>
-    </ui-dialog>
-  </section>
-
-  <!-- Form Participation Section -->
-  <section class="mb-12">
-    <h2 class="text-2xl font-semibold mb-4">Form Participation</h2>
-    <p class="text-gray-600 mb-4">Button with type="submit" participates in form submission.</p>
-    <form class="p-4 border rounded-lg bg-gray-50" onsubmit={handleFormSubmit}>
-      <div class="mb-4">
-        <label class="block text-sm font-medium mb-1" for="name">Name</label>
-        <input
-          type="text"
-          id="name"
-          class="w-full px-3 py-2 border rounded-md"
-          placeholder="Enter your name"
-        />
-      </div>
-      <ui-button variant="primary" type="submit">Submit Form</ui-button>
     </form>
   </section>
 
-  <footer class="text-center text-gray-500 text-sm mt-8">
+  <!-- Dialog Component -->
+  <ui-dialog open={dialogOpen} onclose={handleDialogClose}>
+    <span slot="title">Test Dialog</span>
+    <p>This is the dialog content. It demonstrates:</p>
+    <ul>
+      <li>open property bound to Svelte $state</li>
+      <li>onclose event handler with reason in detail</li>
+      <li>Named slots for title, content, and footer</li>
+    </ul>
+    <p><strong>Close by:</strong> Escape key, backdrop click, or buttons below</p>
+    <div slot="footer">
+      <ui-button variant="outline" onclick={() => dialogOpen = false}>Cancel</ui-button>
+      <ui-button variant="primary" onclick={() => { lastEvent = 'Dialog confirmed'; dialogOpen = false; }}>Confirm</ui-button>
+    </div>
+  </ui-dialog>
+
+  <footer class="footer">
     <p>Svelte 5 + lit-ui integration example</p>
     <p>Using $state runes for reactive property binding</p>
   </footer>
-</main>
+</div>
 
 <style>
+  :global(*) {
+    box-sizing: border-box;
+  }
   :global(body) {
-    font-family: system-ui, -apple-system, sans-serif;
-    background: #f9fafb;
     margin: 0;
     padding: 0;
+    font-family: system-ui, -apple-system, sans-serif;
+    background: #f9fafb;
+    color: #1f2937;
+  }
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+  }
+  .header h1 {
+    margin: 0;
+    font-size: 1.875rem;
+    font-weight: 700;
+  }
+  .badge {
+    background: #f97316;
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+  .subtitle {
+    color: #6b7280;
+    margin: 0 0 1.5rem 0;
+  }
+  .event-log {
+    background: #e5e7eb;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 2rem;
+    font-family: monospace;
+  }
+  .section {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  .section h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+    color: #374151;
+  }
+  .description {
+    color: #6b7280;
+    margin: 0 0 1rem 0;
+    font-size: 0.875rem;
+  }
+  .button-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+  }
+  .form {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    border: 1px solid #e5e7eb;
+  }
+  .form-group {
+    margin-bottom: 1rem;
+  }
+  .form-group label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+  }
+  .form-group input {
+    width: 100%;
+    max-width: 300px;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    font-size: 1rem;
+  }
+  .form-group input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+  ul {
+    margin: 0.5rem 0;
+    padding-left: 1.5rem;
+  }
+  li {
+    margin: 0.25rem 0;
+  }
+  .footer {
+    text-align: center;
+    color: #9ca3af;
+    font-size: 0.875rem;
+    margin-top: 2rem;
+  }
+  .footer p {
+    margin: 0.25rem 0;
   }
 </style>

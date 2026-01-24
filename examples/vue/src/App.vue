@@ -2,126 +2,125 @@
 import { ref } from 'vue';
 import 'lit-ui';
 
-// Dialog state
+// State
 const dialogOpen = ref(false);
-
-// Loading state for button demo
 const loading = ref(false);
+const lastEvent = ref('None');
 
-// Form state
-const formSubmitted = ref(false);
-
-function handleButtonClick() {
-  console.log('Button clicked');
-  dialogOpen.value = true;
+function handleButtonClick(variant: string) {
+  console.log(`Button clicked: ${variant}`);
+  lastEvent.value = `Button clicked: ${variant}`;
 }
 
 function handleDialogClose(e: CustomEvent<{ reason: string }>) {
   console.log('Dialog closed with reason:', e.detail.reason);
+  lastEvent.value = `Dialog closed: ${e.detail.reason}`;
   dialogOpen.value = false;
 }
 
 function handleLoadingClick() {
   console.log('Loading button clicked');
   loading.value = true;
+  lastEvent.value = 'Loading started...';
   setTimeout(() => {
     loading.value = false;
-    console.log('Loading complete');
+    lastEvent.value = 'Loading complete';
   }, 2000);
 }
 
 function handleFormSubmit(e: Event) {
   e.preventDefault();
   console.log('Form submitted');
-  formSubmitted.value = true;
-  setTimeout(() => formSubmitted.value = false, 2000);
+  lastEvent.value = 'Form submitted via ui-button type="submit"';
+}
+
+function handleOpenDialog() {
+  dialogOpen.value = true;
+  lastEvent.value = 'Dialog opened';
 }
 </script>
 
 <template>
   <div class="container">
-    <h1>Vue 3 + lit-ui Test</h1>
-    <p>Testing lit-ui web components in Vue 3 with TypeScript</p>
+    <header class="header">
+      <h1>lit-ui Component Test</h1>
+      <span class="badge">Vue 3</span>
+    </header>
+    <p class="subtitle">Testing lit-ui web components in Vue 3 with TypeScript</p>
 
-    <!-- Button Variants Section -->
-    <section>
+    <!-- Event Log -->
+    <div class="event-log">
+      <strong>Last Event:</strong> {{ lastEvent }}
+    </div>
+
+    <!-- Button Variants -->
+    <section class="section">
       <h2>Button Variants</h2>
+      <p class="description">All 5 button variants: primary, secondary, outline, ghost, destructive</p>
       <div class="button-row">
-        <ui-button variant="primary" @click="() => console.log('Primary clicked')">Primary</ui-button>
-        <ui-button variant="secondary" @click="() => console.log('Secondary clicked')">Secondary</ui-button>
-        <ui-button variant="outline" @click="() => console.log('Outline clicked')">Outline</ui-button>
-        <ui-button variant="ghost" @click="() => console.log('Ghost clicked')">Ghost</ui-button>
-        <ui-button variant="destructive" @click="() => console.log('Destructive clicked')">Destructive</ui-button>
+        <ui-button variant="primary" @click="handleButtonClick('primary')">Primary</ui-button>
+        <ui-button variant="secondary" @click="handleButtonClick('secondary')">Secondary</ui-button>
+        <ui-button variant="outline" @click="handleButtonClick('outline')">Outline</ui-button>
+        <ui-button variant="ghost" @click="handleButtonClick('ghost')">Ghost</ui-button>
+        <ui-button variant="destructive" @click="handleButtonClick('destructive')">Destructive</ui-button>
       </div>
     </section>
 
-    <!-- Button Sizes Section -->
-    <section>
+    <!-- Button Sizes -->
+    <section class="section">
       <h2>Button Sizes</h2>
+      <p class="description">All 3 button sizes: small, medium, large</p>
       <div class="button-row">
-        <ui-button size="sm">Small</ui-button>
-        <ui-button size="md">Medium</ui-button>
-        <ui-button size="lg">Large</ui-button>
+        <ui-button size="sm" @click="handleButtonClick('sm')">Small</ui-button>
+        <ui-button size="md" @click="handleButtonClick('md')">Medium</ui-button>
+        <ui-button size="lg" @click="handleButtonClick('lg')">Large</ui-button>
       </div>
     </section>
 
-    <!-- Button States Section -->
-    <section>
+    <!-- Button States -->
+    <section class="section">
       <h2>Button States</h2>
+      <p class="description">Disabled and loading states</p>
       <div class="button-row">
-        <ui-button disabled>Disabled</ui-button>
+        <ui-button variant="destructive" disabled>Disabled</ui-button>
         <ui-button :loading="loading" @click="handleLoadingClick">
           {{ loading ? 'Loading...' : 'Click to Load' }}
         </ui-button>
       </div>
     </section>
 
-    <!-- Button with Icons Section -->
-    <section>
+    <!-- Button with Icons -->
+    <section class="section">
       <h2>Button with Icons</h2>
+      <p class="description">Using icon-start and icon-end slots</p>
       <div class="button-row">
-        <ui-button variant="primary">
-          <svg slot="icon-start" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+        <ui-button @click="handleButtonClick('icon-start')">
+          <svg slot="icon-start" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
           </svg>
           With Start Icon
         </ui-button>
-        <ui-button variant="secondary">
+        <ui-button variant="secondary" @click="handleButtonClick('icon-end')">
           With End Icon
-          <svg slot="icon-end" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+          <svg slot="icon-end" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M3 10a.75.75 0 01.75-.75h10.638L10.23 5.29a.75.75 0 111.04-1.08l5.5 5.25a.75.75 0 010 1.08l-5.5 5.25a.75.75 0 11-1.04-1.08l4.158-3.96H3.75A.75.75 0 013 10z" clip-rule="evenodd" />
           </svg>
         </ui-button>
       </div>
     </section>
 
-    <!-- Dialog Section -->
-    <section>
-      <h2>Dialog</h2>
-      <ui-button variant="primary" @click="handleButtonClick">Open Dialog</ui-button>
-      <p class="hint">Dialog will open. Press Escape or click backdrop to close.</p>
+    <!-- Dialog -->
+    <section class="section">
+      <h2>Dialog Component</h2>
+      <p class="description">Modal dialog with open/close via state binding</p>
+      <ui-button @click="handleOpenDialog">Open Dialog</ui-button>
     </section>
 
-    <!-- Dialog Component -->
-    <ui-dialog :open="dialogOpen" @close="handleDialogClose">
-      <span slot="title">Test Dialog</span>
-      <p>This is the dialog content. The dialog opened via Vue's :open property binding.</p>
-      <p>Close this dialog by:</p>
-      <ul>
-        <li>Pressing the Escape key</li>
-        <li>Clicking the backdrop</li>
-        <li>Clicking the Close button below</li>
-      </ul>
-      <div slot="footer">
-        <ui-button variant="ghost" @click="dialogOpen = false">Cancel</ui-button>
-        <ui-button variant="primary" @click="dialogOpen = false">Confirm</ui-button>
-      </div>
-    </ui-dialog>
-
-    <!-- Form Participation Section -->
-    <section>
+    <!-- Form Participation -->
+    <section class="section">
       <h2>Form Participation</h2>
-      <form @submit="handleFormSubmit">
+      <p class="description">Button with type="submit" participates in form submission</p>
+      <form class="form" @submit="handleFormSubmit">
         <div class="form-group">
           <label for="name">Name:</label>
           <input id="name" type="text" placeholder="Enter your name" />
@@ -130,80 +129,142 @@ function handleFormSubmit(e: Event) {
           <ui-button type="submit" variant="primary">Submit Form</ui-button>
           <ui-button type="reset" variant="outline">Reset Form</ui-button>
         </div>
-        <p v-if="formSubmitted" class="success">Form submitted successfully!</p>
       </form>
     </section>
+
+    <!-- Dialog Component -->
+    <ui-dialog :open="dialogOpen" @close="handleDialogClose">
+      <span slot="title">Test Dialog</span>
+      <p>This is the dialog content. It demonstrates:</p>
+      <ul>
+        <li>:open property bound to Vue ref</li>
+        <li>@close event handler with reason in detail</li>
+        <li>Named slots for title, content, and footer</li>
+      </ul>
+      <p><strong>Close by:</strong> Escape key, backdrop click, or buttons below</p>
+      <div slot="footer">
+        <ui-button variant="outline" @click="dialogOpen = false">Cancel</ui-button>
+        <ui-button variant="primary" @click="() => { lastEvent = 'Dialog confirmed'; dialogOpen = false; }">Confirm</ui-button>
+      </div>
+    </ui-dialog>
+
+    <footer class="footer">
+      <p>Vue 3 + lit-ui integration example</p>
+      <p>Using ref() for reactive property binding</p>
+    </footer>
   </div>
 </template>
 
 <style>
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  padding: 0;
+  font-family: system-ui, -apple-system, sans-serif;
+  background: #f9fafb;
+  color: #1f2937;
+}
 .container {
   max-width: 800px;
   margin: 0 auto;
   padding: 2rem;
-  font-family: system-ui, -apple-system, sans-serif;
 }
-
-h1 {
-  font-size: 2rem;
+.header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
   margin-bottom: 0.5rem;
 }
-
-h2 {
-  font-size: 1.25rem;
-  margin-top: 2rem;
-  margin-bottom: 1rem;
-  color: #666;
+.header h1 {
+  margin: 0;
+  font-size: 1.875rem;
+  font-weight: 700;
 }
-
-section {
+.badge {
+  background: #10b981;
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+.subtitle {
+  color: #6b7280;
+  margin: 0 0 1.5rem 0;
+}
+.event-log {
+  background: #e5e7eb;
+  padding: 1rem;
+  border-radius: 0.5rem;
   margin-bottom: 2rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid #eee;
+  font-family: monospace;
 }
-
+.section {
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+.section h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+  color: #374151;
+}
+.description {
+  color: #6b7280;
+  margin: 0 0 1rem 0;
+  font-size: 0.875rem;
+}
 .button-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.75rem;
   align-items: center;
 }
-
-.hint {
-  font-size: 0.875rem;
-  color: #666;
-  margin-top: 0.5rem;
+.form {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
 }
-
 .form-group {
   margin-bottom: 1rem;
 }
-
 .form-group label {
   display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
   margin-bottom: 0.25rem;
-  font-weight: 500;
 }
-
 .form-group input {
-  padding: 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  width: 200px;
+  width: 100%;
+  max-width: 300px;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  font-size: 1rem;
 }
-
-.success {
-  color: #22c55e;
-  font-weight: 500;
-  margin-top: 0.5rem;
+.form-group input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
-
 ul {
   margin: 0.5rem 0;
   padding-left: 1.5rem;
 }
-
 li {
+  margin: 0.25rem 0;
+}
+.footer {
+  text-align: center;
+  color: #9ca3af;
+  font-size: 0.875rem;
+  margin-top: 2rem;
+}
+.footer p {
   margin: 0.25rem 0;
 }
 </style>
