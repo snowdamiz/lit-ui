@@ -60,33 +60,33 @@ Requirements for the documentation site milestone.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| INFRA-01 | TBD | Pending |
-| INFRA-02 | TBD | Pending |
-| INFRA-03 | TBD | Pending |
-| INFRA-04 | TBD | Pending |
-| INFRA-05 | TBD | Pending |
-| START-01 | TBD | Pending |
-| START-02 | TBD | Pending |
-| START-03 | TBD | Pending |
-| COMP-01 | TBD | Pending |
-| COMP-02 | TBD | Pending |
-| COMP-03 | TBD | Pending |
-| COMP-04 | TBD | Pending |
-| FRAME-01 | TBD | Pending |
-| FRAME-02 | TBD | Pending |
-| FRAME-03 | TBD | Pending |
-| THEME-01 | TBD | Pending |
-| THEME-02 | TBD | Pending |
-| THEME-03 | TBD | Pending |
-| A11Y-01 | TBD | Pending |
-| A11Y-02 | TBD | Pending |
-| A11Y-03 | TBD | Pending |
+| INFRA-01 | Phase 6 | Pending |
+| INFRA-02 | Phase 6 | Pending |
+| INFRA-03 | Phase 6 | Pending |
+| INFRA-04 | Phase 12 | Pending |
+| INFRA-05 | Phase 12 | Pending |
+| START-01 | Phase 7 | Pending |
+| START-02 | Phase 7 | Pending |
+| START-03 | Phase 7 | Pending |
+| COMP-01 | Phase 8 | Pending |
+| COMP-02 | Phase 8 | Pending |
+| COMP-03 | Phase 8 | Pending |
+| COMP-04 | Phase 8 | Pending |
+| FRAME-01 | Phase 9 | Pending |
+| FRAME-02 | Phase 9 | Pending |
+| FRAME-03 | Phase 9 | Pending |
+| THEME-01 | Phase 10 | Pending |
+| THEME-02 | Phase 10 | Pending |
+| THEME-03 | Phase 10 | Pending |
+| A11Y-01 | Phase 11 | Pending |
+| A11Y-02 | Phase 11 | Pending |
+| A11Y-03 | Phase 11 | Pending |
 
 **Coverage:**
 - v1.1 requirements: 21 total
-- Mapped to phases: 0
-- Unmapped: 21
+- Mapped to phases: 21
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-01-24*
-*Last updated: 2026-01-24 after initial definition*
+*Last updated: 2026-01-24 after roadmap creation*
