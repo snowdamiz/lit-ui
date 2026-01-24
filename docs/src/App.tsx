@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router'
 import { DocsLayout } from './layouts/DocsLayout'
+import { GettingStarted } from './pages/GettingStarted'
 import { Placeholder } from './pages/Placeholder'
 
 export default function App() {
@@ -7,12 +8,11 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route element={<DocsLayout />}>
-          {/* Index route */}
-          <Route index element={<Placeholder />} />
+          {/* Index route - shows Getting Started */}
+          <Route index element={<GettingStarted />} />
 
           {/* Getting Started */}
-          <Route path="installation" element={<Placeholder />} />
-          <Route path="quick-start" element={<Placeholder />} />
+          <Route path="getting-started" element={<GettingStarted />} />
 
           {/* Components */}
           <Route path="components/button" element={<Placeholder />} />
