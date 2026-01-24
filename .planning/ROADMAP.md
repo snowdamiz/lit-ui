@@ -83,10 +83,15 @@ Plans:
   3. CLI detects user's build tool (Vite, Webpack, esbuild) and provides appropriate setup instructions
   4. Running `npx lit-ui list` shows available components with descriptions
   5. CLI configures Tailwind v4 CSS-based setup (not legacy config file)
-**Plans**: TBD
+**Plans**: 6 plans
 
 Plans:
-- [ ] 04-01: TBD
+- [ ] 04-01-PLAN.md — CLI scaffold with TypeScript, tsup, citty entry point
+- [ ] 04-02-PLAN.md — Utility layer (config, build tool detection, PM detection)
+- [ ] 04-03-PLAN.md — Component registry JSON and registry utilities
+- [ ] 04-04-PLAN.md — Init command with config creation and base file copying
+- [ ] 04-05-PLAN.md — Add command with dependency resolution and conflict handling
+- [ ] 04-06-PLAN.md — List command and full CLI verification
 
 ### Phase 5: Framework Verification
 **Goal**: Verify that Button and Dialog components work correctly in React 19+, Vue 3, and Svelte 5 without framework-specific wrappers
@@ -111,7 +116,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 | 1. Foundation | 4/4 | Complete | 2026-01-24 |
 | 2. Button Component | 4/4 | Complete | 2026-01-24 |
 | 3. Dialog Component | 4/4 | Complete | 2026-01-24 |
-| 4. CLI | 0/? | Not started | - |
+| 4. CLI | 0/6 | Not started | - |
 | 5. Framework Verification | 0/? | Not started | - |
 
 ---
