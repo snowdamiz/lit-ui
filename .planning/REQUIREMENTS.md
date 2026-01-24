@@ -46,9 +46,9 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Framework Verification
 
-- [ ] **FWK-01**: Works in React 19+ without wrappers
-- [ ] **FWK-02**: Works in Vue 3 without wrappers
-- [ ] **FWK-03**: Works in Svelte 5 without wrappers
+- [x] **FWK-01**: Works in React 19+ without wrappers
+- [x] **FWK-02**: Works in Vue 3 without wrappers
+- [x] **FWK-03**: Works in Svelte 5 without wrappers
 
 ## v2 Requirements
 
@@ -122,9 +122,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CLI-03 | Phase 4 | Complete |
 | CLI-04 | Phase 4 | Complete |
 | CLI-05 | Phase 4 | Complete |
-| FWK-01 | Phase 5 | Pending |
-| FWK-02 | Phase 5 | Pending |
-| FWK-03 | Phase 5 | Pending |
+| FWK-01 | Phase 5 | Complete |
+| FWK-02 | Phase 5 | Complete |
+| FWK-03 | Phase 5 | Complete |
 
 **Coverage:**
 - v1 requirements: 28 total
@@ -133,4 +133,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-01-23*
-*Last updated: 2026-01-24 after Phase 4 completion*
+*Last updated: 2026-01-24 after Phase 5 completion (milestone complete)*
