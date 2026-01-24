@@ -10,4 +10,8 @@ export default defineConfig({
   banner: {
     js: '#!/usr/bin/env node',
   },
+  // Bundle JSON files inline (used by registry utility)
+  loader: {
+    '.json': 'json',
+  },
 });
