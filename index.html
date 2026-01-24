@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>lit-ui Foundation Demo</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      padding: 2rem;
+      background: var(--color-background, #fff);
+      color: var(--color-foreground, #000);
+      transition: background-color 0.2s, color 0.2s;
+    }
+    .demo-grid {
+      display: grid;
+      gap: 1.5rem;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .controls {
+      margin-bottom: 2rem;
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+    .controls button {
+      padding: 0.5rem 1rem;
+      border-radius: 0.375rem;
+      border: 1px solid #ccc;
+      background: #f5f5f5;
+      cursor: pointer;
+    }
+    .controls button:hover {
+      background: #e5e5e5;
+    }
+    h1 {
+      margin-bottom: 0.5rem;
+    }
+    .subtitle {
+      color: #666;
+      margin-bottom: 2rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>lit-ui Foundation Demo</h1>
+  <p class="subtitle">Validating Tailwind + Shadow DOM integration</p>
+
+  <div class="controls">
+    <button onclick="document.documentElement.classList.toggle('dark')">
+      Toggle Dark Mode
+    </button>
+    <span>Click to test theme switching</span>
+  </div>
+
+  <div class="demo-grid">
+    <demo-card title="Standard Card"></demo-card>
+    <demo-card title="Elevated Card" elevated></demo-card>
+  </div>
+
+  <script type="module" src="/src/index.ts"></script>
+
+  <div style="margin-top: 3rem; padding: 1rem; background: #f0f0f0; border-radius: 0.5rem;">
+    <h3 style="margin-top: 0;">Verification Checklist</h3>
+    <ul>
+      <li>Cards render with visible styling (not unstyled HTML)</li>
+      <li>Buttons have colored backgrounds (primary=blue, destructive=red)</li>
+      <li>Elevated card has larger shadow than standard</li>
+      <li>Dark mode toggle changes colors (background becomes dark)</li>
+      <li>Hover states work on buttons</li>
+    </ul>
+  </div>
+</body>
+</html>
