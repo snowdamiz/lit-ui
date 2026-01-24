@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-23)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** Phase 2 - Button Component
+**Current focus:** Phase 3 - Dialog Component
 
 ## Current Position
 
-Phase: 2 of 5 (Button Component)
-Plan: 4 of 4 in current phase
-Status: Phase complete
-Last activity: 2026-01-24 - Completed 02-04-PLAN.md (Demo Page and Visual Verification)
+Phase: 3 of 5 (Dialog Component)
+Plan: 1 of 3 in current phase
+Status: In progress
+Last activity: 2026-01-24 - Completed 03-01-PLAN.md (Dialog Core)
 
-Progress: [████████░░] 80%
+Progress: [█████████░] 90%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 8
-- Average duration: 2.8 min
-- Total execution time: 22.3 min
+- Total plans completed: 9
+- Average duration: 2.6 min
+- Total execution time: 23.8 min
 
 **By Phase:**
 
@@ -29,10 +29,11 @@ Progress: [████████░░] 80%
 |-------|-------|-------|----------|
 | 01-foundation | 4 | 14.0 min | 3.5 min |
 | 02-button-component | 4 | 8.3 min | 2.1 min |
+| 03-dialog-component | 1 | 1.5 min | 1.5 min |
 
 **Recent Trend:**
-- Last 5 plans: 02-01 (1.0 min), 02-03 (2.3 min), 02-02 (3.0 min), 02-04 (2.0 min)
-- Trend: Phase 2 complete - all button requirements verified
+- Last 5 plans: 02-02 (3.0 min), 02-03 (2.3 min), 02-04 (2.0 min), 03-01 (1.5 min)
+- Trend: Phase 3 started - dialog core complete
 
 *Updated after each plan completion*
 
@@ -58,6 +59,9 @@ Recent decisions affecting current work:
 - Named slots (icon-start, icon-end) for icon composition
 - ElementInternals for form-associated custom elements (formAssociated + attachInternals)
 - requestSubmit() for form submission (triggers validation unlike submit())
+- Native <dialog> with showModal() for automatic focus trapping and Escape handling
+- Close event with reason (escape, backdrop, programmatic) for consumer flexibility
+- Store triggerElement for focus restoration on close
 
 ### Pending Todos
 
@@ -70,5 +74,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-01-24
-Stopped at: Completed 02-04-PLAN.md (Demo Page and Visual Verification) - Phase 2 complete
+Stopped at: Completed 03-01-PLAN.md (Dialog Core)
 Resume file: None
