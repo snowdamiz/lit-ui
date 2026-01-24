@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-24)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** v1.1 Documentation Site - Phase 7 Complete
+**Current focus:** v1.1 Documentation Site - Phase 8 In Progress
 
 ## Current Position
 
-Phase: 7 of 12 (Getting Started)
-Plan: 2 of 2 in phase (COMPLETE)
-Status: Phase complete
-Last activity: 2026-01-24 - Completed Phase 7 (Getting Started)
+Phase: 8 of 12 (Component Documentation)
+Plan: 2 of 4 in phase
+Status: In progress
+Last activity: 2026-01-24 - Completed 08-02-PLAN.md (API Table Components)
 
-Progress: v1.0 SHIPPED | v1.1 [#####--] 5/7+ plans
+Progress: v1.0 SHIPPED | v1.1 [######-] 6/7+ plans
 
 ## Performance Metrics
 
@@ -24,8 +24,8 @@ Progress: v1.0 SHIPPED | v1.1 [#####--] 5/7+ plans
 - Total execution time: ~65 min
 
 **v1.1 Velocity:**
-- Plans completed: 5
-- Total execution time: 9 min
+- Plans completed: 6
+- Total execution time: 10 min
 
 **By Phase:**
 
@@ -38,6 +38,7 @@ Progress: v1.0 SHIPPED | v1.1 [#####--] 5/7+ plans
 | 05-framework-verification | 4 | 16 min | 4.0 min |
 | 06-docs-foundation | 3 | 5 min | 1.7 min |
 | 07-getting-started | 2 | 4 min | 2.0 min |
+| 08-component-documentation | 1 | 1 min | 1.0 min |
 
 ## Accumulated Context
 
@@ -62,6 +63,11 @@ Key decisions are logged in PROJECT.md Key Decisions table.
 - CSS custom properties on ui-button element for theme tokens
 - tsconfig updated with experimentalDecorators for Lit support
 
+**Phase 8 Decisions:**
+- Tables use simple HTML table elements with Tailwind styling
+- Default values show em dash when undefined for clear visual indicator
+- Empty div elements for flex spacing in PrevNextNav
+
 ### Pending Todos
 
 None.
@@ -73,11 +79,11 @@ None.
 ## Session Continuity
 
 Last session: 2026-01-24
-Stopped at: Completed Phase 7 (Getting Started) - all 2 plans
+Stopped at: Completed 08-02-PLAN.md (API Table Components)
 Resume file: None
 
 ## Next Steps
 
-Phase 7 complete. Ready for:
-- Phase 8: Component documentation (Button, Dialog)
-- Phase 9: Framework guides
+Phase 8 in progress. Continue with:
+- 08-03: Button documentation page
+- 08-04: Dialog documentation page
