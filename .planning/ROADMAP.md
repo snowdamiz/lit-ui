@@ -47,10 +47,13 @@ Plans:
   3. Button placed inside a `<form>` can submit the form (form participation via ElementInternals)
   4. Button in loading state shows spinner, is disabled, and announces loading via aria-busy
   5. Button accepts icons in leading/trailing slots via named slots
-**Plans**: TBD
+**Plans**: 4 plans
 
 Plans:
-- [ ] 02-01: TBD
+- [ ] 02-01-PLAN.md — Core button component with variants and sizes
+- [ ] 02-02-PLAN.md — Form participation and keyboard accessibility
+- [ ] 02-03-PLAN.md — Loading state with spinner and icon slots
+- [ ] 02-04-PLAN.md — Demo page and visual verification
 
 ### Phase 3: Dialog Component
 **Goal**: A fully accessible modal dialog that validates complex accessibility patterns (focus management, ARIA across shadow boundaries, keyboard navigation)
@@ -103,7 +106,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 4/4 | Complete | 2026-01-24 |
-| 2. Button Component | 0/? | Not started | - |
+| 2. Button Component | 0/4 | Not started | - |
 | 3. Dialog Component | 0/? | Not started | - |
 | 4. CLI | 0/? | Not started | - |
 | 5. Framework Verification | 0/? | Not started | - |
