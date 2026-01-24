@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-23)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** Phase 3 Complete - Ready for Phase 4
+**Current focus:** Phase 4 - CLI Development
 
 ## Current Position
 
-Phase: 3 of 5 (Dialog Component)
-Plan: 4 of 4 in current phase
-Status: Phase complete
-Last activity: 2026-01-24 - Completed 03-04-PLAN.md (Nested Dialogs and Demo)
+Phase: 4 of 5 (CLI)
+Plan: 1 of 6 in current phase
+Status: In progress
+Last activity: 2026-01-24 - Completed 04-01-PLAN.md (CLI Scaffold)
 
-Progress: [████████████] 100% (Phase 3)
+Progress: [█████████████░░░░░░░░░░░] 54% (13/24 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 12
-- Average duration: 2.4 min
-- Total execution time: 28.2 min
+- Total plans completed: 13
+- Average duration: 2.3 min
+- Total execution time: 29.7 min
 
 **By Phase:**
 
@@ -30,10 +30,11 @@ Progress: [████████████] 100% (Phase 3)
 | 01-foundation | 4 | 14.0 min | 3.5 min |
 | 02-button-component | 4 | 8.3 min | 2.1 min |
 | 03-dialog-component | 4 | 5.9 min | 1.5 min |
+| 04-cli | 1 | 1.5 min | 1.5 min |
 
 **Recent Trend:**
-- Last 5 plans: 03-01 (1.5 min), 03-02 (0.5 min), 03-03 (0.9 min), 03-04 (3.0 min)
-- Trend: Phase 3 complete - all dialog features implemented including nested dialogs and demo
+- Last 5 plans: 03-02 (0.5 min), 03-03 (0.9 min), 03-04 (3.0 min), 04-01 (1.5 min)
+- Trend: Phase 4 started - CLI scaffold complete with citty framework
 
 *Updated after each plan completion*
 
@@ -67,6 +68,9 @@ Recent decisions affecting current work:
 - JSDoc documentation for nested dialog pattern with stopPropagation
 - showCloseButton property for optional close button
 - Dialog centering via margin: auto on native dialog element
+- citty for CLI framework (lightweight, TypeScript-first)
+- tsup for CLI bundling with shebang banner injection
+- createRequire for package.json version import in ESM
 
 ### Pending Todos
 
@@ -79,5 +83,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-01-24
-Stopped at: Completed 03-04-PLAN.md (Nested Dialogs and Demo)
+Stopped at: Completed 04-01-PLAN.md (CLI Scaffold)
 Resume file: None
