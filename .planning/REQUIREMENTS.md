@@ -26,15 +26,15 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Dialog
 
-- [ ] **DLG-01**: Controlled open/close via property
-- [ ] **DLG-02**: Focus trap (WCAG requirement)
-- [ ] **DLG-03**: Escape key to close
-- [ ] **DLG-04**: aria-labelledby/describedby for accessibility
-- [ ] **DLG-05**: Return focus to trigger on close
-- [ ] **DLG-06**: Click-outside to close (optional via prop)
-- [ ] **DLG-07**: Enter/exit animations
-- [ ] **DLG-08**: Reduced-motion support (prefers-reduced-motion)
-- [ ] **DLG-09**: Nested dialog support
+- [x] **DLG-01**: Controlled open/close via property
+- [x] **DLG-02**: Focus trap (WCAG requirement)
+- [x] **DLG-03**: Escape key to close
+- [x] **DLG-04**: aria-labelledby/describedby for accessibility
+- [x] **DLG-05**: Return focus to trigger on close
+- [x] **DLG-06**: Click-outside to close (optional via prop)
+- [x] **DLG-07**: Enter/exit animations
+- [x] **DLG-08**: Reduced-motion support (prefers-reduced-motion)
+- [x] **DLG-09**: Nested dialog support
 
 ### CLI
 
@@ -108,15 +108,15 @@ Which phases cover which requirements. Updated during roadmap creation.
 | BTN-06 | Phase 2 | Complete |
 | BTN-07 | Phase 2 | Complete |
 | BTN-08 | Phase 2 | Complete |
-| DLG-01 | Phase 3 | Pending |
-| DLG-02 | Phase 3 | Pending |
-| DLG-03 | Phase 3 | Pending |
-| DLG-04 | Phase 3 | Pending |
-| DLG-05 | Phase 3 | Pending |
-| DLG-06 | Phase 3 | Pending |
-| DLG-07 | Phase 3 | Pending |
-| DLG-08 | Phase 3 | Pending |
-| DLG-09 | Phase 3 | Pending |
+| DLG-01 | Phase 3 | Complete |
+| DLG-02 | Phase 3 | Complete |
+| DLG-03 | Phase 3 | Complete |
+| DLG-04 | Phase 3 | Complete |
+| DLG-05 | Phase 3 | Complete |
+| DLG-06 | Phase 3 | Complete |
+| DLG-07 | Phase 3 | Complete |
+| DLG-08 | Phase 3 | Complete |
+| DLG-09 | Phase 3 | Complete |
 | CLI-01 | Phase 4 | Pending |
 | CLI-02 | Phase 4 | Pending |
 | CLI-03 | Phase 4 | Pending |
@@ -133,4 +133,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-01-23*
-*Last updated: 2026-01-24 after Phase 2 completion*
+*Last updated: 2026-01-24 after Phase 3 completion*
