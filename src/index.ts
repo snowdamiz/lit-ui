@@ -7,3 +7,6 @@
 
 // Base class for Tailwind-enabled web components
 export { TailwindElement } from './base/tailwind-element';
+
+// Demo component for foundation validation
+export { DemoCard } from './components/demo/demo';
