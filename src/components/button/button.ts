@@ -46,6 +46,8 @@ export type ButtonType = 'button' | 'submit' | 'reset';
  * Supports form participation via ElementInternals for submit/reset behavior.
  *
  * @slot - Default slot for button text content
+ * @slot icon-start - Slot for icon before text
+ * @slot icon-end - Slot for icon after text
  */
 @customElement('ui-button')
 export class Button extends TailwindElement {
@@ -164,6 +166,14 @@ export class Button extends TailwindElement {
         transform: scale(1);
       }
     }
+
+    /* Icon slots - scale with button font-size via em units */
+    ::slotted([slot='icon-start']),
+    ::slotted([slot='icon-end']) {
+      width: 1em;
+      height: 1em;
+      flex-shrink: 0;
+    }
   `;
 
   /**
@@ -184,12 +194,13 @@ export class Button extends TailwindElement {
 
   /**
    * Get the Tailwind classes for the current size.
+   * Includes gap for icon spacing.
    */
   private getSizeClasses(): string {
     const sizes: Record<ButtonSize, string> = {
-      sm: 'px-3 py-1.5 text-sm',
-      md: 'px-4 py-2 text-base',
-      lg: 'px-6 py-3 text-lg',
+      sm: 'px-3 py-1.5 text-sm gap-1.5',
+      md: 'px-4 py-2 text-base gap-2',
+      lg: 'px-6 py-3 text-lg gap-2.5',
     };
     return sizes[this.size];
   }
@@ -260,7 +271,9 @@ export class Button extends TailwindElement {
         @click=${this.handleClick}
         type="button"
       >
+        <slot name="icon-start"></slot>
         ${this.loading ? this.renderSpinner() : html`<slot></slot>`}
+        <slot name="icon-end"></slot>
       </button>
     `;
   }
