@@ -13,3 +13,7 @@ export { DemoCard } from './components/demo/demo';
 
 // Button component
 export { Button } from './components/button/button';
+
+// Dialog component
+export { Dialog } from './components/dialog/dialog';
+export type { DialogSize, CloseReason } from './components/dialog/dialog';
