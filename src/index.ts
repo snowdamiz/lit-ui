@@ -10,3 +10,6 @@ export { TailwindElement } from './base/tailwind-element';
 
 // Demo component for foundation validation
 export { DemoCard } from './components/demo/demo';
+
+// Button component
+export { Button } from './components/button/button';
