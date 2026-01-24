@@ -13,7 +13,7 @@ This roadmap delivers a framework-agnostic component library built on Lit.js wit
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation** - Shadow DOM + Tailwind integration, TypeScript setup, design token system
-- [ ] **Phase 2: Button Component** - Full-featured button with variants, states, accessibility, form participation
+- [x] **Phase 2: Button Component** - Full-featured button with variants, states, accessibility, form participation
 - [ ] **Phase 3: Dialog Component** - Modal dialog with focus trap, ARIA, keyboard navigation, animations
 - [ ] **Phase 4: CLI** - Distribution tool with init, add, registry, build tool detection
 - [ ] **Phase 5: Framework Verification** - Verify components work in React 19+, Vue 3, Svelte 5
@@ -50,10 +50,10 @@ Plans:
 **Plans**: 4 plans
 
 Plans:
-- [ ] 02-01-PLAN.md — Core button component with variants and sizes
-- [ ] 02-02-PLAN.md — Form participation and keyboard accessibility
-- [ ] 02-03-PLAN.md — Loading state with spinner and icon slots
-- [ ] 02-04-PLAN.md — Demo page and visual verification
+- [x] 02-01-PLAN.md — Core button component with variants and sizes
+- [x] 02-02-PLAN.md — Form participation and keyboard accessibility
+- [x] 02-03-PLAN.md — Loading state with spinner and icon slots
+- [x] 02-04-PLAN.md — Demo page and visual verification
 
 ### Phase 3: Dialog Component
 **Goal**: A fully accessible modal dialog that validates complex accessibility patterns (focus management, ARIA across shadow boundaries, keyboard navigation)
@@ -106,7 +106,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 4/4 | Complete | 2026-01-24 |
-| 2. Button Component | 0/4 | Not started | - |
+| 2. Button Component | 4/4 | Complete | 2026-01-24 |
 | 3. Dialog Component | 0/? | Not started | - |
 | 4. CLI | 0/? | Not started | - |
 | 5. Framework Verification | 0/? | Not started | - |

@@ -15,14 +15,14 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Button
 
-- [ ] **BTN-01**: Variants (primary, secondary, outline, ghost, destructive)
-- [ ] **BTN-02**: Sizes (sm, md, lg)
-- [ ] **BTN-03**: States (default, hover, focus, active, disabled)
-- [ ] **BTN-04**: Keyboard activation (Enter/Space)
-- [ ] **BTN-05**: Visible focus ring and aria-disabled support
-- [ ] **BTN-06**: Form participation (works inside `<form>` with submit)
-- [ ] **BTN-07**: Loading state with spinner and aria-busy
-- [ ] **BTN-08**: Icon slots (leading/trailing via named slots)
+- [x] **BTN-01**: Variants (primary, secondary, outline, ghost, destructive)
+- [x] **BTN-02**: Sizes (sm, md, lg)
+- [x] **BTN-03**: States (default, hover, focus, active, disabled)
+- [x] **BTN-04**: Keyboard activation (Enter/Space)
+- [x] **BTN-05**: Visible focus ring and aria-disabled support
+- [x] **BTN-06**: Form participation (works inside `<form>` with submit)
+- [x] **BTN-07**: Loading state with spinner and aria-busy
+- [x] **BTN-08**: Icon slots (leading/trailing via named slots)
 
 ### Dialog
 
@@ -100,14 +100,14 @@ Which phases cover which requirements. Updated during roadmap creation.
 | FNDN-01 | Phase 1 | Complete |
 | FNDN-02 | Phase 1 | Complete |
 | FNDN-03 | Phase 1 | Complete |
-| BTN-01 | Phase 2 | Pending |
-| BTN-02 | Phase 2 | Pending |
-| BTN-03 | Phase 2 | Pending |
-| BTN-04 | Phase 2 | Pending |
-| BTN-05 | Phase 2 | Pending |
-| BTN-06 | Phase 2 | Pending |
-| BTN-07 | Phase 2 | Pending |
-| BTN-08 | Phase 2 | Pending |
+| BTN-01 | Phase 2 | Complete |
+| BTN-02 | Phase 2 | Complete |
+| BTN-03 | Phase 2 | Complete |
+| BTN-04 | Phase 2 | Complete |
+| BTN-05 | Phase 2 | Complete |
+| BTN-06 | Phase 2 | Complete |
+| BTN-07 | Phase 2 | Complete |
+| BTN-08 | Phase 2 | Complete |
 | DLG-01 | Phase 3 | Pending |
 | DLG-02 | Phase 3 | Pending |
 | DLG-03 | Phase 3 | Pending |
@@ -133,4 +133,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-01-23*
-*Last updated: 2026-01-24 after Phase 1 completion*
+*Last updated: 2026-01-24 after Phase 2 completion*
