@@ -45,11 +45,12 @@
   2. Sidebar shows collapsible section navigation
   3. Mobile users see hamburger menu that reveals navigation
   4. Layout adapts correctly from mobile to desktop breakpoints
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 06-01: TBD
-- [ ] 06-02: TBD
+- [ ] 06-01-PLAN.md — Scaffold docs app with React, Vite, Tailwind, React Router
+- [ ] 06-02-PLAN.md — Layout and navigation components (sidebar, header, mobile nav)
+- [ ] 06-03-PLAN.md — Wire routes and verify responsive behavior
 
 #### Phase 7: Getting Started
 **Goal**: New users can install and use their first component
@@ -142,7 +143,7 @@ Phases execute in numeric order: 6 -> 7 -> 8 -> 9 -> 10 -> 11 -> 12
 | 3. Dialog | v1.0 | 4/4 | Complete | 2026-01-24 |
 | 4. CLI | v1.0 | 6/6 | Complete | 2026-01-24 |
 | 5. Verification | v1.0 | 4/4 | Complete | 2026-01-24 |
-| 6. Docs Foundation | v1.1 | 0/? | Not started | - |
+| 6. Docs Foundation | v1.1 | 0/3 | Planned | - |
 | 7. Getting Started | v1.1 | 0/? | Not started | - |
 | 8. Component Docs | v1.1 | 0/? | Not started | - |
 | 9. Framework Guides | v1.1 | 0/? | Not started | - |
