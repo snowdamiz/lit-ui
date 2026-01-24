@@ -37,9 +37,62 @@
     h1 {
       margin-bottom: 0.5rem;
     }
+    h2 {
+      margin-top: 2.5rem;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 0.5rem;
+    }
     .subtitle {
       color: #666;
       margin-bottom: 2rem;
+    }
+    .demo-section {
+      margin-bottom: 2rem;
+    }
+    .demo-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    .demo-label {
+      font-weight: 500;
+      min-width: 120px;
+      color: #555;
+    }
+    .checklist {
+      margin-top: 3rem;
+      padding: 1.5rem;
+      background: #f9fafb;
+      border-radius: 0.5rem;
+      border: 1px solid #e5e7eb;
+    }
+    .checklist h3 {
+      margin-top: 0;
+      margin-bottom: 1rem;
+    }
+    .checklist ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .checklist li {
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .checklist li:last-child {
+      border-bottom: none;
+    }
+    .checklist input[type="checkbox"] {
+      margin-right: 0.75rem;
+    }
+    form {
+      padding: 1rem;
+      background: #f0f9ff;
+      border: 1px solid #bae6fd;
+      border-radius: 0.5rem;
     }
   </style>
 </head>
@@ -59,17 +112,147 @@
     <demo-card title="Elevated Card" elevated></demo-card>
   </div>
 
-  <script type="module" src="/src/index.ts"></script>
+  <!-- Button Demo Section -->
+  <h2>Button Component Demo</h2>
 
-  <div style="margin-top: 3rem; padding: 1rem; background: #f0f0f0; border-radius: 0.5rem;">
-    <h3 style="margin-top: 0;">Verification Checklist</h3>
+  <div class="demo-section">
+    <h3>Variants (BTN-01)</h3>
+    <div class="demo-row">
+      <ui-button variant="primary">Primary</ui-button>
+      <ui-button variant="secondary">Secondary</ui-button>
+      <ui-button variant="outline">Outline</ui-button>
+      <ui-button variant="ghost">Ghost</ui-button>
+      <ui-button variant="destructive">Destructive</ui-button>
+    </div>
+  </div>
+
+  <div class="demo-section">
+    <h3>Sizes (BTN-02)</h3>
+    <div class="demo-row">
+      <span class="demo-label">Small:</span>
+      <ui-button variant="primary" size="sm">Small</ui-button>
+      <ui-button variant="secondary" size="sm">Small</ui-button>
+      <ui-button variant="outline" size="sm">Small</ui-button>
+    </div>
+    <div class="demo-row">
+      <span class="demo-label">Medium:</span>
+      <ui-button variant="primary" size="md">Medium</ui-button>
+      <ui-button variant="secondary" size="md">Medium</ui-button>
+      <ui-button variant="outline" size="md">Medium</ui-button>
+    </div>
+    <div class="demo-row">
+      <span class="demo-label">Large:</span>
+      <ui-button variant="primary" size="lg">Large</ui-button>
+      <ui-button variant="secondary" size="lg">Large</ui-button>
+      <ui-button variant="outline" size="lg">Large</ui-button>
+    </div>
+  </div>
+
+  <div class="demo-section">
+    <h3>States (BTN-03)</h3>
+    <div class="demo-row">
+      <span class="demo-label">Disabled:</span>
+      <ui-button variant="primary" disabled>Disabled Primary</ui-button>
+      <ui-button variant="secondary" disabled>Disabled Secondary</ui-button>
+      <ui-button variant="destructive" disabled>Disabled Destructive</ui-button>
+    </div>
+    <div class="demo-row">
+      <span class="demo-label">Loading:</span>
+      <ui-button id="loading-demo" variant="primary" loading>Loading...</ui-button>
+      <button id="toggle-loading" onclick="toggleLoading()">Toggle Loading</button>
+    </div>
+  </div>
+
+  <div class="demo-section">
+    <h3>Form Participation (BTN-06)</h3>
+    <form id="test-form" onsubmit="event.preventDefault(); alert('Form submitted!');">
+      <p style="margin-top: 0;">Click the button below to test form submission:</p>
+      <ui-button type="submit" variant="primary">Submit Form</ui-button>
+    </form>
+  </div>
+
+  <div class="demo-section">
+    <h3>Icon Slots (BTN-08)</h3>
+    <div class="demo-row">
+      <span class="demo-label">Icon Start:</span>
+      <ui-button variant="primary">
+        <svg slot="icon-start" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 1.414L10.586 9H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z" clip-rule="evenodd"/>
+        </svg>
+        Continue
+      </ui-button>
+      <ui-button variant="secondary">
+        <svg slot="icon-start" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/>
+        </svg>
+        Add Item
+      </ui-button>
+    </div>
+    <div class="demo-row">
+      <span class="demo-label">Icon End:</span>
+      <ui-button variant="outline">
+        Open Link
+        <svg slot="icon-end" viewBox="0 0 20 20" fill="currentColor">
+          <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z"/>
+          <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z"/>
+        </svg>
+      </ui-button>
+      <ui-button variant="ghost">
+        Download
+        <svg slot="icon-end" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"/>
+        </svg>
+      </ui-button>
+    </div>
+    <div class="demo-row">
+      <span class="demo-label">Both Icons:</span>
+      <ui-button variant="primary" size="lg">
+        <svg slot="icon-start" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"/>
+        </svg>
+        Navigate
+        <svg slot="icon-end" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+        </svg>
+      </ui-button>
+    </div>
+  </div>
+
+  <div class="demo-section">
+    <h3>Keyboard & Focus (BTN-04, BTN-05)</h3>
+    <p>Tab through these buttons to test focus ring visibility:</p>
+    <div class="demo-row">
+      <ui-button variant="primary">Tab to me</ui-button>
+      <ui-button variant="secondary">Then me</ui-button>
+      <ui-button variant="outline">And me</ui-button>
+      <ui-button variant="ghost">Also me</ui-button>
+      <ui-button variant="destructive">Finally me</ui-button>
+    </div>
+    <p style="font-size: 0.875rem; color: #666;">Press Enter or Space to activate the focused button</p>
+  </div>
+
+  <div class="checklist">
+    <h3>Verification Checklist</h3>
     <ul>
-      <li>Cards render with visible styling (not unstyled HTML)</li>
-      <li>Buttons have colored backgrounds (primary=blue, destructive=red)</li>
-      <li>Elevated card has larger shadow than standard</li>
-      <li>Dark mode toggle changes colors (background becomes dark)</li>
-      <li>Hover states work on buttons</li>
+      <li><input type="checkbox"> All 5 variants render with distinct colors (primary=blue, secondary=gray, outline=bordered, ghost=transparent, destructive=red)</li>
+      <li><input type="checkbox"> All 3 sizes have different padding/font (sm &lt; md &lt; lg)</li>
+      <li><input type="checkbox"> Disabled buttons are visually muted (opacity reduced)</li>
+      <li><input type="checkbox"> Loading button shows pulsing dots animation</li>
+      <li><input type="checkbox"> Form submit button triggers "Form submitted!" alert</li>
+      <li><input type="checkbox"> Tab navigation moves focus between buttons</li>
+      <li><input type="checkbox"> Enter/Space activates focused button</li>
+      <li><input type="checkbox"> Focus ring is visible as inner glow (inset shadow)</li>
+      <li><input type="checkbox"> Icons render at correct size and position</li>
+      <li><input type="checkbox"> Dark mode toggle changes all button variant colors</li>
     </ul>
   </div>
+
+  <script type="module" src="/src/index.ts"></script>
+  <script>
+    function toggleLoading() {
+      const loadingBtn = document.querySelector('#loading-demo');
+      loadingBtn.loading = !loadingBtn.loading;
+    }
+  </script>
 </body>
 </html>
