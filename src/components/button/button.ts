@@ -105,14 +105,28 @@ export class Button extends TailwindElement {
   @property({ type: Boolean, reflect: true })
   loading = false;
 
+  /**
+   * Additional CSS classes to apply to the inner button element.
+   * These classes are merged with the component's default classes,
+   * allowing customization via Tailwind utilities.
+   * @default ''
+   *
+   * @example
+   * ```html
+   * <ui-button btn-class="rounded-full shadow-lg">Pill Button</ui-button>
+   * ```
+   */
+  @property({ type: String, attribute: 'btn-class' })
+  customClass = '';
+
   constructor() {
     super();
     this.internals = this.attachInternals();
   }
 
   /**
-   * Static styles for focus ring (inner glow) and loading spinner
-   * that cannot be expressed with Tailwind utility classes alone.
+   * Static styles for focus ring (inner glow), loading spinner,
+   * and component-level CSS custom properties.
    */
   static override styles = css`
     :host {
@@ -122,6 +136,12 @@ export class Button extends TailwindElement {
     :host([disabled]),
     :host([loading]) {
       pointer-events: none;
+    }
+
+    button {
+      border-radius: var(--ui-button-radius);
+      box-shadow: var(--ui-button-shadow);
+      font-weight: var(--ui-button-font-weight);
     }
 
     button:focus-visible {
@@ -210,9 +230,10 @@ export class Button extends TailwindElement {
 
   /**
    * Get the base classes common to all button variants.
+   * Note: border-radius, box-shadow, and font-weight are set via CSS custom properties.
    */
   private getBaseClasses(): string {
-    return 'inline-flex items-center justify-center rounded-md font-medium transition-colors duration-150';
+    return 'inline-flex items-center justify-center transition-colors duration-150';
   }
 
   /**
@@ -254,6 +275,8 @@ export class Button extends TailwindElement {
 
   /**
    * Combine all classes into a single string.
+   * User-provided classes via the class attribute are appended last,
+   * allowing them to override default styles.
    */
   private getButtonClasses(): string {
     return [
@@ -261,12 +284,16 @@ export class Button extends TailwindElement {
       this.getVariantClasses(),
       this.getSizeClasses(),
       this.getDisabledClasses(),
-    ].join(' ');
+      this.customClass,
+    ]
+      .filter(Boolean)
+      .join(' ');
   }
 
   override render() {
     return html`
       <button
+        part="button"
         class=${this.getButtonClasses()}
         ?aria-disabled=${this.disabled || this.loading}
         ?aria-busy=${this.loading}
@@ -274,9 +301,9 @@ export class Button extends TailwindElement {
         @click=${this.handleClick}
         type="button"
       >
-        <slot name="icon-start"></slot>
-        ${this.loading ? this.renderSpinner() : html`<slot></slot>`}
-        <slot name="icon-end"></slot>
+        <slot name="icon-start" part="icon-start"></slot>
+        ${this.loading ? this.renderSpinner() : html`<slot part="content"></slot>`}
+        <slot name="icon-end" part="icon-end"></slot>
       </button>
     `;
   }

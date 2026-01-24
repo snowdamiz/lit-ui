@@ -13,16 +13,18 @@ interface PrevNextNavProps {
 
 export function PrevNextNav({ prev, next }: PrevNextNavProps) {
   return (
-    <nav className="mt-16 pt-8 border-t border-gray-200 flex justify-between">
+    <nav className="mt-16 flex justify-between gap-4">
       {prev ? (
         <Link
           to={prev.href}
-          className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
+          className="group flex-1 max-w-xs flex items-center gap-3 p-4 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 transition-all duration-200 hover:border-gray-300 hover:shadow-sm"
         >
-          <ChevronLeft className="w-4 h-4" />
+          <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center group-hover:bg-gray-200 transition-colors">
+            <ChevronLeft className="w-4 h-4 text-gray-600 transition-transform duration-200 group-hover:-translate-x-0.5" />
+          </div>
           <div>
-            <div className="text-sm text-gray-500">Previous</div>
-            <div className="font-medium">{prev.title}</div>
+            <div className="text-xs font-medium text-gray-400 uppercase tracking-wider">Previous</div>
+            <div className="text-sm font-semibold text-gray-900 group-hover:text-gray-700">{prev.title}</div>
           </div>
         </Link>
       ) : (
@@ -32,13 +34,15 @@ export function PrevNextNav({ prev, next }: PrevNextNavProps) {
       {next ? (
         <Link
           to={next.href}
-          className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors text-right"
+          className="group flex-1 max-w-xs flex items-center justify-end gap-3 p-4 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 transition-all duration-200 hover:border-gray-300 hover:shadow-sm text-right ml-auto"
         >
           <div>
-            <div className="text-sm text-gray-500">Next</div>
-            <div className="font-medium">{next.title}</div>
+            <div className="text-xs font-medium text-gray-400 uppercase tracking-wider">Next</div>
+            <div className="text-sm font-semibold text-gray-900 group-hover:text-gray-700">{next.title}</div>
           </div>
-          <ChevronRight className="w-4 h-4" />
+          <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center group-hover:bg-gray-200 transition-colors">
+            <ChevronRight className="w-4 h-4 text-gray-600 transition-transform duration-200 group-hover:translate-x-0.5" />
+          </div>
         </Link>
       ) : (
         <div />

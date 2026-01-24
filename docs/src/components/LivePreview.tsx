@@ -5,8 +5,8 @@
  * then renders it in a styled preview container.
  */
 
-// Side-effect import to register the custom element
-import '../lib/ui-button';
+// Side-effect import to register the custom elements from built library
+import 'lit-ui';
 
 // TypeScript JSX declaration for ui-button
 declare global {
@@ -18,6 +18,7 @@ declare global {
           size?: 'sm' | 'md' | 'lg';
           loading?: boolean;
           disabled?: boolean;
+          'btn-class'?: string;
         },
         HTMLElement
       >;
@@ -27,7 +28,7 @@ declare global {
 
 export function LivePreview() {
   return (
-    <div className="p-6 bg-gray-50 rounded-lg border border-gray-200 mt-4">
+    <div className="p-6 bg-gray-50 rounded-lg mt-4">
       <p className="text-sm text-gray-600 mb-4">Result:</p>
       <ui-button variant="primary">Click me</ui-button>
     </div>

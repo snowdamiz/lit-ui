@@ -54,24 +54,31 @@ function FrameworkTabsInner({
 
   return (
     <div>
-      <div className="flex border-b border-gray-200" role="tablist">
-        {tabs.map((fw) => (
-          <button
-            key={fw}
-            role="tab"
-            aria-selected={effectiveFramework === fw}
-            onClick={() => setFramework(fw)}
-            className={`px-4 py-2 text-sm font-medium transition-colors ${
-              effectiveFramework === fw
-                ? 'text-gray-900 border-b-2 border-gray-900'
-                : 'text-gray-500 hover:text-gray-700'
-            }`}
-          >
-            {labelMap[fw]}
-          </button>
-        ))}
+      {/* Tab header */}
+      <div className="flex items-center justify-between px-4 py-2 bg-gray-50/80 border-b border-gray-100">
+        <div className="flex gap-1" role="tablist">
+          {tabs.map((fw) => (
+            <button
+              key={fw}
+              role="tab"
+              aria-selected={effectiveFramework === fw}
+              onClick={() => setFramework(fw)}
+              className={`px-2.5 py-1 text-xs font-medium rounded-md transition-all duration-200 focus-ring ${
+                effectiveFramework === fw
+                  ? 'bg-gray-900 text-white'
+                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+              }`}
+            >
+              {labelMap[fw]}
+            </button>
+          ))}
+        </div>
+        <span className="text-xs text-gray-400">Code</span>
       </div>
-      <CodeBlock code={code} language={language} />
+      {/* Code block without rounded corners for seamless integration */}
+      <div className="[&_.code-block]:rounded-none [&_.code-block]:border-0 [&_.code-block]:shadow-none [&_.terminal-glow]:before:hidden">
+        <CodeBlock code={code} language={language} showHeader={false} />
+      </div>
     </div>
   );
 }

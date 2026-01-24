@@ -63,10 +63,30 @@ hostDefaultsSheet.replaceSync(hostDefaults);
 const propertyRulePattern = /@property\s+[^{]+\{[^}]+\}/g;
 const propertyRules = tailwindStyles.match(propertyRulePattern) || [];
 
-if (propertyRules.length > 0 && typeof document !== 'undefined') {
-  const propertySheet = new CSSStyleSheet();
-  propertySheet.replaceSync(propertyRules.join('\n'));
-  document.adoptedStyleSheets = [...document.adoptedStyleSheets, propertySheet];
+/**
+ * Extract :root rules containing component tokens (--ui-*) and apply them
+ * to the document. CSS custom properties in :root only work at the document
+ * level and cascade into Shadow DOM from there.
+ */
+const rootRulePattern = /:root\s*\{[^}]*--ui-[^}]+\}/g;
+const rootRules = tailwindStyles.match(rootRulePattern) || [];
+
+if (typeof document !== 'undefined') {
+  const documentRules: string[] = [];
+
+  if (propertyRules.length > 0) {
+    documentRules.push(...propertyRules);
+  }
+
+  if (rootRules.length > 0) {
+    documentRules.push(...rootRules);
+  }
+
+  if (documentRules.length > 0) {
+    const documentSheet = new CSSStyleSheet();
+    documentSheet.replaceSync(documentRules.join('\n'));
+    document.adoptedStyleSheets = [...document.adoptedStyleSheets, documentSheet];
+  }
 }
 
 // =============================================================================

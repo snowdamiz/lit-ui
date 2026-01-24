@@ -18,7 +18,7 @@ export function MobileNav() {
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Trigger asChild>
         <button
-          className="md:hidden p-2 -mr-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-colors"
+          className="md:hidden p-2 -mr-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-colors focus-ring"
           aria-label="Open navigation menu"
         >
           <Menu className="h-6 w-6" />
@@ -26,7 +26,7 @@ export function MobileNav() {
       </Dialog.Trigger>
       <Dialog.Portal>
         <Dialog.Overlay className="SheetOverlay fixed inset-0 bg-black/50 z-50" />
-        <Dialog.Content className="SheetContent fixed left-0 top-0 bottom-0 w-72 bg-white shadow-lg z-50 focus:outline-none">
+        <Dialog.Content className="SheetContent fixed left-0 top-0 bottom-0 w-72 bg-white/95 backdrop-blur-md shadow-lg z-50 focus:outline-none">
           <div className="flex items-center justify-between p-4 border-b border-gray-200">
             <span className="font-semibold text-gray-900">Navigation</span>
             <Dialog.Close asChild>
@@ -38,13 +38,12 @@ export function MobileNav() {
               </button>
             </Dialog.Close>
           </div>
-          <nav className="py-4 px-2 space-y-4 overflow-y-auto h-[calc(100%-65px)]">
-            {navigation.map((section, index) => (
+          <nav className="py-6 px-3 space-y-6 overflow-y-auto h-[calc(100%-65px)]">
+            {navigation.map((section) => (
               <NavSection
                 key={section.title}
                 title={section.title}
                 items={section.items}
-                defaultOpen={index === 0}
               />
             ))}
           </nav>

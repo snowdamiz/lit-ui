@@ -101,6 +101,20 @@ export class Dialog extends TailwindElement {
   showCloseButton = false;
 
   /**
+   * Additional CSS classes to apply to the dialog content container.
+   * These classes are merged with the component's default classes,
+   * allowing customization via Tailwind utilities.
+   * @default ''
+   *
+   * @example
+   * ```html
+   * <ui-dialog dialog-class="max-w-2xl">Wide Dialog</ui-dialog>
+   * ```
+   */
+  @property({ type: String, attribute: 'dialog-class' })
+  customClass = '';
+
+  /**
    * Reference to the native dialog element.
    */
   @query('dialog')
@@ -113,7 +127,7 @@ export class Dialog extends TailwindElement {
   private triggerElement: HTMLElement | null = null;
 
   /**
-   * Static styles for dialog animations and layout.
+   * Static styles for dialog animations, layout, and component-level CSS custom properties.
    * Uses native CSS transitions with @starting-style for enter animations
    * and transition-behavior: allow-discrete for exit animations.
    */
@@ -180,6 +194,9 @@ export class Dialog extends TailwindElement {
 
     .dialog-content {
       width: 100%;
+      border-radius: var(--ui-dialog-radius);
+      box-shadow: var(--ui-dialog-shadow);
+      padding: var(--ui-dialog-padding);
     }
   `;
 
@@ -279,9 +296,26 @@ export class Dialog extends TailwindElement {
     return sizeClasses[this.size];
   }
 
+  /**
+   * Gets the combined classes for the dialog content container.
+   * User-provided classes are appended last to allow overrides.
+   * Note: border-radius, box-shadow, and padding are set via CSS custom properties.
+   */
+  private getContentClasses(): string {
+    return [
+      'dialog-content',
+      this.getSizeClasses(),
+      'bg-card text-card-foreground relative',
+      this.customClass,
+    ]
+      .filter(Boolean)
+      .join(' ');
+  }
+
   override render() {
     return html`
       <dialog
+        part="dialog"
         @cancel=${this.handleCancel}
         @close=${this.handleNativeClose}
         @click=${this.handleDialogClick}
@@ -289,12 +323,14 @@ export class Dialog extends TailwindElement {
         aria-describedby="dialog-description"
       >
         <div
-          class="dialog-content ${this.getSizeClasses()} bg-card text-card-foreground rounded-lg shadow-lg p-6 relative"
+          part="content"
+          class=${this.getContentClasses()}
           @click=${(e: Event) => e.stopPropagation()}
         >
           ${this.showCloseButton
             ? html`
                 <button
+                  part="close-button"
                   class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
                   @click=${() => this.close('programmatic')}
                   aria-label="Close dialog"
@@ -315,13 +351,13 @@ export class Dialog extends TailwindElement {
                 </button>
               `
             : nothing}
-          <header id="dialog-title" class="text-lg font-semibold mb-4">
+          <header part="header" id="dialog-title" class="text-lg font-semibold mb-4">
             <slot name="title"></slot>
           </header>
-          <div id="dialog-description" class="text-muted-foreground">
+          <div part="body" id="dialog-description" class="text-muted-foreground">
             <slot></slot>
           </div>
-          <footer class="mt-6 flex justify-end gap-3">
+          <footer part="footer" class="mt-6 flex justify-end gap-3">
             <slot name="footer"></slot>
           </footer>
         </div>

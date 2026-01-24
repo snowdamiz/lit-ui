@@ -60,6 +60,7 @@ Developers can use polished, accessible UI components in any framework without l
 - ElementInternals for form-associated custom elements
 - Native `<dialog>` with showModal() for focus trapping
 - Embedded templates for portable CLI distribution
+- Custom class attributes for Tailwind customization (`btn-class` for buttons, `dialog-class` for dialogs)
 
 **Known limitations:**
 - Copy-source only (no NPM package mode yet)

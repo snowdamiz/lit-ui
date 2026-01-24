@@ -20,13 +20,6 @@ export default function App() {
           <Route path="components/button" element={<ButtonPage />} />
           <Route path="components/dialog" element={<DialogPage />} />
 
-          {/* Guides */}
-          <Route path="guides/react" element={<Placeholder />} />
-          <Route path="guides/vue" element={<Placeholder />} />
-          <Route path="guides/svelte" element={<Placeholder />} />
-          <Route path="guides/theming" element={<Placeholder />} />
-          <Route path="guides/accessibility" element={<Placeholder />} />
-
           {/* Catch-all for undefined routes */}
           <Route path="*" element={<Placeholder />} />
         </Route>
