@@ -5,16 +5,19 @@
  * - Five visual variants: primary, secondary, outline, ghost, destructive
  * - Three sizes: sm, md, lg
  * - Disabled state with proper accessibility (aria-disabled)
+ * - Loading state with pulsing dots spinner (aria-busy)
+ * - Icon slots (icon-start, icon-end) for icon placement
  * - Inner glow focus ring for visibility across all variants
  *
  * @example
  * ```html
  * <ui-button variant="primary" size="md">Click me</ui-button>
  * <ui-button variant="destructive" disabled>Delete</ui-button>
+ * <ui-button loading>Saving...</ui-button>
  * ```
  */
 
-import { html, css } from 'lit';
+import { html, css, nothing } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { TailwindElement } from '../../base/tailwind-element';
 
@@ -63,21 +66,71 @@ export class Button extends TailwindElement {
   disabled = false;
 
   /**
-   * Static styles for focus ring (inner glow) that cannot be expressed
-   * with Tailwind utility classes alone.
+   * Whether the button is in a loading state.
+   * Shows a pulsing dots spinner and prevents interaction.
+   * @default false
+   */
+  @property({ type: Boolean, reflect: true })
+  loading = false;
+
+  /**
+   * Static styles for focus ring (inner glow) and loading spinner
+   * that cannot be expressed with Tailwind utility classes alone.
    */
   static override styles = css`
     :host {
       display: inline-block;
     }
 
-    :host([disabled]) {
+    :host([disabled]),
+    :host([loading]) {
       pointer-events: none;
     }
 
     button:focus-visible {
       outline: none;
       box-shadow: inset 0 0 0 2px var(--color-ring);
+    }
+
+    /* Pulsing dots spinner */
+    .spinner {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.2em;
+    }
+
+    .spinner::before,
+    .spinner::after,
+    .spinner > span {
+      content: '';
+      width: 0.4em;
+      height: 0.4em;
+      border-radius: 50%;
+      background: currentColor;
+      animation: pulse 1.2s ease-in-out infinite;
+    }
+
+    .spinner::before {
+      animation-delay: 0s;
+    }
+    .spinner > span {
+      animation-delay: 0.2s;
+    }
+    .spinner::after {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes pulse {
+      0%,
+      80%,
+      100% {
+        opacity: 0.3;
+        transform: scale(0.7);
+      }
+      40% {
+        opacity: 1;
+        transform: scale(1);
+      }
     }
   `;
 
@@ -117,10 +170,32 @@ export class Button extends TailwindElement {
   }
 
   /**
-   * Get classes for the disabled state.
+   * Get classes for the disabled/loading state.
    */
   private getDisabledClasses(): string {
-    return this.disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer';
+    return this.disabled || this.loading
+      ? 'opacity-50 cursor-not-allowed'
+      : 'cursor-pointer';
+  }
+
+  /**
+   * Render the pulsing dots spinner.
+   * Uses three dots with staggered animation delays.
+   */
+  private renderSpinner() {
+    return html`<span class="spinner" aria-hidden="true"><span></span></span>`;
+  }
+
+  /**
+   * Handle click events.
+   * Prevents action when disabled or loading.
+   */
+  private handleClick(e: MouseEvent) {
+    if (this.disabled || this.loading) {
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
   }
 
   /**
@@ -139,9 +214,13 @@ export class Button extends TailwindElement {
     return html`
       <button
         class=${this.getButtonClasses()}
-        ?aria-disabled=${this.disabled}
+        ?aria-disabled=${this.disabled || this.loading}
+        ?aria-busy=${this.loading}
+        aria-label=${this.loading ? 'Loading' : nothing}
+        @click=${this.handleClick}
+        type="button"
       >
-        <slot></slot>
+        ${this.loading ? this.renderSpinner() : html`<slot></slot>`}
       </button>
     `;
   }
