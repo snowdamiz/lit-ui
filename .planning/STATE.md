@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-25)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** v3.0 Theme Customization - Phase 22 in progress
+**Current focus:** v3.0 Theme Customization - Phase 22 complete
 
 ## Current Position
 
 Phase: 22 of 24 (CLI Theme Integration)
-Plan: 3 of 4 in current phase (wave 2 complete)
-Status: In progress
-Last activity: 2026-01-25 — Completed 22-02 and 22-03 (wave 2)
+Plan: 4 of 4 in current phase (phase complete)
+Status: Phase complete
+Last activity: 2026-01-25 — Completed 22-04-PLAN.md (CLI theme integration tests)
 
-Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 [###.......] 2/4 phases
+Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 [####......] 2/4 phases
 
 ## Performance Metrics
 
@@ -32,8 +32,8 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 [##
 - Total execution time: ~86 min
 
 **v3.0 Velocity:**
-- Plans completed: 8
-- Total execution time: 16 min
+- Plans completed: 9
+- Total execution time: 17 min
 
 ## Accumulated Context
 
@@ -82,6 +82,11 @@ Key decisions are logged in PROJECT.md Key Decisions table.
 - Insert imports after @charset/@import but before content
 - TTY awareness: prompt in interactive, skip in CI/scripts
 
+**22-04 decisions:**
+- Test fixtures use unique directory name to avoid conflicts
+- Tests cover both Next.js and Vite CSS entry patterns
+- Complete workflow tests simulate actual CLI usage
+
 ### Pending Todos
 
 None.
@@ -92,8 +97,8 @@ None currently.
 
 ## Session Continuity
 
-Last session: 2026-01-25T21:47:00Z
-Stopped at: Completed 22-03-PLAN.md (wave 2 complete)
+Last session: 2026-01-25T21:50:18Z
+Stopped at: Completed 22-04-PLAN.md (Phase 22 complete)
 Resume file: None
 
 ## Next Steps
@@ -102,6 +107,6 @@ Resume file: None
 
 1. ~~Execute Phase 22 plan 02 (init command --theme flag)~~ DONE
 2. ~~Execute Phase 22 plan 03 (theme command)~~ DONE
-3. Execute Phase 22 plan 04 (end-to-end testing)
+3. ~~Execute Phase 22 plan 04 (end-to-end testing)~~ DONE
 4. Continue to Phase 23 (Visual Configurator)
 5. Continue to Phase 24 (Presets and Features)
