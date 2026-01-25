@@ -19,7 +19,7 @@ export function Header() {
         </Link>
         <div className="flex items-center gap-2">
           <a
-            href="https://github.com"
+            href="https://github.com/snowdamiz/lit-ui"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900"

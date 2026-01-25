@@ -42,10 +42,10 @@ function App() {
   return (
     <div className="container">
       <header className="header">
-        <h1>lit-ui Component Test</h1>
+        <h1>LitUI Component Test</h1>
         <span className="badge">React 19</span>
       </header>
-      <p className="subtitle">Testing lit-ui web components in React 19 with TypeScript</p>
+      <p className="subtitle">Testing LitUI web components in React 19 with TypeScript</p>
 
       {/* Event Log */}
       <div className="event-log">

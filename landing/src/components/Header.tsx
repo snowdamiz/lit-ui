@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { getDocsUrl } from '../utils/config'
 
 function Header() {
   const [isScrolled, setIsScrolled] = useState(false)
@@ -14,9 +15,9 @@ function Header() {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         isScrolled
-          ? 'border-b border-gray-200/80 bg-white/90 backdrop-blur-md shadow-sm'
+          ? 'border-b border-gray-200/80 bg-white/90 backdrop-blur-md shadow-[0_1px_3px_oklch(0_0_0/0.04)]'
           : 'bg-transparent'
       }`}
     >
@@ -25,35 +26,38 @@ function Header() {
           <img
             src="/logo-icon.svg"
             alt="lit-ui logo"
-            className="h-8 w-8 rounded-lg shadow-sm transition-transform group-hover:scale-105"
+            className="h-8 w-8 rounded-lg shadow-sm transition-transform duration-300 group-hover:scale-105 group-hover:rotate-[-2deg]"
           />
-          <span className="text-xl font-bold text-gray-900">lit</span>
+          <span className="text-xl font-bold text-gray-900 transition-all duration-300 group-hover:tracking-wide">lit</span>
         </a>
 
         <div className="hidden items-center gap-1 md:flex">
           <a
             href="#features"
-            className="rounded-lg px-4 py-2 text-sm font-medium text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900"
+            className="group relative rounded-lg px-4 py-2 text-sm font-medium text-gray-500 transition-colors hover:text-gray-900"
           >
             Features
+            <span className="absolute bottom-1.5 left-4 right-4 h-px bg-gray-900 origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100" />
           </a>
           <a
             href="#code"
-            className="rounded-lg px-4 py-2 text-sm font-medium text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900"
+            className="group relative rounded-lg px-4 py-2 text-sm font-medium text-gray-500 transition-colors hover:text-gray-900"
           >
             Code
+            <span className="absolute bottom-1.5 left-4 right-4 h-px bg-gray-900 origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100" />
           </a>
           <a
             href="#components"
-            className="rounded-lg px-4 py-2 text-sm font-medium text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900"
+            className="group relative rounded-lg px-4 py-2 text-sm font-medium text-gray-500 transition-colors hover:text-gray-900"
           >
             Components
+            <span className="absolute bottom-1.5 left-4 right-4 h-px bg-gray-900 origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100" />
           </a>
           <a
-            href="https://github.com"
+            href="https://github.com/snowdamiz/lit-ui"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900"
+            className="group relative flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium text-gray-500 transition-colors hover:text-gray-900"
           >
             <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
               <path
@@ -63,11 +67,12 @@ function Header() {
               />
             </svg>
             GitHub
+            <span className="absolute bottom-1.5 left-4 right-4 h-px bg-gray-900 origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100" />
           </a>
         </div>
 
         <a
-          href="#get-started"
+          href={getDocsUrl()}
           className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-all hover:bg-gray-800 btn-shadow focus-ring"
         >
           Get Started

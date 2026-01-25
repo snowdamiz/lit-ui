@@ -135,10 +135,10 @@ function Features() {
 
       <div className="relative mx-auto max-w-6xl px-6">
         <div className="mb-16 text-center">
-          <p className="mb-3 text-sm font-semibold uppercase tracking-wider text-gray-500">
-            Why lit-ui
+          <p className="mb-3 text-sm font-semibold uppercase tracking-[0.15em] text-gray-500">
+            Why LitUI
           </p>
-          <h2 className="mb-4 text-3xl font-bold text-gray-900 md:text-4xl lg:text-5xl">
+          <h2 className="mb-4 text-3xl font-bold tracking-[-0.02em] text-gray-900 md:text-4xl lg:text-5xl">
             Built for Modern Development
           </h2>
           <p className="mx-auto max-w-2xl text-lg text-gray-500 leading-relaxed">
@@ -158,10 +158,10 @@ function Features() {
               <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-gray-50 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
 
               <div className="relative">
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100 text-gray-900 transition-all group-hover:bg-gray-900 group-hover:text-white group-hover:shadow-md">
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100 text-gray-900 transition-all duration-400 group-hover:bg-gray-900 group-hover:text-white group-hover:shadow-md group-hover:scale-105">
                   {feature.icon}
                 </div>
-                <h3 className="mb-2 text-lg font-semibold text-gray-900">
+                <h3 className="mb-2 text-lg font-semibold text-gray-900 transition-transform duration-300 group-hover:translate-x-0.5">
                   {feature.title}
                 </h3>
                 <p className="text-sm leading-relaxed text-gray-500">

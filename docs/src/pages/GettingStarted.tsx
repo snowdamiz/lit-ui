@@ -128,7 +128,7 @@ export function GettingStarted() {
             Getting Started
           </h1>
           <p className="text-lg text-gray-500 leading-relaxed max-w-2xl">
-            Get up and running with lit-ui in just a few steps. Works with React, Vue, Svelte, or any framework.
+            Get up and running with LitUI in just a few steps. Works with React, Vue, Svelte, or any framework.
           </p>
         </div>
       </header>
@@ -143,13 +143,13 @@ export function GettingStarted() {
           </div>
           <div>
             <h2 className="text-xl font-bold text-gray-900">Installation</h2>
-            <p className="text-sm text-gray-500">Initialize lit-ui in your existing project</p>
+            <p className="text-sm text-gray-500">Initialize LitUI in your existing project</p>
           </div>
           <div className="flex-1 h-px bg-gradient-to-r from-gray-200 to-transparent" />
         </div>
 
         <p className="text-gray-600 mb-4">
-          Run this command to set up lit-ui in your project:
+          Run this command to set up LitUI in your project:
         </p>
         <CodeBlock code={installCommand} language="bash" />
 

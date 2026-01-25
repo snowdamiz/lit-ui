@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { getDocsUrl } from '../utils/config'
 
 function Cta() {
   const [copied, setCopied] = useState(false)
@@ -15,9 +16,9 @@ function Cta() {
       <div className="pointer-events-none absolute inset-0 grid-pattern opacity-50" />
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-white via-transparent to-white" />
 
-      {/* Decorative circles */}
-      <div className="pointer-events-none absolute -left-48 top-1/2 -translate-y-1/2 h-96 w-96 rounded-full bg-gray-100 opacity-40 blur-3xl" />
-      <div className="pointer-events-none absolute -right-48 top-1/2 -translate-y-1/2 h-96 w-96 rounded-full bg-gray-100 opacity-40 blur-3xl" />
+      {/* Decorative circles with floating animation */}
+      <div className="pointer-events-none absolute -left-48 top-1/2 -translate-y-1/2 h-96 w-96 rounded-full bg-gray-100 opacity-40 blur-3xl animate-[float_20s_ease-in-out_infinite]" />
+      <div className="pointer-events-none absolute -right-48 top-1/2 -translate-y-1/2 h-96 w-96 rounded-full bg-gray-100 opacity-40 blur-3xl animate-[float_25s_ease-in-out_infinite_5s]" />
 
       <div className="relative mx-auto max-w-6xl px-6">
         <div className="text-center">
@@ -34,8 +35,8 @@ function Cta() {
 
           <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
             <a
-              href="#"
-              className="group rounded-xl bg-gray-900 px-8 py-4 text-lg font-bold text-white transition-all hover:bg-gray-800 btn-shadow focus-ring"
+              href={getDocsUrl()}
+              className="group rounded-xl bg-gray-900 px-8 py-4 text-lg font-bold text-white transition-all hover:bg-gray-800 hover:shadow-lg active:scale-[0.98] btn-shadow focus-ring"
             >
               <span className="flex items-center gap-2">
                 Get Started
@@ -56,8 +57,8 @@ function Cta() {
             </a>
 
             <a
-              href="#"
-              className="flex items-center gap-2.5 rounded-xl border border-gray-200 bg-white px-8 py-4 text-lg font-semibold text-gray-900 shadow-sm transition-all hover:border-gray-300 hover:bg-gray-50 focus-ring"
+              href={getDocsUrl()}
+              className="flex items-center gap-2.5 rounded-xl border border-gray-200 bg-white px-8 py-4 text-lg font-semibold text-gray-900 shadow-sm transition-all hover:border-gray-300 hover:bg-gray-50 hover:shadow-md active:scale-[0.98] focus-ring"
             >
               <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
@@ -69,7 +70,7 @@ function Cta() {
           {/* Quick command */}
           <div className="mt-14">
             <p className="mb-4 text-sm font-medium text-gray-500">Or start right now:</p>
-            <div className="inline-flex items-center gap-4 rounded-xl border border-gray-200 bg-white px-5 py-3 shadow-sm">
+            <div className="inline-flex items-center gap-4 rounded-xl border border-gray-200 bg-white px-5 py-3 shadow-sm transition-all hover:shadow-md hover:border-gray-300">
               <code className="font-mono text-sm">
                 <span className="text-gray-400">$</span>{' '}
                 <span className="font-semibold text-gray-900">npx</span>{' '}

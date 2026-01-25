@@ -14,17 +14,17 @@
 
   <br />
 
-  [Documentation](https://lit-ui.dev) · [Components](#components) · [Examples](#framework-examples)
+  [Documentation](https://litui.dev) · [Components](#components) · [Examples](#framework-examples)
 
 </div>
 
 <br />
 
-## Why lit-ui?
+## Why LitUI?
 
 Most component libraries force you to pick a framework and stick with it. If your team uses React today but migrates to Vue tomorrow, you rewrite your UI.
 
-**lit-ui** solves this:
+**LitUI** solves this:
 
 - **True interoperability** — Web components work natively in any framework
 - **Tailwind CSS v4** — Modern styling with design tokens

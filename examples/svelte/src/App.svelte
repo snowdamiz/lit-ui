@@ -42,10 +42,10 @@
 
 <div class="container">
   <header class="header">
-    <h1>lit-ui Component Test</h1>
+    <h1>LitUI Component Test</h1>
     <span class="badge">Svelte 5</span>
   </header>
-  <p class="subtitle">Testing lit-ui web components in Svelte 5 with TypeScript</p>
+  <p class="subtitle">Testing LitUI web components in Svelte 5 with TypeScript</p>
 
   <!-- Event Log -->
   <div class="event-log">

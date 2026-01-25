@@ -1,4 +1,4 @@
-# Project Milestones: lit-ui
+# Project Milestones: LitUI
 
 ## v1.0 MVP (Shipped: 2026-01-24)
 

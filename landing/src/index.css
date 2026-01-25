@@ -4,6 +4,9 @@
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
+  /* Custom easing functions */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+
   /* Semantic color variables */
   --color-background: oklch(1 0 0);
   --color-foreground: oklch(0.145 0 0);
@@ -92,15 +95,17 @@ body {
 /* Card with subtle shadow and hover lift */
 .card-elevated {
   box-shadow:
+    0 1px 2px 0 oklch(0 0 0 / 0.03),
     0 1px 3px 0 oklch(0 0 0 / 0.04),
-    0 1px 2px -1px oklch(0 0 0 / 0.04);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    0 2px 4px -1px oklch(0 0 0 / 0.03);
+  transition: all 0.4s var(--ease-out-expo);
 }
 
 .card-elevated:hover {
   box-shadow:
+    0 4px 6px -1px oklch(0 0 0 / 0.05),
     0 10px 15px -3px oklch(0 0 0 / 0.08),
-    0 4px 6px -4px oklch(0 0 0 / 0.08);
+    0 20px 25px -5px oklch(0 0 0 / 0.06);
   transform: translateY(-2px);
 }
 
@@ -124,20 +129,68 @@ body {
   box-shadow: 0 0 0 2px oklch(1 0 0), 0 0 0 4px oklch(0.22 0 0);
 }
 
-/* Smooth fade-in animation */
+/* Smooth fade-in animation with subtle scale */
 @keyframes fade-in-up {
   from {
     opacity: 0;
-    transform: translateY(16px);
+    transform: translateY(16px) scale(0.98);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 
 .animate-fade-in-up {
-  animation: fade-in-up 0.6s ease-out forwards;
+  animation: fade-in-up 0.6s var(--ease-out-expo) forwards;
+}
+
+/* Floating animation for decorative elements */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) translateX(0);
+  }
+  25% {
+    transform: translateY(-10px) translateX(5px);
+  }
+  50% {
+    transform: translateY(-5px) translateX(-5px);
+  }
+  75% {
+    transform: translateY(-15px) translateX(3px);
+  }
+}
+
+/* Refined dialog entrance */
+@keyframes dialog-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Animated underline for links */
+.link-underline {
+  position: relative;
+}
+
+.link-underline::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background-color: currentColor;
+  transition: width 0.3s var(--ease-out-expo);
+}
+
+.link-underline:hover::after {
+  width: 100%;
 }
 
 /* Stagger delays for sequential animations */
@@ -199,8 +252,14 @@ body {
   }
 
   .animate-fade-in-up,
-  .card-elevated {
+  .card-elevated,
+  .link-underline::after {
     animation: none;
     transition: none;
+  }
+
+  /* Disable floating animations */
+  [class*="animate-[float"] {
+    animation: none !important;
   }
 }

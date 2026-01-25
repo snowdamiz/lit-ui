@@ -1,3 +1,5 @@
+import { getDocsUrl } from '../utils/config'
+
 function Hero() {
   return (
     <section className="relative overflow-hidden pt-32 pb-20 md:pt-40 md:pb-32">
@@ -5,14 +7,14 @@ function Hero() {
       <div className="pointer-events-none absolute inset-0 grid-pattern" />
       <div className="pointer-events-none absolute inset-0 hero-gradient" />
 
-      {/* Decorative circles */}
-      <div className="pointer-events-none absolute -left-32 top-20 h-64 w-64 rounded-full bg-gray-100 opacity-60 blur-3xl" />
-      <div className="pointer-events-none absolute -right-32 top-40 h-80 w-80 rounded-full bg-gray-100 opacity-50 blur-3xl" />
+      {/* Decorative circles with subtle pulsing */}
+      <div className="pointer-events-none absolute -left-32 top-20 h-64 w-64 rounded-full bg-gray-100 opacity-60 blur-3xl animate-[pulse_8s_ease-in-out_infinite]" />
+      <div className="pointer-events-none absolute -right-32 top-40 h-80 w-80 rounded-full bg-gray-100 opacity-50 blur-3xl animate-[pulse_10s_ease-in-out_infinite_2s]" />
 
       <div className="relative mx-auto max-w-6xl px-6">
         <div className="text-center">
           {/* Badge */}
-          <div className="mb-8 inline-flex items-center gap-2.5 rounded-full border border-gray-200 bg-white/80 px-4 py-2 shadow-sm backdrop-blur-sm animate-fade-in-up opacity-0 stagger-1">
+          <div className="mb-8 inline-flex items-center gap-2.5 rounded-full border border-gray-200/80 bg-white/80 px-4 py-2 shadow-[0_1px_2px_oklch(0_0_0/0.04),inset_0_1px_0_oklch(1_0_0/0.8)] backdrop-blur-sm animate-fade-in-up opacity-0 stagger-1">
             <span className="relative flex h-2 w-2">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-gray-400 opacity-75" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-gray-900" />
@@ -38,8 +40,8 @@ function Hero() {
           {/* CTA buttons */}
           <div className="flex flex-col items-center justify-center gap-4 sm:flex-row animate-fade-in-up opacity-0 stagger-4">
             <a
-              href="#get-started"
-              className="group flex items-center gap-2 rounded-xl bg-gray-900 px-7 py-3.5 text-base font-bold text-white transition-all hover:bg-gray-800 btn-shadow focus-ring"
+              href={getDocsUrl()}
+              className="group flex items-center gap-2 rounded-xl bg-gray-900 px-7 py-3.5 text-base font-bold text-white transition-all hover:bg-gray-800 hover:shadow-lg active:scale-[0.98] btn-shadow focus-ring"
             >
               Get Started
               <svg
@@ -57,10 +59,10 @@ function Hero() {
               </svg>
             </a>
             <a
-              href="https://github.com"
+              href="https://github.com/snowdamiz/lit-ui"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2.5 rounded-xl border border-gray-200 bg-white px-7 py-3.5 text-base font-semibold text-gray-900 transition-all hover:border-gray-300 hover:bg-gray-50 shadow-sm focus-ring"
+              className="flex items-center gap-2.5 rounded-xl border border-gray-200 bg-white px-7 py-3.5 text-base font-semibold text-gray-900 transition-all hover:border-gray-300 hover:bg-gray-50 hover:shadow-md active:scale-[0.98] shadow-sm focus-ring"
             >
               <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
                 <path
@@ -79,9 +81,9 @@ function Hero() {
           <div className="code-block overflow-hidden rounded-xl terminal-glow">
             <div className="flex items-center gap-2 border-b border-gray-800 px-4 py-3">
               <div className="flex gap-1.5">
-                <div className="h-3 w-3 rounded-full bg-gray-700 transition-colors hover:bg-red-400" />
-                <div className="h-3 w-3 rounded-full bg-gray-700 transition-colors hover:bg-yellow-400" />
-                <div className="h-3 w-3 rounded-full bg-gray-700 transition-colors hover:bg-green-400" />
+                <div className="h-3 w-3 rounded-full bg-gray-700 transition-all hover:bg-red-400 hover:scale-110" />
+                <div className="h-3 w-3 rounded-full bg-gray-700 transition-all hover:bg-yellow-400 hover:scale-110" />
+                <div className="h-3 w-3 rounded-full bg-gray-700 transition-all hover:bg-green-400 hover:scale-110" />
               </div>
               <span className="ml-2 text-xs text-gray-500 font-medium">Terminal</span>
             </div>

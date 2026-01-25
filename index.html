@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>lit-ui Foundation Demo</title>
+  <title>LitUI Foundation Demo</title>
   <style>
     body {
       font-family: system-ui, sans-serif;
@@ -12,18 +13,21 @@
       color: var(--color-foreground, #000);
       transition: background-color 0.2s, color 0.2s;
     }
+
     .demo-grid {
       display: grid;
       gap: 1.5rem;
       max-width: 800px;
       margin: 0 auto;
     }
+
     .controls {
       margin-bottom: 2rem;
       display: flex;
       gap: 1rem;
       align-items: center;
     }
+
     .controls button {
       padding: 0.5rem 1rem;
       border-radius: 0.375rem;
@@ -31,25 +35,31 @@
       background: #f5f5f5;
       cursor: pointer;
     }
+
     .controls button:hover {
       background: #e5e5e5;
     }
+
     h1 {
       margin-bottom: 0.5rem;
     }
+
     h2 {
       margin-top: 2.5rem;
       margin-bottom: 1rem;
       border-bottom: 1px solid #ddd;
       padding-bottom: 0.5rem;
     }
+
     .subtitle {
       color: #666;
       margin-bottom: 2rem;
     }
+
     .demo-section {
       margin-bottom: 2rem;
     }
+
     .demo-row {
       display: flex;
       flex-wrap: wrap;
@@ -57,11 +67,13 @@
       align-items: center;
       margin-bottom: 1rem;
     }
+
     .demo-label {
       font-weight: 500;
       min-width: 120px;
       color: #555;
     }
+
     .checklist {
       margin-top: 3rem;
       padding: 1.5rem;
@@ -69,25 +81,31 @@
       border-radius: 0.5rem;
       border: 1px solid #e5e7eb;
     }
+
     .checklist h3 {
       margin-top: 0;
       margin-bottom: 1rem;
     }
+
     .checklist ul {
       list-style: none;
       padding: 0;
       margin: 0;
     }
+
     .checklist li {
       padding: 0.5rem 0;
       border-bottom: 1px solid #e5e7eb;
     }
+
     .checklist li:last-child {
       border-bottom: none;
     }
+
     .checklist input[type="checkbox"] {
       margin-right: 0.75rem;
     }
+
     form {
       padding: 1rem;
       background: #f0f9ff;
@@ -96,8 +114,9 @@
     }
   </style>
 </head>
+
 <body>
-  <h1>lit-ui Foundation Demo</h1>
+  <h1>LitUI Foundation Demo</h1>
   <p class="subtitle">Validating Tailwind + Shadow DOM integration</p>
 
   <div class="controls">
@@ -177,13 +196,17 @@
       <span class="demo-label">Icon Start:</span>
       <ui-button variant="primary">
         <svg slot="icon-start" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 1.414L10.586 9H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z" clip-rule="evenodd"/>
+          <path fill-rule="evenodd"
+            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 1.414L10.586 9H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z"
+            clip-rule="evenodd" />
         </svg>
         Continue
       </ui-button>
       <ui-button variant="secondary">
         <svg slot="icon-start" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/>
+          <path fill-rule="evenodd"
+            d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+            clip-rule="evenodd" />
         </svg>
         Add Item
       </ui-button>
@@ -193,14 +216,17 @@
       <ui-button variant="outline">
         Open Link
         <svg slot="icon-end" viewBox="0 0 20 20" fill="currentColor">
-          <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z"/>
-          <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z"/>
+          <path
+            d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+          <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
         </svg>
       </ui-button>
       <ui-button variant="ghost">
         Download
         <svg slot="icon-end" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"/>
+          <path fill-rule="evenodd"
+            d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
+            clip-rule="evenodd" />
         </svg>
       </ui-button>
     </div>
@@ -208,11 +234,15 @@
       <span class="demo-label">Both Icons:</span>
       <ui-button variant="primary" size="lg">
         <svg slot="icon-start" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"/>
+          <path fill-rule="evenodd"
+            d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+            clip-rule="evenodd" />
         </svg>
         Navigate
         <svg slot="icon-end" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+          <path fill-rule="evenodd"
+            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+            clip-rule="evenodd" />
         </svg>
       </ui-button>
     </div>
@@ -243,7 +273,9 @@
     <ui-dialog id="basic-dialog">
       <span slot="title">Basic Dialog</span>
       <p>This is a basic dialog with title, content, and footer.</p>
-      <p>You can close it by pressing <strong>Escape</strong>, clicking the <strong>backdrop</strong>, or clicking the <strong>Close</strong> button.</p>
+      <p>You can close it by pressing <strong>Escape</strong>, clicking the <strong>backdrop</strong>, or clicking the
+        <strong>Close</strong> button.
+      </p>
       <div slot="footer">
         <ui-button variant="secondary" onclick="closeBasicDialog()">Cancel</ui-button>
         <ui-button variant="primary" onclick="closeBasicDialog()">Close</ui-button>
@@ -344,7 +376,8 @@
 
   <div class="demo-section">
     <h3>Animations & Reduced Motion (DLG-08, DLG-09)</h3>
-    <p>Dialogs animate in/out with a fade + scale effect. Enable "Reduce motion" in your OS accessibility settings to disable animations.</p>
+    <p>Dialogs animate in/out with a fade + scale effect. Enable "Reduce motion" in your OS accessibility settings to
+      disable animations.</p>
     <p style="font-size: 0.875rem; color: #666;">Open any dialog above to see the animations.</p>
   </div>
 
@@ -353,17 +386,20 @@
     <p>When a dialog is open, the page body cannot scroll. This prevents confusing scroll behavior.</p>
     <div style="height: 200px; overflow: auto; border: 1px solid #ddd; padding: 1rem; margin-top: 1rem;">
       <p>This is some long content to demonstrate scroll behavior:</p>
-      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore
+        magna aliqua.</p>
       <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
       <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
-      <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+      <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+      </p>
     </div>
   </div>
 
   <div class="checklist">
     <h3>Button Verification Checklist</h3>
     <ul>
-      <li><input type="checkbox"> All 5 variants render with distinct colors (primary=blue, secondary=gray, outline=bordered, ghost=transparent, destructive=red)</li>
+      <li><input type="checkbox"> All 5 variants render with distinct colors (primary=blue, secondary=gray,
+        outline=bordered, ghost=transparent, destructive=red)</li>
       <li><input type="checkbox"> All 3 sizes have different padding/font (sm &lt; md &lt; lg)</li>
       <li><input type="checkbox"> Disabled buttons are visually muted (opacity reduced)</li>
       <li><input type="checkbox"> Loading button shows pulsing dots animation</li>
@@ -453,4 +489,5 @@
     });
   </script>
 </body>
+
 </html>
