@@ -10,6 +10,8 @@ const { readJson, writeJson, pathExists } = fsExtra;
 export interface LitUIConfig {
   /** Optional JSON schema reference */
   $schema?: string;
+  /** Distribution mode: 'copy-source' copies files, 'npm' uses package dependencies */
+  mode: 'copy-source' | 'npm';
   /** Directory where components are installed */
   componentsPath: string;
   /** Tailwind configuration */
@@ -27,10 +29,11 @@ export interface LitUIConfig {
 }
 
 /** Configuration file name */
-export const CONFIG_FILE = 'lit-ui.json';
+export const CONFIG_FILE = 'lit-ui.config.json';
 
 /** Default configuration values */
 export const DEFAULT_CONFIG: LitUIConfig = {
+  mode: 'copy-source',
   componentsPath: 'src/components/ui',
   tailwind: {
     css: 'src/styles/tailwind.css',
@@ -89,4 +92,17 @@ export async function writeConfig(
   };
 
   await writeJson(configPath, fullConfig, { spaces: 2 });
+}
+
+/**
+ * Get existing config or create one with defaults.
+ * Useful for commands that need a config to exist.
+ */
+export async function getOrCreateConfig(cwd: string): Promise<LitUIConfig> {
+  const existing = await getConfig(cwd);
+  if (existing) return existing;
+
+  const defaultConfig = { ...DEFAULT_CONFIG };
+  await writeConfig(cwd, defaultConfig);
+  return defaultConfig;
 }
