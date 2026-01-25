@@ -5,7 +5,8 @@
  * preview area, and command modal.
  */
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
+import { useSearchParams } from "react-router";
 import {
   ConfiguratorProvider,
   useConfigurator,
@@ -19,7 +20,38 @@ import { ColorSection } from "../../components/configurator/ColorSection";
 import { TailwindSwatches } from "../../components/configurator/TailwindSwatches";
 import { RadiusSelector } from "../../components/configurator/RadiusSelector";
 import { ModeToggle } from "../../components/configurator/ModeToggle";
+import { PresetSelector } from "../../components/configurator/PresetSelector";
+import { ShadeScaleDisplay } from "../../components/configurator/ShadeScaleDisplay";
 import { hexToOklch } from "../../utils/color-utils";
+import { decodeThemeConfig } from "@lit-ui/cli/theme";
+
+/**
+ * URLLoader - Loads theme from URL on mount
+ * Must be inside ConfiguratorProvider to access context
+ */
+function URLLoader() {
+  const [searchParams] = useSearchParams();
+  const { loadThemeConfig } = useConfigurator();
+  const initialLoadDone = useRef(false);
+
+  useEffect(() => {
+    if (initialLoadDone.current) return;
+    initialLoadDone.current = true;
+
+    const encoded = searchParams.get("theme");
+    if (encoded) {
+      try {
+        const config = decodeThemeConfig(encoded);
+        loadThemeConfig(config);
+      } catch (e) {
+        console.warn("Invalid theme in URL, using defaults:", e);
+        // Keep defaults - don't break the page
+      }
+    }
+  }, [searchParams, loadThemeConfig]);
+
+  return null; // This component only handles side effects
+}
 
 /**
  * ConfiguratorSidebar - Sidebar controls for the configurator
@@ -28,6 +60,7 @@ import { hexToOklch } from "../../utils/color-utils";
 function ConfiguratorSidebar() {
   const {
     activeMode,
+    lightColors,
     setLightColor,
     setDarkColor,
   } = useConfigurator();
@@ -50,11 +83,18 @@ function ConfiguratorSidebar() {
 
       <div className="h-px bg-gray-200 dark:bg-gray-700" />
 
+      {/* Preset Themes */}
+      <PresetSelector />
+
+      <div className="h-px bg-gray-200 dark:bg-gray-700" />
+
       {/* Brand Colors Section */}
       <ColorSection title="Brand Colors">
         <div onClick={() => setLastColorKey("primary")}>
           <ColorPickerGroup colorKey="primary" label="Primary" />
         </div>
+        {/* Primary shade scale */}
+        <ShadeScaleDisplay baseColor={lightColors.primary} label="Primary Shades" />
         <div onClick={() => setLastColorKey("secondary")}>
           <ColorPickerGroup colorKey="secondary" label="Secondary" />
         </div>
@@ -101,6 +141,7 @@ function ConfiguratorPageContent() {
 
   return (
     <>
+      <URLLoader />
       <ConfiguratorLayout
         sidebar={<ConfiguratorSidebar />}
         preview={<ThemePreview />}
