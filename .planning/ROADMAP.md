@@ -81,7 +81,14 @@
   2. Developer can build any package independently with `pnpm --filter @lit-ui/X build`
   3. Changeset version bump updates all affected packages with changelog
   4. TypeScript errors in one package are caught at compile time across workspace
-**Plans**: TBD
+**Plans**: 5 plans
+
+Plans:
+- [ ] 13-01-PLAN.md - Workspace foundation (pnpm-workspace.yaml, root package.json, changesets)
+- [ ] 13-02-PLAN.md - Shared configs (@lit-ui/typescript-config, @lit-ui/vite-config)
+- [ ] 13-03-PLAN.md - Package scaffolding (core, button, dialog stubs)
+- [ ] 13-04-PLAN.md - Apps migration (docs, landing to apps/)
+- [ ] 13-05-PLAN.md - Verification and cleanup (install, build, changeset test)
 
 ### Phase 14: Core Package
 **Goal**: @lit-ui/core exports SSR-aware TailwindElement with dual-mode styling
@@ -183,7 +190,7 @@
 | 10. Theming Docs | v1.1 | 0/? | Not started | - |
 | 11. Accessibility Docs | v1.1 | 0/? | Not started | - |
 | 12. Polish | v1.1 | 0/? | Not started | - |
-| 13. Monorepo Infrastructure | v2.0 | 0/? | Not started | - |
+| 13. Monorepo Infrastructure | v2.0 | 0/5 | Planned | - |
 | 14. Core Package | v2.0 | 0/? | Not started | - |
 | 15. Component Packages | v2.0 | 0/? | Not started | - |
 | 16. SSR Package | v2.0 | 0/? | Not started | - |
