@@ -195,17 +195,89 @@
  * COMPONENT CSS CUSTOM PROPERTIES
  * These are defined on :root so they cascade into Shadow DOM.
  * Users can override these globally or in scoped containers.
+ *
+ * Tier 1 Customization: Override these properties for value-based styling
+ * (colors, spacing, sizing) without needing Tailwind classes.
  * ========================================================================== */
 :root {
-  /* Button Component */
+  /* -------------------------------------------------------------------------
+   * Button Component
+   * ------------------------------------------------------------------------- */
+
+  /* Layout */
   --ui-button-radius: 0.375rem; /* --radius-md */
   --ui-button-shadow: none;
-  --ui-button-font-weight: 500;
+  --ui-button-border-width: 1px;
 
-  /* Dialog Component */
+  /* Typography */
+  --ui-button-font-weight: 500;
+  --ui-button-font-size-sm: 0.875rem;
+  --ui-button-font-size-md: 1rem;
+  --ui-button-font-size-lg: 1.125rem;
+
+  /* Spacing */
+  --ui-button-padding-x-sm: 0.75rem;
+  --ui-button-padding-y-sm: 0.375rem;
+  --ui-button-gap-sm: 0.375rem;
+  --ui-button-padding-x-md: 1rem;
+  --ui-button-padding-y-md: 0.5rem;
+  --ui-button-gap-md: 0.5rem;
+  --ui-button-padding-x-lg: 1.5rem;
+  --ui-button-padding-y-lg: 0.75rem;
+  --ui-button-gap-lg: 0.625rem;
+
+  /* Variant Colors - Primary */
+  --ui-button-primary-bg: var(--color-primary);
+  --ui-button-primary-text: var(--color-primary-foreground);
+  --ui-button-primary-hover-opacity: 0.9;
+
+  /* Variant Colors - Secondary */
+  --ui-button-secondary-bg: var(--color-secondary);
+  --ui-button-secondary-text: var(--color-secondary-foreground);
+  --ui-button-secondary-hover-bg: var(--color-accent);
+
+  /* Variant Colors - Outline */
+  --ui-button-outline-bg: transparent;
+  --ui-button-outline-text: var(--color-foreground);
+  --ui-button-outline-border: var(--color-border);
+  --ui-button-outline-hover-bg: var(--color-accent);
+
+  /* Variant Colors - Ghost */
+  --ui-button-ghost-bg: transparent;
+  --ui-button-ghost-text: var(--color-foreground);
+  --ui-button-ghost-hover-bg: var(--color-accent);
+
+  /* Variant Colors - Destructive */
+  --ui-button-destructive-bg: var(--color-destructive);
+  --ui-button-destructive-text: var(--color-destructive-foreground);
+  --ui-button-destructive-hover-opacity: 0.9;
+
+  /* -------------------------------------------------------------------------
+   * Dialog Component
+   * ------------------------------------------------------------------------- */
+
+  /* Layout */
   --ui-dialog-radius: 0.5rem; /* --radius-lg */
   --ui-dialog-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); /* --shadow-lg */
   --ui-dialog-padding: 1.5rem; /* --spacing-6 */
+  --ui-dialog-max-width-sm: 24rem;
+  --ui-dialog-max-width-md: 28rem;
+  --ui-dialog-max-width-lg: 32rem;
+
+  /* Colors */
+  --ui-dialog-bg: var(--color-card);
+  --ui-dialog-text: var(--color-card-foreground);
+  --ui-dialog-backdrop: rgba(0, 0, 0, 0.5);
+
+  /* Typography */
+  --ui-dialog-title-size: 1.125rem;
+  --ui-dialog-title-weight: 600;
+  --ui-dialog-body-color: var(--color-muted-foreground);
+
+  /* Spacing */
+  --ui-dialog-header-margin: 1rem;
+  --ui-dialog-footer-margin: 1.5rem;
+  --ui-dialog-footer-gap: 0.75rem;
 }
 
 /* ==========================================================================

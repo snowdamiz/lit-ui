@@ -128,7 +128,7 @@ export class Dialog extends TailwindElement {
   private triggerElement: HTMLElement | null = null;
 
   /**
-   * Static styles for dialog animations, layout, and component-level CSS custom properties.
+   * Static styles for dialog animations, layout, sizes, and component-level CSS custom properties.
    * Uses native CSS transitions with @starting-style for enter animations
    * and transition-behavior: allow-discrete for exit animations.
    * Includes Tailwind base styles for SSR support.
@@ -171,7 +171,7 @@ export class Dialog extends TailwindElement {
     }
 
     dialog::backdrop {
-      background: rgba(0, 0, 0, 0.5);
+      background: var(--ui-dialog-backdrop);
       opacity: 0;
       transition:
         opacity 150ms ease-out,
@@ -196,11 +196,49 @@ export class Dialog extends TailwindElement {
       }
     }
 
+    /* -------------------------------------------------------------------------
+     * Dialog Content - Use CSS custom properties for layout and colors
+     * Consumers can override --ui-dialog-* properties
+     * ------------------------------------------------------------------------- */
+
     .dialog-content {
       width: 100%;
       border-radius: var(--ui-dialog-radius);
       box-shadow: var(--ui-dialog-shadow);
       padding: var(--ui-dialog-padding);
+      background-color: var(--ui-dialog-bg);
+      color: var(--ui-dialog-text);
+    }
+
+    /* Size variants - controlled via CSS custom properties */
+    .dialog-content.dialog-sm {
+      max-width: var(--ui-dialog-max-width-sm);
+    }
+
+    .dialog-content.dialog-md {
+      max-width: var(--ui-dialog-max-width-md);
+    }
+
+    .dialog-content.dialog-lg {
+      max-width: var(--ui-dialog-max-width-lg);
+    }
+
+    /* Typography - controlled via CSS custom properties */
+    .dialog-title {
+      font-size: var(--ui-dialog-title-size);
+      font-weight: var(--ui-dialog-title-weight);
+      margin-bottom: var(--ui-dialog-header-margin);
+    }
+
+    .dialog-body {
+      color: var(--ui-dialog-body-color);
+    }
+
+    .dialog-footer {
+      margin-top: var(--ui-dialog-footer-margin);
+      display: flex;
+      justify-content: flex-end;
+      gap: var(--ui-dialog-footer-gap);
     }
   `,
   ];
@@ -303,12 +341,14 @@ export class Dialog extends TailwindElement {
 
   /**
    * Gets the size class for the dialog content.
+   * Size dimensions are controlled via CSS custom properties:
+   * --ui-dialog-max-width-{sm,md,lg}
    */
   private getSizeClasses(): string {
     const sizeClasses: Record<DialogSize, string> = {
-      sm: 'max-w-sm',
-      md: 'max-w-md',
-      lg: 'max-w-lg',
+      sm: 'dialog-sm',
+      md: 'dialog-md',
+      lg: 'dialog-lg',
     };
     return sizeClasses[this.size];
   }
@@ -316,13 +356,13 @@ export class Dialog extends TailwindElement {
   /**
    * Gets the combined classes for the dialog content container.
    * User-provided classes are appended last to allow overrides.
-   * Note: border-radius, box-shadow, and padding are set via CSS custom properties.
+   * Layout, colors, and typography are set via CSS custom properties.
    */
   private getContentClasses(): string {
     return [
       'dialog-content',
       this.getSizeClasses(),
-      'bg-card text-card-foreground relative',
+      'relative',
       this.customClass,
     ]
       .filter(Boolean)
@@ -348,7 +388,7 @@ export class Dialog extends TailwindElement {
             ? html`
                 <button
                   part="close-button"
-                  class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                  class="absolute top-4 right-4 text-muted-foreground hover:text-foreground"
                   @click=${() => this.close('programmatic')}
                   aria-label="Close dialog"
                 >
@@ -368,13 +408,13 @@ export class Dialog extends TailwindElement {
                 </button>
               `
             : nothing}
-          <header part="header" id="dialog-title" class="text-lg font-semibold mb-4">
+          <header part="header" id="dialog-title" class="dialog-title">
             <slot name="title"></slot>
           </header>
-          <div part="body" id="dialog-description" class="text-muted-foreground">
+          <div part="body" id="dialog-description" class="dialog-body">
             <slot></slot>
           </div>
-          <footer part="footer" class="mt-6 flex justify-end gap-3">
+          <footer part="footer" class="dialog-footer">
             <slot name="footer"></slot>
           </footer>
         </div>

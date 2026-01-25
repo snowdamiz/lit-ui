@@ -131,7 +131,7 @@ export class Button extends TailwindElement {
 
   /**
    * Static styles for focus ring (inner glow), loading spinner,
-   * and component-level CSS custom properties.
+   * variant colors, sizes, and component-level CSS custom properties.
    * Includes Tailwind base styles for SSR support.
    */
   static override styles = [
@@ -155,6 +155,80 @@ export class Button extends TailwindElement {
     button:focus-visible {
       outline: none;
       box-shadow: inset 0 0 0 2px var(--color-ring);
+    }
+
+    /* -------------------------------------------------------------------------
+     * Variant Styles - Use CSS custom properties for colors
+     * Consumers can override --ui-button-{variant}-* properties
+     * ------------------------------------------------------------------------- */
+
+    /* Primary variant */
+    button.btn-primary {
+      background-color: var(--ui-button-primary-bg);
+      color: var(--ui-button-primary-text);
+    }
+    button.btn-primary:hover:not([aria-disabled='true']) {
+      opacity: var(--ui-button-primary-hover-opacity);
+    }
+
+    /* Secondary variant */
+    button.btn-secondary {
+      background-color: var(--ui-button-secondary-bg);
+      color: var(--ui-button-secondary-text);
+    }
+    button.btn-secondary:hover:not([aria-disabled='true']) {
+      background-color: var(--ui-button-secondary-hover-bg);
+    }
+
+    /* Outline variant */
+    button.btn-outline {
+      background-color: var(--ui-button-outline-bg);
+      color: var(--ui-button-outline-text);
+      border: var(--ui-button-border-width) solid var(--ui-button-outline-border);
+    }
+    button.btn-outline:hover:not([aria-disabled='true']) {
+      background-color: var(--ui-button-outline-hover-bg);
+    }
+
+    /* Ghost variant */
+    button.btn-ghost {
+      background-color: var(--ui-button-ghost-bg);
+      color: var(--ui-button-ghost-text);
+    }
+    button.btn-ghost:hover:not([aria-disabled='true']) {
+      background-color: var(--ui-button-ghost-hover-bg);
+    }
+
+    /* Destructive variant */
+    button.btn-destructive {
+      background-color: var(--ui-button-destructive-bg);
+      color: var(--ui-button-destructive-text);
+    }
+    button.btn-destructive:hover:not([aria-disabled='true']) {
+      opacity: var(--ui-button-destructive-hover-opacity);
+    }
+
+    /* -------------------------------------------------------------------------
+     * Size Styles - Use CSS custom properties for spacing
+     * Consumers can override --ui-button-{size}-* properties
+     * ------------------------------------------------------------------------- */
+
+    button.btn-sm {
+      padding: var(--ui-button-padding-y-sm) var(--ui-button-padding-x-sm);
+      font-size: var(--ui-button-font-size-sm);
+      gap: var(--ui-button-gap-sm);
+    }
+
+    button.btn-md {
+      padding: var(--ui-button-padding-y-md) var(--ui-button-padding-x-md);
+      font-size: var(--ui-button-font-size-md);
+      gap: var(--ui-button-gap-md);
+    }
+
+    button.btn-lg {
+      padding: var(--ui-button-padding-y-lg) var(--ui-button-padding-x-lg);
+      font-size: var(--ui-button-font-size-lg);
+      gap: var(--ui-button-gap-lg);
     }
 
     /* Pulsing dots spinner */
@@ -209,30 +283,31 @@ export class Button extends TailwindElement {
   ];
 
   /**
-   * Get the Tailwind classes for the current variant.
+   * Get the CSS class for the current variant.
+   * Variant colors are controlled via CSS custom properties:
+   * --ui-button-{variant}-bg, --ui-button-{variant}-text, etc.
    */
   private getVariantClasses(): string {
     const variants: Record<ButtonVariant, string> = {
-      primary: 'bg-primary text-primary-foreground hover:opacity-90',
-      secondary: 'bg-secondary text-secondary-foreground hover:bg-accent',
-      outline:
-        'border border-border bg-transparent text-foreground hover:bg-accent',
-      ghost: 'bg-transparent text-foreground hover:bg-accent',
-      destructive:
-        'bg-destructive text-destructive-foreground hover:opacity-90',
+      primary: 'btn-primary',
+      secondary: 'btn-secondary',
+      outline: 'btn-outline',
+      ghost: 'btn-ghost',
+      destructive: 'btn-destructive',
     };
     return variants[this.variant];
   }
 
   /**
-   * Get the Tailwind classes for the current size.
-   * Includes gap for icon spacing.
+   * Get the CSS class for the current size.
+   * Size dimensions are controlled via CSS custom properties:
+   * --ui-button-padding-{x,y}-{size}, --ui-button-font-size-{size}, --ui-button-gap-{size}
    */
   private getSizeClasses(): string {
     const sizes: Record<ButtonSize, string> = {
-      sm: 'px-3 py-1.5 text-sm gap-1.5',
-      md: 'px-4 py-2 text-base gap-2',
-      lg: 'px-6 py-3 text-lg gap-2.5',
+      sm: 'btn-sm',
+      md: 'btn-md',
+      lg: 'btn-lg',
     };
     return sizes[this.size];
   }
