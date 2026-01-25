@@ -103,7 +103,7 @@ Full details: [milestones/v2.0-ROADMAP.md](milestones/v2.0-ROADMAP.md)
   5. Generated CSS integrates with Tailwind v4 (cascades into Shadow DOM)
 **Plans**: 5 plans
 Plans:
-- [ ] 21-01-PLAN.md — Token schema and default theme (TDD)
+- [x] 21-01-PLAN.md — Token schema and default theme (TDD)
 - [ ] 21-02-PLAN.md — OKLCH color utilities (TDD)
 - [ ] 21-03-PLAN.md — URL encoding/decoding (TDD)
 - [ ] 21-04-PLAN.md — CSS generator (TDD)
@@ -177,7 +177,7 @@ Plans:
 | 18. CLI Enhancement | v2.0 | 4/4 | Complete | 2026-01-25 |
 | 19. Publishing | v2.0 | 4/4 | Complete | 2026-01-25 |
 | 20. Documentation | v2.0 | 3/3 | Complete | 2026-01-25 |
-| 21. Theme System Foundation | v3.0 | 0/5 | Planned | - |
+| 21. Theme System Foundation | v3.0 | 1/5 | In progress | - |
 | 22. CLI Theme Integration | v3.0 | 0/? | Not started | - |
 | 23. Visual Configurator Core | v3.0 | 0/? | Not started | - |
 | 24. Presets and Enhanced Features | v3.0 | 0/? | Not started | - |
