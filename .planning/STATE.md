@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-01-24)
 
 ## Current Position
 
-Phase: 18 of 20 (CLI Enhancement)
-Plan: 04 of 04
-Status: Phase complete
-Last activity: 2026-01-25 - Completed 18-04-PLAN.md (Final verification)
+Phase: 19 of 20 (Publishing)
+Plan: 02 of 04
+Status: In progress
+Last activity: 2026-01-25 - Completed 19-02-PLAN.md (Package READMEs)
 
-Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [####################] 20/40 plans
+Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [######################] 22/40 plans
 
 ## Performance Metrics
 
@@ -49,6 +49,7 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [#################
 | 16-ssr-package | 2 | 4 min | 2.0 min |
 | 17-framework-integration | 3 | 20 min | 6.7 min |
 | 18-cli-enhancement | 4 | 10 min | 2.5 min |
+| 19-publishing | 2 | 4 min | 2.0 min |
 
 ## Accumulated Context
 
@@ -161,6 +162,11 @@ Key decisions are logged in PROJECT.md Key Decisions table.
 - List command shows package names in npm mode for clarity
 - Mode displayed in list header for user awareness
 
+**v2.0 Plan 19-01 Decisions:**
+- Empty author field (placeholder for user to fill)
+- Placeholder 'user' in repository URL (updated when actual repo created)
+- CLI remains independent versioning (tooling, not runtime dependency)
+
 ### Pending Todos
 
 None.
@@ -173,7 +179,7 @@ Consider completing v1.1 before or in parallel with v2.0.
 ## Session Continuity
 
 Last session: 2026-01-25
-Stopped at: Completed 18-04-PLAN.md (Final verification)
+Stopped at: Completed 19-02-PLAN.md (Package READMEs)
 Resume file: None
 
 ## Next Steps

@@ -183,8 +183,8 @@ Plans:
 **Plans**: 4 plans
 
 Plans:
-- [ ] 19-01-PLAN.md — Package metadata (repository, description, license, changeset config)
-- [ ] 19-02-PLAN.md — README files for all publishable packages
+- [x] 19-01-PLAN.md — Package metadata (repository, description, license, changeset config)
+- [x] 19-02-PLAN.md — README files for all publishable packages
 - [ ] 19-03-PLAN.md — GitHub Actions release workflow
 - [ ] 19-04-PLAN.md — npm organization setup and verification (checkpoint)
 
@@ -227,7 +227,7 @@ Plans:
 | 16. SSR Package | v2.0 | 2/2 | Complete | 2026-01-25 |
 | 17. Framework Integration | v2.0 | 3/3 | Complete | 2026-01-25 |
 | 18. CLI Enhancement | v2.0 | 4/4 | Complete | 2026-01-25 |
-| 19. Publishing | v2.0 | 0/4 | Planned | - |
+| 19. Publishing | v2.0 | 2/4 | In progress | - |
 | 20. Documentation | v2.0 | 0/? | Not started | - |
 
 ---
