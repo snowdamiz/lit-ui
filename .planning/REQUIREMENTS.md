@@ -103,13 +103,13 @@ Deferred to future milestone.
 | CORE-05 | Phase 14 | Complete |
 | CORE-06 | Phase 14 | Complete |
 | CORE-07 | Phase 14 | Complete |
-| COMP-01 | Phase 15 | Pending |
-| COMP-02 | Phase 15 | Pending |
-| COMP-03 | Phase 15 | Pending |
-| COMP-04 | Phase 15 | Pending |
-| COMP-05 | Phase 15 | Pending |
-| COMP-06 | Phase 15 | Pending |
-| COMP-07 | Phase 15 | Pending |
+| COMP-01 | Phase 15 | Complete |
+| COMP-02 | Phase 15 | Complete |
+| COMP-03 | Phase 15 | Complete |
+| COMP-04 | Phase 15 | Complete |
+| COMP-05 | Phase 15 | Complete |
+| COMP-06 | Phase 15 | Complete |
+| COMP-07 | Phase 15 | Complete |
 | SSR-01 | Phase 16 | Pending |
 | SSR-02 | Phase 16 | Pending |
 | SSR-03 | Phase 16 | Pending |
@@ -138,4 +138,4 @@ Deferred to future milestone.
 
 ---
 *Requirements defined: 2026-01-24*
-*Last updated: 2026-01-25 after Phase 14 completion*
+*Last updated: 2026-01-25 after Phase 15 completion*
