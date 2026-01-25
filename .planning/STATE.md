@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-24)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** v2.0 NPM + SSR - Phase 19 complete
+**Current focus:** v2.0 NPM + SSR - Phase 20 in progress
 
 ## Current Position
 
-Phase: 19 of 20 (Publishing)
-Plan: 04 of 04
-Status: Phase complete
-Last activity: 2026-01-25 - Completed 19-04-PLAN.md (Final Verification)
+Phase: 20 of 20 (Documentation)
+Plan: 01 of 03
+Status: In progress
+Last activity: 2026-01-25 - Completed 20-01-PLAN.md (Installation Documentation)
 
-Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [########################] 24/40 plans
+Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [#########################] 25/40 plans
 
 ## Performance Metrics
 
@@ -50,6 +50,7 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [#################
 | 17-framework-integration | 3 | 20 min | 6.7 min |
 | 18-cli-enhancement | 4 | 10 min | 2.5 min |
 | 19-publishing | 4 | 7 min | 1.8 min |
+| 20-documentation | 1 | 3 min | 3.0 min |
 
 ## Accumulated Context
 
@@ -176,6 +177,11 @@ Key decisions are logged in PROJECT.md Key Decisions table.
 - Automation token (not granular) for CI publishing
 - NPM_TOKEN stored as GitHub repository secret
 
+**v2.0 Plan 20-01 Decisions:**
+- NPM as primary installation path with trade-offs table
+- Copy-source documented as alternative with link to Getting Started
+- Guides section added to navigation for SSR and Migration docs
+
 ### Pending Todos
 
 None.
@@ -188,32 +194,25 @@ Consider completing v1.1 before or in parallel with v2.0.
 ## Session Continuity
 
 Last session: 2026-01-25
-Stopped at: Completed 19-04-PLAN.md (Final Verification)
+Stopped at: Completed 20-01-PLAN.md (Installation Documentation)
 Resume file: None
 
 ## Next Steps
 
-Phase 19 (Publishing) COMPLETE. All 4 plans finished.
+Phase 20 (Documentation) in progress. Plan 01 complete.
 
-### Publishing Phase Complete
+### Documentation Phase Progress
 
-**19-01 (Complete):**
-- npm publishing metadata added to all 5 publishable packages
-- @lit-ui/ssr added to changeset fixed array for lockstep versioning
-- Repository URLs use placeholder (update when repo created)
+**20-01 (Complete):**
+- Installation page created with NPM as primary path
+- Guides section added to navigation (SSR Setup, Migration)
+- GettingStarted links to Installation page
 
-**19-02 (Complete):**
-- Package READMEs added
+**20-02 (Pending):**
+- SSR Setup guide for Next.js and Astro
 
-**19-03 (Complete):**
-- GitHub Actions release workflow created
-- Uses changesets/action for automated version PRs and npm publishing
-- Requires NPM_TOKEN secret in repository settings
-
-**19-04 (Complete):**
-- npm organization 'lit-ui' created
-- NPM_TOKEN secret added to GitHub repository
-- All 5 packages verified ready for publishing
+**20-03 (Pending):**
+- Migration guide for copy-source to npm
 
 ### Ready for First Release
 
@@ -222,7 +221,3 @@ To publish first version:
 2. Commit and push
 3. Merge "Version Packages" PR
 4. GitHub Actions publishes to npm
-
-### Remaining v2.0 Work
-
-Phase 20 (Documentation Updates) is the final phase.
