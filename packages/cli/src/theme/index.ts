@@ -13,3 +13,9 @@ export { defaultTheme, mergeThemeConfig } from "./defaults.js";
 
 // Color utilities
 export { generateScale, deriveDarkMode, deriveForeground } from "./color-scale.js";
+
+// Encoding utilities
+export { encodeThemeConfig, decodeThemeConfig } from "./encoding.js";
+
+// CSS generation
+export { generateThemeCSS } from "./css-generator.js";
