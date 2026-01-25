@@ -88,6 +88,11 @@ Key decisions are logged in PROJECT.md Key Decisions table.
 - Use privatePackages config instead of ignore for private workspace deps
 - Keep src.old/ for Phase 14-15 migration reference
 
+**v2.0 Plan 14-01 Decisions:**
+- SSR uses inline CSS via static styles getter (isServer === true)
+- Constructable stylesheets guarded with !isServer check
+- vite-env.d.ts added for CSS module type declarations
+
 **v2.0 Plan 14-02 Decisions:**
 - Multi-entry Vite config over createLibraryConfig for subpath support
 - Tailwind token names (--color-primary) not custom --lui- namespace
