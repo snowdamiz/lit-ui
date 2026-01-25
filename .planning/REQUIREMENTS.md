@@ -58,10 +58,10 @@ Requirements for NPM package distribution and SSR compatibility.
 
 ### Publishing
 
-- [ ] **PUB-01**: All packages published to npm under @lit-ui scope
-- [ ] **PUB-02**: Package versions follow semver
-- [ ] **PUB-03**: README included in each published package
-- [ ] **PUB-04**: Changelog generated via changesets
+- [x] **PUB-01**: All packages published to npm under @lit-ui scope
+- [x] **PUB-02**: Package versions follow semver
+- [x] **PUB-03**: README included in each published package
+- [x] **PUB-04**: Changelog generated via changesets
 
 ### Documentation
 
@@ -123,10 +123,10 @@ Deferred to future milestone.
 | CLI-03 | Phase 18 | Complete |
 | CLI-04 | Phase 18 | Complete |
 | CLI-05 | Phase 18 | Complete |
-| PUB-01 | Phase 19 | Pending |
-| PUB-02 | Phase 19 | Pending |
-| PUB-03 | Phase 19 | Pending |
-| PUB-04 | Phase 19 | Pending |
+| PUB-01 | Phase 19 | Complete |
+| PUB-02 | Phase 19 | Complete |
+| PUB-03 | Phase 19 | Complete |
+| PUB-04 | Phase 19 | Complete |
 | DOC-01 | Phase 20 | Pending |
 | DOC-02 | Phase 20 | Pending |
 | DOC-03 | Phase 20 | Pending |
@@ -138,4 +138,4 @@ Deferred to future milestone.
 
 ---
 *Requirements defined: 2026-01-24*
-*Last updated: 2026-01-25 after Phase 18 completion*
+*Last updated: 2026-01-25 after Phase 19 completion*
