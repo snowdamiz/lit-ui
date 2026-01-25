@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-24)
 ## Current Position
 
 Phase: 18 of 20 (CLI Enhancement)
-Plan: 02 of 04
+Plan: 03 of 04
 Status: In progress
-Last activity: 2026-01-25 - Completed 18-02-PLAN.md (Add command mode branching)
+Last activity: 2026-01-25 - Completed 18-03-PLAN.md (Migrate command)
 
-Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [##################] 18/40 plans
+Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [###################.] 19/40 plans
 
 ## Performance Metrics
 
@@ -28,8 +28,8 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [#################
 - Total execution time: 22 min
 
 **v2.0 Velocity:**
-- Plans completed: 16
-- Total execution time: 50 min
+- Plans completed: 17
+- Total execution time: 52 min
 
 **By Phase:**
 
@@ -48,7 +48,7 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [#################
 | 15-component-packages | 3 | 10 min | 3.3 min |
 | 16-ssr-package | 2 | 4 min | 2.0 min |
 | 17-framework-integration | 3 | 20 min | 6.7 min |
-| 18-cli-enhancement | 2 | 5 min | 2.5 min |
+| 18-cli-enhancement | 3 | 7 min | 2.3 min |
 
 ## Accumulated Context
 
@@ -152,6 +152,11 @@ Key decisions are logged in PROJECT.md Key Decisions table.
 - lui-* prefix for component tag names in usage hints
 - Flag overrides config: --npm or --copy takes precedence over config mode
 
+**v2.0 Plan 18-03 Decisions:**
+- diff package provides built-in types (@types/diff not needed)
+- Show only added/removed lines in diff output for brevity
+- Require confirmation only for modified files (unmodified migrate silently)
+
 ### Pending Todos
 
 None.
@@ -163,13 +168,13 @@ Consider completing v1.1 before or in parallel with v2.0.
 
 ## Session Continuity
 
-Last session: 2026-01-25 07:18 UTC
-Stopped at: Completed 18-02-PLAN.md (Add command mode branching)
+Last session: 2026-01-25 07:09 UTC
+Stopped at: Completed 18-03-PLAN.md (Migrate command)
 Resume file: None
 
 ## Next Steps
 
-Phase 18 (CLI Enhancement) in progress. 2 of 4 plans complete.
+Phase 18 (CLI Enhancement) in progress. 3 of 4 plans complete.
 
 ### CLI Enhancement Progress
 
@@ -183,4 +188,10 @@ Phase 18 (CLI Enhancement) in progress. 2 of 4 plans complete.
 - Add command branches on mode with --npm and --copy flags
 - Auto-detects package manager for install command
 
-**Next: 18-03-PLAN.md** - Update command for package updates
+**18-03 (Complete):**
+- Migrate command converts copy-source to npm mode
+- Diff detection for modified source files
+- Confirmation prompts before replacing modified files
+- Source files deleted after successful npm install
+
+**Next: 18-04-PLAN.md** - Update command for package updates
