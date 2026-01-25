@@ -14,7 +14,7 @@ import { Button } from './button.js';
 if (!isServer && typeof customElements !== 'undefined') {
   if (!customElements.get('lui-button')) {
     customElements.define('lui-button', Button);
-  } else if (process.env.NODE_ENV === 'development') {
+  } else if (import.meta.env?.DEV) {
     console.warn(
       '[lui-button] Custom element already registered. ' +
         'This may indicate duplicate imports or version conflicts.'
