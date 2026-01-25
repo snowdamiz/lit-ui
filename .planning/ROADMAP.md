@@ -100,7 +100,12 @@ Plans:
   3. After hydration, component uses shared constructable stylesheets (memory optimization)
   4. Design tokens available via CSS custom properties from @lit-ui/core/tokens
   5. Tree shaking removes unused exports when bundling consumer app
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 14-01-PLAN.md - SSR-aware TailwindElement with dual-mode styling
+- [ ] 14-02-PLAN.md - Design tokens module and utility helpers
+- [ ] 14-03-PLAN.md - Build verification and FOUC prevention
 
 ### Phase 15: Component Packages
 **Goal**: Button and Dialog published as independent packages with SSR compatibility
