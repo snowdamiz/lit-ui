@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-25)
 ## Current Position
 
 Phase: 21 of 24 (Theme System Foundation)
-Plan: 2 of 5 in current phase
+Plan: 4 of 5 in current phase
 Status: In progress
-Last activity: 2026-01-25 — Completed 21-02-PLAN.md
+Last activity: 2026-01-25 — Completed 21-04-PLAN.md
 
-Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 [##........] 2/5 plans (Phase 21)
+Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 [####......] 4/5 plans (Phase 21)
 
 ## Performance Metrics
 
@@ -32,8 +32,8 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 [##
 - Total execution time: ~86 min
 
 **v3.0 Velocity:**
-- Plans completed: 2
-- Total execution time: 7 min
+- Plans completed: 4
+- Total execution time: 9 min
 
 ## Accumulated Context
 
@@ -60,6 +60,11 @@ Key decisions are logged in PROJECT.md Key Decisions table.
 - NaN hue handling defaults to 0 for achromatic colors
 - Dark mode uses 0.9x chroma reduction
 
+**21-04 decisions:**
+- --lui-* prefix for CSS custom properties
+- Both .dark class AND @media prefers-color-scheme for dark mode
+- :root:not(.light) selector for opt-out capability
+
 ### Pending Todos
 
 None.
@@ -70,15 +75,14 @@ None currently.
 
 ## Session Continuity
 
-Last session: 2026-01-25T20:29:44Z
-Stopped at: Completed 21-02-PLAN.md
+Last session: 2026-01-25T20:34:57Z
+Stopped at: Completed 21-04-PLAN.md
 Resume file: None
 
 ## Next Steps
 
 ### Milestone v3.0 in progress
 
-1. Continue Phase 21 with 21-03-PLAN.md (URL encoding/decoding)
-2. Execute plans 21-04 through 21-05
-3. Verify phase with `/gsd:verify-phase 21`
-4. Continue to Phase 22
+1. Execute 21-05-PLAN.md (Integration tests)
+2. Verify phase with `/gsd:verify-phase 21`
+3. Continue to Phase 22 (CLI commands)
