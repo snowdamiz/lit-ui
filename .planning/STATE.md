@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-24)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** v2.0 NPM + SSR - Phase 18 complete
+**Current focus:** v2.0 NPM + SSR - Phase 19 in progress
 
 ## Current Position
 
 Phase: 19 of 20 (Publishing)
-Plan: 02 of 04
+Plan: 03 of 04
 Status: In progress
-Last activity: 2026-01-25 - Completed 19-02-PLAN.md (Package READMEs)
+Last activity: 2026-01-25 - Completed 19-03-PLAN.md (CI/CD Pipeline)
 
-Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [######################] 22/40 plans
+Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [#######################] 23/40 plans
 
 ## Performance Metrics
 
@@ -49,7 +49,7 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [#################
 | 16-ssr-package | 2 | 4 min | 2.0 min |
 | 17-framework-integration | 3 | 20 min | 6.7 min |
 | 18-cli-enhancement | 4 | 10 min | 2.5 min |
-| 19-publishing | 2 | 4 min | 2.0 min |
+| 19-publishing | 3 | 6 min | 2.0 min |
 
 ## Accumulated Context
 
@@ -167,6 +167,10 @@ Key decisions are logged in PROJECT.md Key Decisions table.
 - Placeholder 'user' in repository URL (updated when actual repo created)
 - CLI remains independent versioning (tooling, not runtime dependency)
 
+**v2.0 Plan 19-03 Decisions:**
+- Static output for Astro example (CI build compatibility)
+- Standard NPM_TOKEN secret approach (not OIDC trusted publishing)
+
 ### Pending Todos
 
 None.
@@ -179,12 +183,12 @@ Consider completing v1.1 before or in parallel with v2.0.
 ## Session Continuity
 
 Last session: 2026-01-25
-Stopped at: Completed 19-02-PLAN.md (Package READMEs)
+Stopped at: Completed 19-03-PLAN.md (CI/CD Pipeline)
 Resume file: None
 
 ## Next Steps
 
-Phase 19 (Publishing) in progress. Plans 01-02 complete.
+Phase 19 (Publishing) in progress. Plans 01-03 complete.
 
 ### Publishing Progress
 
@@ -196,5 +200,9 @@ Phase 19 (Publishing) in progress. Plans 01-02 complete.
 **19-02 (Complete):**
 - Package READMEs added
 
-**19-03:** GitHub Actions CI/CD
+**19-03 (Complete):**
+- GitHub Actions release workflow created
+- Uses changesets/action for automated version PRs and npm publishing
+- Requires NPM_TOKEN secret in repository settings
+
 **19-04:** Final verification
