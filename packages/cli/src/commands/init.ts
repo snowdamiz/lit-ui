@@ -346,6 +346,11 @@ export const init = defineCommand({
       description: 'Working directory',
       default: '.',
     },
+    theme: {
+      type: 'string',
+      description: 'Encoded theme configuration from configurator',
+      required: false,
+    },
   },
   async run({ args }) {
     const cwd = resolve(args.cwd);
