@@ -1,509 +1,619 @@
-# Architecture Research
+# Architecture Research: NPM + SSR Integration
 
-**Domain:** CLI-distributed Lit.js component library (ShadCN-style)
-**Researched:** 2026-01-23
-**Confidence:** HIGH (verified via official Lit documentation, shadcn/ui docs, and established patterns from MWC/Shoelace)
+**Domain:** NPM package distribution and SSR support for LitUI
+**Researched:** 2026-01-24
+**Confidence:** HIGH (verified via official Lit SSR documentation, NPM workspace patterns)
 
-## Standard Architecture
+## Executive Summary
 
-### System Overview
+Adding NPM package distribution and SSR support to LitUI requires:
+1. **New package structure** with scoped NPM packages (@lit-ui/core, @lit-ui/button, @lit-ui/dialog)
+2. **TailwindElement SSR adaptation** to handle constructable stylesheets in DSD context
+3. **CLI dual-mode support** for both copy-source and npm install workflows
+4. **Build configuration** for per-package publishing with proper exports
 
-```
-                           lit-ui Architecture
-============================================================================
+The key architectural challenge is that **constructable stylesheets cannot be serialized in Declarative Shadow DOM**. This requires using Lit's static styles for SSR while preserving the current constructable stylesheet approach for client-side efficiency.
 
-  DISTRIBUTION LAYER (CLI)
-  -------------------------------------------------------------------------
-  |  +-------------+    +--------------+    +----------------+            |
-  |  | CLI Tool    |    | Registry     |    | Transformer    |            |
-  |  | (commander/ |<-->| (JSON Schema)|<-->| (Code Rewrite) |            |
-  |  |  oclif)     |    |              |    |                |            |
-  |  +-------------+    +--------------+    +----------------+            |
-  -------------------------------------------------------------------------
-                              |
-                              | fetches/copies
-                              v
-  COMPONENT LIBRARY (Source)
-  -------------------------------------------------------------------------
-  |  +---------------+  +---------------+  +---------------+              |
-  |  | Components    |  | Primitives    |  | Utilities     |              |
-  |  | (button,      |  | (base-element |  | (cn(), tokens,|              |
-  |  |  dialog, etc) |  |  tailwind-el) |  |  types)       |              |
-  |  +-------+-------+  +-------+-------+  +-------+-------+              |
-  |          |                  |                  |                      |
-  |          +------------------+------------------+                      |
-  |                             |                                         |
-  |                             v                                         |
-  |  +----------------------------------------------------------+        |
-  |  |              Shared Design Tokens (CSS Variables)         |        |
-  |  +----------------------------------------------------------+        |
-  -------------------------------------------------------------------------
-                              |
-                              | consumed by
-                              v
-  USER'S PROJECT
-  -------------------------------------------------------------------------
-  |  +---------------+  +---------------+  +---------------+              |
-  |  | components/   |  | lib/          |  | styles/       |              |
-  |  |   ui/         |  |   utils.ts    |  |   tokens.css  |              |
-  |  |   button.ts   |  |               |  |               |              |
-  |  +---------------+  +---------------+  +---------------+              |
-  -------------------------------------------------------------------------
-```
+---
 
-### Component Responsibilities
+## Package Structure
 
-| Component | Responsibility | Typical Implementation |
-|-----------|----------------|------------------------|
-| **CLI Tool** | Fetches, transforms, and writes component source to user project | Node.js with commander/oclif, prompts via inquirer |
-| **Registry** | Defines available components, dependencies, file mappings | JSON schema (registry.json + registry-item.json) |
-| **Transformer** | Rewrites imports, applies CSS variable mappings, adjusts paths | AST manipulation or string transforms |
-| **Base Element** | Provides shared Tailwind styles, theme inheritance, common behaviors | LitElement subclass with unsafeCSS for Tailwind |
-| **UI Components** | Self-contained, accessible web components (Button, Dialog, etc.) | LitElement with CSS custom properties |
-| **Design Tokens** | Centralized CSS variables for colors, spacing, typography | CSS file with :root tokens + component overrides |
-| **Utilities** | Helper functions (cn for class merging, type definitions) | TypeScript modules |
-
-## Recommended Project Structure
+### Existing (keep unchanged)
 
 ```
-lit-ui/
-├── packages/                    # Monorepo packages
-│   ├── cli/                     # CLI distribution tool
-│   │   ├── src/
-│   │   │   ├── commands/        # CLI commands (init, add, diff)
-│   │   │   │   ├── init.ts      # Project initialization
-│   │   │   │   ├── add.ts       # Add component to project
-│   │   │   │   └── diff.ts      # Show changes from upstream
-│   │   │   ├── utils/
-│   │   │   │   ├── registry.ts  # Registry fetching/parsing
-│   │   │   │   ├── transform.ts # Code transformation logic
-│   │   │   │   └── config.ts    # Project config handling
-│   │   │   └── index.ts         # CLI entry point
-│   │   └── package.json
-│   │
-│   └── ui/                      # Component source library
-│       ├── src/
-│       │   ├── components/      # UI components
-│       │   │   ├── button/
-│       │   │   │   ├── button.ts
-│       │   │   │   ├── button.styles.ts
-│       │   │   │   └── index.ts
-│       │   │   └── dialog/
-│       │   │       ├── dialog.ts
-│       │   │       ├── dialog.styles.ts
-│       │   │       └── index.ts
-│       │   ├── primitives/      # Base classes and building blocks
-│       │   │   ├── tailwind-element.ts
-│       │   │   └── base-element.ts
-│       │   ├── styles/          # Shared styles
-│       │   │   ├── tokens.css   # Design tokens
-│       │   │   └── tailwind.css # Tailwind base + utilities
-│       │   └── lib/             # Utilities
-│       │       ├── utils.ts     # cn(), etc.
-│       │       └── types.ts     # Shared types
-│       ├── registry.json        # Component registry definition
-│       └── package.json
-│
-├── apps/                        # Demo/docs applications
-│   └── docs/                    # Documentation site
-│       └── ...
-│
-├── pnpm-workspace.yaml          # Monorepo workspace config
-├── turbo.json                   # Build orchestration (optional)
-└── package.json                 # Root package
+/
+├── src/                          # Main component source (for development/demo)
+│   ├── base/tailwind-element.ts
+│   ├── components/button/button.ts
+│   ├── components/dialog/dialog.ts
+│   └── styles/tailwind.css
+├── packages/
+│   └── cli/                      # CLI tool (lit-ui command)
 ```
 
-### Structure Rationale
+### New Packages (add)
 
-- **packages/cli/:** Separate package for the CLI tool, published to npm. Users install globally or use npx. Decoupled from component source.
-- **packages/ui/:** Contains all component source code. This is the "registry" - the CLI fetches from here. Components organized by feature (button/, dialog/) with co-located styles.
-- **primitives/:** Base classes that all components extend. TailwindElement handles Tailwind CSS integration. Provides shared behaviors.
-- **styles/:** Design tokens as CSS custom properties. Centralized so components reference tokens, not hard-coded values.
-- **registry.json:** The manifest file that defines what components exist, their dependencies, and file mappings.
-- **apps/docs/:** Documentation site for showcasing components. Uses Storybook or custom solution.
-
-## Architectural Patterns
-
-### Pattern 1: TailwindElement Base Class
-
-**What:** A shared LitElement subclass that injects Tailwind CSS into the Shadow DOM at build time.
-**When to use:** Every component that needs Tailwind styling.
-**Trade-offs:**
-- PRO: Consistent Tailwind access across all components
-- PRO: Single place to update Tailwind configuration
-- CON: Adds base styles to every component (mitigated by Tailwind JIT)
-
-**Example:**
-```typescript
-// primitives/tailwind-element.ts
-import { LitElement, unsafeCSS } from 'lit';
-import tailwindStyles from '../styles/tailwind.css?inline';
-
-export class TailwindElement extends LitElement {
-  static styles = [unsafeCSS(tailwindStyles)];
-}
-
-// components/button/button.ts
-import { html, css } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
-import { TailwindElement } from '../../primitives/tailwind-element.js';
-
-@customElement('ui-button')
-export class Button extends TailwindElement {
-  @property() variant: 'primary' | 'secondary' = 'primary';
-
-  static styles = [
-    ...TailwindElement.styles,
-    css`
-      :host {
-        display: inline-block;
-      }
-    `
-  ];
-
-  render() {
-    return html`
-      <button class="px-4 py-2 rounded-md ${this.variant === 'primary'
-        ? 'bg-primary text-primary-foreground'
-        : 'bg-secondary text-secondary-foreground'}">
-        <slot></slot>
-      </button>
-    `;
-  }
-}
+```
+packages/
+├── cli/                          # EXISTING - enhance for dual-mode
+├── core/                         # NEW - @lit-ui/core
+│   ├── src/
+│   │   ├── tailwind-element.ts   # SSR-aware base class
+│   │   ├── ssr/                  # SSR utilities
+│   │   │   ├── index.ts
+│   │   │   └── hydration.ts
+│   │   └── index.ts
+│   ├── package.json
+│   └── vite.config.ts
+├── button/                       # NEW - @lit-ui/button
+│   ├── src/
+│   │   ├── button.ts
+│   │   └── index.ts
+│   ├── package.json
+│   └── vite.config.ts
+└── dialog/                       # NEW - @lit-ui/dialog
+    ├── src/
+    │   ├── dialog.ts
+    │   └── index.ts
+    ├── package.json
+    └── vite.config.ts
 ```
 
-### Pattern 2: CSS Custom Properties for Theming
+### Package Details
 
-**What:** Use CSS variables for all themable values. Components define defaults that users can override.
-**When to use:** Any value that should be customizable (colors, spacing, radii, etc.).
-**Trade-offs:**
-- PRO: Works across Shadow DOM boundaries via CSS inheritance
-- PRO: Enables per-instance and tree-based theming
-- CON: Requires discipline to use tokens everywhere
+#### @lit-ui/core
 
-**Example:**
-```typescript
-// components/button/button.styles.ts
-import { css } from 'lit';
+**Purpose:** Base infrastructure shared by all components
 
-export const buttonStyles = css`
-  :host {
-    --button-bg: var(--primary);
-    --button-text: var(--primary-foreground);
-    --button-radius: var(--radius);
-    --button-padding-x: var(--spacing-4);
-    --button-padding-y: var(--spacing-2);
-  }
+**Contents:**
+- `TailwindElement` base class (SSR-aware version)
+- SSR utilities for Declarative Shadow DOM
+- Hydration support module
+- CSS injection utilities
+- Design token exports
 
-  button {
-    background-color: var(--button-bg);
-    color: var(--button-text);
-    border-radius: var(--button-radius);
-    padding: var(--button-padding-y) var(--button-padding-x);
-  }
-`;
-```
+**Dependencies:**
+- `lit` (peer dependency)
+- `@lit-labs/ssr-client` (optional peer for SSR)
 
-```css
-/* User's project: styles/tokens.css */
-:root {
-  --primary: hsl(222.2 47.4% 11.2%);
-  --primary-foreground: hsl(210 40% 98%);
-  --radius: 0.5rem;
-  --spacing-2: 0.5rem;
-  --spacing-4: 1rem;
-}
-
-/* Per-instance customization */
-ui-button.danger {
-  --button-bg: var(--destructive);
-  --button-text: var(--destructive-foreground);
-}
-```
-
-### Pattern 3: Registry-Based Distribution (shadcn Pattern)
-
-**What:** Components defined in a JSON registry that the CLI reads to know what to install.
-**When to use:** The entire distribution model - how users add components to their projects.
-**Trade-offs:**
-- PRO: Users own their code, can customize freely
-- PRO: No runtime dependency on library (copy-source)
-- PRO: Tree-shaking is automatic (only installed components)
-- CON: Updates require manual diffing or re-running CLI
-- CON: More complex than npm install
-
-**Example:**
+**Exports:**
 ```json
-// packages/ui/registry.json
 {
-  "$schema": "https://example.com/schema/registry.json",
-  "name": "lit-ui",
-  "homepage": "https://lit-ui.dev",
-  "items": [
-    {
-      "name": "button",
-      "type": "registry:component",
-      "title": "Button",
-      "description": "A customizable button component",
-      "dependencies": ["lit"],
-      "registryDependencies": ["tailwind-element", "utils"],
-      "files": [
-        {
-          "path": "components/button/button.ts",
-          "type": "registry:component"
-        },
-        {
-          "path": "components/button/button.styles.ts",
-          "type": "registry:component"
-        }
-      ]
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
     },
-    {
-      "name": "tailwind-element",
-      "type": "registry:lib",
-      "title": "Tailwind Element",
-      "description": "Base class for Tailwind-enabled components",
-      "dependencies": ["lit"],
-      "files": [
-        {
-          "path": "primitives/tailwind-element.ts",
-          "type": "registry:lib"
-        }
-      ]
+    "./ssr": {
+      "types": "./dist/ssr/index.d.ts",
+      "import": "./dist/ssr/index.js"
     }
-  ]
+  }
 }
 ```
 
-### Pattern 4: Component Configuration File
+#### @lit-ui/button
 
-**What:** A project-level config file that tells the CLI how to install components.
-**When to use:** Every project using lit-ui. Created during `lit-ui init`.
-**Trade-offs:**
-- PRO: Customizes installation paths, aliases, style preferences
-- PRO: Enables project-specific transformations
-- CON: Another config file to maintain
+**Purpose:** Button component for NPM consumers
 
-**Example:**
+**Dependencies:**
+- `@lit-ui/core` (peer dependency)
+- `lit` (peer dependency)
+
+**Exports:**
 ```json
-// User's project: lit-ui.json (or components.json)
 {
-  "$schema": "https://lit-ui.dev/schema/config.json",
-  "style": "default",
-  "tailwind": {
-    "config": "tailwind.config.ts",
-    "css": "src/styles/globals.css",
-    "baseColor": "slate",
-    "cssVariables": true
-  },
-  "aliases": {
-    "components": "src/components",
-    "ui": "src/components/ui",
-    "lib": "src/lib",
-    "utils": "src/lib/utils"
-  },
-  "typescript": true
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  }
 }
 ```
 
-## Data Flow
+#### @lit-ui/dialog
 
-### Component Installation Flow
+**Purpose:** Dialog component for NPM consumers
 
-```
-[User runs: npx lit-ui add button]
-    |
-    v
-[CLI reads lit-ui.json] --> If missing, prompt for init
-    |
-    v
-[CLI fetches registry.json from source]
-    |
-    v
-[CLI resolves "button" + registryDependencies]
-    |   - button depends on tailwind-element, utils
-    |   - check if already installed, prompt if conflict
-    v
-[CLI fetches component files]
-    |
-    v
-[Transformer rewrites code]
-    |   - Adjust import paths to match aliases
-    |   - Apply CSS variable mappings if configured
-    |   - Convert to JS if typescript: false
-    v
-[CLI writes files to user's project]
-    |   - src/components/ui/button.ts
-    |   - src/primitives/tailwind-element.ts (if not exists)
-    |   - src/lib/utils.ts (if not exists)
-    v
-[CLI reports success + next steps]
-```
+**Dependencies:**
+- `@lit-ui/core` (peer dependency)
+- `lit` (peer dependency)
 
-### Component Rendering Data Flow
-
-```
-[Parent sets attribute/property]
-    |
-    v
-[Lit reactive property triggers update]
-    |
-    v
-[render() method called]
-    |   - Returns lit-html template
-    |   - Tailwind classes applied
-    v
-[lit-html diffs and updates DOM]
-    |
-    v
-[CSS Custom Properties inherited]
-    |   - :root tokens flow down
-    |   - Component defaults applied
-    v
-[Browser paints styled component]
-```
-
-### Theming Data Flow
-
-```
-[Global tokens defined in :root]
-    |
-    v
-[CSS custom properties inherit through Shadow DOM]
-    |
-    v
-[Component uses var(--token) with fallbacks]
-    |
-    v
-[User can override at any level]
-    |   - :root (global theme)
-    |   - Element selector (all instances)
-    |   - Inline style (single instance)
-```
-
-## Scaling Considerations
-
-| Scale | Architecture Adjustments |
-|-------|--------------------------|
-| 0-10 components | Single package, all components in one registry. CLI can be minimal. |
-| 10-50 components | Consider component categories in registry. Add search/filter to CLI. |
-| 50+ components | Split into namespaced registries (@lit-ui/core, @lit-ui/charts). Versioning becomes critical. |
-
-### Scaling Priorities
-
-1. **First bottleneck:** Registry size - as components grow, fetching full registry.json becomes slow. Solution: Lazy-load component metadata or use registry index.
-2. **Second bottleneck:** Tailwind CSS bundle in each component. Solution: Component-level CSS extraction or shared stylesheet with CSS parts.
-3. **Third consideration:** Version drift between user's installed components and upstream. Solution: `lit-ui diff` command to show changes.
-
-## Anti-Patterns
-
-### Anti-Pattern 1: Tight Coupling to Tailwind Classes
-
-**What people do:** Hard-code Tailwind classes directly in templates without abstraction.
-**Why it's wrong:** Users can't customize styling without editing component source. Theme changes require touching every component.
-**Do this instead:** Use CSS custom properties for themable values. Tailwind classes are implementation details that reference tokens:
-```typescript
-// BAD
-class="bg-blue-500 text-white"
-
-// GOOD
-class="bg-primary text-primary-foreground"
-// Where --primary and --primary-foreground are CSS variables
-```
-
-### Anti-Pattern 2: Runtime Framework Detection
-
-**What people do:** Add runtime checks for React/Vue/Svelte and adjust behavior.
-**Why it's wrong:** Bloats bundle, adds complexity, web components should just work everywhere.
-**Do this instead:** Web components are framework-agnostic by design. Document usage patterns for each framework. If wrappers needed, keep them in separate packages (@lit-ui/react).
-
-### Anti-Pattern 3: Monolithic Component Bundle
-
-**What people do:** Publish all components as a single npm package that users import from.
-**Why it's wrong:** Defeats tree-shaking, users get all code even if they use one button.
-**Do this instead:** Copy-source distribution (shadcn model) or per-component npm packages.
-
-### Anti-Pattern 4: Shadow DOM Style Piercing
-
-**What people do:** Use `::part()` and `::slotted()` extensively for external styling.
-**Why it's wrong:** Creates tight coupling between component internals and external CSS. Breaks encapsulation.
-**Do this instead:** Expose theming through CSS custom properties. Use `::part()` sparingly for advanced use cases.
-
-### Anti-Pattern 5: Heavy Base Class
-
-**What people do:** Put too much logic in the base TailwindElement class.
-**Why it's wrong:** Every component inherits unnecessary code. Hard to tree-shake.
-**Do this instead:** Keep base class minimal. Use Lit controllers or mixins for opt-in behaviors.
+---
 
 ## Integration Points
 
-### External Services
+### With Existing TailwindElement
 
-| Service | Integration Pattern | Notes |
-|---------|---------------------|-------|
-| npm Registry | Publish CLI package | `npx lit-ui` or global install |
-| GitHub/CDN | Host registry.json and component source | Could be GitHub raw URLs or dedicated CDN |
-| Tailwind CSS | PostCSS plugin at build time | Uses postcss-lit for Shadow DOM support |
-| Bundlers (Vite/Rollup) | Consumer's build process | Components are source files, not pre-built |
+**Current approach (client-only):**
+```typescript
+// tailwind-element.ts - CURRENT
+const tailwindSheet = new CSSStyleSheet();
+tailwindSheet.replaceSync(tailwindStyles);
 
-### Internal Boundaries
+export class TailwindElement extends LitElement {
+  connectedCallback() {
+    super.connectedCallback();
+    this.shadowRoot.adoptedStyleSheets = [tailwindSheet, ...];
+  }
+}
+```
 
-| Boundary | Communication | Notes |
-|----------|---------------|-------|
-| CLI <-> Registry | HTTP fetch (JSON) | Registry is read-only, CLI consumes |
-| CLI <-> User Project | File system writes | Transformed source code |
-| Component <-> Component | DOM events, properties | Standard web component patterns |
-| Component <-> Tokens | CSS custom property inheritance | No JavaScript, pure CSS cascade |
-| User App <-> Components | HTML attributes, properties, events | Standard custom element interface |
+**Problem:** Constructable stylesheets cannot be serialized in Declarative Shadow DOM (DSD). When server-rendering, styles must be inlined as `<style>` tags within the `<template shadowrootmode="open">`.
 
-## Build Order Implications
+**Solution: Dual-mode TailwindElement**
 
-Based on component dependencies, the recommended build/development order:
+```typescript
+// tailwind-element.ts - SSR-AWARE
+import { LitElement, css, unsafeCSS, isServer } from 'lit';
+import type { CSSResultGroup } from 'lit';
 
-### Phase 1: Foundation
-1. **Design tokens** (styles/tokens.css) - No dependencies
-2. **Tailwind configuration** - Depends on tokens
-3. **Utility functions** (lib/utils.ts) - No dependencies
+// Compile-time: styles as string for SSR injection
+import tailwindStyles from './tailwind.css?inline';
+import hostDefaults from './host-defaults.css?inline';
 
-### Phase 2: Primitives
-4. **TailwindElement base class** - Depends on Tailwind config
-5. **BaseElement** (if separate from TailwindElement) - Depends on TailwindElement
+// SSR: Use static styles (inlined in DSD template)
+// Client: Use constructable stylesheets for efficiency (shared across instances)
 
-### Phase 3: Core Components (MVP)
-6. **Button** - Depends on TailwindElement, tokens, utils
-7. **Dialog** - Depends on TailwindElement, tokens, utils (may depend on Button for actions)
+// Client-side only: shared constructable stylesheet
+let sharedTailwindSheet: CSSStyleSheet | null = null;
+let sharedHostDefaultsSheet: CSSStyleSheet | null = null;
 
-### Phase 4: CLI
-8. **Registry schema** - Defines components from Phase 3
-9. **CLI commands** - Depends on registry schema being stable
-10. **Transformer** - May need adjustment as component patterns solidify
+if (!isServer) {
+  sharedTailwindSheet = new CSSStyleSheet();
+  sharedTailwindSheet.replaceSync(tailwindStyles);
+  sharedHostDefaultsSheet = new CSSStyleSheet();
+  sharedHostDefaultsSheet.replaceSync(hostDefaults);
+}
 
-### Phase 5: Distribution
-11. **Documentation site** - Showcases all components
-12. **Integration examples** (React, Vue, Svelte) - Validates framework-agnostic claims
+export class TailwindElement extends LitElement {
+  // Static styles for SSR - these get inlined in the DSD template
+  static styles: CSSResultGroup = [
+    unsafeCSS(tailwindStyles),
+    unsafeCSS(hostDefaults)
+  ];
+
+  connectedCallback() {
+    super.connectedCallback();
+
+    // Client-side optimization: replace static styles with shared
+    // constructable stylesheets for better memory efficiency
+    if (!isServer && this.shadowRoot && sharedTailwindSheet && sharedHostDefaultsSheet) {
+      // Get component-specific styles (from subclass)
+      const componentStyles = this.shadowRoot.adoptedStyleSheets.slice(2);
+
+      // Use shared stylesheets instead of per-instance copies
+      this.shadowRoot.adoptedStyleSheets = [
+        sharedTailwindSheet,
+        sharedHostDefaultsSheet,
+        ...componentStyles
+      ];
+    }
+  }
+}
+```
+
+**Key insight:** Lit's `isServer` export (from `lit`) enables conditional code paths. Static styles work for SSR (inlined in DSD), while client-side uses efficient constructable stylesheets.
+
+**SSR Lifecycle Considerations:**
+- `constructor()` - Runs on server
+- `connectedCallback()` - Does NOT run on server
+- `render()` - Runs on server
+- `updated()`, `firstUpdated()` - Do NOT run on server
+
+This means the constructable stylesheet optimization only runs in browsers after hydration.
+
+### With Existing CLI
+
+**Current CLI behavior:**
+- `lit-ui init` - creates lit-ui.json, copies base files
+- `lit-ui add <component>` - copies component source to user's project
+- Uses embedded templates for portable distribution
+
+**Enhanced CLI for dual-mode:**
+
+Add `mode` to lit-ui.json config:
+```json
+{
+  "$schema": "https://lit-ui.dev/schema.json",
+  "mode": "copy-source",
+  "componentsPath": "src/components/ui",
+  "tailwind": { "css": "src/styles/tailwind.css" },
+  "aliases": {
+    "components": "@/components/ui",
+    "base": "@/lib/lit-ui"
+  }
+}
+```
+
+**Mode options:**
+- `"copy-source"` (default): Current behavior - copies component source files
+- `"npm"`: Installs @lit-ui/* packages from NPM
+
+**CLI changes:**
+
+1. **`lit-ui init`** prompts for mode selection:
+   - copy-source: current behavior (copies TailwindElement, styles)
+   - npm: installs @lit-ui/core, configures imports
+
+2. **`lit-ui add <component>`** behavior by mode:
+   - **copy-source:** copies embedded template (current behavior)
+   - **npm:** runs `npm install @lit-ui/<component>`, shows import instructions
+
+3. **New `lit-ui migrate` command:**
+   - Converts copy-source project to npm mode
+   - Updates imports from local paths to @lit-ui/* packages
+   - Removes copied source files (with confirmation)
+
+### With Existing Build (Vite)
+
+**Current vite.config.ts:**
+```typescript
+export default defineConfig({
+  plugins: [tailwindcss(), dts({ rollupTypes: true })],
+  build: {
+    lib: { entry: 'src/index.ts', formats: ['es'], fileName: 'index' },
+    rollupOptions: { external: ['lit'] }
+  }
+});
+```
+
+**New workspace configuration:**
+
+Root package.json:
+```json
+{
+  "name": "lit-ui-monorepo",
+  "private": true,
+  "workspaces": ["packages/*"]
+}
+```
+
+Per-package vite.config.ts pattern:
+```typescript
+// packages/core/vite.config.ts
+import { defineConfig } from 'vite';
+import tailwindcss from '@tailwindcss/vite';
+import dts from 'vite-plugin-dts';
+
+export default defineConfig({
+  plugins: [
+    tailwindcss(),
+    dts({ rollupTypes: true })
+  ],
+  build: {
+    lib: {
+      entry: {
+        index: 'src/index.ts',
+        'ssr/index': 'src/ssr/index.ts'
+      },
+      formats: ['es']
+    },
+    rollupOptions: {
+      external: ['lit', /^@lit-labs\//]
+    }
+  }
+});
+```
+
+```typescript
+// packages/button/vite.config.ts
+import { defineConfig } from 'vite';
+import dts from 'vite-plugin-dts';
+
+export default defineConfig({
+  plugins: [dts({ rollupTypes: true })],
+  build: {
+    lib: {
+      entry: 'src/index.ts',
+      formats: ['es'],
+      fileName: 'index'
+    },
+    rollupOptions: {
+      // Mark all dependencies as external
+      external: ['lit', '@lit-ui/core', /^@lit-labs\//]
+    }
+  }
+});
+```
+
+**Tailwind handling:**
+- @lit-ui/core compiles and embeds Tailwind CSS at build time
+- Component packages (button, dialog) import TailwindElement which includes styles
+- No Tailwind plugin needed in component packages
+
+---
+
+## SSR Architecture
+
+### How Lit SSR Works
+
+1. **Server:** @lit-labs/ssr renders components to HTML with Declarative Shadow DOM
+2. **HTML Output:** Shadow DOM contents wrapped in `<template shadowrootmode="open">`
+3. **Browser:** DSD automatically attaches shadow roots on parse
+4. **Hydration:** @lit-labs/ssr-client enables component rehydration
+
+### Key Packages
+
+| Package | Purpose | Required For |
+|---------|---------|--------------|
+| `@lit-labs/ssr` | Server-side rendering | Node.js server |
+| `@lit-labs/ssr-client` | Client hydration support | Browser hydration |
+| `lit` | Core library with isServer | Both |
+
+### LitUI SSR Integration
+
+**TailwindElement already has SSR-compatible guards:**
+```typescript
+// Already in current code - won't run server-side
+if (typeof document !== 'undefined') {
+  const documentSheet = new CSSStyleSheet();
+  // ...
+}
+```
+
+**Changes needed for full SSR support:**
+
+1. **Use `isServer` import** from lit for cleaner conditional logic
+2. **Move styles to static property** so they're included in SSR output
+3. **Export SSR utilities** from @lit-ui/core/ssr
+
+### SSR Output Example
+
+Server renders this HTML:
+```html
+<ui-button variant="primary">
+  <template shadowrootmode="open">
+    <style>
+      /* Tailwind CSS (inlined from static styles) */
+      .bg-primary { ... }
+      .px-4 { ... }
+    </style>
+    <button class="inline-flex items-center justify-center px-4 py-2 bg-primary text-primary-foreground">
+      <slot></slot>
+    </button>
+  </template>
+  Click me
+</ui-button>
+```
+
+Browser parses this, DSD automatically attaches shadow root, then hydration makes it interactive.
+
+### Hydration Setup
+
+For SSR-rendered components to become interactive:
+
+```typescript
+// Entry point - MUST load before lit
+import '@lit-labs/ssr-client/lit-element-hydrate-support.js';
+
+// Then import components
+import '@lit-ui/button';
+```
+
+**@lit-ui/core/ssr convenience export:**
+```typescript
+// packages/core/src/ssr/index.ts
+export async function setupHydration() {
+  if (typeof window !== 'undefined') {
+    await import('@lit-labs/ssr-client/lit-element-hydrate-support.js');
+  }
+}
+
+// Re-export for type support
+export type { SSRResult } from '@lit-labs/ssr';
+```
+
+---
+
+## Data Flow
+
+### NPM Mode Flow
+
+```
+Developer                         NPM                          Browser
+    |                              |                              |
+    | npm install @lit-ui/button   |                              |
+    |----------------------------->|                              |
+    |                              |                              |
+    | import '@lit-ui/button'      |                              |
+    | (in app code)                |                              |
+    |                              |                              |
+    | Build (Vite/Webpack)         |                              |
+    | ----------------------------------------------------------->|
+    |                              |                              |
+    |                              |      <ui-button> works       |
+    |                              |<------------------------------|
+```
+
+**Import chain:**
+```
+@lit-ui/button
+  |-- depends on @lit-ui/core (peer)
+        |-- depends on lit (peer)
+```
+
+### Copy-Source Mode Flow (existing, unchanged)
+
+```
+Developer                         CLI                           Project
+    |                              |                              |
+    | npx lit-ui add button        |                              |
+    |----------------------------->|                              |
+    |                              |                              |
+    |                              | Copy button.ts to            |
+    |                              | src/components/ui/           |
+    |                              |----------------------------->|
+    |                              |                              |
+    | import './components/ui/button'                             |
+    | (local file)                 |                              |
+```
+
+### SSR Mode Flow
+
+```
+Server (Node.js)                                          Browser
+    |                                                        |
+    | import { render } from '@lit-labs/ssr'                 |
+    | import '@lit-ui/button'                                |
+    |                                                        |
+    | const html = render(html`<ui-button>Click</ui-button>`)|
+    |                                                        |
+    | Output:                                                |
+    | <ui-button>                                            |
+    |   <template shadowrootmode="open">                     |
+    |     <style>/* Tailwind CSS */</style>                  |
+    |     <button class="..."><slot></slot></button>         |
+    |   </template>                                          |
+    |   Click                                                |
+    | </ui-button>                                           |
+    |                                                        |
+    | HTML sent to browser --------------------------------->|
+    |                                                        |
+    |                               DSD auto-attaches shadow |
+    |                               Hydration script loads   |
+    |                               Components interactive   |
+```
+
+---
+
+## Suggested Build Order
+
+Based on dependencies and integration points:
+
+### Phase 1: Package Infrastructure (Week 1)
+
+1. **Configure npm workspaces** in root package.json
+2. **Create packages/core** directory structure
+3. **Adapt TailwindElement for SSR** - add static styles, isServer guards
+4. **Configure @lit-ui/core build** - Vite, TypeScript, exports
+5. **Test @lit-ui/core** builds and exports correctly
+
+### Phase 2: Component Packages (Week 1-2)
+
+6. **Create packages/button** - port button.ts with @lit-ui/core import
+7. **Create packages/dialog** - port dialog.ts with @lit-ui/core import
+8. **Test component packages** build and work in isolation
+
+### Phase 3: SSR Support (Week 2)
+
+9. **Add @lit-ui/core/ssr** subpath with hydration utilities
+10. **Test SSR rendering** with @lit-labs/ssr directly
+11. **Document SSR setup** for Next.js, Astro, etc.
+
+### Phase 4: CLI Enhancement (Week 2-3)
+
+12. **Add mode config** to lit-ui.json schema
+13. **Update init command** for mode selection
+14. **Update add command** for npm mode behavior
+15. **Add migrate command** for copy-to-npm conversion
+
+### Phase 5: Publishing (Week 3)
+
+16. **Set up npm publishing** workflow (GitHub Actions)
+17. **Configure scoped packages** (@lit-ui/* on npm)
+18. **Publish initial versions** to npm
+
+---
+
+## Anti-Patterns to Avoid
+
+### Do Not: Bundle Lit into packages
+
+```typescript
+// BAD: packages/button/vite.config.ts
+rollupOptions: {
+  // Missing external - bundles lit
+}
+
+// GOOD: packages/button/vite.config.ts
+rollupOptions: {
+  external: ['lit', '@lit-ui/core', /^@lit-labs\//]
+}
+```
+
+Lit must be external/peer dependency. Bundling causes version conflicts and breaks SSR conditional exports.
+
+### Do Not: Use dynamic imports for styles in SSR
+
+```typescript
+// BAD: Won't work in SSR
+async connectedCallback() {
+  const styles = await import('./styles.css');
+  this.shadowRoot.adoptedStyleSheets = [styles];
+}
+
+// GOOD: Static styles work in SSR
+static styles = [unsafeCSS(tailwindStyles)];
+```
+
+Styles must be statically analyzable for SSR to inline them.
+
+### Do Not: Access DOM in constructor or property initializers
+
+```typescript
+// BAD: Breaks SSR
+class MyEl extends LitElement {
+  width = document.body.clientWidth; // Error on server
+}
+
+// GOOD: Guard with isServer or defer to connectedCallback
+import { isServer } from 'lit';
+class MyEl extends LitElement {
+  width = isServer ? 0 : document.body.clientWidth;
+}
+```
+
+### Do Not: Rely solely on constructable stylesheets
+
+```typescript
+// BAD: Won't render styles in SSR
+static styles = []; // Empty
+connectedCallback() {
+  this.shadowRoot.adoptedStyleSheets = [sheet]; // Only client
+}
+
+// GOOD: Static styles for SSR, optimize in connectedCallback
+static styles = [unsafeCSS(tailwindStyles)];
+connectedCallback() {
+  if (!isServer) {
+    // Optimization: use shared stylesheet
+  }
+}
+```
+
+---
+
+## Scalability Considerations
+
+| Concern | 2 Components | 10 Components | 50+ Components |
+|---------|--------------|---------------|----------------|
+| Package count | 3 (@lit-ui/core + 2) | 11 | 51+ |
+| Build time | ~5s | ~30s | Consider turborepo |
+| Tailwind CSS size | ~50KB | ~80KB | Per-component CSS builds |
+| Version management | Manual | Changesets | Changesets + automated |
+
+**Recommendation for v2.0:** Start with manual version management for 3 packages. Add Changesets if/when expanding to more components.
+
+---
 
 ## Sources
 
 ### Official Documentation (HIGH confidence)
-- [Lit.dev Documentation](https://lit.dev/docs/) - Component structure, styling patterns
-- [Lit Styles Guide](https://lit.dev/docs/components/styles/) - CSS custom properties, theming
-- [shadcn/ui Documentation](https://ui.shadcn.com/docs) - CLI distribution model, registry schema
-- [shadcn registry.json Schema](https://ui.shadcn.com/docs/registry/registry-json) - Registry structure
-- [shadcn registry-item.json Schema](https://ui.shadcn.com/docs/registry/registry-item-json) - Component definition
-- [shadcn components.json](https://ui.shadcn.com/docs/components-json) - Project configuration
-
-### Reference Implementations (HIGH confidence)
-- [Lit GitHub Repository](https://github.com/lit/lit) - Monorepo structure
-- [Material Components Web Architecture](https://github.com/material-components/material-components-web/blob/master/docs/code/architecture.md) - Subsystem/component patterns
-- [Shoelace GitHub](https://github.com/shoelace-style/shoelace) - Lit-based component library patterns
+- [Lit SSR Overview](https://lit.dev/docs/ssr/overview/) - SSR architecture and DSD
+- [Lit SSR Authoring](https://lit.dev/docs/ssr/authoring/) - Component SSR requirements
+- [Lit SSR Client Usage](https://lit.dev/docs/ssr/client-usage/) - Hydration setup
+- [@lit-labs/ssr NPM](https://www.npmjs.com/package/@lit-labs/ssr) - Package details
+- [Node.js Package Exports](https://nodejs.org/api/packages.html) - Subpath exports spec
 
 ### Community Resources (MEDIUM confidence)
-- [Open Web Components Generator](https://open-wc.org/docs/development/generator/) - Project scaffolding
-- [Using Tailwind with Lit Elements](https://dev.to/43081j/using-tailwind-v3-with-lit-elements-39mk) - Tailwind integration patterns
-- [Framework Interoperable Component Libraries with Lit](https://dev.to/reggi/framework-interoperable-component-libraries-using-lit-web-components-43ac) - Cross-framework patterns
-- [The Anatomy of shadcn/ui](https://manupa.dev/blog/anatomy-of-shadcn-ui) - CLI distribution deep dive
+- [Constructable Stylesheets Discussion](https://github.com/lit/lit/discussions/2220) - DSD limitation
+- [Web Components, Tailwind, and SSR](https://www.konnorrogers.com/posts/2023/web-components-tailwind-and-ssr) - Tailwind SSR approaches
+- [NPM Workspaces Guide](https://blog.npmjs.org/post/186494959890/monorepos-and-npm.html) - Monorepo best practices
+- [TypeScript Mono-repo Setup](https://blog.frankdejonge.nl/setting-up-a-typescript-mono-repo-for-scoped-packages/) - Scoped package patterns
 
 ---
-*Architecture research for: lit-ui (CLI-distributed Lit.js component library)*
-*Researched: 2026-01-23*
+
+*Architecture research for: LitUI v2.0 NPM + SSR*
+*Researched: 2026-01-24*

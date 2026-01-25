@@ -332,5 +332,441 @@ Phase 3 (CLI/Distribution) - Must document SSR limitations clearly. Consider if 
 - [ShadCN/UI Architecture](https://ui.shadcn.com/docs) - HIGH confidence (for CLI/copy-source patterns)
 
 ---
+
+# v2.0 NPM + SSR Pitfalls
+
+**Focus:** Adding NPM package distribution and SSR to existing Lit 3.x + Tailwind v4 library
+**Researched:** 2026-01-24
+**Confidence:** HIGH (verified against official Lit docs and multiple sources)
+
+This section covers pitfalls specific to the v2.0 milestone: adding NPM package mode and SSR compatibility to the existing copy-source library.
+
+---
+
+## Critical Pitfalls (NPM + SSR)
+
+Issues that cause production failures, rewrites, or significant architectural changes.
+
+---
+
+### NPM-1: Bundling Before Publishing Causes Duplicate Lit Versions
+
+**What happens:** Pre-bundling components includes Lit in the published package. When users install your package, npm cannot deduplicate Lit with their existing installation. This results in multiple Lit versions loading simultaneously, causing the "Multiple versions of Lit loaded" warning and potential runtime bugs.
+
+**Warning signs:**
+- Browser console shows: `window.litElementVersions`, `window.reactiveElementVersions`, or `window.litHtmlVersions` contain multiple entries
+- Users report "Multiple versions of Lit loaded" warnings
+- Lit-html templates behave unexpectedly or fail to update
+- Package size unexpectedly large after `npm pack`
+
+**Prevention:**
+- Configure Vite/Rollup to externalize `lit` and all `@lit/*` packages
+- In `vite.config.ts` library mode: `build.rollupOptions.external: ['lit', /^lit\//, /^@lit\//]`
+- Keep `lit` as `peerDependency`, not `dependency`
+- Never use bundler's "standalone" or "iife" output for NPM packages
+- Test with `npm ls lit` in a consuming project to verify deduplication
+
+**Phase to address:** NPM Package Build Configuration (early phase - foundational)
+
+**Confidence:** HIGH - [Lit Publishing Docs](https://lit.dev/docs/tools/publishing/)
+
+---
+
+### NPM-2: Constructable Stylesheets Break SSR
+
+**What happens:** The current TailwindElement uses `new CSSStyleSheet()` and `adoptedStyleSheets` which require DOM APIs unavailable during server rendering. Declarative Shadow DOM has no way to serialize constructable stylesheets.
+
+**Warning signs:**
+- `ReferenceError: CSSStyleSheet is not defined` during SSR
+- Server renders empty shadow roots (no styles)
+- Components flash unstyled then restyle on hydration (severe FOUC)
+- Styles work in dev (client-only) but fail in production (SSR)
+
+**Prevention:**
+- Detect SSR environment: `typeof document === 'undefined'` or `typeof window === 'undefined'`
+- For SSR: inline styles as `<style>` elements inside declarative shadow DOM template
+- For CSR: continue using constructable stylesheets for performance (shared across instances)
+- Use conditional logic pattern:
+  ```typescript
+  if (isServer) {
+    // Return lit-html template with inline <style>
+  } else {
+    // Use adoptedStyleSheets
+  }
+  ```
+- Test with `@lit-labs/ssr` before claiming SSR support
+
+**Phase to address:** SSR Infrastructure (dedicated SSR phase - cannot be retrofitted easily)
+
+**Confidence:** HIGH - [web.dev DSD article](https://web.dev/articles/declarative-shadow-dom), [Lit SSR Docs](https://lit.dev/docs/ssr/overview/)
+
+---
+
+### NPM-3: CSS @property Rules Don't Work in Shadow DOM
+
+**What happens:** The codebase already extracts `@property` rules and injects them into the document. However, with SSR, the document-level injection happens in `connectedCallback` (client-side). Server-rendered components have no `@property` registration, causing Tailwind utilities like `shadow-*` and `ring-*` to break completely on initial render.
+
+**Warning signs:**
+- Box shadows and rings render as `none` or transparent on SSR pages
+- Styles work after hydration but not on initial server render
+- Tailwind v4 utilities that depend on `@property` (gradients, transforms, shadows) malfunction
+
+**Prevention:**
+- Include fallback values in all CSS that uses `@property`-dependent custom properties
+- In `host-defaults.css`, ensure all `--tw-*` variables have explicit fallbacks
+- For SSR, consider inlining the `@property` declarations in the rendered HTML's `<head>`
+- Test SSR output with JavaScript disabled to catch missing fallbacks
+
+**Phase to address:** SSR Styling (same phase as constructable stylesheets fix)
+
+**Confidence:** HIGH - [Tailwind Shadow DOM Discussion](https://github.com/tailwindlabs/tailwindcss/discussions/16772)
+
+---
+
+### NPM-4: Hydration Module Load Order Causes Double Rendering
+
+**What happens:** If component JavaScript loads before hydration support is installed, Lit creates new shadow roots instead of adopting server-rendered declarative shadow DOM. This causes duplicate content, flash of unstyled content, or "Shadow root cannot be created on a host which already hosts a shadow tree" errors.
+
+**Warning signs:**
+- Content appears, disappears, then reappears (double render)
+- Console error: "Shadow root cannot be created on a host which already hosts a shadow tree"
+- SSR'd content flickers or shifts significantly on page load
+- Components work fine without SSR but break when server-rendered
+
+**Prevention:**
+- Load `@lit-labs/ssr-client/lit-element-hydrate-support.js` BEFORE any Lit imports
+- In HTML: place hydrate support script tag before component bundles
+- Use `defer` or dynamic imports to ensure correct load order
+- Document this requirement clearly for library consumers
+- Example:
+  ```html
+  <script type="module" src="@lit-labs/ssr-client/lit-element-hydrate-support.js"></script>
+  <script type="module" src="your-components.js"></script>
+  ```
+
+**Phase to address:** SSR Client Integration (late SSR phase - requires SSR infrastructure first)
+
+**Confidence:** HIGH - [Lit SSR Client Usage](https://lit.dev/docs/ssr/client-usage/)
+
+---
+
+### NPM-5: ElementInternals Not Available During SSR
+
+**What happens:** Form-associated custom elements use `this.attachInternals()` in the constructor. This API requires DOM and throws during server rendering. The Button component uses ElementInternals for form submission.
+
+**Warning signs:**
+- `TypeError: this.attachInternals is not a function` during SSR
+- Server-side rendering crashes when processing form components
+- Form participation works client-side but SSR fails
+
+**Prevention:**
+- Guard `attachInternals()` call: only execute when DOM is available
+- Pattern:
+  ```typescript
+  constructor() {
+    super();
+    if (typeof window !== 'undefined') {
+      this.internals = this.attachInternals();
+    }
+  }
+  ```
+- Form participation is inherently client-side; accept that form submission requires JS
+- Document that SSR renders visual state only; form behavior requires hydration
+
+**Phase to address:** SSR Component Compatibility (during component SSR adaptation)
+
+**Confidence:** HIGH - [WebKit ElementInternals Article](https://webkit.org/blog/13711/elementinternals-and-form-associated-custom-elements/)
+
+---
+
+### NPM-6: Vite ?inline Imports Break NPM Package
+
+**What happens:** The codebase uses `import tailwindStyles from '../styles/tailwind.css?inline'`. This is a Vite-specific feature. When published to NPM, consumers using other bundlers (Webpack, esbuild, Rollup without Vite) cannot resolve `?inline` queries.
+
+**Warning signs:**
+- `Module not found: Can't resolve './styles/tailwind.css?inline'`
+- Package works in your Vite project but fails for users
+- Build errors in non-Vite environments
+
+**Prevention:**
+- For NPM package: process CSS at build time, not import time
+- Options:
+  1. Use Vite library mode with CSS handling plugins (`vite-plugin-lib-inject-css`)
+  2. Pre-process CSS into a JS string constant during build
+  3. Use rollup's `string` plugin to inline CSS files
+- Alternative: publish processed CSS as separate file with documented import pattern
+- Test package in Webpack and esbuild projects before release
+
+**Phase to address:** NPM Package Build Configuration (early - affects entire build pipeline)
+
+**Confidence:** HIGH - Direct observation of codebase + bundler compatibility research
+
+---
+
+## Moderate Pitfalls (NPM + SSR)
+
+Issues that cause delays, confusion, or technical debt but are recoverable.
+
+---
+
+### NPM-7: Missing File Extensions in Imports
+
+**What happens:** TypeScript allows omitting `.js` extensions. Published packages without extensions require complex import maps or don't work in browsers/Deno without bundlers.
+
+**Warning signs:**
+- Package works with bundlers but fails with native ES modules
+- Import maps grow excessively large
+- Deno or browser direct import fails
+
+**Prevention:**
+- Configure TypeScript to require extensions: `"moduleResolution": "NodeNext"` or `"Bundler"`
+- Use ESLint rule to enforce extensions in imports
+- Add `.js` extensions to all relative imports (even for `.ts` files)
+- Verify with `tsc --noEmit` and test native browser import
+
+**Phase to address:** NPM Package Build Configuration
+
+**Confidence:** HIGH - [Lit Publishing Docs](https://lit.dev/docs/tools/publishing/)
+
+---
+
+### NPM-8: :host-context(.dark) Limited Browser Support in SSR
+
+**What happens:** Dark mode relies on `:host-context(.dark)`. While modern browsers support this, Firefox only added support recently (2023). SSR clients with older browsers may have broken dark mode.
+
+**Warning signs:**
+- Dark mode works in Chrome/Safari but not Firefox (older versions)
+- SSR'd dark mode content displays incorrectly
+- Users report "dark mode doesn't work" on specific browsers
+
+**Prevention:**
+- Check browser support matrix for your target audience
+- Consider CSS custom properties alternative that inherits through shadow DOM
+- Pattern: `color: var(--text-color)` where `--text-color` is set on `:root` or `.dark`
+- Provide polyfill documentation or fallback patterns
+- Alternative: use `@media (prefers-color-scheme: dark)` which has broader support
+
+**Phase to address:** SSR Styling or Documentation (depends on target browser matrix)
+
+**Confidence:** MEDIUM - Browser support is improving; may be non-issue for modern-only targets
+
+---
+
+### NPM-9: Custom Element Registration Side Effects Break Tree Shaking
+
+**What happens:** Using `@customElement('ui-button')` decorator registers the element as a side effect of importing the module. Bundlers may tree-shake away unused components OR fail to tree-shake used components (include everything).
+
+**Warning signs:**
+- Users importing one component get entire library bundled
+- OR users' builds exclude components they imported
+- Package size complaints from users
+
+**Prevention:**
+- Separate registration from class definition:
+  ```typescript
+  // button.ts - no side effects
+  export class Button extends TailwindElement { ... }
+
+  // button.define.ts - side effect
+  import { Button } from './button.js';
+  customElements.define('ui-button', Button);
+  ```
+- In `package.json`, specify `"sideEffects": ["*.define.js"]`
+- Offer both patterns: auto-registration and manual registration
+- Document both import patterns for users
+
+**Phase to address:** NPM Package Architecture (early - affects file structure)
+
+**Confidence:** HIGH - [Lit Tree Shaking Discussion](https://github.com/lit/lit/discussions/4772)
+
+---
+
+### NPM-10: CSS Duplication in SSR Output
+
+**What happens:** Declarative Shadow DOM cannot share stylesheets like constructable stylesheets can. Server-rendering 50 buttons means duplicating the entire Tailwind CSS 50 times in HTML, bloating page size.
+
+**Warning signs:**
+- SSR'd pages are unexpectedly large (megabytes)
+- First Contentful Paint delayed due to HTML size
+- Network tab shows huge HTML responses
+
+**Prevention:**
+- Minimize CSS per component (use CSS variables for theming)
+- Consider extracting shared styles to document `<head>` for SSR
+- Use `::part()` pseudo-element for external styling
+- Implement CSS deduplication strategy:
+  - Shared base styles in `<head>`
+  - Component-specific styles only in shadow DOM
+- Accept some duplication as tradeoff for encapsulation
+
+**Phase to address:** SSR Optimization (later phase - after basic SSR works)
+
+**Confidence:** MEDIUM - [DSD style sharing article](https://eisenbergeffect.medium.com/sharing-styles-in-declarative-shadow-dom-c5bf84ffd311)
+
+---
+
+### NPM-11: Package.json exports Field Misconfiguration
+
+**What happens:** Modern Node.js and bundlers use `exports` field for module resolution. Incorrect configuration causes "Module not found" errors or wrong module loaded.
+
+**Warning signs:**
+- Package works in some projects but not others
+- TypeScript types don't resolve
+- Subpath imports (`@lit-ui/button`) fail
+- "ERR_PACKAGE_PATH_NOT_EXPORTED" errors
+
+**Prevention:**
+- Define complete exports map including types:
+  ```json
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./button": {
+      "types": "./dist/button/index.d.ts",
+      "import": "./dist/button/index.js"
+    }
+  }
+  ```
+- Use `arethetypeswrong` tool to validate package.json
+- Test with `npm pack` and install tarball in test project
+- Test with TypeScript `moduleResolution: "NodeNext"` and `"Bundler"`
+
+**Phase to address:** NPM Package Configuration
+
+**Confidence:** HIGH - [Snyk npm package article](https://snyk.io/blog/building-npm-package-compatible-with-esm-and-cjs-2024/)
+
+---
+
+### NPM-12: defer-hydration Not Removed on Property-Heavy Components
+
+**What happens:** Lit SSR adds `defer-hydration` attribute to prevent premature rendering. If not properly removed, components never hydrate. Complex property initialization can cause hydration to hang.
+
+**Warning signs:**
+- Components render but don't respond to interaction
+- `defer-hydration` attribute persists in DOM
+- Event handlers don't fire
+- Component appears "frozen"
+
+**Prevention:**
+- Ensure hydration support module is loaded (see pitfall NPM-4)
+- Avoid heavy computation in `connectedCallback` that might block hydration
+- Test hydration with various property combinations
+- Check that `defer-hydration` is removed after page load
+
+**Phase to address:** SSR Testing (validation phase)
+
+**Confidence:** MEDIUM - [Lit SSR defer-hydration docs](https://lit.dev/docs/ssr/client-usage/)
+
+---
+
+## Minor Pitfalls (NPM + SSR)
+
+Issues that cause annoyance but are quickly fixable.
+
+---
+
+### NPM-13: Missing TypeScript HTMLElementTagNameMap Declaration
+
+**What happens:** TypeScript users don't get type hints when using custom elements. `document.querySelector('ui-button')` returns `Element | null` instead of `Button | null`.
+
+**Warning signs:**
+- TypeScript users complain about lack of type inference
+- Must manually cast: `document.querySelector('ui-button') as Button`
+
+**Prevention:**
+- Already implemented in codebase - verify it's exported in `.d.ts`
+- Ensure declaration is in published types:
+  ```typescript
+  declare global {
+    interface HTMLElementTagNameMap {
+      'ui-button': Button;
+    }
+  }
+  ```
+
+**Phase to address:** NPM Package Build Configuration (types generation)
+
+**Confidence:** HIGH - Codebase already has this pattern
+
+---
+
+### NPM-14: Forgetting to Externalize Peer Dependencies
+
+**What happens:** `lit` is a peer dependency but gets included in bundle anyway because Vite/Rollup wasn't configured correctly.
+
+**Warning signs:**
+- Published package larger than expected
+- `npm ls` shows duplicate lit in consumer projects
+
+**Prevention:**
+- Double-check `rollupOptions.external` in Vite config
+- Verify bundle size before publishing
+- Run `npm pack && tar -tf lit-ui-*.tgz` to inspect contents
+
+**Phase to address:** NPM Package Build Configuration
+
+**Confidence:** HIGH - Common oversight
+
+---
+
+### NPM-15: FOUC on First Page Load Without Preload
+
+**What happens:** Users see unstyled custom element content briefly before JavaScript loads and applies styles.
+
+**Warning signs:**
+- Custom element content flashes or shifts
+- `:not(:defined)` styles not applied
+
+**Prevention:**
+- Add `:not(:defined)` CSS to hide unregistered elements:
+  ```css
+  ui-button:not(:defined) { visibility: hidden; }
+  ```
+- Preload component JavaScript: `<link rel="modulepreload" href="components.js">`
+- SSR with Declarative Shadow DOM includes styles inline (solves for SSR case)
+
+**Phase to address:** Documentation or CLI Generated CSS
+
+**Confidence:** HIGH - [FOUC in Web Components article](https://www.jacobmilhorn.com/posts/solving-fouc-in-web-components/)
+
+---
+
+## Phase-Specific Warnings Summary (NPM + SSR)
+
+| Phase Topic | Likely Pitfall | Priority |
+|-------------|---------------|----------|
+| NPM Build Config | NPM-1 Bundling Lit, NPM-6 ?inline imports, NPM-7 Extensions, NPM-9 Side effects | HIGH |
+| Package.json Setup | NPM-11 Exports field, NPM-14 Externals, NPM-13 Types | HIGH |
+| SSR Infrastructure | NPM-2 Constructable stylesheets, NPM-5 ElementInternals | CRITICAL |
+| SSR Styling | NPM-3 @property rules, NPM-8 :host-context, NPM-10 CSS duplication | HIGH |
+| SSR Client Integration | NPM-4 Hydration order, NPM-12 defer-hydration | HIGH |
+| Documentation | NPM-15 FOUC, consumer guidance | MEDIUM |
+
+---
+
+## Sources (NPM + SSR)
+
+**Official Documentation:**
+- [Lit Publishing Guide](https://lit.dev/docs/tools/publishing/)
+- [Lit SSR Overview](https://lit.dev/docs/ssr/overview/)
+- [Lit SSR Client Usage](https://lit.dev/docs/ssr/client-usage/)
+
+**Web Standards:**
+- [Declarative Shadow DOM (web.dev)](https://web.dev/articles/declarative-shadow-dom)
+- [ElementInternals (WebKit)](https://webkit.org/blog/13711/elementinternals-and-form-associated-custom-elements/)
+
+**Community Resources:**
+- [Web Components Tailwind SSR (Konnor Rogers)](https://www.konnorrogers.com/posts/2023/web-components-tailwind-and-ssr)
+- [Tailwind Shadow DOM @property issue](https://github.com/tailwindlabs/tailwindcss/discussions/16772)
+- [Multiple Lit Versions](https://lit.dev/docs/tools/development/)
+- [Sharing Styles in DSD](https://eisenbergeffect.medium.com/sharing-styles-in-declarative-shadow-dom-c5bf84ffd311)
+- [Solving FOUC in Web Components](https://www.jacobmilhorn.com/posts/solving-fouc-in-web-components/)
+- [NPM Package ESM/CJS (Snyk)](https://snyk.io/blog/building-npm-package-compatible-with-esm-and-cjs-2024/)
+- [Lit Tree Shaking Discussion](https://github.com/lit/lit/discussions/4772)
+
+---
 *Pitfalls research for: Lit.js Framework-Agnostic Component Library*
-*Researched: 2026-01-23*
+*Original research: 2026-01-23*
+*NPM + SSR research added: 2026-01-24*

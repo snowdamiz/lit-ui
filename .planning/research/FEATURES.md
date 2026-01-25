@@ -1,7 +1,7 @@
 # Feature Research
 
 **Domain:** Framework-agnostic component library (Lit.js web components)
-**Researched:** 2026-01-23
+**Researched:** 2026-01-23 (v1.0), 2026-01-24 (v2.0 NPM + SSR)
 **Confidence:** HIGH (verified across multiple authoritative sources)
 
 ## Feature Landscape
@@ -63,6 +63,155 @@ Features that seem good but create problems.
 | **CSS Reset/Normalize** | "Consistent base styles" | Conflicts with host application's reset; Shadow DOM already isolates | Document that components work with any reset; don't impose one |
 | **Automatic Form Validation** | "Built-in validation is convenient" | Every app has different validation needs; creates conflicts with form libraries | Expose validation attributes/events; let host app handle validation logic |
 
+---
+
+## v2.0 NPM + SSR Feature Research
+
+**Researched:** 2026-01-24
+**Focus:** NPM package distribution and SSR support for existing web component library
+
+### NPM Package Features
+
+#### Table Stakes for NPM Distribution
+
+Features users expect from any professional component library published to NPM.
+
+| Feature | Description | Complexity | Confidence |
+|---------|-------------|------------|------------|
+| **ESM exports** | Pure ES modules with `"type": "module"` - required for tree shaking | Low | HIGH |
+| **TypeScript declarations** | `.d.ts` files bundled with package via `types` field | Low | HIGH |
+| **Subpath exports** | Individual component imports via `@lit-ui/button` or `lit-ui/button` | Medium | HIGH |
+| **`sideEffects: false`** | Enables bundler tree shaking by declaring pure modules | Low | HIGH |
+| **Proper `exports` field** | Conditional exports with `import`, `types` conditions | Low | HIGH |
+| **Peer dependency on Lit** | `"lit": "^3.0.0"` as peer dep to avoid version conflicts | Low | HIGH |
+| **Semantic versioning** | Clear major/minor/patch versioning for breaking changes | Low | HIGH |
+| **README with quick start** | Installation and basic usage in package README | Low | HIGH |
+| **LICENSE file** | MIT license included in package | Low | HIGH |
+| **Changelog** | CHANGELOG.md tracking version changes | Low | MEDIUM |
+
+#### NPM Differentiators
+
+Features that distinguish high-quality component libraries.
+
+| Feature | Description | Why Valuable | Complexity | Confidence |
+|---------|-------------|--------------|------------|------------|
+| **Custom Elements Manifest** | `custom-elements.json` describing component APIs | Enables IDE autocomplete, Figma integration, AI tooling via MCP | Medium | HIGH |
+| **Scoped packages** | `@lit-ui/core`, `@lit-ui/button`, `@lit-ui/dialog` monorepo | Install only what you need, cleaner dependency tree | Medium | HIGH |
+| **React wrappers package** | `@lit-ui/react` using `@lit/react` for proper React integration | Better DX for React users - properties work, events work | Medium | HIGH |
+| **Bundle size tracking** | CI checks via size-limit or bundlewatch | Prevents bundle bloat, builds trust | Low | MEDIUM |
+| **Per-component lazy loading** | Dynamic imports work out of the box | Smaller initial bundles for apps | Low | HIGH |
+| **Source maps** | `.map` files for debugging | Better DX when debugging | Low | HIGH |
+
+#### NPM Package Structure Recommendation
+
+Based on research, the recommended package structure for v2.0:
+
+```
+Monorepo packages:
+  @lit-ui/core        - Base classes (TailwindElement), utilities, types
+  @lit-ui/button      - Button component (depends on @lit-ui/core)
+  @lit-ui/dialog      - Dialog component (depends on @lit-ui/core)
+  @lit-ui/react       - React wrappers (optional, for enhanced React DX)
+  lit-ui              - CLI tool (existing, enhanced for npm mode)
+
+package.json exports pattern:
+  {
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js"
+      }
+    },
+    "sideEffects": false,
+    "peerDependencies": {
+      "lit": "^3.0.0"
+    }
+  }
+```
+
+**Rationale:** Scoped packages allow granular installation. Users can `npm install @lit-ui/button` without pulling in Dialog. The monorepo structure mirrors successful libraries like Shoelace and maintains the "install only what you use" philosophy.
+
+---
+
+### SSR Features
+
+#### Table Stakes for SSR Compatibility
+
+Features required for SSR compatibility with Lit web components.
+
+| Feature | Description | Complexity | Confidence |
+|---------|-------------|------------|------------|
+| **Declarative Shadow DOM output** | Components render `<template shadowrootmode="open">` server-side | Medium | HIGH |
+| **Hydration support** | Load `@lit-labs/ssr-client/lit-element-hydrate-support.js` before components | Low | HIGH |
+| **DSD polyfill guidance** | Document polyfill for older browsers (Firefox had it, now universal) | Low | HIGH |
+| **No DOM access in constructors** | Components must not access `document` or `window` on initialization | Low | HIGH |
+| **Static rendering fallback** | Components display meaningful content even without JS | Medium | MEDIUM |
+
+#### SSR Implementation Requirements
+
+Based on Lit's official SSR documentation:
+
+| Requirement | Description | Complexity | Confidence |
+|-------------|-------------|------------|------------|
+| **`@lit-labs/ssr` package** | Server-side rendering for Lit templates and components | Medium | HIGH |
+| **`@lit-labs/ssr-client` package** | Client-side hydration support | Low | HIGH |
+| **`@lit-labs/ssr-dom-shim`** | Minimal DOM API shims for Node.js environment | Low | HIGH |
+| **Component module ordering** | Hydration support must load BEFORE `lit` module | Medium | HIGH |
+| **Shadow-only components** | Only shadow DOM components supported (LitUI already uses this) | N/A | HIGH |
+
+#### SSR Differentiators
+
+Features that provide enhanced SSR experience.
+
+| Feature | Description | Why Valuable | Complexity | Confidence |
+|---------|-------------|--------------|------------|------------|
+| **Framework SSR integrations** | Support for Next.js (`@lit-labs/nextjs`), Nuxt, Astro | Wider adoption in framework ecosystems | High | HIGH |
+| **React SSR deep rendering** | `@lit-labs/ssr-react` for enhanced React SSR | Lit components render fully in React SSR | High | HIGH |
+| **Streaming support** | Lit SSR supports streaming HTML | Faster TTFB on large pages | Medium | MEDIUM |
+| **Server-only templates** | `html` from `@lit-labs/ssr` for doc-level rendering | Full HTML document rendering capability | Medium | MEDIUM |
+
+#### SSR Browser Support Status (2026)
+
+| Browser | Declarative Shadow DOM | Notes |
+|---------|------------------------|-------|
+| Chrome | 90+ (shadowroot), 124+ (shadowrootmode) | Full support |
+| Edge | 91+ (shadowroot), 124+ (shadowrootmode) | Full support |
+| Firefox | Supported (as of 2024) | No longer needs polyfill |
+| Safari | Supported | Via WebKit |
+
+**Polyfill recommendation:** Include `@webcomponents/template-shadowroot` for legacy browser support, but document that modern browsers (2024+) have native support.
+
+---
+
+### NPM + SSR Anti-Features (Do NOT Build)
+
+Features to deliberately avoid - common mistakes or over-engineering.
+
+| Anti-Feature | Why to Avoid | What to Do Instead |
+|--------------|--------------|-------------------|
+| **CommonJS dual package** | Web components are modern JS - CJS adds complexity, maintenance burden, potential dual-package hazard | ESM-only with clear documentation |
+| **React-specific component variants** | Defeats framework-agnostic value proposition | Use `@lit/react` wrappers that wrap existing components |
+| **Built-in state management** | Conflicts with host framework's state (React, Vue, Svelte all have their own) | Components accept props, emit events |
+| **CSS-in-JS runtime** | Conflicts with Tailwind approach, adds bundle size | Continue constructable stylesheets pattern |
+| **Automatic framework detection** | Adds complexity, magic behavior | Clear documentation per framework |
+| **Single mega-package** | Forces users to install everything | Scoped packages for granular deps |
+| **Private/proprietary registry** | Reduces adoption | Public NPM registry |
+| **Webpack-specific optimizations** | Bundler lock-in | Use standard ESM, let bundlers optimize |
+| **Heavy polyfill bundling** | Most modern browsers don't need it | Document polyfill for users who need it |
+| **Auto-update mechanism in package** | Security risk, complexity | Document update process clearly |
+
+#### SSR-Specific Anti-Features
+
+| Anti-Feature | Why to Avoid | What to Do Instead |
+|--------------|--------------|-------------------|
+| **DOM manipulation in constructors** | Breaks SSR - no DOM available server-side | Use `connectedCallback()` or `firstUpdated()` |
+| **`window`/`document` direct access** | Undefined in Node.js SSR environment | Guard with `typeof window !== 'undefined'` |
+| **Synchronous async data fetching** | SSR cannot wait for async operations | Accept data as properties from parent |
+| **Custom SSR implementation** | Reinventing the wheel, maintenance burden | Use `@lit-labs/ssr` ecosystem |
+| **Forced hydration** | Some pages don't need interactivity | Support static-only rendering option |
+
+---
+
 ## Feature Dependencies
 
 ```
@@ -103,16 +252,48 @@ Features that seem good but create problems.
     |-- requires --> [Hydration Strategy]
 ```
 
-### Dependency Notes
+### v2.0 NPM + SSR Dependencies on v1.0
 
-- **Accessibility requires Keyboard + Focus:** Cannot have a11y without proper keyboard nav and focus management. These are foundational.
-- **Dialog requires Focus Trap:** Modal dialogs MUST trap focus; this is a WCAG requirement, not optional.
-- **Tailwind conflicts with Deep Shadow DOM:** This is a critical architecture decision. Options: (1) Use light DOM, (2) Inject styles via constructable stylesheets, (3) Use `::part()` for limited styling. Research suggests approach (2) with Twind or similar runtime generation.
-- **Copy-Source and NPM can coexist:** ShadCN model; CLI copies source, or users install package for convenience.
+How v2.0 features relate to existing v1.0 implementation:
+
+```
+Existing v1.0 features:
+  [TailwindElement base class]
+  [Button component]
+  [Dialog component]
+  [CLI tool]
+
+NPM features build on:
+  TailwindElement  -->  @lit-ui/core package
+  Button           -->  @lit-ui/button package (depends on core)
+  Dialog           -->  @lit-ui/dialog package (depends on core)
+  CLI              -->  Enhanced to support npm install mode
+
+SSR features require:
+  Components       -->  Review for SSR compatibility (no DOM in constructors)
+  TailwindElement  -->  Ensure constructable stylesheets work in SSR
+  Button           -->  Should work (no DOM manipulation)
+  Dialog           -->  May need review (uses native <dialog>, showModal())
+```
+
+### Package Dependency Flow
+
+```
+@lit-ui/core (TailwindElement, design tokens, types)
+    ^
+    |
+    +-- @lit-ui/button (Button component)
+    |
+    +-- @lit-ui/dialog (Dialog component)
+    |
+    +-- @lit-ui/react (React wrappers - optional)
+```
+
+---
 
 ## MVP Definition
 
-### Launch With (v1)
+### Launch With (v1) - SHIPPED
 
 Minimum viable product to validate the concept.
 
@@ -146,7 +327,36 @@ Minimum viable product to validate the concept.
   - CSS custom properties for theming
   - Example with Tailwind v4
 
-### Add After Validation (v1.x)
+### v2.0 MVP: NPM + SSR
+
+Features to add for v2.0 milestone.
+
+#### Phase 1: NPM Packages (Priority: HIGH)
+
+Must-have features:
+1. Monorepo setup with workspace packages
+2. `@lit-ui/core` with TailwindElement and types
+3. `@lit-ui/button` and `@lit-ui/dialog` packages
+4. Proper `exports`, `types`, `sideEffects` in package.json
+5. TypeScript declarations generated
+6. Custom Elements Manifest (`custom-elements.json`)
+
+#### Phase 2: SSR Support (Priority: HIGH)
+
+Must-have features:
+1. Verify components work in Node.js (no DOM in constructors)
+2. Add `@lit-labs/ssr` as optional peer dependency
+3. Document hydration setup requirements
+4. Provide example integrations (Next.js, basic Node)
+
+#### Phase 3: Enhanced DX (Priority: MEDIUM)
+
+Nice-to-have features:
+1. `@lit-ui/react` wrappers package
+2. Bundle size CI checks
+3. Framework-specific SSR integration packages
+
+### Add After Validation (v1.x / v2.x)
 
 Features to add once core is working.
 
@@ -155,10 +365,9 @@ Features to add once core is working.
 - [ ] **Tooltip** - trigger: low complexity, high demand
 - [ ] **Checkbox/Radio** - trigger: form use cases validated
 - [ ] **Card Component** - trigger: layout primitive requests
-- [ ] **NPM Package Distribution** - trigger: users want auto-updates
 - [ ] **More Themes** - trigger: customization requests beyond light/dark
 
-### Future Consideration (v2+)
+### Future Consideration (v3+)
 
 Features to defer until product-market fit is established.
 
@@ -171,32 +380,49 @@ Features to defer until product-market fit is established.
 - [ ] **Headless Mode** - defer: doubles maintenance burden
 - [ ] **Animation Library** - defer: CSS transitions sufficient for v1
 
+---
+
+## v2.0 Complexity Summary
+
+| Category | Low Complexity | Medium Complexity | High Complexity |
+|----------|----------------|-------------------|-----------------|
+| NPM | ESM exports, types, sideEffects, peer deps | Subpath exports, CEM, monorepo | - |
+| SSR | Hydration docs, polyfill guidance | DSD output, component review | Framework integrations |
+
+**Overall Assessment:** NPM packaging is largely straightforward with established patterns. SSR support has clear Lit ecosystem tools but requires careful component review and documentation.
+
+---
+
 ## Feature Prioritization Matrix
 
 | Feature | User Value | Implementation Cost | Priority |
 |---------|------------|---------------------|----------|
-| Button Component | HIGH | LOW | P1 |
-| Dialog Component | HIGH | MEDIUM | P1 |
-| Accessibility (WCAG 2.1 AA) | HIGH | HIGH | P1 |
-| CLI Copy-Source Mode | HIGH | MEDIUM | P1 |
-| Tailwind Integration | HIGH | HIGH | P1 |
-| TypeScript Support | HIGH | LOW | P1 |
-| Dark/Light Theme | MEDIUM | LOW | P1 |
-| Documentation | HIGH | MEDIUM | P1 |
-| Framework Agnostic Verification | HIGH | MEDIUM | P1 |
+| Button Component | HIGH | LOW | P1 - DONE |
+| Dialog Component | HIGH | MEDIUM | P1 - DONE |
+| Accessibility (WCAG 2.1 AA) | HIGH | HIGH | P1 - DONE |
+| CLI Copy-Source Mode | HIGH | MEDIUM | P1 - DONE |
+| Tailwind Integration | HIGH | HIGH | P1 - DONE |
+| TypeScript Support | HIGH | LOW | P1 - DONE |
+| Dark/Light Theme | MEDIUM | LOW | P1 - DONE |
+| Documentation | HIGH | MEDIUM | P1 - DONE |
+| Framework Agnostic Verification | HIGH | MEDIUM | P1 - DONE |
+| **NPM Package Distribution** | HIGH | MEDIUM | **P1 - v2.0** |
+| **SSR Compatibility** | HIGH | MEDIUM | **P1 - v2.0** |
+| Custom Elements Manifest | MEDIUM | LOW | P1 - v2.0 |
 | Input Component | HIGH | LOW | P2 |
 | Select/Dropdown | HIGH | HIGH | P2 |
 | Loading States | MEDIUM | LOW | P2 |
 | Animation System | MEDIUM | MEDIUM | P2 |
-| NPM Package Mode | MEDIUM | LOW | P2 |
-| SSR Compatibility | MEDIUM | HIGH | P3 |
+| React Wrappers Package | MEDIUM | MEDIUM | P2 |
 | Figma Kit | LOW | HIGH | P3 |
 | Headless Mode | MEDIUM | HIGH | P3 |
 
 **Priority key:**
-- P1: Must have for launch
+- P1: Must have for launch / current milestone
 - P2: Should have, add when possible
 - P3: Nice to have, future consideration
+
+---
 
 ## Competitor Feature Analysis
 
@@ -209,9 +435,10 @@ Features to defer until product-market fit is established.
 | **Component Count** | 50+ | 60+ | 30+ primitives | Start with 2, grow based on demand |
 | **Customization** | Full source ownership | CSS custom properties | Full control (unstyled) | Source ownership OR CSS vars |
 | **TypeScript** | Full support | Full support | Full support | Full support |
-| **SSR** | Next.js focused | Requires setup | React-focused | Declarative Shadow DOM (planned) |
+| **SSR** | Next.js focused | Requires setup | React-focused | Declarative Shadow DOM (v2.0) |
 | **Dark Mode** | Built-in | Built-in | User handles | Built-in with prefers-color-scheme |
 | **Bundle Size** | Zero runtime (copy-paste) | ~60KB for all | Small per-component | Minimal (Lit ~5KB + component) |
+| **NPM Packages** | Single package (copy-paste focus) | Monorepo scoped packages | Single package | Monorepo scoped packages (v2.0) |
 
 ### Competitive Positioning
 
@@ -221,11 +448,13 @@ Features to defer until product-market fit is established.
 
 **vs. Radix:** We offer styled defaults. Radix is headless-only; great for design teams but requires significant styling work. We provide styled components with customization escape hatches.
 
-**Unique Value Proposition:** Framework-agnostic components with ShadCN-style copy-source distribution and Tailwind compatibility.
+**Unique Value Proposition:** Framework-agnostic components with ShadCN-style copy-source distribution, Tailwind compatibility, AND NPM package mode with SSR support.
+
+---
 
 ## Sources
 
-### Component Library Research
+### v1.0 Component Library Research
 - [ShadCN/UI Official Documentation](https://ui.shadcn.com/docs) - Copy-paste model, CLI architecture
 - [Radix UI Primitives](https://www.radix-ui.com/primitives) - Accessibility patterns, headless approach
 - [Shoelace/Web Awesome](https://shoelace.style/) - Web Components with Lit, framework agnosticism
@@ -252,6 +481,42 @@ Features to defer until product-market fit is established.
 - [USWDS Design Tokens](https://designsystem.digital.gov/design-tokens/) - Government standard approach
 - [The Design System Guide](https://thedesignsystem.guide/design-tokens) - Token naming conventions
 
+### v2.0 NPM Packaging
+- [Guide to package.json exports](https://hirok.io/posts/package-json-exports)
+- [Node.js Packages Documentation](https://nodejs.org/api/packages.html)
+- [Tree Shaking Guide - Webpack](https://webpack.js.org/guides/tree-shaking/)
+- [Complete Monorepo Guide 2025](https://jsdev.space/complete-monorepo-guide/)
+- [Building npm library with Web Components](https://bjerkek.medium.com/building-a-npm-library-with-web-components-using-lerna-rollup-and-jest-9f76f59348ba)
+- [How to Make Tree Shakeable Libraries](https://blog.theodo.com/2021/04/library-tree-shaking/)
+- [Creating tree-shakable library with tsup](https://dorshinar.me/posts/treeshaking-with-tsup)
+
+### v2.0 SSR and Declarative Shadow DOM
+- [Lit SSR Overview](https://lit.dev/docs/ssr/overview/)
+- [Lit SSR Client Usage](https://lit.dev/docs/ssr/client-usage/)
+- [@lit-labs/ssr NPM](https://www.npmjs.com/package/@lit-labs/ssr)
+- [@lit-labs/ssr-client NPM](https://www.npmjs.com/package/@lit-labs/ssr-client)
+- [@lit-labs/ssr-react NPM](https://www.npmjs.com/package/@lit-labs/ssr-react)
+- [Declarative Shadow DOM - web.dev](https://web.dev/articles/declarative-shadow-dom)
+- [Declarative Shadow DOM - Can I Use](https://caniuse.com/declarative-shadow-dom)
+
+### Custom Elements Manifest
+- [Custom Elements Manifest GitHub](https://github.com/webcomponents/custom-elements-manifest)
+- [Custom Elements Manifest - Open WC](https://custom-elements-manifest.open-wc.org/)
+- [The killer feature of Web Components](https://daverupert.com/2025/10/custom-elements-manifest-killer-feature/)
+
+### React Integration
+- [Lit React Documentation](https://lit.dev/docs/frameworks/react/)
+- [@lit/react NPM](https://www.npmjs.com/package/@lit/react)
+
+### TypeScript
+- [TypeScript Type Declarations](https://www.typescriptlang.org/docs/handbook/2/type-declarations.html)
+- [Building a TypeScript Library in 2025](https://dev.to/arshadyaseen/building-a-typescript-library-in-2025-2h0i)
+
+### Bundle Optimization
+- [How to Reduce JavaScript Bundle Size in 2025](https://dev.to/frontendtoolstech/how-to-reduce-javascript-bundle-size-in-2025-2n77)
+- [8 Ways to Optimize JavaScript Bundle Size](https://about.codecov.io/blog/8-ways-to-optimize-your-javascript-bundle-size/)
+
 ---
 *Feature research for: lit-ui framework-agnostic component library*
-*Researched: 2026-01-23*
+*v1.0 researched: 2026-01-23*
+*v2.0 NPM + SSR researched: 2026-01-24*
