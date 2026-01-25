@@ -1,5 +1,5 @@
 {
-  "name": "lit-ui",
+  "name": "@lit-ui/cli",
   "version": "0.0.1",
   "description": "Add lit-ui components to your project",
   "repository": {
