@@ -7,11 +7,15 @@ import { MigrationGuide } from './pages/MigrationGuide'
 import { Placeholder } from './pages/Placeholder'
 import { ButtonPage } from './pages/components/ButtonPage'
 import { DialogPage } from './pages/components/DialogPage'
+import { ConfiguratorPage } from './pages/configurator/ConfiguratorPage'
 
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* Configurator has its own layout, not nested in DocsLayout */}
+        <Route path="configurator" element={<ConfiguratorPage />} />
+
         <Route element={<DocsLayout />}>
           {/* Index route - shows Getting Started */}
           <Route index element={<GettingStarted />} />

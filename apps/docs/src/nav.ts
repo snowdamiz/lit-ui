@@ -33,4 +33,10 @@ export const navigation: NavSection[] = [
       { title: "Dialog", href: "/components/dialog" },
     ],
   },
+  {
+    title: "Tools",
+    items: [
+      { title: "Theme Configurator", href: "/configurator" },
+    ],
+  },
 ]
