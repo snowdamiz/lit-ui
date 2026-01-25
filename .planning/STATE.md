@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-24)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** v2.0 NPM + SSR - Phase 13 complete
+**Current focus:** v2.0 NPM + SSR - Phase 14 in progress
 
 ## Current Position
 
-Phase: 13 of 20 (Monorepo Infrastructure) - COMPLETE
-Plan: 05 of 05
-Status: Phase complete
-Last activity: 2026-01-25 - Completed 13-05-PLAN.md
+Phase: 14 of 20 (Core Package)
+Plan: 02 of 04
+Status: In progress
+Last activity: 2026-01-25 - Completed 14-02-PLAN.md
 
-Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [#####.....] 5/40 plans
+Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [######....] 7/40 plans
 
 ## Performance Metrics
 
@@ -28,8 +28,8 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [#####.....] 5/40 
 - Total execution time: 22 min
 
 **v2.0 Velocity:**
-- Plans completed: 5
-- Total execution time: 11 min
+- Plans completed: 7
+- Total execution time: 15 min
 
 **By Phase:**
 
@@ -44,6 +44,7 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [#####.....] 5/40 
 | 07-getting-started | 2 | 4 min | 2.0 min |
 | 08-component-documentation | 4 | 10 min | 2.5 min |
 | 13-monorepo-infrastructure | 5 | 11 min | 2.2 min |
+| 14-core-package | 2 | 4 min | 2.0 min |
 
 ## Accumulated Context
 
@@ -87,6 +88,11 @@ Key decisions are logged in PROJECT.md Key Decisions table.
 - Use privatePackages config instead of ignore for private workspace deps
 - Keep src.old/ for Phase 14-15 migration reference
 
+**v2.0 Plan 14-02 Decisions:**
+- Multi-entry Vite config over createLibraryConfig for subpath support
+- Tailwind token names (--color-primary) not custom --lui- namespace
+- Type helpers exported for token path validation
+
 ### Pending Todos
 
 None.
@@ -98,12 +104,12 @@ Consider completing v1.1 before or in parallel with v2.0.
 
 ## Session Continuity
 
-Last session: 2026-01-25 03:00 UTC
-Stopped at: Completed 13-05-PLAN.md (Phase 13 complete)
+Last session: 2026-01-25 04:08 UTC
+Stopped at: Completed 14-02-PLAN.md
 Resume file: None
 
 ## Next Steps
 
-Phase 13 (Monorepo Infrastructure) complete. Ready for Phase 14: Core Package.
+Phase 14 Plan 02 complete. Continue with 14-03-PLAN.md (TailwindElement base class).
 
-Run `/gsd:discuss-phase 14` to gather context before planning.
+Run `/gsd:execute-plan .planning/phases/14-core-package/14-03-PLAN.md` to continue.
