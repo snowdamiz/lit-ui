@@ -3,6 +3,7 @@ import { DocsLayout } from './layouts/DocsLayout'
 import { GettingStarted } from './pages/GettingStarted'
 import { Installation } from './pages/Installation'
 import { SSRGuide } from './pages/SSRGuide'
+import { MigrationGuide } from './pages/MigrationGuide'
 import { Placeholder } from './pages/Placeholder'
 import { ButtonPage } from './pages/components/ButtonPage'
 import { DialogPage } from './pages/components/DialogPage'
@@ -23,7 +24,7 @@ export default function App() {
 
           {/* Guides */}
           <Route path="guides/ssr" element={<SSRGuide />} />
-          <Route path="guides/migration" element={<Placeholder />} />
+          <Route path="guides/migration" element={<MigrationGuide />} />
 
           {/* Components */}
           <Route path="components/button" element={<ButtonPage />} />
