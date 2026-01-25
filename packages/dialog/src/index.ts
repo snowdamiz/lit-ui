@@ -9,9 +9,10 @@ export type { DialogSize, CloseReason } from './dialog.js';
 export { TailwindElement, isServer } from '@lit-ui/core';
 
 // Safe custom element registration with collision detection
+// Register on both server (via @lit-labs/ssr-dom-shim) and client
 import { Dialog } from './dialog.js';
 
-if (!isServer && typeof customElements !== 'undefined') {
+if (typeof customElements !== 'undefined') {
   if (!customElements.get('lui-dialog')) {
     customElements.define('lui-dialog', Dialog);
   }

@@ -23,7 +23,7 @@
 
 import { html, css, nothing, isServer } from 'lit';
 import { property } from 'lit/decorators.js';
-import { TailwindElement } from '@lit-ui/core';
+import { TailwindElement, tailwindBaseStyles } from '@lit-ui/core';
 
 /**
  * Button variant types for visual styling
@@ -132,8 +132,11 @@ export class Button extends TailwindElement {
   /**
    * Static styles for focus ring (inner glow), loading spinner,
    * and component-level CSS custom properties.
+   * Includes Tailwind base styles for SSR support.
    */
-  static override styles = css`
+  static override styles = [
+    ...tailwindBaseStyles,
+    css`
     :host {
       display: inline-block;
     }
@@ -202,7 +205,8 @@ export class Button extends TailwindElement {
       height: 1em;
       flex-shrink: 0;
     }
-  `;
+  `,
+  ];
 
   /**
    * Get the Tailwind classes for the current variant.

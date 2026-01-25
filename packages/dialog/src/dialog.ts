@@ -45,7 +45,7 @@
 import { html, css, nothing } from 'lit';
 import { isServer } from 'lit';
 import { property, query } from 'lit/decorators.js';
-import { TailwindElement } from '@lit-ui/core';
+import { TailwindElement, tailwindBaseStyles } from '@lit-ui/core';
 
 /**
  * Dialog size types for max-width
@@ -131,8 +131,11 @@ export class Dialog extends TailwindElement {
    * Static styles for dialog animations, layout, and component-level CSS custom properties.
    * Uses native CSS transitions with @starting-style for enter animations
    * and transition-behavior: allow-discrete for exit animations.
+   * Includes Tailwind base styles for SSR support.
    */
-  static override styles = css`
+  static override styles = [
+    ...tailwindBaseStyles,
+    css`
     :host {
       display: contents;
     }
@@ -199,7 +202,8 @@ export class Dialog extends TailwindElement {
       box-shadow: var(--ui-dialog-shadow);
       padding: var(--ui-dialog-padding);
     }
-  `;
+  `,
+  ];
 
   /**
    * Called when reactive properties change.

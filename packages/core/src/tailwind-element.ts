@@ -102,6 +102,19 @@ if (typeof document !== 'undefined') {
 }
 
 // =============================================================================
+// BASE STYLES FOR SUBCLASS ACCESS
+// =============================================================================
+
+/**
+ * Base Tailwind styles that subclasses can use in their static styles.
+ * Only includes styles during SSR; on client, styles are adopted via sheets.
+ * Returns an array so it can be spread into subclass styles arrays.
+ */
+export const tailwindBaseStyles: CSSResultGroup[] = isServer
+  ? [unsafeCSS(tailwindStyles), unsafeCSS(hostDefaults)]
+  : [];
+
+// =============================================================================
 // TAILWIND ELEMENT BASE CLASS
 // =============================================================================
 
@@ -114,40 +127,36 @@ if (typeof document !== 'undefined') {
  *
  * **SSR Behavior:**
  * - During server-side rendering (isServer === true), styles are returned
- *   via the static `styles` getter as inline CSS for Declarative Shadow DOM
+ *   via static `styles` as inline CSS for Declarative Shadow DOM
  * - During client-side hydration/rendering (isServer === false), styles are
  *   applied via adoptedStyleSheets for memory efficiency
  *
+ * **Subclass Styles:**
+ * Subclasses can define their own static styles. Use `tailwindBaseStyles`
+ * to include Tailwind CSS during SSR:
+ *
  * @example
  * ```typescript
- * @customElement('ui-button')
+ * import { TailwindElement, tailwindBaseStyles } from '@lit-ui/core';
+ * import { css } from 'lit';
+ *
  * export class Button extends TailwindElement {
- *   render() {
- *     return html`<button class="px-4 py-2 bg-primary rounded-md">Click</button>`;
- *   }
+ *   static override styles = [
+ *     ...tailwindBaseStyles,
+ *     css`:host { display: inline-block; }`
+ *   ];
  * }
  * ```
  */
 export class TailwindElement extends LitElement {
   /**
-   * Static styles getter that provides SSR-aware styling.
+   * Static styles for TailwindElement base class.
+   * During SSR, includes Tailwind styles inline.
+   * On client, returns empty array (styles adopted via sheets).
    *
-   * - **SSR (isServer === true):** Returns inline CSS so it's included in
-   *   the Declarative Shadow DOM template during server rendering
-   * - **Client (isServer === false):** Returns empty array since styles
-   *   are applied via adoptedStyleSheets in connectedCallback
-   *
-   * Subclasses can extend this by defining their own static styles which
-   * will be merged with Tailwind styles.
+   * Subclasses should spread tailwindBaseStyles into their own styles array.
    */
-  static get styles(): CSSResultGroup {
-    if (isServer) {
-      // During SSR, return inline CSS for Declarative Shadow DOM
-      return [unsafeCSS(tailwindStyles), unsafeCSS(hostDefaults)];
-    }
-    // On client, styles are applied via adoptedStyleSheets
-    return [];
-  }
+  static override styles: CSSResultGroup = tailwindBaseStyles;
 
   /**
    * Called when the element is connected to the document's DOM.

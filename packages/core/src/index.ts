@@ -1,6 +1,6 @@
 // @lit-ui/core - SSR-aware base class for Tailwind-styled web components
 
-export { TailwindElement } from './tailwind-element.js';
+export { TailwindElement, tailwindBaseStyles } from './tailwind-element.js';
 
 // Re-export isServer for component authors to use directly
 export { isServer } from 'lit';
