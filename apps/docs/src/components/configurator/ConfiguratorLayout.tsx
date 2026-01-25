@@ -6,6 +6,7 @@
  */
 
 import { ReactNode } from "react";
+import { ShareButton } from "./ShareButton";
 
 interface ConfiguratorLayoutProps {
   sidebar: ReactNode;
@@ -24,12 +25,17 @@ export function ConfiguratorLayout({
       <aside className="w-80 lg:w-96 shrink-0 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex flex-col">
         {/* Sidebar header */}
         <div className="p-4 border-b border-gray-200 dark:border-gray-800">
-          <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">
-            Theme Configurator
-          </h1>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-            Customize your Lit UI theme
-          </p>
+          <div className="flex items-start justify-between gap-2">
+            <div>
+              <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">
+                Theme Configurator
+              </h1>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                Customize your Lit UI theme
+              </p>
+            </div>
+            <ShareButton />
+          </div>
         </div>
 
         {/* Scrollable sidebar content */}
