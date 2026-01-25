@@ -16,6 +16,14 @@ export const navigation: NavSection[] = [
     title: "Overview",
     items: [
       { title: "Getting Started", href: "/getting-started" },
+      { title: "Installation", href: "/installation" },
+    ],
+  },
+  {
+    title: "Guides",
+    items: [
+      { title: "SSR Setup", href: "/guides/ssr" },
+      { title: "Migration", href: "/guides/migration" },
     ],
   },
   {

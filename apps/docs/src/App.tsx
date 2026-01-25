@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router'
 import { DocsLayout } from './layouts/DocsLayout'
 import { GettingStarted } from './pages/GettingStarted'
+import { Installation } from './pages/Installation'
 import { Placeholder } from './pages/Placeholder'
 import { ButtonPage } from './pages/components/ButtonPage'
 import { DialogPage } from './pages/components/DialogPage'
@@ -15,6 +16,13 @@ export default function App() {
 
           {/* Getting Started */}
           <Route path="getting-started" element={<GettingStarted />} />
+
+          {/* Installation */}
+          <Route path="installation" element={<Installation />} />
+
+          {/* Guides */}
+          <Route path="guides/ssr" element={<Placeholder />} />
+          <Route path="guides/migration" element={<Placeholder />} />
 
           {/* Components */}
           <Route path="components/button" element={<ButtonPage />} />
