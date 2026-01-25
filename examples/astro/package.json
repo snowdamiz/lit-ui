@@ -1,0 +1,23 @@
+{
+  "name": "@lit-ui/example-astro",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "astro": "^5.0.0",
+    "@semantic-ui/astro-lit": "^0.0.2",
+    "@lit-ui/ssr": "workspace:*",
+    "@lit-ui/button": "workspace:*",
+    "@lit-ui/dialog": "workspace:*",
+    "@lit-ui/core": "workspace:*",
+    "lit": "^3.3.2"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.0"
+  }
+}
