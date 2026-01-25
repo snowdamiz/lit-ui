@@ -19,6 +19,7 @@ import {
   type PackageManager,
 } from '../utils/detect-package-manager';
 import { success, warn, info, error, spinner, file, highlight, command } from '../utils/logger';
+import { applyTheme } from '../utils/apply-theme';
 
 // =============================================================================
 // EMBEDDED TEMPLATES
@@ -522,5 +523,15 @@ Components are ready to use - no additional setup required.
     console.log('');
 
     success('lit-ui initialized successfully!');
+
+    // Handle theme if provided
+    if (args.theme) {
+      console.log('');
+      await applyTheme(cwd, args.theme, { yes: args.yes });
+    } else {
+      // Show hint about theme customization
+      console.log('');
+      info('Tip: Use --theme to customize colors. Get one at https://lit-ui.dev/themes');
+    }
   },
 });
