@@ -60,6 +60,11 @@ Key decisions are logged in PROJECT.md Key Decisions table.
 - NaN hue handling defaults to 0 for achromatic colors
 - Dark mode uses 0.9x chroma reduction
 
+**21-03 decisions:**
+- Explicit base64url format validation before decode (regex check)
+- 4-stage validation: format -> decode -> JSON -> schema
+- Descriptive error messages for each failure mode
+
 **21-04 decisions:**
 - --lui-* prefix for CSS custom properties
 - Both .dark class AND @media prefers-color-scheme for dark mode
@@ -75,8 +80,8 @@ None currently.
 
 ## Session Continuity
 
-Last session: 2026-01-25T20:34:57Z
-Stopped at: Completed 21-04-PLAN.md
+Last session: 2026-01-25T20:35:26Z
+Stopped at: Completed 21-03-PLAN.md (+ 21-04-PLAN.md parallel)
 Resume file: None
 
 ## Next Steps
