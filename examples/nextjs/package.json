@@ -13,7 +13,7 @@
     "next": "^15.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "@lit-labs/nextjs": "^0.3.0",
+    "@lit-labs/nextjs": "^0.2.4",
     "@lit-ui/ssr": "workspace:*",
     "@lit-ui/button": "workspace:*",
     "@lit-ui/dialog": "workspace:*",

@@ -2,16 +2,16 @@
 /**
  * Astro SSR Example with Lit Components
  *
- * This page demonstrates how to use @lit-ui components with Astro's
- * client:* hydration directives for optimal performance.
+ * This page demonstrates how to use @lit-ui components in Astro with
+ * server-side rendering and client-side hydration.
  *
- * Key concepts:
- * - client:visible: Hydrates when component enters viewport (recommended)
- * - client:load: Hydrates immediately on page load
- * - client:idle: Hydrates when browser becomes idle
+ * For self-registering custom elements (@lit-ui components):
+ * - Import components in frontmatter for SSR registration
+ * - Use custom element tags directly in HTML
+ * - Import in script tag for client-side hydration
  *
  * The components are server-rendered with Declarative Shadow DOM,
- * then hydrated on the client when the directive triggers.
+ * then hydrated on the client when the script loads.
  */
 import Layout from '../layouts/Layout.astro';
 
@@ -28,11 +28,10 @@ import '@lit-ui/dialog';
     <p>Click the button to see hydration working:</p>
 
     <!--
-      client:visible hydrates when the element scrolls into view.
-      This is the recommended directive for most components as it
-      minimizes JavaScript loaded on initial page load.
+      The lui-button is server-rendered with Declarative Shadow DOM.
+      After hydration via the script tag below, click handlers work.
     -->
-    <lui-button client:visible variant="primary" id="demo-button">
+    <lui-button variant="primary" id="demo-button">
       Click Me
     </lui-button>
 
@@ -45,7 +44,7 @@ import '@lit-ui/dialog';
     <h2>Dialog Component</h2>
     <p>Open the dialog to see SSR + hydration in action:</p>
 
-    <lui-button client:visible variant="secondary" id="open-dialog">
+    <lui-button variant="secondary" id="open-dialog">
       Open Dialog
     </lui-button>
 
@@ -53,7 +52,7 @@ import '@lit-ui/dialog';
       The dialog is SSR'd with its content. After hydration,
       showModal() and close() work as expected.
     -->
-    <lui-dialog client:visible id="demo-dialog">
+    <lui-dialog id="demo-dialog">
       <span slot="header">Hello from SSR</span>
       <p>This dialog was server-rendered and hydrated on the client.</p>
       <p>The content was visible in the initial HTML response.</p>
@@ -71,14 +70,14 @@ import '@lit-ui/dialog';
       Override a CSS custom property to demonstrate theming.
       The style is included in SSR output.
     -->
-    <lui-button client:visible variant="primary" style="--ui-button-radius: 999px;">
+    <lui-button variant="primary" style="--ui-button-radius: 999px;">
       Rounded Button
     </lui-button>
   </section>
 </Layout>
 
 <!--
-  Client-side script for interactivity after hydration.
+  Client-side script for hydration and interactivity.
 
   CRITICAL: @lit-ui/ssr/hydration MUST be the FIRST import.
   This patches LitElement before any component classes load,
@@ -91,7 +90,7 @@ import '@lit-ui/dialog';
   // FIRST: Import hydration support (patches LitElement)
   import '@lit-ui/ssr/hydration';
 
-  // THEN: Import component modules
+  // THEN: Import component modules for client-side hydration
   import '@lit-ui/button';
   import '@lit-ui/dialog';
 

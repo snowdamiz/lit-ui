@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "astro": "^5.0.0",
-    "@semantic-ui/astro-lit": "^0.0.2",
+    "@semantic-ui/astro-lit": "^5.1.1",
     "@lit-ui/ssr": "workspace:*",
     "@lit-ui/button": "workspace:*",
     "@lit-ui/dialog": "workspace:*",
