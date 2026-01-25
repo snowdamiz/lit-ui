@@ -117,7 +117,12 @@ Plans:
   3. Button form participation works client-side (gracefully skipped during SSR)
   4. Dialog showModal() works client-side (gracefully skipped during SSR)
   5. TypeScript autocomplete shows component props and events
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 15-01-PLAN.md - Button package migration with SSR guards
+- [ ] 15-02-PLAN.md - Dialog package migration with SSR guards
+- [ ] 15-03-PLAN.md - Build verification and FOUC CSS update
 
 ### Phase 16: SSR Package
 **Goal**: @lit-ui/ssr provides utilities for server-rendering components
@@ -197,7 +202,7 @@ Plans:
 | 12. Polish | v1.1 | 0/? | Not started | - |
 | 13. Monorepo Infrastructure | v2.0 | 5/5 | Complete | 2026-01-25 |
 | 14. Core Package | v2.0 | 3/3 | Complete | 2026-01-25 |
-| 15. Component Packages | v2.0 | 0/? | Not started | - |
+| 15. Component Packages | v2.0 | 0/3 | Not started | - |
 | 16. SSR Package | v2.0 | 0/? | Not started | - |
 | 17. Framework Integration | v2.0 | 0/? | Not started | - |
 | 18. CLI Enhancement | v2.0 | 0/? | Not started | - |
@@ -206,4 +211,4 @@ Plans:
 
 ---
 *Roadmap created: 2026-01-24*
-*Last updated: 2026-01-25 (Phase 14 complete)*
+*Last updated: 2026-01-25 (Phase 15 planned)*
