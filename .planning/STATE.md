@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-24)
 ## Current Position
 
 Phase: 17 of 20 (Framework Integration)
-Plan: 01 of 03 complete
-Status: In progress
-Last activity: 2026-01-25 - Completed 17-01-PLAN.md (Node.js SSR example)
+Plan: 03 of 03 complete
+Status: Phase complete
+Last activity: 2026-01-25 - Completed 17-03-PLAN.md (Astro SSR example)
 
-Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [##############] 14/40 plans
+Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [################] 16/40 plans
 
 ## Performance Metrics
 
@@ -28,8 +28,8 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [##############] 1
 - Total execution time: 22 min
 
 **v2.0 Velocity:**
-- Plans completed: 13
-- Total execution time: 30 min
+- Plans completed: 16
+- Total execution time: 50 min
 
 **By Phase:**
 
@@ -47,7 +47,7 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [##############] 1
 | 14-core-package | 3 | 5 min | 1.7 min |
 | 15-component-packages | 3 | 10 min | 3.3 min |
 | 16-ssr-package | 2 | 4 min | 2.0 min |
-| 17-framework-integration | 1 | 6 min | 6.0 min |
+| 17-framework-integration | 3 | 20 min | 6.7 min |
 
 ## Accumulated Context
 
@@ -135,6 +135,11 @@ Key decisions are logged in PROJECT.md Key Decisions table.
 - JSX type declarations for custom elements in client component file
 - 'use client' boundary pattern for Lit in Next.js App Router
 
+**v2.0 Plan 17-03 Decisions:**
+- Use @semantic-ui/astro-lit instead of deprecated @astrojs/lit
+- Self-registering custom elements don't use client:* directives
+- Hydration import goes in page script tag, not separate entry file
+
 ### Pending Todos
 
 None.
@@ -146,20 +151,30 @@ Consider completing v1.1 before or in parallel with v2.0.
 
 ## Session Continuity
 
-Last session: 2026-01-25 06:21 UTC
-Stopped at: Completed 17-01-PLAN.md (Node.js SSR example)
+Last session: 2026-01-25 06:24 UTC
+Stopped at: Completed 17-03-PLAN.md (Astro SSR example) - Phase 17 COMPLETE
 Resume file: None
 
 ## Next Steps
 
-Phase 17 (Framework Integration) in progress. 17-01 complete, 17-02 and 17-03 remaining.
+Phase 17 (Framework Integration) is COMPLETE. Ready for Phase 18 (NPM Publishing).
 
-### @lit-ui/ssr Package Summary
-- **Server rendering:** `import { render, html, renderToString, isServer } from '@lit-ui/ssr'`
-- **Client hydration:** `import '@lit-ui/ssr/hydration'` (MUST be first import)
-- **Manual hydration:** `import { hydrate } from '@lit-ui/ssr/hydration'`
+### Framework Integration Summary
 
-### Node.js Example Summary (17-01)
-- **Pattern:** Express server with renderToString, client hydration
-- **Critical:** Import @lit-ui/ssr/hydration FIRST in client entry
-- **Location:** examples/node/
+**Node.js (17-01):**
+- Express server with renderToString
+- Client entry with hydration first
+- Location: examples/node/
+
+**Next.js (17-02):**
+- App Router with 'use client' boundary
+- withLitSSR plugin in next.config.mjs
+- Location: examples/nextjs/
+
+**Astro (17-03):**
+- @semantic-ui/astro-lit integration
+- Frontmatter imports for SSR, script imports for hydration
+- Location: examples/astro/
+
+### Common Pattern
+All frameworks require `import '@lit-ui/ssr/hydration'` as FIRST import in client-side code.
