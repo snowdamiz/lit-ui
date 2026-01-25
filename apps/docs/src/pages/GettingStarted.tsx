@@ -2,6 +2,7 @@
  * Getting Started documentation page
  */
 
+import { Link } from 'react-router';
 import { CodeBlock } from '../components/CodeBlock';
 import { FrameworkTabs } from '../components/FrameworkTabs';
 import { LivePreview } from '../components/LivePreview';
@@ -173,9 +174,12 @@ export function GettingStarted() {
 
         <div className="mt-6 p-4 rounded-xl bg-gray-50 border border-gray-100">
           <p className="text-sm text-gray-600">
-            <span className="font-medium text-gray-700">Using yarn or pnpm?</span>{' '}
-            Use <code className="px-1.5 py-0.5 bg-white border border-gray-200 rounded text-xs font-mono">yarn dlx lit-ui init</code> or{' '}
-            <code className="px-1.5 py-0.5 bg-white border border-gray-200 rounded text-xs font-mono">pnpm dlx lit-ui init</code> instead.
+            <span className="font-medium text-gray-700">Prefer npm packages?</span>{' '}
+            See the{' '}
+            <Link to="/installation" className="text-gray-900 font-medium underline decoration-gray-300 underline-offset-2 hover:decoration-gray-900 transition-colors">
+              Installation guide
+            </Link>{' '}
+            for npm installation and other options.
           </p>
         </div>
       </section>
@@ -306,7 +310,7 @@ export function GettingStarted() {
       {/* Navigation */}
       <div className="divider-fade mb-8" />
       <PrevNextNav
-        next={{ title: 'Button', href: '/components/button' }}
+        next={{ title: 'Installation', href: '/installation' }}
       />
     </div>
   );
