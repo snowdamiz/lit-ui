@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-01-24)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** v2.0 NPM + SSR - Phase 20 in progress
+**Current focus:** v2.0 NPM + SSR - COMPLETE
 
 ## Current Position
 
 Phase: 20 of 20 (Documentation)
 Plan: 03 of 03
-Status: Phase complete
-Last activity: 2026-01-25 - Completed 20-03-PLAN.md (Migration Guide)
+Status: Milestone complete
+Last activity: 2026-01-25 - v2.0 milestone verified complete
 
 Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [###########################] 27/27 plans
 
@@ -208,27 +208,32 @@ Resume file: None
 
 ## Next Steps
 
-Phase 20 (Documentation) COMPLETE. All v2.0 plans complete.
+### v2.0 NPM + SSR MILESTONE COMPLETE
 
-### Documentation Phase Progress
+All 8 phases (13-20) with 27 plans executed and verified.
 
-**20-01 (Complete):**
-- Installation page created with NPM as primary path
-- Guides section added to navigation (SSR Setup, Migration)
-- GettingStarted links to Installation page
-
-**20-02 (Complete):**
-- SSR Setup guide with hydration, Next.js, Astro, FOUC sections
-- Route /guides/ssr now renders SSRGuide component
-
-**20-03 (Complete):**
-- Migration guide for copy-source to npm conversion
-- Route /guides/migration now renders MigrationGuide component
+**What was built:**
+- Monorepo infrastructure with pnpm workspaces and changesets
+- @lit-ui/core with SSR-aware TailwindElement
+- @lit-ui/button and @lit-ui/dialog packages
+- @lit-ui/ssr for server-side rendering
+- Framework examples (Next.js, Astro, Express)
+- Enhanced CLI with npm/copy-source modes
+- GitHub Actions release workflow
+- Documentation (Installation, SSR Guide, Migration Guide)
 
 ### Ready for First Release
 
-v2.0 NPM + SSR implementation complete. To publish first version:
+To publish packages to npm:
 1. Create changeset: `pnpm changeset`
 2. Commit and push
 3. Merge "Version Packages" PR
 4. GitHub Actions publishes to npm
+
+### Remaining Work
+
+v1.1 Documentation Site phases 9-12 are still pending:
+- Phase 9: Framework Guides
+- Phase 10: Theming Documentation
+- Phase 11: Accessibility Documentation
+- Phase 12: Polish

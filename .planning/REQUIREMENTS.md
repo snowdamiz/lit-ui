@@ -65,9 +65,9 @@ Requirements for NPM package distribution and SSR compatibility.
 
 ### Documentation
 
-- [ ] **DOC-01**: NPM installation guide in docs site
-- [ ] **DOC-02**: SSR setup guide with hydration instructions
-- [ ] **DOC-03**: Migration guide from copy-source to npm mode
+- [x] **DOC-01**: NPM installation guide in docs site
+- [x] **DOC-02**: SSR setup guide with hydration instructions
+- [x] **DOC-03**: Migration guide from copy-source to npm mode
 
 ## v2.1+ Requirements
 
@@ -127,9 +127,9 @@ Deferred to future milestone.
 | PUB-02 | Phase 19 | Complete |
 | PUB-03 | Phase 19 | Complete |
 | PUB-04 | Phase 19 | Complete |
-| DOC-01 | Phase 20 | Pending |
-| DOC-02 | Phase 20 | Pending |
-| DOC-03 | Phase 20 | Pending |
+| DOC-01 | Phase 20 | Complete |
+| DOC-02 | Phase 20 | Complete |
+| DOC-03 | Phase 20 | Complete |
 
 **Coverage:**
 - v2.0 requirements: 35 total
@@ -138,4 +138,4 @@ Deferred to future milestone.
 
 ---
 *Requirements defined: 2026-01-24*
-*Last updated: 2026-01-25 after Phase 19 completion*
+*Last updated: 2026-01-25 after v2.0 milestone completion*

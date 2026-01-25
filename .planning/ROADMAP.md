@@ -4,7 +4,7 @@
 
 - v1.0 MVP - Phases 1-5 (shipped 2026-01-24)
 - v1.1 Documentation Site - Phases 6-12 (in progress)
-- **v2.0 NPM + SSR** - Phases 13-20 (planned)
+- **v2.0 NPM + SSR** - Phases 13-20 (shipped 2026-01-25)
 
 ## Phases
 
@@ -199,9 +199,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 20-01-PLAN.md — Installation page (NPM primary + copy-source alternative)
-- [ ] 20-02-PLAN.md — SSR Guide (Next.js + Astro setup)
-- [ ] 20-03-PLAN.md — Migration Guide (copy-source to npm)
+- [x] 20-01-PLAN.md — Installation page (NPM primary + copy-source alternative)
+- [x] 20-02-PLAN.md — SSR Guide (Next.js + Astro setup)
+- [x] 20-03-PLAN.md — Migration Guide (copy-source to npm)
 
 ---
 
@@ -233,8 +233,8 @@ Plans:
 | 17. Framework Integration | v2.0 | 3/3 | Complete | 2026-01-25 |
 | 18. CLI Enhancement | v2.0 | 4/4 | Complete | 2026-01-25 |
 | 19. Publishing | v2.0 | 4/4 | Complete | 2026-01-25 |
-| 20. Documentation | v2.0 | 0/3 | Planned | - |
+| 20. Documentation | v2.0 | 3/3 | Complete | 2026-01-25 |
 
 ---
 *Roadmap created: 2026-01-24*
-*Last updated: 2026-01-25 (Phase 20 planned)*
+*Last updated: 2026-01-25 (v2.0 milestone complete)*
