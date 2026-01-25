@@ -103,9 +103,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 14-01-PLAN.md - SSR-aware TailwindElement with dual-mode styling
-- [ ] 14-02-PLAN.md - Design tokens module and utility helpers
-- [ ] 14-03-PLAN.md - Build verification and FOUC prevention
+- [x] 14-01-PLAN.md - SSR-aware TailwindElement with dual-mode styling
+- [x] 14-02-PLAN.md - Design tokens module and utility helpers
+- [x] 14-03-PLAN.md - Build verification and FOUC prevention
 
 ### Phase 15: Component Packages
 **Goal**: Button and Dialog published as independent packages with SSR compatibility
@@ -196,7 +196,7 @@ Plans:
 | 11. Accessibility Docs | v1.1 | 0/? | Not started | - |
 | 12. Polish | v1.1 | 0/? | Not started | - |
 | 13. Monorepo Infrastructure | v2.0 | 5/5 | Complete | 2026-01-25 |
-| 14. Core Package | v2.0 | 0/? | Not started | - |
+| 14. Core Package | v2.0 | 3/3 | Complete | 2026-01-25 |
 | 15. Component Packages | v2.0 | 0/? | Not started | - |
 | 16. SSR Package | v2.0 | 0/? | Not started | - |
 | 17. Framework Integration | v2.0 | 0/? | Not started | - |
@@ -206,4 +206,4 @@ Plans:
 
 ---
 *Roadmap created: 2026-01-24*
-*Last updated: 2026-01-25*
+*Last updated: 2026-01-25 (Phase 14 complete)*
