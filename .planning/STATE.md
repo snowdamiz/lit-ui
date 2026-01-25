@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-24)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** v2.0 NPM + SSR - Phase 16 in progress
+**Current focus:** v2.0 NPM + SSR - Phase 16 COMPLETE
 
 ## Current Position
 
-Phase: 16 of 20 (SSR Package)
-Plan: 01 of 02
-Status: In progress
-Last activity: 2026-01-25 - Completed 16-01-PLAN.md (SSR package structure)
+Phase: 16 of 20 (SSR Package) - COMPLETE
+Plan: 02 of 02
+Status: Phase complete
+Last activity: 2026-01-25 - Completed 16-02-PLAN.md (Hydration and verification)
 
-Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [############] 12/40 plans
+Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [#############] 13/40 plans
 
 ## Performance Metrics
 
@@ -28,8 +28,8 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [############] 12/
 - Total execution time: 22 min
 
 **v2.0 Velocity:**
-- Plans completed: 12
-- Total execution time: 29 min
+- Plans completed: 13
+- Total execution time: 30 min
 
 **By Phase:**
 
@@ -46,7 +46,7 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [############] 12/
 | 13-monorepo-infrastructure | 5 | 11 min | 2.2 min |
 | 14-core-package | 3 | 5 min | 1.7 min |
 | 15-component-packages | 3 | 10 min | 3.3 min |
-| 16-ssr-package | 1 | 3 min | 3.0 min |
+| 16-ssr-package | 2 | 4 min | 2.0 min |
 
 ## Accumulated Context
 
@@ -122,6 +122,10 @@ Key decisions are logged in PROJECT.md Key Decisions table.
 - All Lit packages (@lit-labs/*) marked external in vite.config.ts
 - renderToString helper wraps render() + collectResult()
 
+**v2.0 Plan 16-02 Decisions:**
+- Hydration import order: @lit-ui/ssr/hydration must be first import (before any Lit components)
+- Lockfile committed during verification (was missed in 16-01)
+
 ### Pending Todos
 
 None.
@@ -133,10 +137,15 @@ Consider completing v1.1 before or in parallel with v2.0.
 
 ## Session Continuity
 
-Last session: 2026-01-25 05:15 UTC
-Stopped at: Completed 16-01-PLAN.md (SSR package structure)
+Last session: 2026-01-25 05:39 UTC
+Stopped at: Completed 16-02-PLAN.md (Hydration and verification) - Phase 16 COMPLETE
 Resume file: None
 
 ## Next Steps
 
-Continue with 16-02-PLAN.md (SSR integration examples) or verify Phase 16.
+Phase 16 (SSR Package) is complete. Ready for Phase 17 (Framework Integration).
+
+### @lit-ui/ssr Package Summary
+- **Server rendering:** `import { render, html, renderToString, isServer } from '@lit-ui/ssr'`
+- **Client hydration:** `import '@lit-ui/ssr/hydration'` (MUST be first import)
+- **Manual hydration:** `import { hydrate } from '@lit-ui/ssr/hydration'`
