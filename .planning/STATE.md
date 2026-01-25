@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-24)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** v2.0 NPM + SSR - Phase 18 in progress
+**Current focus:** v2.0 NPM + SSR - Phase 18 complete
 
 ## Current Position
 
 Phase: 18 of 20 (CLI Enhancement)
-Plan: 03 of 04
-Status: In progress
-Last activity: 2026-01-25 - Completed 18-03-PLAN.md (Migrate command)
+Plan: 04 of 04
+Status: Phase complete
+Last activity: 2026-01-25 - Completed 18-04-PLAN.md (Final verification)
 
-Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [###################.] 19/40 plans
+Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [####################] 20/40 plans
 
 ## Performance Metrics
 
@@ -28,8 +28,8 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [#################
 - Total execution time: 22 min
 
 **v2.0 Velocity:**
-- Plans completed: 17
-- Total execution time: 52 min
+- Plans completed: 20
+- Total execution time: 58 min
 
 **By Phase:**
 
@@ -48,7 +48,7 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [#################
 | 15-component-packages | 3 | 10 min | 3.3 min |
 | 16-ssr-package | 2 | 4 min | 2.0 min |
 | 17-framework-integration | 3 | 20 min | 6.7 min |
-| 18-cli-enhancement | 3 | 7 min | 2.3 min |
+| 18-cli-enhancement | 4 | 10 min | 2.5 min |
 
 ## Accumulated Context
 
@@ -157,6 +157,10 @@ Key decisions are logged in PROJECT.md Key Decisions table.
 - Show only added/removed lines in diff output for brevity
 - Require confirmation only for modified files (unmodified migrate silently)
 
+**v2.0 Plan 18-04 Decisions:**
+- List command shows package names in npm mode for clarity
+- Mode displayed in list header for user awareness
+
 ### Pending Todos
 
 None.
@@ -168,15 +172,15 @@ Consider completing v1.1 before or in parallel with v2.0.
 
 ## Session Continuity
 
-Last session: 2026-01-25 07:09 UTC
-Stopped at: Completed 18-03-PLAN.md (Migrate command)
+Last session: 2026-01-25
+Stopped at: Completed 18-04-PLAN.md (Final verification)
 Resume file: None
 
 ## Next Steps
 
-Phase 18 (CLI Enhancement) in progress. 3 of 4 plans complete.
+Phase 18 (CLI Enhancement) complete. All 4 plans finished.
 
-### CLI Enhancement Progress
+### CLI Enhancement Summary
 
 **18-01 (Complete):**
 - Mode field added to LitUIConfig
@@ -194,4 +198,9 @@ Phase 18 (CLI Enhancement) in progress. 3 of 4 plans complete.
 - Confirmation prompts before replacing modified files
 - Source files deleted after successful npm install
 
-**Next: 18-04-PLAN.md** - Update command for package updates
+**18-04 (Complete):**
+- Mode-aware list command with package name display
+- Full CLI verification passed
+- All commands work with lit-ui.config.json
+
+**Next Phase: 19** - To be planned
