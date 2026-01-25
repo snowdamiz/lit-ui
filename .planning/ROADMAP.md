@@ -133,7 +133,11 @@ Plans:
   2. Rendered HTML contains `<template shadowrootmode="open">` with component markup
   3. Developer follows hydration guide and components become interactive after page load
   4. Component author uses `import { isServer } from '@lit-ui/ssr'` for conditional logic
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 16-01-PLAN.md - SSR package structure and render utilities
+- [ ] 16-02-PLAN.md - Hydration support and build verification
 
 ### Phase 17: Framework Integration
 **Goal**: Working SSR examples for Next.js, Astro, and generic Node.js
@@ -203,7 +207,7 @@ Plans:
 | 13. Monorepo Infrastructure | v2.0 | 5/5 | Complete | 2026-01-25 |
 | 14. Core Package | v2.0 | 3/3 | Complete | 2026-01-25 |
 | 15. Component Packages | v2.0 | 3/3 | Complete | 2026-01-25 |
-| 16. SSR Package | v2.0 | 0/? | Not started | - |
+| 16. SSR Package | v2.0 | 0/2 | Not started | - |
 | 17. Framework Integration | v2.0 | 0/? | Not started | - |
 | 18. CLI Enhancement | v2.0 | 0/? | Not started | - |
 | 19. Publishing | v2.0 | 0/? | Not started | - |
@@ -211,4 +215,4 @@ Plans:
 
 ---
 *Roadmap created: 2026-01-24*
-*Last updated: 2026-01-25 (Phase 15 complete)*
+*Last updated: 2026-01-25 (Phase 16 planned)*
