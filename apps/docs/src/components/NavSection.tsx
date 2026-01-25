@@ -33,11 +33,33 @@ function DialogIcon() {
   )
 }
 
+function ServerIcon() {
+  return (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="3" width="20" height="6" rx="1" />
+      <rect x="2" y="15" width="20" height="6" rx="1" />
+      <circle cx="6" cy="6" r="1" fill="currentColor" />
+      <circle cx="6" cy="18" r="1" fill="currentColor" />
+    </svg>
+  )
+}
+
+function MigrationIcon() {
+  return (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M5 12h14" />
+      <path d="M13 6l6 6-6 6" />
+    </svg>
+  )
+}
+
 // Map of item titles to their icons
 const iconMap: Record<string, () => JSX.Element> = {
   'Getting Started': BookIcon,
   'Button': ButtonIcon,
   'Dialog': DialogIcon,
+  'SSR Setup': ServerIcon,
+  'Migration': MigrationIcon,
 }
 
 export function NavSection({ title, items }: NavSectionProps) {
