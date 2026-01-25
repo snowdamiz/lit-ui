@@ -10,6 +10,19 @@ Now with **dual distribution**: copy-source ownership via CLI or traditional npm
 
 Developers can use polished, accessible UI components in any framework without lock-in — one component library that works everywhere.
 
+## Current Milestone: v3.0 Theme Customization
+
+**Goal:** Give users build-time control over component appearance through a visual configurator that generates customized CLI commands with baked-in themes.
+
+**Target features:**
+- Visual theme configurator on docs site with live preview
+- OKLCH color customization with auto-calculated shade scales
+- Light/dark mode simultaneous editing
+- CLI `--theme` parameter accepting encoded configuration
+- Theme generates Tailwind CSS layer (integrates with user's Tailwind config)
+- Preset themes (default, dark, blue, green)
+- Shareable theme URLs
+
 ## Requirements
 
 ### Validated
@@ -34,16 +47,28 @@ Developers can use polished, accessible UI components in any framework without l
 
 ### Active
 
-- [ ] Framework integration guides (React, Vue, Svelte)
-- [ ] Theming documentation (design tokens, customization)
-- [ ] Accessibility documentation (WCAG patterns, keyboard navigation)
-- [ ] Search functionality in docs
+- [ ] Visual theme configurator page on docs site with live preview
+- [ ] OKLCH color customization with auto-calculated shade scales
+- [ ] Light/dark mode simultaneous editing
+- [ ] Border radius customization
+- [ ] CLI `--theme` parameter with encoded config
+- [ ] Tailwind CSS layer generation from theme config
+- [ ] Preset themes (default, dark, blue, green)
+- [ ] Shareable theme URLs
+- [ ] Generated npx command display in configurator
 
-### Deferred (v2.1+)
+### Deferred (v3.1+)
 
+- Framework integration guides (React, Vue, Svelte) — from v1.1
+- Accessibility documentation — from v1.1
+- Search functionality in docs — from v1.1
 - Auto-update mechanism for installed components
 - Custom Elements Manifest for IDE integration
 - @lit-ui/react package with React wrappers
+- Runtime theme switching
+- WCAG contrast validation in configurator
+- Typography/animation/shadow customization
+- JSON export/import of theme configuration
 
 ### Out of Scope
 
@@ -52,6 +77,10 @@ Developers can use polished, accessible UI components in any framework without l
 - React-specific features — defeats framework-agnostic value proposition
 - Built-in state management — conflicts with host framework's state management
 - CJS output — modern bundlers handle ESM; CJS adds complexity
+- Server-side theme config storage — keep it simple with URL-encoded params
+- Runtime theme switching — this milestone is build-time customization
+- Per-component different themes — all components share one theme in v3.0
+- Component source modification — theme via Tailwind/CSS, not hardcoded values
 
 ## Context
 
@@ -70,9 +99,18 @@ Developers can use polished, accessible UI components in any framework without l
 - pnpm workspaces with lockstep versioning via changesets
 - Peer dependencies for Lit and @lit-ui/core
 
+**v3.0 context:**
+- Current components use CSS custom properties for some theming
+- Tailwind v4 uses CSS-based configuration (@theme directive)
+- CLI already handles copy-source and npm modes
+- Docs site exists with component pages
+- Theme approach: visual configurator → encoded URL → CLI `--theme` → Tailwind CSS layer
+- colorjs.io for OKLCH color manipulation, lz-string for URL encoding
+
 **Known limitations:**
 - No auto-update for installed components
 - Docs site phases 9-12 incomplete (Framework, Theming, Accessibility, Polish)
+- Current theming is limited to what CSS custom properties expose
 
 ## Constraints
 
@@ -81,6 +119,7 @@ Developers can use polished, accessible UI components in any framework without l
 - **Distribution**: CLI copy-source mode OR npm packages (user choice)
 - **Browser support**: Modern browsers only (constructable stylesheets, Declarative Shadow DOM)
 - **SSR**: Requires @lit-labs/ssr and proper hydration import order
+- **Theme persistence**: URL-encoded in CLI command (no server storage)
 
 ## Key Decisions
 
@@ -100,15 +139,15 @@ Developers can use polished, accessible UI components in any framework without l
 | Components register on both server/client | @lit-labs/ssr provides customElements shim | ✓ Good — SSR renders correctly |
 | Lit as peer dependency | Avoid version conflicts, reduce bundle size | ✓ Good — single Lit instance |
 | Copy-source as default CLI mode | Backward compatibility | ✓ Good — existing users unaffected |
+| Build-time theming over runtime | Simpler, no JS overhead, works with SSR | — Pending |
+| URL-encoded token config | No server needed, shareable commands | — Pending |
+| Tailwind CSS layer for themes | Integrates with user's existing Tailwind setup | — Pending |
+| OKLCH color space | Perceptual uniformity for calculated shades | — Pending |
 
 ## Shipped Milestones
 
 - **v1.0 MVP** (2026-01-24): Button, Dialog, CLI with copy-source distribution
 - **v2.0 NPM + SSR** (2026-01-25): NPM packages, SSR support, dual distribution
 
-## Next Milestone
-
-Complete v1.1 Documentation Site (phases 9-12) to finish framework guides, theming, accessibility, and polish.
-
 ---
-*Last updated: 2026-01-25 after v2.0 milestone*
+*Last updated: 2026-01-25 after v3.0 roadmap created*
