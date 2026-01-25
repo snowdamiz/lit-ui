@@ -8,13 +8,13 @@ export default defineConfig({
   resolve: {
     alias: {
       // Use built library (dist has processed CSS)
-      'lit-ui': resolve(__dirname, '../dist'),
+      'lit-ui': resolve(__dirname, '../../dist'),
     },
   },
   server: {
     port: 5174,
     fs: {
-      allow: ['..'],
+      allow: ['../..'],
     },
   },
 })
