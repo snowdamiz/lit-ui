@@ -1,0 +1,24 @@
+{
+  "name": "@lit-ui/example-node",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "vite build",
+    "start": "node dist/server.js"
+  },
+  "dependencies": {
+    "express": "^5.2.0"
+  },
+  "devDependencies": {
+    "@lit-ui/button": "workspace:*",
+    "@lit-ui/core": "workspace:*",
+    "@lit-ui/dialog": "workspace:*",
+    "@lit-ui/ssr": "workspace:*",
+    "@types/express": "^5.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1"
+  }
+}
