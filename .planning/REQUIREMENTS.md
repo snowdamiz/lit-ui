@@ -9,40 +9,40 @@ Requirements for theme customization milestone. Each maps to roadmap phases.
 
 ### Visual Configurator
 
-- [ ] **CONFIG-01**: Configurator page exists on docs site
-- [ ] **CONFIG-02**: Live preview updates as theme values change
-- [ ] **CONFIG-03**: User can customize primary color
-- [ ] **CONFIG-04**: User can customize secondary, destructive, background, foreground, muted, accent colors
-- [ ] **CONFIG-05**: User can customize border radius
-- [ ] **CONFIG-06**: User can edit light and dark mode simultaneously
-- [ ] **CONFIG-07**: Preset themes available (default, dark, blue, green)
-- [ ] **CONFIG-08**: User can apply preset with one click
-- [ ] **CONFIG-09**: Configurator generates npx command with encoded theme
-- [ ] **CONFIG-10**: User can generate shareable theme URL
-- [ ] **CONFIG-11**: Colors use OKLCH for perceptual uniformity
-- [ ] **CONFIG-12**: Shade scales auto-calculate from primary color
+- [x] **CONFIG-01**: Configurator page exists on docs site
+- [x] **CONFIG-02**: Live preview updates as theme values change
+- [x] **CONFIG-03**: User can customize primary color
+- [x] **CONFIG-04**: User can customize secondary, destructive, background, foreground, muted, accent colors
+- [x] **CONFIG-05**: User can customize border radius
+- [x] **CONFIG-06**: User can edit light and dark mode simultaneously
+- [x] **CONFIG-07**: Preset themes available (default, dark, blue, green)
+- [x] **CONFIG-08**: User can apply preset with one click
+- [x] **CONFIG-09**: Configurator generates npx command with encoded theme
+- [x] **CONFIG-10**: User can generate shareable theme URL
+- [x] **CONFIG-11**: Colors use OKLCH for perceptual uniformity
+- [x] **CONFIG-12**: Shade scales auto-calculate from primary color
 
 ### CLI Theme Integration
 
-- [ ] **CLI-01**: `lit-ui init` accepts `--theme` parameter with encoded config
-- [ ] **CLI-02**: CLI decodes and validates theme config
-- [ ] **CLI-03**: CLI generates/updates Tailwind CSS layer with theme colors
-- [ ] **CLI-04**: Generated CSS integrates with Tailwind v4 @theme or :root
-- [ ] **CLI-05**: Theme applies to all components installed in session
+- [x] **CLI-01**: `lit-ui init` accepts `--theme` parameter with encoded config
+- [x] **CLI-02**: CLI decodes and validates theme config
+- [x] **CLI-03**: CLI generates/updates Tailwind CSS layer with theme colors
+- [x] **CLI-04**: Generated CSS integrates with Tailwind v4 @theme or :root
+- [x] **CLI-05**: Theme applies to all components installed in session
 
 ### Theme System
 
-- [ ] **THEME-01**: Theme colors defined as CSS custom properties
-- [ ] **THEME-02**: Theme integrates with user's Tailwind configuration
-- [ ] **THEME-03**: Light and dark mode variants generated
-- [ ] **THEME-04**: User can override theme via standard CSS mechanisms
-- [ ] **THEME-05**: Components use theme colors via Tailwind utilities or CSS vars
+- [x] **THEME-01**: Theme colors defined as CSS custom properties
+- [x] **THEME-02**: Theme integrates with user's Tailwind configuration
+- [x] **THEME-03**: Light and dark mode variants generated
+- [x] **THEME-04**: User can override theme via standard CSS mechanisms
+- [x] **THEME-05**: Components use theme colors via Tailwind utilities or CSS vars
 
 ### Component Integration
 
-- [ ] **COMP-01**: Installed components display with configured theme
-- [ ] **COMP-02**: Components work correctly in light and dark mode
-- [ ] **COMP-03**: Theme persists across component installations (same session)
+- [x] **COMP-01**: Installed components display with configured theme
+- [x] **COMP-02**: Components work correctly in light and dark mode
+- [x] **COMP-03**: Theme persists across component installations (same session)
 
 ## Future Requirements (v3.1+)
 
@@ -81,31 +81,31 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CONFIG-01 | Phase 23 | Pending |
-| CONFIG-02 | Phase 23 | Pending |
-| CONFIG-03 | Phase 23 | Pending |
-| CONFIG-04 | Phase 23 | Pending |
-| CONFIG-05 | Phase 23 | Pending |
-| CONFIG-06 | Phase 23 | Pending |
-| CONFIG-07 | Phase 24 | Pending |
-| CONFIG-08 | Phase 24 | Pending |
-| CONFIG-09 | Phase 24 | Pending |
-| CONFIG-10 | Phase 24 | Pending |
-| CONFIG-11 | Phase 21 | Pending |
-| CONFIG-12 | Phase 24 | Pending |
+| CONFIG-01 | Phase 23 | Complete |
+| CONFIG-02 | Phase 23 | Complete |
+| CONFIG-03 | Phase 23 | Complete |
+| CONFIG-04 | Phase 23 | Complete |
+| CONFIG-05 | Phase 23 | Complete |
+| CONFIG-06 | Phase 23 | Complete |
+| CONFIG-07 | Phase 24 | Complete |
+| CONFIG-08 | Phase 24 | Complete |
+| CONFIG-09 | Phase 24 | Complete |
+| CONFIG-10 | Phase 24 | Complete |
+| CONFIG-11 | Phase 21 | Complete |
+| CONFIG-12 | Phase 24 | Complete |
 | CLI-01 | Phase 22 | Complete |
 | CLI-02 | Phase 22 | Complete |
 | CLI-03 | Phase 22 | Complete |
 | CLI-04 | Phase 22 | Complete |
 | CLI-05 | Phase 22 | Complete |
-| THEME-01 | Phase 21 | Pending |
-| THEME-02 | Phase 21 | Pending |
-| THEME-03 | Phase 21 | Pending |
-| THEME-04 | Phase 21 | Pending |
-| THEME-05 | Phase 21 | Pending |
-| COMP-01 | Phase 23 | Pending |
-| COMP-02 | Phase 23 | Pending |
-| COMP-03 | Phase 23 | Pending |
+| THEME-01 | Phase 21 | Complete |
+| THEME-02 | Phase 21 | Complete |
+| THEME-03 | Phase 21 | Complete |
+| THEME-04 | Phase 21 | Complete |
+| THEME-05 | Phase 21 | Complete |
+| COMP-01 | Phase 23 | Complete |
+| COMP-02 | Phase 23 | Complete |
+| COMP-03 | Phase 23 | Complete |
 
 **Coverage:**
 - v3.0 requirements: 25 total
@@ -114,4 +114,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-01-25*
-*Last updated: 2026-01-25 (traceability completed)*
+*Last updated: 2026-01-25 (v3.0 complete - all requirements satisfied)*

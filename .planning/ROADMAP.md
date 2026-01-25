@@ -5,7 +5,7 @@
 - ✅ **v1.0 MVP** — Phases 1-5 (shipped 2026-01-24)
 - 🚧 **v1.1 Documentation Site** — Phases 6-12 (in progress)
 - ✅ **v2.0 NPM + SSR** — Phases 13-20 (shipped 2026-01-25) → [archive](milestones/v2.0-ROADMAP.md)
-- 🚧 **v3.0 Theme Customization** — Phases 21-24 (in progress)
+- ✅ **v3.0 Theme Customization** — Phases 21-24 (shipped 2026-01-25)
 
 ## Phases
 
@@ -146,7 +146,7 @@ Plans:
 - [x] 23-03-PLAN.md — Preview, layout, modal, and routing
 - [x] 23-04-PLAN.md — Human verification checkpoint
 
-### Phase 24: Presets and Enhanced Features
+### Phase 24: Presets and Enhanced Features ✓
 **Goal**: Preset themes, shareable URLs, and CLI command generation complete the configurator experience
 **Depends on**: Phase 23
 **Requirements**: CONFIG-07, CONFIG-08, CONFIG-09, CONFIG-10, CONFIG-12
@@ -156,11 +156,12 @@ Plans:
   3. Configurator generates npx command with encoded theme for copying
   4. User can generate shareable theme URL that restores configuration when loaded
   5. Shade scales auto-calculate from primary color (user picks base, variants derived)
-**Plans**: 3 plans
+**Plans**: 3 plans (complete)
+**Completed**: 2026-01-25
 Plans:
-- [ ] 24-01-PLAN.md — Foundation: export generateScale, presets data, loadThemeConfig
-- [ ] 24-02-PLAN.md — UI components: PresetSelector, ShareButton, ShadeScaleDisplay
-- [ ] 24-03-PLAN.md — Integration: wire components, URL sync, verification
+- [x] 24-01-PLAN.md — Foundation: export generateScale, presets data, loadThemeConfig
+- [x] 24-02-PLAN.md — UI components: PresetSelector, ShareButton, ShadeScaleDisplay
+- [x] 24-03-PLAN.md — Integration: wire components, URL sync, verification
 
 ---
 
@@ -197,7 +198,7 @@ Plans:
 | 21. Theme System Foundation | v3.0 | 5/5 | Complete | 2026-01-25 |
 | 22. CLI Theme Integration | v3.0 | 4/4 | Complete | 2026-01-25 |
 | 23. Visual Configurator Core | v3.0 | 4/4 | Complete | 2026-01-25 |
-| 24. Presets and Enhanced Features | v3.0 | 0/3 | Planned | - |
+| 24. Presets and Enhanced Features | v3.0 | 3/3 | Complete | 2026-01-25 |
 
 ---
 *Roadmap created: 2026-01-24*
