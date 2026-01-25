@@ -2,7 +2,7 @@
   "$schema": "https://unpkg.com/@changesets/config@3.1.1/schema.json",
   "changelog": "@changesets/changelog-github",
   "commit": false,
-  "fixed": [["@lit-ui/core", "@lit-ui/button", "@lit-ui/dialog"]],
+  "fixed": [["@lit-ui/core", "@lit-ui/button", "@lit-ui/dialog", "@lit-ui/ssr"]],
   "linked": [],
   "access": "public",
   "baseBranch": "main",
