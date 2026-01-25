@@ -147,7 +147,12 @@ Plans:
   1. Next.js example repo demonstrates SSR with lit-ui components
   2. Astro example repo demonstrates SSR with lit-ui components
   3. Generic Node.js example shows how to SSR in any framework
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 17-01-PLAN.md - Node.js/Express SSR example (direct @lit-ui/ssr usage)
+- [ ] 17-02-PLAN.md - Next.js App Router SSR example (withLitSSR + 'use client')
+- [ ] 17-03-PLAN.md - Astro SSR example (@semantic-ui/astro-lit + client:visible)
 
 ### Phase 18: CLI Enhancement
 **Goal**: CLI supports both copy-source and npm installation modes
