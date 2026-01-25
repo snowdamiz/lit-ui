@@ -8,13 +8,14 @@ import { PrevNextNav } from '../../components/PrevNextNav';
 import { CodeBlock } from '../../components/CodeBlock';
 
 // Side-effect import to register custom elements from built library
-import 'lit-ui';
+import '@lit-ui/button';
+import '@lit-ui/dialog';
 
-// JSX type declaration for ui-dialog (ui-button is declared in ButtonPage.tsx)
+// JSX type declaration for lui-dialog (lui-button is declared in LivePreview.tsx)
 declare global {
   namespace JSX {
     interface IntrinsicElements {
-      'ui-dialog': React.DetailedHTMLProps<
+      'lui-dialog': React.DetailedHTMLProps<
         React.HTMLAttributes<HTMLElement> & {
           open?: boolean;
           size?: 'sm' | 'md' | 'lg';
@@ -91,171 +92,171 @@ const dialogParts: CSSPartDef[] = [
 // CSS Custom Properties data
 type CSSVarDef = { name: string; default: string; description: string };
 const dialogCSSVars: CSSVarDef[] = [
-  { name: '--ui-dialog-radius', default: 'var(--radius-lg)', description: 'Border radius of the dialog content.' },
-  { name: '--ui-dialog-shadow', default: 'var(--shadow-lg)', description: 'Box shadow of the dialog content.' },
-  { name: '--ui-dialog-padding', default: 'var(--spacing-6)', description: 'Inner padding of the dialog content.' },
+  { name: '--lui-dialog-radius', default: 'var(--radius-lg)', description: 'Border radius of the dialog content.' },
+  { name: '--lui-dialog-shadow', default: 'var(--shadow-lg)', description: 'Box shadow of the dialog content.' },
+  { name: '--lui-dialog-padding', default: 'var(--spacing-6)', description: 'Inner padding of the dialog content.' },
 ];
 
 // Code examples for frameworks
 const basicDialogCode = {
-  html: `<ui-button onclick="document.getElementById('demo-dialog').open = true">
+  html: `<lui-button onclick="document.getElementById('demo-dialog').open = true">
   Open Dialog
-</ui-button>
+</lui-button>
 
-<ui-dialog id="demo-dialog" show-close-button>
+<lui-dialog id="demo-dialog" show-close-button>
   <span slot="title">Dialog Title</span>
   <p>This is the dialog content. You can put any content here.</p>
-</ui-dialog>`,
+</lui-dialog>`,
   react: `const [open, setOpen] = useState(false);
 
-<ui-button onClick={() => setOpen(true)}>Open Dialog</ui-button>
-<ui-dialog open={open} show-close-button onClose={() => setOpen(false)}>
+<lui-button onClick={() => setOpen(true)}>Open Dialog</lui-button>
+<lui-dialog open={open} show-close-button onClose={() => setOpen(false)}>
   <span slot="title">Dialog Title</span>
   <p>This is the dialog content. You can put any content here.</p>
-</ui-dialog>`,
+</lui-dialog>`,
   vue: `<script setup>
 const isOpen = ref(false);
 </script>
 
 <template>
-  <ui-button @click="isOpen = true">Open Dialog</ui-button>
-  <ui-dialog :open="isOpen" show-close-button @close="isOpen = false">
+  <lui-button @click="isOpen = true">Open Dialog</lui-button>
+  <lui-dialog :open="isOpen" show-close-button @close="isOpen = false">
     <span slot="title">Dialog Title</span>
     <p>This is the dialog content. You can put any content here.</p>
-  </ui-dialog>
+  </lui-dialog>
 </template>`,
   svelte: `<script>
   let isOpen = false;
 </script>
 
-<ui-button on:click={() => isOpen = true}>Open Dialog</ui-button>
-<ui-dialog open={isOpen} show-close-button on:close={() => isOpen = false}>
+<lui-button on:click={() => isOpen = true}>Open Dialog</lui-button>
+<lui-dialog open={isOpen} show-close-button on:close={() => isOpen = false}>
   <span slot="title">Dialog Title</span>
   <p>This is the dialog content. You can put any content here.</p>
-</ui-dialog>`,
+</lui-dialog>`,
 };
 
 const confirmDialogCode = {
-  html: `<ui-dialog id="confirm-dialog">
+  html: `<lui-dialog id="confirm-dialog">
   <span slot="title">Confirm Action</span>
   <p>Are you sure you want to proceed? This action cannot be undone.</p>
   <div slot="footer">
-    <ui-button variant="outline" onclick="this.closest('ui-dialog').open = false">
+    <lui-button variant="outline" onclick="this.closest('lui-dialog').open = false">
       Cancel
-    </ui-button>
-    <ui-button variant="destructive" onclick="handleConfirm()">
+    </lui-button>
+    <lui-button variant="destructive" onclick="handleConfirm()">
       Confirm
-    </ui-button>
+    </lui-button>
   </div>
-</ui-dialog>`,
-  react: `<ui-dialog open={open} onClose={() => setOpen(false)}>
+</lui-dialog>`,
+  react: `<lui-dialog open={open} onClose={() => setOpen(false)}>
   <span slot="title">Confirm Action</span>
   <p>Are you sure you want to proceed? This action cannot be undone.</p>
   <div slot="footer">
-    <ui-button variant="outline" onClick={() => setOpen(false)}>
+    <lui-button variant="outline" onClick={() => setOpen(false)}>
       Cancel
-    </ui-button>
-    <ui-button variant="destructive" onClick={handleConfirm}>
+    </lui-button>
+    <lui-button variant="destructive" onClick={handleConfirm}>
       Confirm
-    </ui-button>
+    </lui-button>
   </div>
-</ui-dialog>`,
-  vue: `<ui-dialog :open="isOpen" @close="isOpen = false">
+</lui-dialog>`,
+  vue: `<lui-dialog :open="isOpen" @close="isOpen = false">
   <span slot="title">Confirm Action</span>
   <p>Are you sure you want to proceed? This action cannot be undone.</p>
   <div slot="footer">
-    <ui-button variant="outline" @click="isOpen = false">
+    <lui-button variant="outline" @click="isOpen = false">
       Cancel
-    </ui-button>
-    <ui-button variant="destructive" @click="handleConfirm">
+    </lui-button>
+    <lui-button variant="destructive" @click="handleConfirm">
       Confirm
-    </ui-button>
+    </lui-button>
   </div>
-</ui-dialog>`,
-  svelte: `<ui-dialog open={isOpen} on:close={() => isOpen = false}>
+</lui-dialog>`,
+  svelte: `<lui-dialog open={isOpen} on:close={() => isOpen = false}>
   <span slot="title">Confirm Action</span>
   <p>Are you sure you want to proceed? This action cannot be undone.</p>
   <div slot="footer">
-    <ui-button variant="outline" on:click={() => isOpen = false}>
+    <lui-button variant="outline" on:click={() => isOpen = false}>
       Cancel
-    </ui-button>
-    <ui-button variant="destructive" on:click={handleConfirm}>
+    </lui-button>
+    <lui-button variant="destructive" on:click={handleConfirm}>
       Confirm
-    </ui-button>
+    </lui-button>
   </div>
-</ui-dialog>`,
+</lui-dialog>`,
 };
 
 // Class passthrough example code
 const classPassthroughCode = {
-  html: `<ui-dialog id="wide-dialog" dialog-class="max-w-2xl">
+  html: `<lui-dialog id="wide-dialog" dialog-class="max-w-2xl">
   <span slot="title">Wide Dialog</span>
   <p>This dialog uses dialog-class for a wider max-width.</p>
-</ui-dialog>
+</lui-dialog>
 
-<ui-dialog id="styled-dialog" dialog-class="bg-gradient-to-br from-gray-50 to-gray-100">
+<lui-dialog id="styled-dialog" dialog-class="bg-gradient-to-br from-gray-50 to-gray-100">
   <span slot="title">Styled Dialog</span>
   <p>This dialog has a gradient background via Tailwind classes.</p>
-</ui-dialog>`,
-  react: `<ui-dialog open={open} dialog-class="max-w-2xl" onClose={() => setOpen(false)}>
+</lui-dialog>`,
+  react: `<lui-dialog open={open} dialog-class="max-w-2xl" onClose={() => setOpen(false)}>
   <span slot="title">Wide Dialog</span>
   <p>This dialog uses dialog-class for a wider max-width.</p>
-</ui-dialog>
+</lui-dialog>
 
-<ui-dialog open={open} dialog-class="bg-gradient-to-br from-gray-50 to-gray-100">
+<lui-dialog open={open} dialog-class="bg-gradient-to-br from-gray-50 to-gray-100">
   <span slot="title">Styled Dialog</span>
   <p>This dialog has a gradient background via Tailwind classes.</p>
-</ui-dialog>`,
-  vue: `<ui-dialog :open="isOpen" dialog-class="max-w-2xl" @close="isOpen = false">
+</lui-dialog>`,
+  vue: `<lui-dialog :open="isOpen" dialog-class="max-w-2xl" @close="isOpen = false">
   <span slot="title">Wide Dialog</span>
   <p>This dialog uses dialog-class for a wider max-width.</p>
-</ui-dialog>
+</lui-dialog>
 
-<ui-dialog :open="isOpen" dialog-class="bg-gradient-to-br from-gray-50 to-gray-100">
+<lui-dialog :open="isOpen" dialog-class="bg-gradient-to-br from-gray-50 to-gray-100">
   <span slot="title">Styled Dialog</span>
   <p>This dialog has a gradient background via Tailwind classes.</p>
-</ui-dialog>`,
-  svelte: `<ui-dialog open={isOpen} dialog-class="max-w-2xl" on:close={() => isOpen = false}>
+</lui-dialog>`,
+  svelte: `<lui-dialog open={isOpen} dialog-class="max-w-2xl" on:close={() => isOpen = false}>
   <span slot="title">Wide Dialog</span>
   <p>This dialog uses dialog-class for a wider max-width.</p>
-</ui-dialog>
+</lui-dialog>
 
-<ui-dialog open={isOpen} dialog-class="bg-gradient-to-br from-gray-50 to-gray-100">
+<lui-dialog open={isOpen} dialog-class="bg-gradient-to-br from-gray-50 to-gray-100">
   <span slot="title">Styled Dialog</span>
   <p>This dialog has a gradient background via Tailwind classes.</p>
-</ui-dialog>`,
+</lui-dialog>`,
 };
 
 // CSS Custom Properties example code
 const cssVarsCode = `/* Global override - affects all dialogs */
 :root {
-  --ui-dialog-radius: 1rem;
-  --ui-dialog-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
-  --ui-dialog-padding: 2rem;
+  --lui-dialog-radius: 1rem;
+  --lui-dialog-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+  --lui-dialog-padding: 2rem;
 }
 
 /* Scoped override - only affects dialogs in this container */
 .compact-dialogs {
-  --ui-dialog-padding: 1rem;
-  --ui-dialog-radius: 0.5rem;
+  --lui-dialog-padding: 1rem;
+  --lui-dialog-radius: 0.5rem;
 }`;
 
 // CSS Parts example code
 const cssPartsCode = `/* Style the dialog content with complete control */
-ui-dialog::part(content) {
+lui-dialog::part(content) {
   background: linear-gradient(135deg, #1a1a2e, #16213e);
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 /* Style the header */
-ui-dialog::part(header) {
+lui-dialog::part(header) {
   color: white;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   padding-bottom: 1rem;
 }
 
 /* Style the footer */
-ui-dialog::part(footer) {
+lui-dialog::part(footer) {
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   padding-top: 1rem;
 }`;
@@ -275,11 +276,11 @@ function BasicDialogDemo() {
 
   return (
     <div>
-      <ui-button onClick={() => setOpen(true)}>Open Dialog</ui-button>
-      <ui-dialog ref={dialogRef} {...(open ? { open: true } : {})} show-close-button>
+      <lui-button onClick={() => setOpen(true)}>Open Dialog</lui-button>
+      <lui-dialog ref={dialogRef} {...(open ? { open: true } : {})} show-close-button>
         <span slot="title">Dialog Title</span>
         <p>This is the dialog content. You can put any content here.</p>
-      </ui-dialog>
+      </lui-dialog>
     </div>
   );
 }
@@ -304,21 +305,21 @@ function ConfirmDialogDemo() {
 
   return (
     <div>
-      <ui-button variant="destructive" onClick={() => setOpen(true)}>
+      <lui-button variant="destructive" onClick={() => setOpen(true)}>
         Delete Item
-      </ui-button>
-      <ui-dialog ref={dialogRef} {...(open ? { open: true } : {})}>
+      </lui-button>
+      <lui-dialog ref={dialogRef} {...(open ? { open: true } : {})}>
         <span slot="title">Confirm Action</span>
         <p>Are you sure you want to proceed? This action cannot be undone.</p>
         <div slot="footer">
-          <ui-button variant="outline" onClick={() => setOpen(false)}>
+          <lui-button variant="outline" onClick={() => setOpen(false)}>
             Cancel
-          </ui-button>
-          <ui-button variant="destructive" onClick={handleConfirm}>
+          </lui-button>
+          <lui-button variant="destructive" onClick={handleConfirm}>
             Confirm
-          </ui-button>
+          </lui-button>
         </div>
-      </ui-dialog>
+      </lui-dialog>
     </div>
   );
 }
@@ -351,20 +352,20 @@ function ClassPassthroughDemo() {
 
   return (
     <div className="flex flex-wrap gap-3">
-      <ui-button onClick={() => setWideOpen(true)}>Wide Dialog</ui-button>
-      <ui-button variant="secondary" onClick={() => setStyledOpen(true)}>Styled Dialog</ui-button>
+      <lui-button onClick={() => setWideOpen(true)}>Wide Dialog</lui-button>
+      <lui-button variant="secondary" onClick={() => setStyledOpen(true)}>Styled Dialog</lui-button>
 
-      <ui-dialog ref={wideDialogRef} {...(wideOpen ? { open: true } : {})} dialog-class="max-w-2xl" show-close-button>
+      <lui-dialog ref={wideDialogRef} {...(wideOpen ? { open: true } : {})} dialog-class="max-w-2xl" show-close-button>
         <span slot="title">Wide Dialog</span>
         <p>This dialog uses <code className="px-1.5 py-0.5 bg-gray-100 rounded text-xs font-mono">dialog-class="max-w-2xl"</code> for a wider max-width than the default.</p>
         <p className="mt-2 text-gray-500 text-sm">The extra width is useful for content that needs more horizontal space, like tables or forms with side-by-side fields.</p>
-      </ui-dialog>
+      </lui-dialog>
 
-      <ui-dialog ref={styledDialogRef} {...(styledOpen ? { open: true } : {})} dialog-class="bg-gradient-to-br from-gray-50 to-gray-100" show-close-button>
+      <lui-dialog ref={styledDialogRef} {...(styledOpen ? { open: true } : {})} dialog-class="bg-gradient-to-br from-gray-50 to-gray-100" show-close-button>
         <span slot="title">Styled Dialog</span>
         <p>This dialog has a gradient background applied via Tailwind classes.</p>
         <p className="mt-2 text-gray-500 text-sm">Use <code className="px-1.5 py-0.5 bg-white rounded text-xs font-mono">dialog-class</code> to add any Tailwind utilities for per-instance customization.</p>
-      </ui-dialog>
+      </lui-dialog>
     </div>
   );
 }

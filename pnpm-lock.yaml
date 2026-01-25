@@ -20,6 +20,15 @@ importers:
 
   apps/docs:
     dependencies:
+      '@lit-ui/button':
+        specifier: workspace:*
+        version: link:../../packages/button
+      '@lit-ui/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+      '@lit-ui/dialog':
+        specifier: workspace:*
+        version: link:../../packages/dialog
       '@radix-ui/react-collapsible':
         specifier: ^1.1.12
         version: 1.1.12(@types/react-dom@18.3.7(@types/react@18.3.27))(@types/react@18.3.27)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -105,11 +114,10 @@ importers:
         version: 6.4.1(@types/node@25.0.10)(jiti@2.6.1)(lightningcss@1.30.2)
 
   packages/button:
-    dependencies:
+    devDependencies:
       '@lit-ui/core':
         specifier: workspace:*
         version: link:../core
-    devDependencies:
       '@lit-ui/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
@@ -203,11 +211,10 @@ importers:
         version: 4.5.4(@types/node@25.0.10)(rollup@4.56.0)(typescript@5.9.3)(vite@7.3.1(@types/node@25.0.10)(jiti@2.6.1)(lightningcss@1.30.2))
 
   packages/dialog:
-    dependencies:
+    devDependencies:
       '@lit-ui/core':
         specifier: workspace:*
         version: link:../core
-    devDependencies:
       '@lit-ui/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config

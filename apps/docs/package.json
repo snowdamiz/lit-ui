@@ -9,6 +9,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@lit-ui/button": "workspace:*",
+    "@lit-ui/core": "workspace:*",
+    "@lit-ui/dialog": "workspace:*",
     "@radix-ui/react-collapsible": "^1.1.12",
     "@radix-ui/react-dialog": "^1.1.15",
     "framer-motion": "^11.15.0",

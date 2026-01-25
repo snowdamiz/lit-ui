@@ -6,9 +6,9 @@ import { PrevNextNav } from '../../components/PrevNextNav';
 import { CodeBlock } from '../../components/CodeBlock';
 
 // Side-effect import to register custom elements from built library
-import 'lit-ui';
+import '@lit-ui/button';
 
-// Note: JSX types for ui-button are declared in components/LivePreview.tsx
+// Note: JSX types for llui-button are declared in components/LivePreview.tsx
 
 // Props data from source Button component
 const buttonProps: PropDef[] = [
@@ -78,64 +78,64 @@ const buttonParts: CSSPartDef[] = [
 // CSS Custom Properties data
 type CSSVarDef = { name: string; default: string; description: string };
 const buttonCSSVars: CSSVarDef[] = [
-  { name: '--ui-button-radius', default: 'var(--radius-md)', description: 'Border radius of the button.' },
-  { name: '--ui-button-shadow', default: 'none', description: 'Box shadow of the button.' },
-  { name: '--ui-button-font-weight', default: '500', description: 'Font weight of the button text.' },
+  { name: '--lui-button-radius', default: 'var(--radius-md)', description: 'Border radius of the button.' },
+  { name: '--lui-button-shadow', default: 'none', description: 'Box shadow of the button.' },
+  { name: '--lui-button-font-weight', default: '500', description: 'Font weight of the button text.' },
 ];
 
 // Code examples - web components use same syntax in all frameworks
-const variantsCode = `<ui-button variant="primary">Primary</ui-button>
-<ui-button variant="secondary">Secondary</ui-button>
-<ui-button variant="outline">Outline</ui-button>
-<ui-button variant="ghost">Ghost</ui-button>
-<ui-button variant="destructive">Destructive</ui-button>`;
+const variantsCode = `<lui-button variant="primary">Primary</lui-button>
+<lui-button variant="secondary">Secondary</lui-button>
+<lui-button variant="outline">Outline</lui-button>
+<lui-button variant="ghost">Ghost</lui-button>
+<lui-button variant="destructive">Destructive</lui-button>`;
 
-const sizesCode = `<ui-button size="sm">Small</ui-button>
-<ui-button size="md">Medium</ui-button>
-<ui-button size="lg">Large</ui-button>`;
+const sizesCode = `<lui-button size="sm">Small</lui-button>
+<lui-button size="md">Medium</lui-button>
+<lui-button size="lg">Large</lui-button>`;
 
-const loadingCode = `<ui-button loading>Loading...</ui-button>
-<ui-button variant="secondary" loading>Saving</ui-button>`;
+const loadingCode = `<lui-button loading>Loading...</lui-button>
+<lui-button variant="secondary" loading>Saving</lui-button>`;
 
-const iconCode = `<ui-button>
+const iconCode = `<lui-button>
   <svg slot="icon-start" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
   Add Item
-</ui-button>
-<ui-button variant="outline">
+</lui-button>
+<lui-button variant="outline">
   Settings
   <svg slot="icon-end" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-</ui-button>`;
+</lui-button>`;
 
-const disabledCode = `<ui-button disabled>Disabled</ui-button>
-<ui-button variant="destructive" disabled>Cannot Delete</ui-button>`;
+const disabledCode = `<lui-button disabled>Disabled</lui-button>
+<lui-button variant="destructive" disabled>Cannot Delete</lui-button>`;
 
-const customStyleCode = `<ui-button btn-class="rounded-full">Pill Button</ui-button>
-<ui-button btn-class="shadow-lg">Shadow Button</ui-button>
-<ui-button variant="secondary" btn-class="font-bold">Bold Text</ui-button>`;
+const customStyleCode = `<lui-button btn-class="rounded-full">Pill Button</lui-button>
+<lui-button btn-class="shadow-lg">Shadow Button</lui-button>
+<lui-button variant="secondary" btn-class="font-bold">Bold Text</lui-button>`;
 
 // CSS Custom Properties example code
 const cssVarsCode = `/* Global override - all buttons become pill-shaped */
 :root {
-  --ui-button-radius: 9999px;
-  --ui-button-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --lui-button-radius: 9999px;
+  --lui-button-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 /* Scoped override - only affects buttons in this container */
 .card-actions {
-  --ui-button-radius: 0.25rem;
-  --ui-button-shadow: none;
+  --lui-button-radius: 0.25rem;
+  --lui-button-shadow: none;
 }`;
 
 // CSS Parts example code
 const cssPartsCode = `/* Style the inner button element with complete control */
-ui-button::part(button) {
+lui-button::part(button) {
   background: linear-gradient(135deg, #667eea, #764ba2);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 /* Style on hover */
-ui-button::part(button):hover {
+lui-button::part(button):hover {
   background: linear-gradient(135deg, #764ba2, #667eea);
 }`;
 
@@ -183,11 +183,11 @@ export function ButtonPage() {
             <ExampleBlock
               preview={
                 <div className="flex flex-wrap gap-3">
-                  <ui-button variant="primary">Primary</ui-button>
-                  <ui-button variant="secondary">Secondary</ui-button>
-                  <ui-button variant="outline">Outline</ui-button>
-                  <ui-button variant="ghost">Ghost</ui-button>
-                  <ui-button variant="destructive">Destructive</ui-button>
+                  <lui-button variant="primary">Primary</lui-button>
+                  <lui-button variant="secondary">Secondary</lui-button>
+                  <lui-button variant="outline">Outline</lui-button>
+                  <lui-button variant="ghost">Ghost</lui-button>
+                  <lui-button variant="destructive">Destructive</lui-button>
                 </div>
               }
               html={variantsCode}
@@ -206,9 +206,9 @@ export function ButtonPage() {
             <ExampleBlock
               preview={
                 <div className="flex flex-wrap items-center gap-3">
-                  <ui-button size="sm">Small</ui-button>
-                  <ui-button size="md">Medium</ui-button>
-                  <ui-button size="lg">Large</ui-button>
+                  <lui-button size="sm">Small</lui-button>
+                  <lui-button size="md">Medium</lui-button>
+                  <lui-button size="lg">Large</lui-button>
                 </div>
               }
               html={sizesCode}
@@ -227,8 +227,8 @@ export function ButtonPage() {
             <ExampleBlock
               preview={
                 <div className="flex flex-wrap gap-3">
-                  <ui-button loading>Loading...</ui-button>
-                  <ui-button variant="secondary" loading>Saving</ui-button>
+                  <lui-button loading>Loading...</lui-button>
+                  <lui-button variant="secondary" loading>Saving</lui-button>
                 </div>
               }
               html={loadingCode}
@@ -247,14 +247,14 @@ export function ButtonPage() {
             <ExampleBlock
               preview={
                 <div className="flex flex-wrap gap-3">
-                  <ui-button>
+                  <lui-button>
                     <span slot="icon-start" dangerouslySetInnerHTML={{ __html: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>' }} />
                     Add Item
-                  </ui-button>
-                  <ui-button variant="outline">
+                  </lui-button>
+                  <lui-button variant="outline">
                     Settings
                     <span slot="icon-end" dangerouslySetInnerHTML={{ __html: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>' }} />
-                  </ui-button>
+                  </lui-button>
                 </div>
               }
               html={iconCode}
@@ -273,8 +273,8 @@ export function ButtonPage() {
             <ExampleBlock
               preview={
                 <div className="flex flex-wrap gap-3">
-                  <ui-button disabled>Disabled</ui-button>
-                  <ui-button variant="destructive" disabled>Cannot Delete</ui-button>
+                  <lui-button disabled>Disabled</lui-button>
+                  <lui-button variant="destructive" disabled>Cannot Delete</lui-button>
                 </div>
               }
               html={disabledCode}
@@ -304,12 +304,12 @@ export function ButtonPage() {
             </p>
             <div className="mb-4">
               <style>{`
-                .demo-pill-buttons { --ui-button-radius: 9999px; --ui-button-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+                .demo-pill-buttons { --lui-button-radius: 9999px; --lui-button-shadow: 0 4px 6px rgba(0,0,0,0.1); }
               `}</style>
               <div className="demo-pill-buttons flex flex-wrap gap-3 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                <ui-button>Pill Button</ui-button>
-                <ui-button variant="secondary">With Shadow</ui-button>
-                <ui-button variant="outline">Styled via CSS Vars</ui-button>
+                <lui-button>Pill Button</lui-button>
+                <lui-button variant="secondary">With Shadow</lui-button>
+                <lui-button variant="outline">Styled via CSS Vars</lui-button>
               </div>
             </div>
             <CodeBlock code={cssVarsCode} language="css" />
@@ -324,9 +324,9 @@ export function ButtonPage() {
             <ExampleBlock
               preview={
                 <div className="flex flex-wrap gap-3">
-                  <ui-button btn-class="rounded-full">Pill Button</ui-button>
-                  <ui-button btn-class="shadow-lg">Shadow Button</ui-button>
-                  <ui-button variant="secondary" btn-class="font-bold">Bold Text</ui-button>
+                  <lui-button btn-class="rounded-full">Pill Button</lui-button>
+                  <lui-button btn-class="shadow-lg">Shadow Button</lui-button>
+                  <lui-button variant="secondary" btn-class="font-bold">Bold Text</lui-button>
                 </div>
               }
               html={customStyleCode}
@@ -348,17 +348,17 @@ export function ButtonPage() {
             </p>
             <div className="mb-4">
               <style>{`
-                .demo-gradient-buttons ui-button::part(button) {
+                .demo-gradient-buttons lui-button::part(button) {
                   background: linear-gradient(135deg, #667eea, #764ba2);
                   text-transform: uppercase;
                   letter-spacing: 0.05em;
                 }
-                .demo-gradient-buttons ui-button::part(button):hover {
+                .demo-gradient-buttons lui-button::part(button):hover {
                   background: linear-gradient(135deg, #764ba2, #667eea);
                 }
               `}</style>
               <div className="demo-gradient-buttons flex flex-wrap gap-3 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                <ui-button>Gradient Button</ui-button>
+                <lui-button>Gradient Button</lui-button>
               </div>
             </div>
             <CodeBlock code={cssPartsCode} language="css" />
