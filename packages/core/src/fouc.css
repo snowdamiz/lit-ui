@@ -1,0 +1,35 @@
+/**
+ * FOUC Prevention for @lit-ui components
+ *
+ * Include this CSS in your app's global styles to prevent
+ * Flash of Unstyled Content before component JS loads.
+ *
+ * Usage:
+ * @import '@lit-ui/core/fouc.css';
+ *
+ * Or copy these rules to your own CSS.
+ */
+
+/* Hide undefined custom elements */
+ui-button:not(:defined),
+ui-dialog:not(:defined) {
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* Optional: Show skeleton placeholder instead of hiding */
+/*
+ui-button:not(:defined) {
+  display: inline-block;
+  min-width: 80px;
+  min-height: 36px;
+  background: var(--color-muted, #e5e5e5);
+  border-radius: var(--radius-md, 0.375rem);
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+*/

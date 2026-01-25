@@ -17,9 +17,10 @@
     "./utils": {
       "types": "./dist/utils/index.d.ts",
       "import": "./dist/utils/index.js"
-    }
+    },
+    "./fouc.css": "./src/fouc.css"
   },
-  "files": ["dist"],
+  "files": ["dist", "src/fouc.css"],
   "sideEffects": false,
   "scripts": {
     "dev": "vite build --watch",
