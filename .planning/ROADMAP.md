@@ -84,8 +84,8 @@
 **Plans**: 5 plans
 
 Plans:
-- [ ] 13-01-PLAN.md - Workspace foundation (pnpm-workspace.yaml, root package.json, changesets)
-- [ ] 13-02-PLAN.md - Shared configs (@lit-ui/typescript-config, @lit-ui/vite-config)
+- [x] 13-01-PLAN.md - Workspace foundation (pnpm-workspace.yaml, root package.json, changesets)
+- [x] 13-02-PLAN.md - Shared configs (@lit-ui/typescript-config, @lit-ui/vite-config)
 - [ ] 13-03-PLAN.md - Package scaffolding (core, button, dialog stubs)
 - [ ] 13-04-PLAN.md - Apps migration (docs, landing to apps/)
 - [ ] 13-05-PLAN.md - Verification and cleanup (install, build, changeset test)
@@ -190,7 +190,7 @@ Plans:
 | 10. Theming Docs | v1.1 | 0/? | Not started | - |
 | 11. Accessibility Docs | v1.1 | 0/? | Not started | - |
 | 12. Polish | v1.1 | 0/? | Not started | - |
-| 13. Monorepo Infrastructure | v2.0 | 0/5 | Planned | - |
+| 13. Monorepo Infrastructure | v2.0 | 2/5 | In progress | - |
 | 14. Core Package | v2.0 | 0/? | Not started | - |
 | 15. Component Packages | v2.0 | 0/? | Not started | - |
 | 16. SSR Package | v2.0 | 0/? | Not started | - |
@@ -201,4 +201,4 @@ Plans:
 
 ---
 *Roadmap created: 2026-01-24*
-*Last updated: 2026-01-24*
+*Last updated: 2026-01-25*
