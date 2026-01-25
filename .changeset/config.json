@@ -1,0 +1,11 @@
+{
+  "$schema": "https://unpkg.com/@changesets/config@3.1.1/schema.json",
+  "changelog": "@changesets/changelog-github",
+  "commit": false,
+  "fixed": [["@lit-ui/core", "@lit-ui/button", "@lit-ui/dialog"]],
+  "linked": [],
+  "access": "public",
+  "baseBranch": "main",
+  "updateInternalDependencies": "patch",
+  "ignore": ["@lit-ui/typescript-config", "@lit-ui/vite-config", "lit-ui-docs", "lit-ui-landing"]
+}
