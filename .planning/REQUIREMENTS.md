@@ -24,7 +24,7 @@ Requirements for theme customization milestone. Each maps to roadmap phases.
 
 ### CLI Theme Integration
 
-- [ ] **CLI-01**: `lit-ui add` accepts `--theme` parameter with encoded config
+- [ ] **CLI-01**: `lit-ui init` accepts `--theme` parameter with encoded config
 - [ ] **CLI-02**: CLI decodes and validates theme config
 - [ ] **CLI-03**: CLI generates/updates Tailwind CSS layer with theme colors
 - [ ] **CLI-04**: Generated CSS integrates with Tailwind v4 @theme or :root
@@ -93,11 +93,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CONFIG-10 | Phase 24 | Pending |
 | CONFIG-11 | Phase 21 | Pending |
 | CONFIG-12 | Phase 24 | Pending |
-| CLI-01 | Phase 22 | Pending |
-| CLI-02 | Phase 22 | Pending |
-| CLI-03 | Phase 22 | Pending |
-| CLI-04 | Phase 22 | Pending |
-| CLI-05 | Phase 22 | Pending |
+| CLI-01 | Phase 22 | Complete |
+| CLI-02 | Phase 22 | Complete |
+| CLI-03 | Phase 22 | Complete |
+| CLI-04 | Phase 22 | Complete |
+| CLI-05 | Phase 22 | Complete |
 | THEME-01 | Phase 21 | Pending |
 | THEME-02 | Phase 21 | Pending |
 | THEME-03 | Phase 21 | Pending |
