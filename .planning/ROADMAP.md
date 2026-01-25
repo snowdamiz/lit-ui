@@ -115,12 +115,17 @@ Plans:
 **Depends on**: Phase 21
 **Requirements**: CLI-01, CLI-02, CLI-03, CLI-04, CLI-05
 **Success Criteria** (what must be TRUE):
-  1. `lit-ui add --theme <encoded>` parses and validates the theme parameter
+  1. `lit-ui init --theme <encoded>` parses and validates the theme parameter
   2. CLI decodes theme config and reports validation errors clearly
-  3. CLI generates/updates lit-ui-tokens.css with theme colors
-  4. Theme applies to all components installed in the same CLI session
+  3. CLI generates/updates lit-ui-theme.css with theme colors
+  4. Theme applies via `lit-ui theme <encoded>` command post-init
   5. Generated CSS uses :root variables that cascade into component Shadow DOM
-**Plans**: TBD
+**Plans**: 4 plans
+Plans:
+- [ ] 22-01-PLAN.md — Shared theme utilities (detect-css-entry, inject-import, apply-theme)
+- [ ] 22-02-PLAN.md — Init command --theme parameter
+- [ ] 22-03-PLAN.md — Standalone theme command
+- [ ] 22-04-PLAN.md — CLI theme integration tests
 
 ### Phase 23: Visual Configurator Core
 **Goal**: Users can visually customize theme colors and see live preview of components
@@ -179,10 +184,10 @@ Plans:
 | 19. Publishing | v2.0 | 4/4 | Complete | 2026-01-25 |
 | 20. Documentation | v2.0 | 3/3 | Complete | 2026-01-25 |
 | 21. Theme System Foundation | v3.0 | 5/5 | Complete | 2026-01-25 |
-| 22. CLI Theme Integration | v3.0 | 0/? | Not started | - |
+| 22. CLI Theme Integration | v3.0 | 0/4 | Planned | - |
 | 23. Visual Configurator Core | v3.0 | 0/? | Not started | - |
 | 24. Presets and Enhanced Features | v3.0 | 0/? | Not started | - |
 
 ---
 *Roadmap created: 2026-01-24*
-*Last updated: 2026-01-25 (Phase 21 complete: 5/5 plans)*
+*Last updated: 2026-01-25 (Phase 22 planned: 4 plans in 3 waves)*
