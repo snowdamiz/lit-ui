@@ -1,0 +1,123 @@
+/**
+ * Shadow DOM Host Defaults for Tailwind v4 @property Workaround
+ *
+ * Tailwind v4 uses CSS @property declarations for shadow, ring, transform,
+ * and other utilities. The @property rule only works at the document level,
+ * not inside Shadow DOM (W3C spec limitation: csswg-drafts#10541).
+ *
+ * This file provides explicit :host declarations with default values for
+ * all Tailwind internal variables that depend on @property. Components
+ * using TailwindElement will import this file to ensure these utilities
+ * work correctly within Shadow DOM.
+ *
+ * Usage: Import into TailwindElement base class styles.
+ *
+ * Reference: tailwindlabs/tailwindcss discussion #15556
+ */
+
+:host {
+  /* ==========================================================================
+   * SHADOW/RING DEFAULTS
+   * Required for box-shadow, ring-* utilities
+   * ========================================================================== */
+  --tw-shadow: 0 0 #0000;
+  --tw-shadow-color: initial;
+  --tw-inset-shadow: 0 0 #0000;
+  --tw-inset-shadow-color: initial;
+  --tw-ring-color: initial;
+  --tw-ring-shadow: 0 0 #0000;
+  --tw-ring-inset: ;
+  --tw-ring-offset-width: 0px;
+  --tw-ring-offset-color: #fff;
+  --tw-ring-offset-shadow: 0 0 #0000;
+
+  /* ==========================================================================
+   * TRANSFORM DEFAULTS
+   * Required for translate-*, rotate-*, scale-*, skew-* utilities
+   * ========================================================================== */
+  --tw-translate-x: 0;
+  --tw-translate-y: 0;
+  --tw-translate-z: 0;
+  --tw-rotate-x: 0;
+  --tw-rotate-y: 0;
+  --tw-rotate-z: 0;
+  --tw-skew-x: 0;
+  --tw-skew-y: 0;
+  --tw-scale-x: 1;
+  --tw-scale-y: 1;
+  --tw-scale-z: 1;
+
+  /* ==========================================================================
+   * BORDER DEFAULTS
+   * Required for border utilities
+   * ========================================================================== */
+  --tw-border-style: solid;
+
+  /* ==========================================================================
+   * TYPOGRAPHY DEFAULTS
+   * Required for font-weight, tracking, leading utilities
+   * ========================================================================== */
+  --tw-font-weight: initial;
+  --tw-tracking: initial;
+  --tw-leading: initial;
+
+  /* ==========================================================================
+   * BACKDROP FILTER DEFAULTS
+   * Required for backdrop-blur, backdrop-brightness, etc.
+   * ========================================================================== */
+  --tw-backdrop-blur: initial;
+  --tw-backdrop-brightness: initial;
+  --tw-backdrop-contrast: initial;
+  --tw-backdrop-grayscale: initial;
+  --tw-backdrop-hue-rotate: initial;
+  --tw-backdrop-invert: initial;
+  --tw-backdrop-opacity: initial;
+  --tw-backdrop-saturate: initial;
+  --tw-backdrop-sepia: initial;
+
+  /* ==========================================================================
+   * FILTER DEFAULTS
+   * Required for blur, brightness, contrast, etc. filter utilities
+   * ========================================================================== */
+  --tw-blur: initial;
+  --tw-brightness: initial;
+  --tw-contrast: initial;
+  --tw-grayscale: initial;
+  --tw-hue-rotate: initial;
+  --tw-invert: initial;
+  --tw-saturate: initial;
+  --tw-sepia: initial;
+  --tw-drop-shadow: initial;
+
+  /* ==========================================================================
+   * GRADIENT DEFAULTS
+   * Required for gradient utilities
+   * ========================================================================== */
+  --tw-gradient-from: transparent;
+  --tw-gradient-to: transparent;
+  --tw-gradient-via: transparent;
+  --tw-gradient-stops: initial;
+  --tw-gradient-from-position: 0%;
+  --tw-gradient-via-position: 50%;
+  --tw-gradient-to-position: 100%;
+
+  /* ==========================================================================
+   * DIVIDE DEFAULTS
+   * Required for divide-* utilities
+   * ========================================================================== */
+  --tw-divide-x-reverse: 0;
+  --tw-divide-y-reverse: 0;
+
+  /* ==========================================================================
+   * SPACE DEFAULTS
+   * Required for space-x-*, space-y-* utilities
+   * ========================================================================== */
+  --tw-space-x-reverse: 0;
+  --tw-space-y-reverse: 0;
+
+  /* ==========================================================================
+   * OUTLINE DEFAULTS
+   * Required for outline-* utilities
+   * ========================================================================== */
+  --tw-outline-style: solid;
+}
