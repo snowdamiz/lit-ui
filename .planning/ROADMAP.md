@@ -138,7 +138,12 @@ Plans:
   3. User can customize primary, secondary, destructive, background, foreground, muted, accent colors
   4. User can customize border radius
   5. User can edit light and dark mode simultaneously (both visible or switchable)
-**Plans**: TBD
+**Plans**: 4 plans
+Plans:
+- [ ] 23-01-PLAN.md — Foundation: color utilities and ConfiguratorContext
+- [ ] 23-02-PLAN.md — Color picker UI components
+- [ ] 23-03-PLAN.md — Preview, layout, modal, and routing
+- [ ] 23-04-PLAN.md — Human verification checkpoint
 
 ### Phase 24: Presets and Enhanced Features
 **Goal**: Preset themes, shareable URLs, and CLI command generation complete the configurator experience
@@ -186,9 +191,9 @@ Plans:
 | 20. Documentation | v2.0 | 3/3 | Complete | 2026-01-25 |
 | 21. Theme System Foundation | v3.0 | 5/5 | Complete | 2026-01-25 |
 | 22. CLI Theme Integration | v3.0 | 4/4 | Complete | 2026-01-25 |
-| 23. Visual Configurator Core | v3.0 | 0/? | Not started | - |
+| 23. Visual Configurator Core | v3.0 | 0/4 | Ready | - |
 | 24. Presets and Enhanced Features | v3.0 | 0/? | Not started | - |
 
 ---
 *Roadmap created: 2026-01-24*
-*Last updated: 2026-01-25 (Phase 22 complete: CLI theme integration)*
+*Last updated: 2026-01-25 (Phase 23 planned: Visual Configurator Core)*
