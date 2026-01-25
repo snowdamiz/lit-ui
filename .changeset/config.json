@@ -7,5 +7,9 @@
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": ["@lit-ui/typescript-config", "@lit-ui/vite-config", "lit-ui-docs", "lit-ui-landing"]
+  "privatePackages": {
+    "version": false,
+    "tag": false
+  },
+  "ignore": ["lit-ui-docs", "lit-ui-landing"]
 }
