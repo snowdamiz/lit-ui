@@ -1,0 +1,11 @@
+{
+  "name": "@lit-ui/typescript-config",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./base.json": "./base.json",
+    "./library.json": "./library.json"
+  },
+  "files": ["*.json"]
+}
