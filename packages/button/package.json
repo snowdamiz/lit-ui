@@ -17,13 +17,12 @@
     "dev": "vite build --watch",
     "build": "vite build"
   },
-  "dependencies": {
-    "@lit-ui/core": "workspace:*"
-  },
   "peerDependencies": {
-    "lit": "^3.0.0"
+    "lit": "^3.0.0",
+    "@lit-ui/core": "^0.0.1"
   },
   "devDependencies": {
+    "@lit-ui/core": "workspace:*",
     "@lit-ui/typescript-config": "workspace:*",
     "@lit-ui/vite-config": "workspace:*",
     "@tailwindcss/vite": "^4.1.18",
