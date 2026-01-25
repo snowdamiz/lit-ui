@@ -196,7 +196,12 @@ Plans:
   1. User finds NPM installation guide as alternative to copy-source
   2. User finds SSR setup guide with hydration instructions and module load order
   3. User finds migration guide for converting copy-source projects to npm mode
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 20-01-PLAN.md — Installation page (NPM primary + copy-source alternative)
+- [ ] 20-02-PLAN.md — SSR Guide (Next.js + Astro setup)
+- [ ] 20-03-PLAN.md — Migration Guide (copy-source to npm)
 
 ---
 
@@ -228,8 +233,8 @@ Plans:
 | 17. Framework Integration | v2.0 | 3/3 | Complete | 2026-01-25 |
 | 18. CLI Enhancement | v2.0 | 4/4 | Complete | 2026-01-25 |
 | 19. Publishing | v2.0 | 4/4 | Complete | 2026-01-25 |
-| 20. Documentation | v2.0 | 0/? | Not started | - |
+| 20. Documentation | v2.0 | 0/3 | Planned | - |
 
 ---
 *Roadmap created: 2026-01-24*
-*Last updated: 2026-01-25 (Phase 19 complete)*
+*Last updated: 2026-01-25 (Phase 20 planned)*
