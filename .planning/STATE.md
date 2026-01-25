@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-24)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** v2.0 NPM + SSR - Phase 14 complete
+**Current focus:** v2.0 NPM + SSR - Phase 15 in progress
 
 ## Current Position
 
-Phase: 14 of 20 (Core Package) - COMPLETE
-Plan: 03 of 03
-Status: Phase complete
-Last activity: 2026-01-25 - Completed Phase 14
+Phase: 15 of 20 (Component Packages)
+Plan: 02 of 03
+Status: In progress
+Last activity: 2026-01-25 - Completed 15-02-PLAN.md (Dialog component)
 
-Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [########..] 8/40 plans
+Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [#########.] 10/40 plans
 
 ## Performance Metrics
 
@@ -28,8 +28,8 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [########..] 8/40 
 - Total execution time: 22 min
 
 **v2.0 Velocity:**
-- Plans completed: 8
-- Total execution time: 16 min
+- Plans completed: 10
+- Total execution time: 22 min
 
 **By Phase:**
 
@@ -45,6 +45,7 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [########..] 8/40 
 | 08-component-documentation | 4 | 10 min | 2.5 min |
 | 13-monorepo-infrastructure | 5 | 11 min | 2.2 min |
 | 14-core-package | 3 | 5 min | 1.7 min |
+| 15-component-packages | 2 | 6 min | 3.0 min |
 
 ## Accumulated Context
 
@@ -102,6 +103,11 @@ Key decisions are logged in PROJECT.md Key Decisions table.
 - fouc.css shipped as source file for direct CSS import
 - Skeleton placeholder styles commented as optional pattern
 
+**v2.0 Plan 15-02 Decisions:**
+- Remove rollupTypes from vite-plugin-dts (api-extractor Map bug)
+- Remove process.env.NODE_ENV check (requires @types/node)
+- Simple no-op SSR approach for showModal/close (per CONTEXT.md)
+
 ### Pending Todos
 
 None.
@@ -113,12 +119,12 @@ Consider completing v1.1 before or in parallel with v2.0.
 
 ## Session Continuity
 
-Last session: 2026-01-25 04:15 UTC
-Stopped at: Completed Phase 14 (Core Package)
+Last session: 2026-01-25 04:59 UTC
+Stopped at: Completed 15-02-PLAN.md (Dialog component migration)
 Resume file: None
 
 ## Next Steps
 
-Phase 14 (Core Package) complete. Ready for Phase 15: Component Packages.
+Continue Phase 15 with Plan 03 (Accordion component) or revisit Plan 01 (Button) if SSR patterns need alignment.
 
-Run `/gsd:discuss-phase 15` to gather context before planning.
+Run `/gsd:execute-plan 03` to continue Phase 15.
