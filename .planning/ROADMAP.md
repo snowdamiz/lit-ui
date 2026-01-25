@@ -1,9 +1,10 @@
-# Roadmap: lit-ui
+# Roadmap: LitUI
 
 ## Milestones
 
 - v1.0 MVP - Phases 1-5 (shipped 2026-01-24)
-- **v1.1 Documentation Site** - Phases 6-12 (in progress)
+- v1.1 Documentation Site - Phases 6-12 (in progress)
+- **v2.0 NPM + SSR** - Phases 13-20 (planned)
 
 ## Phases
 
@@ -32,112 +33,141 @@
 
 </details>
 
-### v1.1 Documentation Site (In Progress)
+<details>
+<summary>v1.1 Documentation Site (Phases 6-12) - IN PROGRESS</summary>
 
-**Milestone Goal:** Comprehensive documentation site matching landing page theme, enabling developers to learn lit-ui through guides, API reference, and live examples.
-
-#### Phase 6: Docs Foundation
+### Phase 6: Docs Foundation
 **Goal**: Standalone docs app with navigation and responsive layout
-**Depends on**: Phase 5 (v1.0 complete)
-**Requirements**: INFRA-01, INFRA-02, INFRA-03
-**Success Criteria** (what must be TRUE):
-  1. Docs app runs at /docs with same visual style as landing page
-  2. Sidebar shows collapsible section navigation
-  3. Mobile users see hamburger menu that reveals navigation
-  4. Layout adapts correctly from mobile to desktop breakpoints
-**Plans**: 3 plans
+**Plans**: 3 plans (complete)
 
-Plans:
-- [x] 06-01-PLAN.md — Scaffold docs app with React, Vite, Tailwind, React Router
-- [x] 06-02-PLAN.md — Layout and navigation components (sidebar, header, mobile nav)
-- [x] 06-03-PLAN.md — Wire routes and verify responsive behavior
-
-#### Phase 7: Getting Started
+### Phase 7: Getting Started
 **Goal**: New users can install and use their first component
-**Depends on**: Phase 6
-**Requirements**: START-01, START-02, START-03
-**Success Criteria** (what must be TRUE):
-  1. User finds installation instructions for `npx lit-ui init`
-  2. User can follow quick start to add first component
-  3. User understands project structure after running init
 **Plans**: 2 plans (complete)
 
-Plans:
-- [x] 07-01-PLAN.md — CodeBlock and FrameworkTabs components for code display
-- [x] 07-02-PLAN.md — Getting Started page with installation, quick start, project structure, and live preview
-
-#### Phase 8: Component Documentation
+### Phase 8: Component Documentation
 **Goal**: Complete API reference and examples for Button and Dialog
-**Depends on**: Phase 6
-**Requirements**: COMP-01, COMP-02, COMP-03, COMP-04
-**Success Criteria** (what must be TRUE):
-  1. User finds Button props, slots, and events documented
-  2. User sees live Button examples for all variants and sizes
-  3. User finds Dialog props, slots, and events documented
-  4. User sees live Dialog examples (basic, nested, dismissible)
-**Plans**: 4 plans
+**Plans**: 4 plans (complete)
 
-Plans:
-- [x] 08-01-PLAN.md — Shared infrastructure (FrameworkContext, ExampleBlock, updated FrameworkTabs)
-- [x] 08-02-PLAN.md — API reference tables (PropsTable, SlotsTable, EventsTable) and PrevNextNav
-- [x] 08-03-PLAN.md — Button documentation page with examples and API reference
-- [x] 08-04-PLAN.md — Dialog documentation page with examples and API reference
-
-#### Phase 9: Framework Guides
+### Phase 9: Framework Guides
 **Goal**: Developers know how to use components in their framework
-**Depends on**: Phase 8
+**Plans**: TBD
+
+### Phase 10: Theming Documentation
+**Goal**: Developers can customize component appearance
+**Plans**: TBD
+
+### Phase 11: Accessibility Documentation
+**Goal**: Developers understand accessibility patterns in components
+**Plans**: TBD
+
+### Phase 12: Polish
+**Goal**: Docs are discoverable and searchable
+**Plans**: TBD
+
+</details>
+
+---
+
+## v2.0 NPM + SSR (Phases 13-20)
+
+**Milestone Goal:** Enable NPM package distribution and SSR compatibility, giving developers the choice between copy-source ownership and traditional npm install.
+
+### Phase 13: Monorepo Infrastructure
+**Goal**: Project restructured as pnpm monorepo with changesets for version management
+**Depends on**: v1.0 complete
+**Requirements**: MONO-01, MONO-02, MONO-03, MONO-04
+**Success Criteria** (what must be TRUE):
+  1. Developer runs `pnpm install` at root and all packages install correctly
+  2. Developer can build any package independently with `pnpm --filter @lit-ui/X build`
+  3. Changeset version bump updates all affected packages with changelog
+  4. TypeScript errors in one package are caught at compile time across workspace
+**Plans**: TBD
+
+### Phase 14: Core Package
+**Goal**: @lit-ui/core exports SSR-aware TailwindElement with dual-mode styling
+**Depends on**: Phase 13
+**Requirements**: CORE-01, CORE-02, CORE-03, CORE-04, CORE-05, CORE-06, CORE-07
+**Success Criteria** (what must be TRUE):
+  1. Consumer imports `import { TailwindElement } from '@lit-ui/core'` successfully
+  2. TailwindElement renders with inline styles during SSR (no constructable stylesheets)
+  3. After hydration, component uses shared constructable stylesheets (memory optimization)
+  4. Design tokens available via CSS custom properties from @lit-ui/core/tokens
+  5. Tree shaking removes unused exports when bundling consumer app
+**Plans**: TBD
+
+### Phase 15: Component Packages
+**Goal**: Button and Dialog published as independent packages with SSR compatibility
+**Depends on**: Phase 14
+**Requirements**: COMP-01, COMP-02, COMP-03, COMP-04, COMP-05, COMP-06, COMP-07
+**Success Criteria** (what must be TRUE):
+  1. Consumer installs `@lit-ui/button` and imports Button component
+  2. Consumer installs `@lit-ui/dialog` and imports Dialog component
+  3. Button form participation works client-side (gracefully skipped during SSR)
+  4. Dialog showModal() works client-side (gracefully skipped during SSR)
+  5. TypeScript autocomplete shows component props and events
+**Plans**: TBD
+
+### Phase 16: SSR Package
+**Goal**: @lit-ui/ssr provides utilities for server-rendering components
+**Depends on**: Phase 15
+**Requirements**: SSR-01, SSR-02, SSR-03, SSR-04, SSR-05
+**Success Criteria** (what must be TRUE):
+  1. Developer imports `import { render } from '@lit-ui/ssr'` and renders component to DSD HTML
+  2. Rendered HTML contains `<template shadowrootmode="open">` with component markup
+  3. Developer follows hydration guide and components become interactive after page load
+  4. Component author uses `import { isServer } from '@lit-ui/ssr'` for conditional logic
+**Plans**: TBD
+
+### Phase 17: Framework Integration
+**Goal**: Working SSR examples for Next.js, Astro, and generic Node.js
+**Depends on**: Phase 16
 **Requirements**: FRAME-01, FRAME-02, FRAME-03
 **Success Criteria** (what must be TRUE):
-  1. React developers find integration guide with examples
-  2. Vue developers find integration guide with examples
-  3. Svelte developers find integration guide with examples
+  1. Next.js example repo demonstrates SSR with lit-ui components
+  2. Astro example repo demonstrates SSR with lit-ui components
+  3. Generic Node.js example shows how to SSR in any framework
 **Plans**: TBD
 
-Plans:
-- [ ] 09-01: TBD
-
-#### Phase 10: Theming Documentation
-**Goal**: Developers can customize component appearance
-**Depends on**: Phase 8
-**Requirements**: THEME-01, THEME-02, THEME-03
+### Phase 18: CLI Enhancement
+**Goal**: CLI supports both copy-source and npm installation modes
+**Depends on**: Phase 15
+**Requirements**: CLI-01, CLI-02, CLI-03, CLI-04, CLI-05
 **Success Criteria** (what must be TRUE):
-  1. User finds design tokens (colors, spacing, typography) documented
-  2. User learns how to customize via CSS custom properties
-  3. User can set up dark mode following the guide
+  1. User runs `lit-ui init` and chooses between copy-source and npm mode
+  2. In npm mode, `lit-ui add button` runs `npm install @lit-ui/button`
+  3. In copy-source mode, `lit-ui add button` copies source files (existing behavior)
+  4. User can migrate existing copy-source project to npm with `lit-ui migrate`
 **Plans**: TBD
 
-Plans:
-- [ ] 10-01: TBD
-
-#### Phase 11: Accessibility Documentation
-**Goal**: Developers understand accessibility patterns in components
-**Depends on**: Phase 8
-**Requirements**: A11Y-01, A11Y-02, A11Y-03
+### Phase 19: Publishing
+**Goal**: All packages published to npm under @lit-ui scope
+**Depends on**: Phase 16, Phase 17, Phase 18
+**Requirements**: PUB-01, PUB-02, PUB-03, PUB-04
 **Success Criteria** (what must be TRUE):
-  1. User finds WCAG compliance overview
-  2. User understands keyboard navigation patterns for each component
-  3. User learns screen reader considerations
+  1. `npm install @lit-ui/core @lit-ui/button @lit-ui/dialog` succeeds from npm registry
+  2. Published packages show proper README on npm package page
+  3. Version numbers follow semver (major.minor.patch)
+  4. Changelog published with each release via changesets
 **Plans**: TBD
 
-Plans:
-- [ ] 11-01: TBD
-
-#### Phase 12: Polish
-**Goal**: Docs are discoverable and searchable
-**Depends on**: Phase 11
-**Requirements**: INFRA-04, INFRA-05
+### Phase 20: Documentation
+**Goal**: Docs site updated with NPM and SSR guides
+**Depends on**: Phase 19
+**Requirements**: DOC-01, DOC-02, DOC-03
 **Success Criteria** (what must be TRUE):
-  1. User can navigate via search or comprehensive anchor links
-  2. Landing page header links to documentation
+  1. User finds NPM installation guide as alternative to copy-source
+  2. User finds SSR setup guide with hydration instructions and module load order
+  3. User finds migration guide for converting copy-source projects to npm mode
 **Plans**: TBD
 
-Plans:
-- [ ] 12-01: TBD
+---
 
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 6 -> 7 -> 8 -> 9 -> 10 -> 11 -> 12
+- v1.0: Phases 1-5 (complete)
+- v1.1: Phases 6-12 (6->7->8->9->10->11->12)
+- v2.0: Phases 13-20 (13->14->15->16->17->18->19->20, with 17/18 parallelizable after 16/15)
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
@@ -153,6 +183,14 @@ Phases execute in numeric order: 6 -> 7 -> 8 -> 9 -> 10 -> 11 -> 12
 | 10. Theming Docs | v1.1 | 0/? | Not started | - |
 | 11. Accessibility Docs | v1.1 | 0/? | Not started | - |
 | 12. Polish | v1.1 | 0/? | Not started | - |
+| 13. Monorepo Infrastructure | v2.0 | 0/? | Not started | - |
+| 14. Core Package | v2.0 | 0/? | Not started | - |
+| 15. Component Packages | v2.0 | 0/? | Not started | - |
+| 16. SSR Package | v2.0 | 0/? | Not started | - |
+| 17. Framework Integration | v2.0 | 0/? | Not started | - |
+| 18. CLI Enhancement | v2.0 | 0/? | Not started | - |
+| 19. Publishing | v2.0 | 0/? | Not started | - |
+| 20. Documentation | v2.0 | 0/? | Not started | - |
 
 ---
 *Roadmap created: 2026-01-24*

@@ -138,4 +138,4 @@ Deferred to future milestone.
 
 ---
 *Requirements defined: 2026-01-24*
-*Last updated: 2026-01-24 after v2.0 milestone definition*
+*Last updated: 2026-01-24 after v2.0 roadmap creation*

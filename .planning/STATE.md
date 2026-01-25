@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-24)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** v2.0 NPM + SSR - Not started
+**Current focus:** v2.0 NPM + SSR - Roadmap complete, ready for planning
 
 ## Current Position
 
-Phase: Not started (defining requirements)
-Plan: —
-Status: Defining requirements
-Last activity: 2026-01-24 — Milestone v2.0 started
+Phase: 13 - Monorepo Infrastructure (not started)
+Plan: --
+Status: Roadmap complete, ready for phase planning
+Last activity: 2026-01-24 -- v2.0 roadmap created
 
-Progress: v1.0 SHIPPED | v1.1 [########░░] 8/12 phases | v2.0 [░░░░░░░░░░] 0%
+Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [..........] 0/8 phases
 
 ## Performance Metrics
 
@@ -52,6 +52,14 @@ Key decisions are logged in PROJECT.md Key Decisions table.
 - nightOwl theme for syntax highlighting
 - Tables use simple HTML with Tailwind styling
 
+**v2.0 Research findings (from research/SUMMARY.md):**
+- pnpm workspaces for monorepo (not npm/yarn)
+- @changesets/cli for versioning
+- @lit-labs/ssr v4.0.0 for SSR
+- Dual-mode styling: static styles for SSR, constructable stylesheets for client
+- isServer guards for ElementInternals and DOM APIs
+- Lit must be external (peer dependency), not bundled
+
 ### Pending Todos
 
 None.
@@ -64,9 +72,9 @@ Consider completing v1.1 before or in parallel with v2.0.
 ## Session Continuity
 
 Last session: 2026-01-24
-Stopped at: Starting milestone v2.0
+Stopped at: v2.0 roadmap created
 Resume file: None
 
 ## Next Steps
 
-Define requirements for v2.0 NPM + SSR milestone.
+Run `/gsd:plan-phase 13` to create plans for Monorepo Infrastructure phase.
