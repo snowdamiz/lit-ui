@@ -16,5 +16,7 @@ import lit from '@semantic-ui/astro-lit';
  */
 export default defineConfig({
   integrations: [lit()],
-  output: 'server',
+  // Use 'static' for example builds (no adapter needed)
+  // Production deployments would set 'server' with appropriate adapter
+  output: 'static',
 });
