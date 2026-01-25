@@ -12,11 +12,12 @@
   "scripts": {
     "dev": "pnpm -r --parallel run dev",
     "build": "pnpm -r run build",
+    "build:packages": "pnpm --filter './packages/**' run build",
     "test": "pnpm -r run test",
     "lint": "pnpm -r run lint",
     "changeset": "changeset",
     "version": "changeset version",
-    "ci:publish": "pnpm build && changeset publish --access public"
+    "ci:publish": "pnpm build:packages && changeset publish --access public"
   },
   "keywords": [
     "lit",

@@ -248,10 +248,10 @@ const TAILWIND_CSS_TEMPLATE = `/**
 
 /* ==========================================================================
  * DARK MODE (optional)
- * Uses :host-context(.dark) for Shadow DOM components.
- * Add .dark class to html or body to enable.
+ * CSS custom properties cascade into Shadow DOM from ancestor elements.
+ * Add .dark class to html or body to enable dark mode.
  * ========================================================================== */
-:host-context(.dark) {
+.dark {
   --color-primary: var(--color-blue-400);
   --color-primary-foreground: var(--color-gray-950);
 
