@@ -11,15 +11,15 @@
  */
 
 /* Hide undefined custom elements */
-ui-button:not(:defined),
-ui-dialog:not(:defined) {
+lui-button:not(:defined),
+lui-dialog:not(:defined) {
   opacity: 0;
   visibility: hidden;
 }
 
 /* Optional: Show skeleton placeholder instead of hiding */
 /*
-ui-button:not(:defined) {
+lui-button:not(:defined) {
   display: inline-block;
   min-width: 80px;
   min-height: 36px;
