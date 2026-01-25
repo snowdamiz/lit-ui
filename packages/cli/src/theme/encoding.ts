@@ -47,10 +47,11 @@ export function encodeThemeConfig(config: ThemeConfig): string {
 /**
  * Decodes a base64url encoded string to a validated ThemeConfig.
  *
- * Performs three-stage validation:
- * 1. Base64 decoding (catches invalid base64 characters)
- * 2. JSON parsing (catches malformed JSON)
- * 3. Zod schema validation (catches invalid config structure)
+ * Performs four-stage validation:
+ * 1. Base64url format validation (catches invalid characters)
+ * 2. Base64url decoding
+ * 3. JSON parsing (catches malformed JSON)
+ * 4. Zod schema validation (catches invalid config structure)
  *
  * @param encoded - base64url encoded theme configuration string
  * @returns Validated ThemeConfig object
