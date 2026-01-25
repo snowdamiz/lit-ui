@@ -187,3 +187,19 @@ export { decodeThemeConfig } from "./encoding.js";
  * ```
  */
 export { generateThemeCSS } from "./css-generator.js";
+
+/**
+ * Generate a 50-950 shade scale from a base OKLCH color.
+ *
+ * Produces 10 shades with lightness ranging from 0.97 (50) to 0.20 (950).
+ * Chroma is modulated to prevent oversaturation at extreme lightness values.
+ *
+ * @example
+ * ```ts
+ * import { generateScale } from '@lit-ui/cli/theme';
+ *
+ * const shades = generateScale('oklch(0.6 0.2 250)');
+ * // { '50': 'oklch(0.97 0.02 250)', '100': 'oklch(0.92 0.06 250)', ... }
+ * ```
+ */
+export { generateScale } from "./color-scale.js";
