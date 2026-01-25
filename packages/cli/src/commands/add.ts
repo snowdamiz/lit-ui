@@ -2,13 +2,14 @@ import { defineCommand } from 'citty';
 import { resolve } from 'pathe';
 import { consola } from 'consola';
 import pc from 'picocolors';
-import { getConfig } from '../utils/config';
+import { getOrCreateConfig } from '../utils/config';
 import {
   getComponent,
   resolveDependencies,
   type RegistryComponent,
 } from '../utils/registry';
 import { copyComponentFiles, type CopyResult } from '../utils/copy-component';
+import { installComponent, isNpmComponent } from '../utils/install-component';
 
 /**
  * Add command - adds a component to the user's project
@@ -41,21 +42,43 @@ export const add = defineCommand({
       description: 'Working directory',
       default: '.',
     },
+    npm: {
+      type: 'boolean',
+      description: 'Install from npm (override config mode)',
+      default: false,
+    },
+    copy: {
+      type: 'boolean',
+      description: 'Copy source files (override config mode)',
+      default: false,
+    },
   },
   async run({ args }) {
     const cwd = resolve(args.cwd);
     const componentName = args.component;
 
-    // Step 1: Check if lit-ui.json exists
-    const config = await getConfig(cwd);
-    if (!config) {
-      consola.error(
-        `No lit-ui.json found. Run ${pc.cyan('lit-ui init')} first.`
-      );
-      process.exit(1);
+    // Step 1: Get or create config (auto-creates with defaults if missing)
+    const config = await getOrCreateConfig(cwd);
+
+    // Step 2: Determine effective mode (flags override config)
+    const mode = args.npm ? 'npm' : args.copy ? 'copy-source' : config.mode;
+
+    // Step 3: Handle npm mode
+    if (mode === 'npm') {
+      if (!isNpmComponent(componentName)) {
+        consola.error(`Component ${pc.cyan(componentName)} not available as npm package.`);
+        consola.info('Available npm components: button, dialog');
+        process.exit(1);
+      }
+
+      const success = await installComponent(componentName, cwd);
+      if (!success) {
+        process.exit(1);
+      }
+      return; // Exit early, skip copy logic
     }
 
-    // Step 2: Look up component in registry
+    // Step 4: copy-source mode - Look up component in registry
     const component = getComponent(componentName);
     if (!component) {
       consola.error(`Component ${pc.cyan(componentName)} not found in registry.`);
@@ -67,7 +90,7 @@ export const add = defineCommand({
       process.exit(1);
     }
 
-    // Step 3: Resolve dependencies
+    // Step 5: Resolve dependencies
     const allComponentNames = resolveDependencies(componentName);
     const componentsToAdd: RegistryComponent[] = [];
 
@@ -78,7 +101,7 @@ export const add = defineCommand({
       }
     }
 
-    // Step 4: Confirm if there are dependencies (and not --yes)
+    // Step 6: Confirm if there are dependencies (and not --yes)
     if (componentsToAdd.length > 1 && !args.yes) {
       consola.info(
         `${pc.cyan(componentName)} has dependencies. The following will be added:`
@@ -98,7 +121,7 @@ export const add = defineCommand({
       }
     }
 
-    // Step 5: Copy component files
+    // Step 7: Copy component files
     const allResults: CopyResult[] = [];
     const addedComponents: string[] = [];
 
@@ -124,7 +147,7 @@ export const add = defineCommand({
       }
     }
 
-    // Step 6: Summary
+    // Step 8: Summary
     const copiedFiles = allResults.filter((r) => r.copied);
     const skippedFiles = allResults.filter((r) => r.skipped);
 
@@ -145,7 +168,7 @@ export const add = defineCommand({
       );
     }
 
-    // Step 7: Next steps
+    // Step 9: Next steps
     if (addedComponents.length > 0) {
       console.log('');
       consola.info('Next steps:');
