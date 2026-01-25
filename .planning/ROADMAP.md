@@ -86,9 +86,9 @@
 Plans:
 - [x] 13-01-PLAN.md - Workspace foundation (pnpm-workspace.yaml, root package.json, changesets)
 - [x] 13-02-PLAN.md - Shared configs (@lit-ui/typescript-config, @lit-ui/vite-config)
-- [ ] 13-03-PLAN.md - Package scaffolding (core, button, dialog stubs)
-- [ ] 13-04-PLAN.md - Apps migration (docs, landing to apps/)
-- [ ] 13-05-PLAN.md - Verification and cleanup (install, build, changeset test)
+- [x] 13-03-PLAN.md - Package scaffolding (core, button, dialog stubs)
+- [x] 13-04-PLAN.md - Apps migration (docs, landing to apps/)
+- [x] 13-05-PLAN.md - Verification and cleanup (install, build, changeset test)
 
 ### Phase 14: Core Package
 **Goal**: @lit-ui/core exports SSR-aware TailwindElement with dual-mode styling
@@ -190,7 +190,7 @@ Plans:
 | 10. Theming Docs | v1.1 | 0/? | Not started | - |
 | 11. Accessibility Docs | v1.1 | 0/? | Not started | - |
 | 12. Polish | v1.1 | 0/? | Not started | - |
-| 13. Monorepo Infrastructure | v2.0 | 2/5 | In progress | - |
+| 13. Monorepo Infrastructure | v2.0 | 5/5 | Complete | 2026-01-25 |
 | 14. Core Package | v2.0 | 0/? | Not started | - |
 | 15. Component Packages | v2.0 | 0/? | Not started | - |
 | 16. SSR Package | v2.0 | 0/? | Not started | - |

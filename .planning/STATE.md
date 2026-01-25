@@ -104,6 +104,6 @@ Resume file: None
 
 ## Next Steps
 
-Phase 13 (Monorepo Infrastructure) complete. Ready to proceed with:
-- Phase 14: Button Migration (migrate src.old/components/button to packages/button)
-- Phase 15: Dialog Migration (migrate src.old/components/dialog to packages/dialog)
+Phase 13 (Monorepo Infrastructure) complete. Ready for Phase 14: Core Package.
+
+Run `/gsd:discuss-phase 14` to gather context before planning.
