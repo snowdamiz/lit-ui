@@ -44,17 +44,17 @@ Requirements for NPM package distribution and SSR compatibility.
 
 ### SSR Framework Integration
 
-- [ ] **FRAME-01**: Next.js integration guide with working example
-- [ ] **FRAME-02**: Astro integration guide with working example
-- [ ] **FRAME-03**: Generic Node.js SSR example for other frameworks
+- [x] **FRAME-01**: Next.js integration guide with working example
+- [x] **FRAME-02**: Astro integration guide with working example
+- [x] **FRAME-03**: Generic Node.js SSR example for other frameworks
 
 ### CLI Enhancement
 
-- [ ] **CLI-01**: lit-ui.json supports mode: "copy-source" | "npm"
-- [ ] **CLI-02**: `lit-ui init` prompts for distribution mode
-- [ ] **CLI-03**: `lit-ui add` in npm mode runs npm/pnpm/yarn install
-- [ ] **CLI-04**: `lit-ui add` in copy-source mode works as before
-- [ ] **CLI-05**: `lit-ui migrate` converts copy-source to npm mode
+- [x] **CLI-01**: lit-ui.json supports mode: "copy-source" | "npm"
+- [x] **CLI-02**: `lit-ui init` prompts for distribution mode
+- [x] **CLI-03**: `lit-ui add` in npm mode runs npm/pnpm/yarn install
+- [x] **CLI-04**: `lit-ui add` in copy-source mode works as before
+- [x] **CLI-05**: `lit-ui migrate` converts copy-source to npm mode
 
 ### Publishing
 
@@ -115,14 +115,14 @@ Deferred to future milestone.
 | SSR-03 | Phase 16 | Complete |
 | SSR-04 | Phase 16 | Complete |
 | SSR-05 | Phase 16 | Complete |
-| FRAME-01 | Phase 17 | Pending |
-| FRAME-02 | Phase 17 | Pending |
-| FRAME-03 | Phase 17 | Pending |
-| CLI-01 | Phase 18 | Pending |
-| CLI-02 | Phase 18 | Pending |
-| CLI-03 | Phase 18 | Pending |
-| CLI-04 | Phase 18 | Pending |
-| CLI-05 | Phase 18 | Pending |
+| FRAME-01 | Phase 17 | Complete |
+| FRAME-02 | Phase 17 | Complete |
+| FRAME-03 | Phase 17 | Complete |
+| CLI-01 | Phase 18 | Complete |
+| CLI-02 | Phase 18 | Complete |
+| CLI-03 | Phase 18 | Complete |
+| CLI-04 | Phase 18 | Complete |
+| CLI-05 | Phase 18 | Complete |
 | PUB-01 | Phase 19 | Pending |
 | PUB-02 | Phase 19 | Pending |
 | PUB-03 | Phase 19 | Pending |
@@ -138,4 +138,4 @@ Deferred to future milestone.
 
 ---
 *Requirements defined: 2026-01-24*
-*Last updated: 2026-01-25 after Phase 16 completion*
+*Last updated: 2026-01-25 after Phase 18 completion*

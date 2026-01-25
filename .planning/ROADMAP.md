@@ -167,9 +167,9 @@ Plans:
 
 Plans:
 - [x] 18-01-PLAN.md - Config schema update and init mode prompt
-- [ ] 18-02-PLAN.md - Add command mode branching with npm install
-- [ ] 18-03-PLAN.md - Migrate command with diff detection
-- [ ] 18-04-PLAN.md - List command update and verification
+- [x] 18-02-PLAN.md - Add command mode branching with npm install
+- [x] 18-03-PLAN.md - Migrate command with diff detection
+- [x] 18-04-PLAN.md - List command update and verification
 
 ### Phase 19: Publishing
 **Goal**: All packages published to npm under @lit-ui scope
@@ -220,10 +220,10 @@ Plans:
 | 15. Component Packages | v2.0 | 3/3 | Complete | 2026-01-25 |
 | 16. SSR Package | v2.0 | 2/2 | Complete | 2026-01-25 |
 | 17. Framework Integration | v2.0 | 3/3 | Complete | 2026-01-25 |
-| 18. CLI Enhancement | v2.0 | 1/4 | In progress | - |
+| 18. CLI Enhancement | v2.0 | 4/4 | Complete | 2026-01-25 |
 | 19. Publishing | v2.0 | 0/? | Not started | - |
 | 20. Documentation | v2.0 | 0/? | Not started | - |
 
 ---
 *Roadmap created: 2026-01-24*
-*Last updated: 2026-01-25 (Phase 18 plan 01 complete)*
+*Last updated: 2026-01-25 (Phase 18 complete)*
