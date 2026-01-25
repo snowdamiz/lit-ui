@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-24)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** v2.0 NPM + SSR - Phase 15 complete
+**Current focus:** v2.0 NPM + SSR - Phase 16 in progress
 
 ## Current Position
 
-Phase: 15 of 20 (Component Packages) - COMPLETE
-Plan: 03 of 03
-Status: Phase verified and complete
-Last activity: 2026-01-25 - Phase 15 verified, all 5 success criteria passed
+Phase: 16 of 20 (SSR Package)
+Plan: 01 of 02
+Status: In progress
+Last activity: 2026-01-25 - Completed 16-01-PLAN.md (SSR package structure)
 
-Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [###########] 11/40 plans
+Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [############] 12/40 plans
 
 ## Performance Metrics
 
@@ -28,8 +28,8 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [###########] 11/4
 - Total execution time: 22 min
 
 **v2.0 Velocity:**
-- Plans completed: 11
-- Total execution time: 26 min
+- Plans completed: 12
+- Total execution time: 29 min
 
 **By Phase:**
 
@@ -46,6 +46,7 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [###########] 11/4
 | 13-monorepo-infrastructure | 5 | 11 min | 2.2 min |
 | 14-core-package | 3 | 5 min | 1.7 min |
 | 15-component-packages | 3 | 10 min | 3.3 min |
+| 16-ssr-package | 1 | 3 min | 3.0 min |
 
 ## Accumulated Context
 
@@ -117,6 +118,10 @@ Key decisions are logged in PROJECT.md Key Decisions table.
 - CSS custom property names (--ui-button-radius) kept for API stability
 - lui-* tag names for all @lit-ui components
 
+**v2.0 Plan 16-01 Decisions:**
+- All Lit packages (@lit-labs/*) marked external in vite.config.ts
+- renderToString helper wraps render() + collectResult()
+
 ### Pending Todos
 
 None.
@@ -128,12 +133,10 @@ Consider completing v1.1 before or in parallel with v2.0.
 
 ## Session Continuity
 
-Last session: 2026-01-25 05:05 UTC
-Stopped at: Completed 15-03-PLAN.md (Build verification and FOUC update)
+Last session: 2026-01-25 05:15 UTC
+Stopped at: Completed 16-01-PLAN.md (SSR package structure)
 Resume file: None
 
 ## Next Steps
 
-Phase 15 (Component Packages) verified and complete. Ready for Phase 16: SSR Package.
-
-Run `/gsd:discuss-phase 16` to gather context before planning.
+Continue with 16-02-PLAN.md (SSR integration examples) or verify Phase 16.
