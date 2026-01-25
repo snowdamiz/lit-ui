@@ -150,7 +150,7 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 17-01-PLAN.md - Node.js/Express SSR example (direct @lit-ui/ssr usage)
+- [x] 17-01-PLAN.md - Node.js/Express SSR example (direct @lit-ui/ssr usage)
 - [ ] 17-02-PLAN.md - Next.js App Router SSR example (withLitSSR + 'use client')
 - [ ] 17-03-PLAN.md - Astro SSR example (@semantic-ui/astro-lit + client:visible)
 
@@ -213,11 +213,11 @@ Plans:
 | 14. Core Package | v2.0 | 3/3 | Complete | 2026-01-25 |
 | 15. Component Packages | v2.0 | 3/3 | Complete | 2026-01-25 |
 | 16. SSR Package | v2.0 | 2/2 | Complete | 2026-01-25 |
-| 17. Framework Integration | v2.0 | 0/? | Not started | - |
+| 17. Framework Integration | v2.0 | 1/3 | In progress | - |
 | 18. CLI Enhancement | v2.0 | 0/? | Not started | - |
 | 19. Publishing | v2.0 | 0/? | Not started | - |
 | 20. Documentation | v2.0 | 0/? | Not started | - |
 
 ---
 *Roadmap created: 2026-01-24*
-*Last updated: 2026-01-25 (Phase 16 complete)*
+*Last updated: 2026-01-25 (Phase 17 plan 01 complete)*

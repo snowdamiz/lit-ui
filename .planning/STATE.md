@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-01-24)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** v2.0 NPM + SSR - Phase 16 COMPLETE
+**Current focus:** v2.0 NPM + SSR - Phase 17 in progress
 
 ## Current Position
 
 Phase: 17 of 20 (Framework Integration)
-Plan: 02 of 03 complete (17-01 and 17-03 in parallel)
+Plan: 01 of 03 complete
 Status: In progress
-Last activity: 2026-01-25 - Completed 17-02-PLAN.md (Next.js SSR example)
+Last activity: 2026-01-25 - Completed 17-01-PLAN.md (Node.js SSR example)
 
 Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [##############] 14/40 plans
 
@@ -47,6 +47,7 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [##############] 1
 | 14-core-package | 3 | 5 min | 1.7 min |
 | 15-component-packages | 3 | 10 min | 3.3 min |
 | 16-ssr-package | 2 | 4 min | 2.0 min |
+| 17-framework-integration | 1 | 6 min | 6.0 min |
 
 ## Accumulated Context
 
@@ -126,6 +127,10 @@ Key decisions are logged in PROJECT.md Key Decisions table.
 - Hydration import order: @lit-ui/ssr/hydration must be first import (before any Lit components)
 - Lockfile committed during verification (was missed in 16-01)
 
+**v2.0 Plan 17-01 Decisions:**
+- Components register on both server and client (removed isServer guard from customElements.define)
+- TailwindElement exports tailwindBaseStyles for subclass style composition
+
 **v2.0 Plan 17-02 Decisions:**
 - JSX type declarations for custom elements in client component file
 - 'use client' boundary pattern for Lit in Next.js App Router
@@ -141,20 +146,20 @@ Consider completing v1.1 before or in parallel with v2.0.
 
 ## Session Continuity
 
-Last session: 2026-01-25 06:19 UTC
-Stopped at: Completed 17-02-PLAN.md (Next.js SSR example)
+Last session: 2026-01-25 06:21 UTC
+Stopped at: Completed 17-01-PLAN.md (Node.js SSR example)
 Resume file: None
 
 ## Next Steps
 
-Phase 17 (Framework Integration) in progress. Plans 17-01 and 17-03 executing in parallel.
+Phase 17 (Framework Integration) in progress. 17-01 complete, 17-02 and 17-03 remaining.
 
 ### @lit-ui/ssr Package Summary
 - **Server rendering:** `import { render, html, renderToString, isServer } from '@lit-ui/ssr'`
 - **Client hydration:** `import '@lit-ui/ssr/hydration'` (MUST be first import)
 - **Manual hydration:** `import { hydrate } from '@lit-ui/ssr/hydration'`
 
-### Next.js Example Summary (17-02)
-- **Pattern:** 'use client' boundary for all Lit component usage
-- **Critical:** Import @lit-ui/ssr/hydration before any Lit components
-- **Location:** examples/nextjs/
+### Node.js Example Summary (17-01)
+- **Pattern:** Express server with renderToString, client hydration
+- **Critical:** Import @lit-ui/ssr/hydration FIRST in client entry
+- **Location:** examples/node/
