@@ -156,7 +156,11 @@ Plans:
   3. Configurator generates npx command with encoded theme for copying
   4. User can generate shareable theme URL that restores configuration when loaded
   5. Shade scales auto-calculate from primary color (user picks base, variants derived)
-**Plans**: TBD
+**Plans**: 3 plans
+Plans:
+- [ ] 24-01-PLAN.md — Foundation: export generateScale, presets data, loadThemeConfig
+- [ ] 24-02-PLAN.md — UI components: PresetSelector, ShareButton, ShadeScaleDisplay
+- [ ] 24-03-PLAN.md — Integration: wire components, URL sync, verification
 
 ---
 
@@ -193,8 +197,8 @@ Plans:
 | 21. Theme System Foundation | v3.0 | 5/5 | Complete | 2026-01-25 |
 | 22. CLI Theme Integration | v3.0 | 4/4 | Complete | 2026-01-25 |
 | 23. Visual Configurator Core | v3.0 | 4/4 | Complete | 2026-01-25 |
-| 24. Presets and Enhanced Features | v3.0 | 0/? | Ready | - |
+| 24. Presets and Enhanced Features | v3.0 | 0/3 | Planned | - |
 
 ---
 *Roadmap created: 2026-01-24*
-*Last updated: 2026-01-25 (Phase 23 complete: Visual Configurator Core)*
+*Last updated: 2026-01-25 (Phase 24 planned: Presets and Enhanced Features)*
