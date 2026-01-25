@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router'
 import { DocsLayout } from './layouts/DocsLayout'
 import { GettingStarted } from './pages/GettingStarted'
 import { Installation } from './pages/Installation'
+import { SSRGuide } from './pages/SSRGuide'
 import { Placeholder } from './pages/Placeholder'
 import { ButtonPage } from './pages/components/ButtonPage'
 import { DialogPage } from './pages/components/DialogPage'
@@ -21,7 +22,7 @@ export default function App() {
           <Route path="installation" element={<Installation />} />
 
           {/* Guides */}
-          <Route path="guides/ssr" element={<Placeholder />} />
+          <Route path="guides/ssr" element={<SSRGuide />} />
           <Route path="guides/migration" element={<Placeholder />} />
 
           {/* Components */}
