@@ -1,619 +1,469 @@
-# Architecture Research: NPM + SSR Integration
+# Architecture Research: Theme Customization
 
-**Domain:** NPM package distribution and SSR support for LitUI
-**Researched:** 2026-01-24
-**Confidence:** HIGH (verified via official Lit SSR documentation, NPM workspace patterns)
+**Domain:** Visual theme configurator for Lit/Tailwind component library
+**Researched:** 2026-01-25
+**Confidence:** HIGH (based on existing codebase analysis and established patterns)
 
 ## Executive Summary
 
-Adding NPM package distribution and SSR support to LitUI requires:
-1. **New package structure** with scoped NPM packages (@lit-ui/core, @lit-ui/button, @lit-ui/dialog)
-2. **TailwindElement SSR adaptation** to handle constructable stylesheets in DSD context
-3. **CLI dual-mode support** for both copy-source and npm install workflows
-4. **Build configuration** for per-package publishing with proper exports
+The theme customization system integrates with LitUI's existing dual-mode architecture (copy-source vs npm) by adding a visual configurator in the docs site, URL-based token encoding, CLI parameter parsing, and CSS generation. The architecture leverages the existing CSS custom property foundation in `@lit-ui/core` while adding new tooling for customization.
 
-The key architectural challenge is that **constructable stylesheets cannot be serialized in Declarative Shadow DOM**. This requires using Lit's static styles for SSR while preserving the current constructable stylesheet approach for client-side efficiency.
-
----
-
-## Package Structure
-
-### Existing (keep unchanged)
-
-```
-/
-├── src/                          # Main component source (for development/demo)
-│   ├── base/tailwind-element.ts
-│   ├── components/button/button.ts
-│   ├── components/dialog/dialog.ts
-│   └── styles/tailwind.css
-├── packages/
-│   └── cli/                      # CLI tool (lit-ui command)
-```
-
-### New Packages (add)
-
-```
-packages/
-├── cli/                          # EXISTING - enhance for dual-mode
-├── core/                         # NEW - @lit-ui/core
-│   ├── src/
-│   │   ├── tailwind-element.ts   # SSR-aware base class
-│   │   ├── ssr/                  # SSR utilities
-│   │   │   ├── index.ts
-│   │   │   └── hydration.ts
-│   │   └── index.ts
-│   ├── package.json
-│   └── vite.config.ts
-├── button/                       # NEW - @lit-ui/button
-│   ├── src/
-│   │   ├── button.ts
-│   │   └── index.ts
-│   ├── package.json
-│   └── vite.config.ts
-└── dialog/                       # NEW - @lit-ui/dialog
-    ├── src/
-    │   ├── dialog.ts
-    │   └── index.ts
-    ├── package.json
-    └── vite.config.ts
-```
-
-### Package Details
-
-#### @lit-ui/core
-
-**Purpose:** Base infrastructure shared by all components
-
-**Contents:**
-- `TailwindElement` base class (SSR-aware version)
-- SSR utilities for Declarative Shadow DOM
-- Hydration support module
-- CSS injection utilities
-- Design token exports
-
-**Dependencies:**
-- `lit` (peer dependency)
-- `@lit-labs/ssr-client` (optional peer for SSR)
-
-**Exports:**
-```json
-{
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    },
-    "./ssr": {
-      "types": "./dist/ssr/index.d.ts",
-      "import": "./dist/ssr/index.js"
-    }
-  }
-}
-```
-
-#### @lit-ui/button
-
-**Purpose:** Button component for NPM consumers
-
-**Dependencies:**
-- `@lit-ui/core` (peer dependency)
-- `lit` (peer dependency)
-
-**Exports:**
-```json
-{
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    }
-  }
-}
-```
-
-#### @lit-ui/dialog
-
-**Purpose:** Dialog component for NPM consumers
-
-**Dependencies:**
-- `@lit-ui/core` (peer dependency)
-- `lit` (peer dependency)
+The system follows a "configure once, generate artifacts" model where:
+1. Users visually configure tokens in the docs site
+2. Configuration is base64url-encoded into a CLI command
+3. CLI decodes and generates `lit-ui-tokens.css`
+4. Components consume tokens via CSS custom properties (already working)
 
 ---
 
 ## Integration Points
 
-### With Existing TailwindElement
+### 1. Docs Site (apps/docs)
 
-**Current approach (client-only):**
-```typescript
-// tailwind-element.ts - CURRENT
-const tailwindSheet = new CSSStyleSheet();
-tailwindSheet.replaceSync(tailwindStyles);
+**Current state:**
+- React app with React Router
+- Component pages at `/components/button`, `/components/dialog`
+- Uses Tailwind CSS for styling
+- Imports live `@lit-ui/*` packages for demos
 
-export class TailwindElement extends LitElement {
-  connectedCallback() {
-    super.connectedCallback();
-    this.shadowRoot.adoptedStyleSheets = [tailwindSheet, ...];
-  }
-}
+**Integration:**
+- Add new route: `/theme` or `/customize`
+- Add to navigation in `nav.ts`
+- New page component: `ThemeConfigurator.tsx`
+- Uses existing `LivePreview.tsx` pattern for showing components with applied tokens
+
+**Key constraint:** The configurator UI runs in the docs site (React) but must preview Lit web components with the configured tokens applied via CSS custom properties.
+
+### 2. Token System (@lit-ui/core)
+
+**Current state:**
+- `packages/core/src/styles/tailwind.css` - Defines primitive and semantic tokens in `@theme` block
+- `packages/core/src/tokens/index.ts` - TypeScript references to CSS variables
+- `:root` block defines component-level CSS custom properties (`--ui-button-*`, `--ui-dialog-*`)
+- `.dark` block overrides semantic tokens for dark mode
+
+**Integration:**
+- Tokens already exist and are well-structured
+- CLI will generate `lit-ui-tokens.css` that overrides `:root` values
+- Generated file imports before or alongside existing CSS
+- No changes to `@lit-ui/core` package required - consumers override via cascade
+
+**Token categories for customization (from existing `tailwind.css`):**
+
+| Category | Existing Variables | Customizable |
+|----------|-------------------|--------------|
+| Brand Colors | `--color-brand-*` (50-950) | Yes - primary color |
+| Semantic Colors | `--color-primary`, `--color-secondary`, etc. | Yes |
+| Spacing | `--spacing-*` | Partial (component-specific) |
+| Typography | `--font-family-*` | Yes |
+| Shadows | `--shadow-*` | Yes |
+| Border Radius | `--radius-*` | Yes |
+| Component Tokens | `--ui-button-*`, `--ui-dialog-*` | Yes |
+
+### 3. CLI (packages/cli)
+
+**Current state:**
+- Commands: `init`, `add`, `list`, `migrate`
+- Uses citty framework
+- Handles both copy-source and npm modes
+- Writes `lit-ui.config.json` for project configuration
+- Embedded templates in `templates/index.ts`
+
+**Integration:**
+- New command: `lit-ui theme` or extend `lit-ui init --theme <encoded>`
+- Parse base64url-encoded token configuration
+- Generate `lit-ui-tokens.css` file
+- Update `lit-ui.config.json` to track token file path
+- Works with both copy-source and npm modes
+
+**CLI flow:**
+```
+npx lit-ui add button --theme eyJwcmltYXJ5IjoiIzNiODJmNiIsInJhZGl1cyI6IjAuNXJlbSJ9
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                              Base64URL encoded: {"primary":"#3b82f6","radius":"0.5rem"}
 ```
 
-**Problem:** Constructable stylesheets cannot be serialized in Declarative Shadow DOM (DSD). When server-rendering, styles must be inlined as `<style>` tags within the `<template shadowrootmode="open">`.
+### 4. Component Consumption
 
-**Solution: Dual-mode TailwindElement**
+**Current state:**
+- Components use CSS custom properties in their styles
+- `TailwindElement` base class adopts stylesheets in Shadow DOM
+- CSS variables cascade from `:root` into Shadow DOM
+- Dark mode via `.dark` class on ancestor
 
-```typescript
-// tailwind-element.ts - SSR-AWARE
-import { LitElement, css, unsafeCSS, isServer } from 'lit';
-import type { CSSResultGroup } from 'lit';
-
-// Compile-time: styles as string for SSR injection
-import tailwindStyles from './tailwind.css?inline';
-import hostDefaults from './host-defaults.css?inline';
-
-// SSR: Use static styles (inlined in DSD template)
-// Client: Use constructable stylesheets for efficiency (shared across instances)
-
-// Client-side only: shared constructable stylesheet
-let sharedTailwindSheet: CSSStyleSheet | null = null;
-let sharedHostDefaultsSheet: CSSStyleSheet | null = null;
-
-if (!isServer) {
-  sharedTailwindSheet = new CSSStyleSheet();
-  sharedTailwindSheet.replaceSync(tailwindStyles);
-  sharedHostDefaultsSheet = new CSSStyleSheet();
-  sharedHostDefaultsSheet.replaceSync(hostDefaults);
-}
-
-export class TailwindElement extends LitElement {
-  // Static styles for SSR - these get inlined in the DSD template
-  static styles: CSSResultGroup = [
-    unsafeCSS(tailwindStyles),
-    unsafeCSS(hostDefaults)
-  ];
-
-  connectedCallback() {
-    super.connectedCallback();
-
-    // Client-side optimization: replace static styles with shared
-    // constructable stylesheets for better memory efficiency
-    if (!isServer && this.shadowRoot && sharedTailwindSheet && sharedHostDefaultsSheet) {
-      // Get component-specific styles (from subclass)
-      const componentStyles = this.shadowRoot.adoptedStyleSheets.slice(2);
-
-      // Use shared stylesheets instead of per-instance copies
-      this.shadowRoot.adoptedStyleSheets = [
-        sharedTailwindSheet,
-        sharedHostDefaultsSheet,
-        ...componentStyles
-      ];
-    }
-  }
-}
-```
-
-**Key insight:** Lit's `isServer` export (from `lit`) enables conditional code paths. Static styles work for SSR (inlined in DSD), while client-side uses efficient constructable stylesheets.
-
-**SSR Lifecycle Considerations:**
-- `constructor()` - Runs on server
-- `connectedCallback()` - Does NOT run on server
-- `render()` - Runs on server
-- `updated()`, `firstUpdated()` - Do NOT run on server
-
-This means the constructable stylesheet optimization only runs in browsers after hydration.
-
-### With Existing CLI
-
-**Current CLI behavior:**
-- `lit-ui init` - creates lit-ui.json, copies base files
-- `lit-ui add <component>` - copies component source to user's project
-- Uses embedded templates for portable distribution
-
-**Enhanced CLI for dual-mode:**
-
-Add `mode` to lit-ui.json config:
-```json
-{
-  "$schema": "https://lit-ui.dev/schema.json",
-  "mode": "copy-source",
-  "componentsPath": "src/components/ui",
-  "tailwind": { "css": "src/styles/tailwind.css" },
-  "aliases": {
-    "components": "@/components/ui",
-    "base": "@/lib/lit-ui"
-  }
-}
-```
-
-**Mode options:**
-- `"copy-source"` (default): Current behavior - copies component source files
-- `"npm"`: Installs @lit-ui/* packages from NPM
-
-**CLI changes:**
-
-1. **`lit-ui init`** prompts for mode selection:
-   - copy-source: current behavior (copies TailwindElement, styles)
-   - npm: installs @lit-ui/core, configures imports
-
-2. **`lit-ui add <component>`** behavior by mode:
-   - **copy-source:** copies embedded template (current behavior)
-   - **npm:** runs `npm install @lit-ui/<component>`, shows import instructions
-
-3. **New `lit-ui migrate` command:**
-   - Converts copy-source project to npm mode
-   - Updates imports from local paths to @lit-ui/* packages
-   - Removes copied source files (with confirmation)
-
-### With Existing Build (Vite)
-
-**Current vite.config.ts:**
-```typescript
-export default defineConfig({
-  plugins: [tailwindcss(), dts({ rollupTypes: true })],
-  build: {
-    lib: { entry: 'src/index.ts', formats: ['es'], fileName: 'index' },
-    rollupOptions: { external: ['lit'] }
-  }
-});
-```
-
-**New workspace configuration:**
-
-Root package.json:
-```json
-{
-  "name": "lit-ui-monorepo",
-  "private": true,
-  "workspaces": ["packages/*"]
-}
-```
-
-Per-package vite.config.ts pattern:
-```typescript
-// packages/core/vite.config.ts
-import { defineConfig } from 'vite';
-import tailwindcss from '@tailwindcss/vite';
-import dts from 'vite-plugin-dts';
-
-export default defineConfig({
-  plugins: [
-    tailwindcss(),
-    dts({ rollupTypes: true })
-  ],
-  build: {
-    lib: {
-      entry: {
-        index: 'src/index.ts',
-        'ssr/index': 'src/ssr/index.ts'
-      },
-      formats: ['es']
-    },
-    rollupOptions: {
-      external: ['lit', /^@lit-labs\//]
-    }
-  }
-});
-```
-
-```typescript
-// packages/button/vite.config.ts
-import { defineConfig } from 'vite';
-import dts from 'vite-plugin-dts';
-
-export default defineConfig({
-  plugins: [dts({ rollupTypes: true })],
-  build: {
-    lib: {
-      entry: 'src/index.ts',
-      formats: ['es'],
-      fileName: 'index'
-    },
-    rollupOptions: {
-      // Mark all dependencies as external
-      external: ['lit', '@lit-ui/core', /^@lit-labs\//]
-    }
-  }
-});
-```
-
-**Tailwind handling:**
-- @lit-ui/core compiles and embeds Tailwind CSS at build time
-- Component packages (button, dialog) import TailwindElement which includes styles
-- No Tailwind plugin needed in component packages
+**Integration:**
+- No component changes required
+- Generated `lit-ui-tokens.css` is loaded at document level
+- CSS cascade applies custom values automatically
+- Components already reference `var(--ui-button-radius)`, etc.
 
 ---
 
-## SSR Architecture
+## New Components
 
-### How Lit SSR Works
+### 1. Theme Configurator Page (apps/docs)
 
-1. **Server:** @lit-labs/ssr renders components to HTML with Declarative Shadow DOM
-2. **HTML Output:** Shadow DOM contents wrapped in `<template shadowrootmode="open">`
-3. **Browser:** DSD automatically attaches shadow roots on parse
-4. **Hydration:** @lit-labs/ssr-client enables component rehydration
+**File:** `apps/docs/src/pages/ThemeConfigurator.tsx`
 
-### Key Packages
+**Responsibilities:**
+- Visual UI for adjusting design tokens
+- Live preview of components with current token values
+- Generate shareable URL with encoded config
+- Generate CLI command with encoded config
+- Copy-to-clipboard functionality
 
-| Package | Purpose | Required For |
-|---------|---------|--------------|
-| `@lit-labs/ssr` | Server-side rendering | Node.js server |
-| `@lit-labs/ssr-client` | Client hydration support | Browser hydration |
-| `lit` | Core library with isServer | Both |
+**State management:**
+- React useState for token values
+- URL query parameter sync for shareability
+- Local component state (no global state needed)
 
-### LitUI SSR Integration
+**Sub-components needed:**
+- `ColorPicker.tsx` - For color token editing
+- `SliderInput.tsx` - For spacing/radius values
+- `FontSelector.tsx` - For typography options
+- `TokenPreview.tsx` - Shows current token values as CSS
+- `CommandOutput.tsx` - Displays generated CLI command
 
-**TailwindElement already has SSR-compatible guards:**
+### 2. Token Encoder/Decoder (shared)
+
+**File:** `packages/cli/src/utils/tokens.ts` (CLI) and equivalent in docs
+
+**Responsibilities:**
+- Define token schema (TypeScript interface)
+- Encode token config to base64url string
+- Decode base64url string to token config
+- Validate token values
+
+**Schema example:**
 ```typescript
-// Already in current code - won't run server-side
-if (typeof document !== 'undefined') {
-  const documentSheet = new CSSStyleSheet();
-  // ...
+interface ThemeTokens {
+  // Brand
+  primary: string;       // oklch or hex color
+  primaryForeground?: string;
+
+  // UI
+  radius: string;        // e.g., "0.5rem"
+  shadow?: 'none' | 'sm' | 'md' | 'lg';
+
+  // Component-specific
+  buttonRadius?: string;
+  dialogRadius?: string;
+
+  // Dark mode overrides
+  dark?: {
+    primary?: string;
+    // ... other overrides
+  };
 }
 ```
 
-**Changes needed for full SSR support:**
+### 3. CSS Generator (CLI)
 
-1. **Use `isServer` import** from lit for cleaner conditional logic
-2. **Move styles to static property** so they're included in SSR output
-3. **Export SSR utilities** from @lit-ui/core/ssr
+**File:** `packages/cli/src/utils/generate-tokens.ts`
 
-### SSR Output Example
+**Responsibilities:**
+- Transform token config into CSS custom properties
+- Generate `:root` block with overrides
+- Generate `.dark` block if dark mode tokens provided
+- Write `lit-ui-tokens.css` file
 
-Server renders this HTML:
-```html
-<ui-button variant="primary">
-  <template shadowrootmode="open">
-    <style>
-      /* Tailwind CSS (inlined from static styles) */
-      .bg-primary { ... }
-      .px-4 { ... }
-    </style>
-    <button class="inline-flex items-center justify-center px-4 py-2 bg-primary text-primary-foreground">
-      <slot></slot>
-    </button>
-  </template>
-  Click me
-</ui-button>
-```
+**Output example:**
+```css
+/**
+ * LitUI Theme Tokens
+ * Generated by: npx lit-ui add button --theme <encoded>
+ *
+ * Import this file in your main CSS or entry point.
+ */
+:root {
+  /* Brand Override */
+  --color-primary: oklch(0.62 0.18 240);
+  --color-primary-foreground: white;
 
-Browser parses this, DSD automatically attaches shadow root, then hydration makes it interactive.
-
-### Hydration Setup
-
-For SSR-rendered components to become interactive:
-
-```typescript
-// Entry point - MUST load before lit
-import '@lit-labs/ssr-client/lit-element-hydrate-support.js';
-
-// Then import components
-import '@lit-ui/button';
-```
-
-**@lit-ui/core/ssr convenience export:**
-```typescript
-// packages/core/src/ssr/index.ts
-export async function setupHydration() {
-  if (typeof window !== 'undefined') {
-    await import('@lit-labs/ssr-client/lit-element-hydrate-support.js');
-  }
+  /* Component Overrides */
+  --ui-button-radius: 0.5rem;
+  --ui-dialog-radius: 0.75rem;
 }
 
-// Re-export for type support
-export type { SSRResult } from '@lit-labs/ssr';
+.dark {
+  --color-primary: oklch(0.70 0.15 240);
+}
 ```
+
+### 4. Theme Command (CLI)
+
+**File:** `packages/cli/src/commands/theme.ts`
+
+**Responsibilities:**
+- Parse `--theme` parameter from encoded string
+- Call token decoder
+- Call CSS generator
+- Write output file
+- Update `lit-ui.config.json`
+
+---
+
+## Modified Components
+
+### 1. CLI Add Command
+
+**File:** `packages/cli/src/commands/add.ts`
+
+**Changes:**
+- Add `--theme` argument option
+- If `--theme` provided, decode and generate tokens CSS
+- Include token file in installation output
+
+### 2. CLI Config
+
+**File:** `packages/cli/src/utils/config.ts`
+
+**Changes:**
+- Add `tokens.css` path to `LitUIConfig` interface
+- Track whether tokens file was generated
+
+```typescript
+interface LitUIConfig {
+  // ... existing fields
+  tokens?: {
+    path: string;         // e.g., "src/styles/lit-ui-tokens.css"
+    generated: boolean;   // Whether CLI generated it
+  };
+}
+```
+
+### 3. Docs Navigation
+
+**File:** `apps/docs/src/nav.ts`
+
+**Changes:**
+- Add "Theme" or "Customize" entry to navigation
+
+### 4. Docs App Router
+
+**File:** `apps/docs/src/App.tsx`
+
+**Changes:**
+- Add route for theme configurator page
 
 ---
 
 ## Data Flow
 
-### NPM Mode Flow
-
 ```
-Developer                         NPM                          Browser
-    |                              |                              |
-    | npm install @lit-ui/button   |                              |
-    |----------------------------->|                              |
-    |                              |                              |
-    | import '@lit-ui/button'      |                              |
-    | (in app code)                |                              |
-    |                              |                              |
-    | Build (Vite/Webpack)         |                              |
-    | ----------------------------------------------------------->|
-    |                              |                              |
-    |                              |      <ui-button> works       |
-    |                              |<------------------------------|
-```
-
-**Import chain:**
-```
-@lit-ui/button
-  |-- depends on @lit-ui/core (peer)
-        |-- depends on lit (peer)
-```
-
-### Copy-Source Mode Flow (existing, unchanged)
-
-```
-Developer                         CLI                           Project
-    |                              |                              |
-    | npx lit-ui add button        |                              |
-    |----------------------------->|                              |
-    |                              |                              |
-    |                              | Copy button.ts to            |
-    |                              | src/components/ui/           |
-    |                              |----------------------------->|
-    |                              |                              |
-    | import './components/ui/button'                             |
-    | (local file)                 |                              |
++------------------+     +------------------+     +------------------+
+|   Docs Site      |     |   URL/Clipboard  |     |   User's CLI     |
+|  Configurator    | --> |   Encoded Token  | --> |   lit-ui add     |
+|  (React UI)      |     |   Config String  |     |   --theme xxx    |
++------------------+     +------------------+     +------------------+
+        |                                                  |
+        v                                                  v
++------------------+                          +------------------+
+|  Live Preview    |                          |  Token Decoder   |
+|  (applies CSS    |                          |  (base64url ->   |
+|   vars inline)   |                          |   JSON object)   |
++------------------+                          +------------------+
+                                                       |
+                                                       v
+                                              +------------------+
+                                              |  CSS Generator   |
+                                              |  (JSON -> CSS    |
+                                              |   custom props)  |
+                                              +------------------+
+                                                       |
+                                                       v
+                                              +------------------+
+                                              | lit-ui-tokens.css|
+                                              | (written to user |
+                                              |  project)        |
+                                              +------------------+
+                                                       |
+                                                       v
+                                              +------------------+
+                                              |  Components      |
+                                              |  (consume via    |
+                                              |   CSS cascade)   |
+                                              +------------------+
 ```
 
-### SSR Mode Flow
+### Encoding Format
 
-```
-Server (Node.js)                                          Browser
-    |                                                        |
-    | import { render } from '@lit-labs/ssr'                 |
-    | import '@lit-ui/button'                                |
-    |                                                        |
-    | const html = render(html`<ui-button>Click</ui-button>`)|
-    |                                                        |
-    | Output:                                                |
-    | <ui-button>                                            |
-    |   <template shadowrootmode="open">                     |
-    |     <style>/* Tailwind CSS */</style>                  |
-    |     <button class="..."><slot></slot></button>         |
-    |   </template>                                          |
-    |   Click                                                |
-    | </ui-button>                                           |
-    |                                                        |
-    | HTML sent to browser --------------------------------->|
-    |                                                        |
-    |                               DSD auto-attaches shadow |
-    |                               Hydration script loads   |
-    |                               Components interactive   |
+Use **base64url** (RFC 4648 Section 5) for URL-safe encoding:
+- Replaces `+` with `-` and `/` with `_`
+- Omits padding (`=`) for cleaner URLs
+- Safe for CLI arguments and URL query parameters
+
+**Example:**
+```javascript
+// Input
+const tokens = { primary: "#3b82f6", radius: "0.5rem" };
+
+// Encode
+const json = JSON.stringify(tokens);
+const base64 = btoa(json).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+// Result: "eyJwcmltYXJ5IjoiIzNiODJmNiIsInJhZGl1cyI6IjAuNXJlbSJ9"
+
+// Decode
+const decoded = JSON.parse(atob(base64.replace(/-/g, '+').replace(/_/g, '/')));
 ```
 
 ---
 
-## Suggested Build Order
+## Build Order
 
-Based on dependencies and integration points:
+Recommended implementation sequence based on dependencies:
 
-### Phase 1: Package Infrastructure (Week 1)
+### Phase 1: Token Infrastructure
+**Goal:** Establish encoding/decoding and CSS generation
 
-1. **Configure npm workspaces** in root package.json
-2. **Create packages/core** directory structure
-3. **Adapt TailwindElement for SSR** - add static styles, isServer guards
-4. **Configure @lit-ui/core build** - Vite, TypeScript, exports
-5. **Test @lit-ui/core** builds and exports correctly
+1. **Token schema definition** (`packages/cli/src/utils/token-schema.ts`)
+   - Define TypeScript interface for customizable tokens
+   - List all token names and their valid value types
+   - No dependencies
 
-### Phase 2: Component Packages (Week 1-2)
+2. **Encoder/decoder utilities** (`packages/cli/src/utils/token-encoding.ts`)
+   - Base64url encode/decode functions
+   - JSON validation against schema
+   - Depends on: Token schema
 
-6. **Create packages/button** - port button.ts with @lit-ui/core import
-7. **Create packages/dialog** - port dialog.ts with @lit-ui/core import
-8. **Test component packages** build and work in isolation
+3. **CSS generator** (`packages/cli/src/utils/generate-tokens-css.ts`)
+   - Transform token object to CSS string
+   - Handle light/dark mode sections
+   - Depends on: Token schema
 
-### Phase 3: SSR Support (Week 2)
+### Phase 2: CLI Integration
+**Goal:** CLI can accept and process token configuration
 
-9. **Add @lit-ui/core/ssr** subpath with hydration utilities
-10. **Test SSR rendering** with @lit-labs/ssr directly
-11. **Document SSR setup** for Next.js, Astro, etc.
+4. **Theme command or add extension** (`packages/cli/src/commands/add.ts` or new `theme.ts`)
+   - Add `--theme` parameter parsing
+   - Integrate encoder/decoder
+   - Call CSS generator
+   - Write output file
+   - Depends on: Encoder/decoder, CSS generator
 
-### Phase 4: CLI Enhancement (Week 2-3)
+5. **Config updates** (`packages/cli/src/utils/config.ts`)
+   - Add tokens path to config interface
+   - Track generated token files
+   - Depends on: Theme command
 
-12. **Add mode config** to lit-ui.json schema
-13. **Update init command** for mode selection
-14. **Update add command** for npm mode behavior
-15. **Add migrate command** for copy-to-npm conversion
+### Phase 3: Visual Configurator
+**Goal:** Users can visually customize and get CLI command
 
-### Phase 5: Publishing (Week 3)
+6. **Configurator page scaffold** (`apps/docs/src/pages/ThemeConfigurator.tsx`)
+   - Basic page with sections for each token category
+   - State management for token values
+   - Depends on: Token schema (can duplicate or share)
 
-16. **Set up npm publishing** workflow (GitHub Actions)
-17. **Configure scoped packages** (@lit-ui/* on npm)
-18. **Publish initial versions** to npm
+7. **Input components** (ColorPicker, SliderInput, etc.)
+   - Individual controls for different token types
+   - Depends on: Configurator scaffold
+
+8. **Live preview**
+   - Apply token values as inline CSS variables
+   - Show components updating in real-time
+   - Depends on: Input components
+
+9. **Command generation**
+   - Encode current token state
+   - Display copyable CLI command
+   - Shareable URL with query params
+   - Depends on: Encoder (client-side version), Live preview
+
+### Phase 4: Polish
+**Goal:** Complete user experience
+
+10. **Preset themes**
+    - Pre-built configurations users can start from
+    - One-click application in configurator
+    - Depends on: Full configurator
+
+11. **Documentation**
+    - Update installation guide with token customization
+    - Add theming guide to docs
+    - Depends on: All above
+
+---
+
+## Architecture Patterns to Follow
+
+### 1. CSS Custom Property Cascade
+Components already consume tokens via CSS custom properties. The generated `lit-ui-tokens.css` overrides `:root` values, which cascade into Shadow DOM automatically.
+
+```css
+/* Existing in @lit-ui/core */
+:root {
+  --color-primary: oklch(0.62 0.18 250);  /* Default blue */
+}
+
+/* Generated lit-ui-tokens.css - loaded after core */
+:root {
+  --color-primary: oklch(0.65 0.20 140);  /* User's green */
+}
+```
+
+### 2. Separation of Concerns
+- **Docs site:** UI only, generates encoded config
+- **CLI:** Decodes config, generates CSS artifacts
+- **Components:** Consume CSS variables (no changes needed)
+
+### 3. Stateless Configuration
+No server storage. All state is encoded in:
+- URL query parameters (for sharing configurator state)
+- CLI command argument (for applying configuration)
+
+### 4. Progressive Enhancement
+Works with existing projects:
+- Users without token customization get defaults
+- Token file is optional - only generated if `--theme` is used
+- Existing CSS variable overrides continue to work
 
 ---
 
 ## Anti-Patterns to Avoid
 
-### Do Not: Bundle Lit into packages
+### 1. Runtime Theme Switching
+**Avoid:** Building JavaScript-based theme switching
+**Why:** Adds complexity, bundle size, conflicts with SSR
+**Instead:** CSS custom properties with class-based dark mode (already implemented)
 
-```typescript
-// BAD: packages/button/vite.config.ts
-rollupOptions: {
-  // Missing external - bundles lit
-}
+### 2. Token Compilation into Components
+**Avoid:** Baking token values into component builds
+**Why:** Prevents runtime customization, requires rebuild
+**Instead:** Components reference CSS variables; users override at document level
 
-// GOOD: packages/button/vite.config.ts
-rollupOptions: {
-  external: ['lit', '@lit-ui/core', /^@lit-labs\//]
-}
-```
+### 3. Server-Side Token Storage
+**Avoid:** Storing token configs on a server
+**Why:** Adds infrastructure complexity, authentication concerns
+**Instead:** Encode in URL/CLI command, let users store their own files
 
-Lit must be external/peer dependency. Bundling causes version conflicts and breaks SSR conditional exports.
-
-### Do Not: Use dynamic imports for styles in SSR
-
-```typescript
-// BAD: Won't work in SSR
-async connectedCallback() {
-  const styles = await import('./styles.css');
-  this.shadowRoot.adoptedStyleSheets = [styles];
-}
-
-// GOOD: Static styles work in SSR
-static styles = [unsafeCSS(tailwindStyles)];
-```
-
-Styles must be statically analyzable for SSR to inline them.
-
-### Do Not: Access DOM in constructor or property initializers
-
-```typescript
-// BAD: Breaks SSR
-class MyEl extends LitElement {
-  width = document.body.clientWidth; // Error on server
-}
-
-// GOOD: Guard with isServer or defer to connectedCallback
-import { isServer } from 'lit';
-class MyEl extends LitElement {
-  width = isServer ? 0 : document.body.clientWidth;
-}
-```
-
-### Do Not: Rely solely on constructable stylesheets
-
-```typescript
-// BAD: Won't render styles in SSR
-static styles = []; // Empty
-connectedCallback() {
-  this.shadowRoot.adoptedStyleSheets = [sheet]; // Only client
-}
-
-// GOOD: Static styles for SSR, optimize in connectedCallback
-static styles = [unsafeCSS(tailwindStyles)];
-connectedCallback() {
-  if (!isServer) {
-    // Optimization: use shared stylesheet
-  }
-}
-```
+### 4. Modifying @lit-ui/core for Themes
+**Avoid:** Changing core package to support custom themes
+**Why:** Breaks existing users, complicates updates
+**Instead:** CSS cascade - user's token file overrides core defaults
 
 ---
 
-## Scalability Considerations
+## Confidence Assessment
 
-| Concern | 2 Components | 10 Components | 50+ Components |
-|---------|--------------|---------------|----------------|
-| Package count | 3 (@lit-ui/core + 2) | 11 | 51+ |
-| Build time | ~5s | ~30s | Consider turborepo |
-| Tailwind CSS size | ~50KB | ~80KB | Per-component CSS builds |
-| Version management | Manual | Changesets | Changesets + automated |
-
-**Recommendation for v2.0:** Start with manual version management for 3 packages. Add Changesets if/when expanding to more components.
+| Area | Confidence | Reasoning |
+|------|------------|-----------|
+| CSS Custom Property Integration | HIGH | Already implemented in codebase, well-understood pattern |
+| Base64URL Encoding | HIGH | Standard RFC 4648, widely used for URL-safe encoding |
+| CLI Parameter Parsing | HIGH | citty framework already handles this well |
+| React Configurator UI | HIGH | Standard React patterns, docs site already uses React |
+| Shadow DOM Token Cascade | HIGH | Verified working in existing components |
+| Token Schema Design | MEDIUM | Need to balance completeness with complexity |
 
 ---
 
 ## Sources
 
-### Official Documentation (HIGH confidence)
-- [Lit SSR Overview](https://lit.dev/docs/ssr/overview/) - SSR architecture and DSD
-- [Lit SSR Authoring](https://lit.dev/docs/ssr/authoring/) - Component SSR requirements
-- [Lit SSR Client Usage](https://lit.dev/docs/ssr/client-usage/) - Hydration setup
-- [@lit-labs/ssr NPM](https://www.npmjs.com/package/@lit-labs/ssr) - Package details
-- [Node.js Package Exports](https://nodejs.org/api/packages.html) - Subpath exports spec
-
-### Community Resources (MEDIUM confidence)
-- [Constructable Stylesheets Discussion](https://github.com/lit/lit/discussions/2220) - DSD limitation
-- [Web Components, Tailwind, and SSR](https://www.konnorrogers.com/posts/2023/web-components-tailwind-and-ssr) - Tailwind SSR approaches
-- [NPM Workspaces Guide](https://blog.npmjs.org/post/186494959890/monorepos-and-npm.html) - Monorepo best practices
-- [TypeScript Mono-repo Setup](https://blog.frankdejonge.nl/setting-up-a-typescript-mono-repo-for-scoped-packages/) - Scoped package patterns
-
----
-
-*Architecture research for: LitUI v2.0 NPM + SSR*
-*Researched: 2026-01-24*
+- [shadcn/ui Theming Documentation](https://ui.shadcn.com/docs/theming) - CSS variable architecture for component theming
+- [Contentful Design Tokens Guide](https://www.contentful.com/blog/design-token-system/) - Token system architecture patterns
+- [RFC 4648 Base64URL](https://datatracker.ietf.org/doc/html/rfc4648) - URL-safe encoding specification
+- [tweakcn Theme Editor](https://tweakcn.com/) - Example of visual theme configurator for shadcn/ui
+- Existing codebase analysis:
+  - `/packages/core/src/styles/tailwind.css` - Current token definitions
+  - `/packages/cli/src/commands/add.ts` - CLI command patterns
+  - `/packages/cli/src/utils/config.ts` - Configuration management
+  - `/apps/docs/src/pages/components/ButtonPage.tsx` - Docs page patterns

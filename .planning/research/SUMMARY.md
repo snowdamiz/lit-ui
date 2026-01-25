@@ -1,329 +1,346 @@
 # Project Research Summary
 
-**Project:** LitUI v2.0 - NPM Package Distribution + SSR Support
-**Domain:** Web Component Library Enhancement - Package Publishing & Server-Side Rendering
-**Researched:** 2026-01-24
+**Project:** LitUI v3.0 Theme Customization
+**Domain:** Lit.js Web Components + Tailwind v4 + Visual Theme Configurator
+**Researched:** 2026-01-25
 **Confidence:** HIGH
 
 ## Executive Summary
 
-Adding NPM package distribution and SSR support to LitUI requires monorepo restructuring with scoped packages (@lit-ui/core, @lit-ui/button, @lit-ui/dialog) and fundamental changes to how styles are handled. The existing TailwindElement base class uses constructable stylesheets, which cannot be serialized in Declarative Shadow DOM - requiring a dual-mode approach that uses static styles for SSR and optimized constructable stylesheets client-side.
+LitUI v3.0 adds a visual theme configurator to an existing Lit.js component library with Tailwind v4 integration. The system enables users to customize design tokens (colors, spacing, shadows, typography) through a visual interface on the docs site, encode their configuration into a URL-safe parameter, pass it to the CLI, and generate a `lit-ui-tokens.css` file. The architecture leverages the existing CSS custom property foundation in `@lit-ui/core`, requiring no component changes.
 
-The recommended approach leverages pnpm workspaces for monorepo management, @changesets/cli for versioning, and the official @lit-labs/ssr ecosystem for server rendering. The critical architectural insight is that Lit's `isServer` flag enables conditional code paths, allowing components to work both server-side (with inlined styles) and client-side (with shared constructable stylesheets). The CLI tool remains operational in both copy-source and npm modes, giving users flexibility in distribution models.
+The recommended approach uses a "configure once, generate artifacts" model: users visually configure tokens in the React-based docs site, the configuration is base64url-encoded into a CLI command, the CLI decodes and generates CSS that overrides `:root` values, and components consume tokens via CSS cascade into Shadow DOM. This maintains the existing dual-distribution model (copy-source via CLI + NPM packages) while adding professional theming infrastructure.
 
-The primary risks center around build configuration (bundling Lit causes version conflicts), hydration ordering (ssr-client must load before components), and CSS handling (constructable stylesheets break SSR, @property rules need fallbacks). These are all solvable with proper external configuration in Vite, documented module load order, and dual-mode styling approach. The existing components are largely SSR-compatible except for ElementInternals usage in Button, which needs an isServer guard.
+Critical risks center on **Tailwind v4's `@theme` directive scope** (only works in the main entry file, not imported files), **token naming as permanent API** (renaming breaks user configs), and **URL encoding limitations** (configs can exceed browser URL length limits). Mitigation requires careful token architecture from the start, URL-safe base64url encoding with compression, and storing only diffs from defaults rather than full configurations.
 
 ## Key Findings
 
-### Recommended Stack Additions
+### Recommended Stack
 
-**From STACK-NPM-SSR.md** — NPM distribution and SSR require new tooling while leveraging existing Vite/TypeScript infrastructure.
+LitUI already has a solid technical foundation: Lit 3.x for web components, Tailwind v4 with `@tailwindcss/vite`, TypeScript 5.x, and a CLI built with Commander.js and Inquirer.js. The v3.0 milestone adds theme customization infrastructure without changing the core stack.
 
-**Core additions:**
-- **@lit-labs/ssr (v4.0.0)** — Server-side rendering with Declarative Shadow DOM output. Only official Lit SSR solution, experimental but functional.
-- **@lit-labs/ssr-client (v1.1.8)** — Client-side hydration support. Must load before Lit to adopt server-rendered shadow roots.
-- **pnpm (v10.28.1)** — Monorepo workspace manager with 60-80% disk savings via content-addressable store. Industry standard over npm/yarn workspaces.
-- **@changesets/cli (v2.29.8)** — Independent package versioning and changelog generation. Standard for multi-package publishing.
-- **@webcomponents/template-shadowroot (v0.2.1)** — Polyfill for Declarative Shadow DOM in legacy browsers (optional - modern browsers have native support).
+**Core technologies for v3.0:**
+- **React** (docs site): Visual configurator UI with live preview — already in use for docs site, mature color picker ecosystem
+- **Base64URL encoding**: URL-safe configuration encoding — RFC 4648 standard, works in both browser and Node.js
+- **lz-string or similar**: Compression before encoding — reduces config size by ~60-80% to stay within URL limits
+- **Tailwind v4 `@theme` directive**: Token definition and utility generation — CSS-first configuration, replaces JavaScript config
+- **CSS custom properties**: Cross-boundary theming — cascades from `:root` into Shadow DOM automatically
+- **Existing CLI (citty framework)**: Extends with `--theme` parameter — reuses established CLI patterns
 
-**Build configuration changes:**
-- Expand package.json exports field for subpath imports (@lit-ui/core/ssr)
-- Mark lit as external in all builds to prevent bundling
-- Add isServer guards around browser-only APIs (CSSStyleSheet, ElementInternals)
-- Use static styles property for SSR, constructable stylesheets for client optimization
-
-**Integration with existing stack:**
-- Lit 3.3.2 — No changes needed, import isServer for conditional logic
-- Vite 7.3.1 — Adapt to per-package library builds with workspace configuration
-- vite-plugin-dts 4.5.4 — Works with multiple entry points for subpath exports
-- Tailwind v4 — Constructable stylesheets work client-side; static inlining for SSR
+**Critical patterns from existing codebase:**
+- `@theme` directive in main `tailwind.css` entry file for primitive tokens
+- `:root` block for semantic and component-level tokens
+- `.dark` class-based dark mode overrides
+- TailwindElement base class with constructable stylesheets
+- `@property` extraction pattern for Shadow DOM compatibility
 
 ### Expected Features
 
-**From FEATURES.md** — NPM package mode and SSR compatibility table stakes.
+LitUI v3.0 focuses on build-time theme customization. Runtime theme switching is explicitly out of scope.
 
 **Must have (table stakes):**
-- ESM exports with proper exports field — Required for tree shaking and modern bundlers
-- TypeScript declarations (.d.ts files) — Standard expectation for component libraries
-- Subpath exports (@lit-ui/button, @lit-ui/core/ssr) — Granular imports, only load what you use
-- Peer dependency on Lit (^3.0.0) — Prevent version conflicts
-- Declarative Shadow DOM SSR output — Components render with styles server-side
-- Hydration support documentation — Users must know to load ssr-client before components
-- Semantic versioning and changelogs — Professional package management
+- **Live preview** — every comparable tool (shadcn themes, tweakcn, Radix) shows instant updates
+- **Color customization** (primary, secondary, destructive, background, foreground) — core use case for theming
+- **Light/dark mode dual editing** — industry standard, users expect both modes configured together
+- **Border radius control** — universal customization point, small change with large visual impact
+- **Copy-paste CSS output** — shadcn pattern, zero friction adoption
+- **CLI accepts token configuration** — users shouldn't re-copy CSS each time components are added
+- **Generated `lit-ui-tokens.css` file** — the deliverable artifact consumed by components
 
-**Should have (competitive):**
-- Scoped packages monorepo (@lit-ui/*) — Install only needed components, clean dependency tree
-- Custom Elements Manifest (custom-elements.json) — Enables IDE autocomplete, Figma integration, AI tooling
-- React wrappers package (@lit-ui/react) — Better DX for React users via @lit/react
-- Source maps for debugging — Improves developer experience
-- Bundle size CI tracking — Prevent bloat, build trust
+**Should have (competitive advantage):**
+- **Shareable theme URL** — encode entire theme in URL for collaboration and showcasing
+- **WCAG contrast validation** — real-time accessibility feedback, competitors rarely include this
+- **JSON export** — enables design tool workflows beyond CSS
+- **3-4 preset themes** — curated starting points reduce decision fatigue
 
-**Defer (v2+):**
-- Framework-specific SSR packages (Next.js, Nuxt adapters) — After basic SSR validated
-- Streaming SSR support — Advanced optimization
-- Server-only template rendering — Edge case usage
+**Defer (v3.1+ or never):**
+- Typography customization (font family, scale) — adds complexity, limited ROI for MVP
+- Animation tokens — smaller visual impact than colors/spacing
+- Component-specific token previews — beyond "see a demo page"
+- Undo/redo history — nice UX but not essential
+- Runtime theme switching — conflicts with build-time approach, adds JS overhead
 
 ### Architecture Approach
 
-**From ARCHITECTURE.md** — Monorepo package structure with SSR-aware TailwindElement and dual-mode CLI.
-
-The architecture adds three new packages while keeping existing source structure for development. @lit-ui/core exports the SSR-aware TailwindElement base class plus optional /ssr utilities. Component packages (@lit-ui/button, @lit-ui/dialog) depend on core as peer dependency. The CLI tool expands to support both copy-source (existing) and npm install modes via lit-ui.json config.
+The theme customization system integrates with LitUI's existing dual-mode architecture (copy-source vs NPM) by adding four new components: (1) visual configurator page in the React-based docs site, (2) token encoding/decoding utilities shared between docs and CLI, (3) CSS generator in the CLI that transforms token configs to CSS custom properties, and (4) CLI command extension to accept `--theme` parameter. The architecture maintains clean separation: docs site handles UI and generates encoded config, CLI handles decoding and artifact generation, components consume via CSS cascade without modification.
 
 **Major components:**
-1. **@lit-ui/core package** — TailwindElement base class with dual-mode styling (static styles for SSR, constructable for client), SSR utilities, design token exports. Peer depends on lit.
-2. **@lit-ui/button and @lit-ui/dialog packages** — Individual component packages that peer depend on @lit-ui/core. Published with proper exports field for subpath imports.
-3. **Enhanced CLI with mode selection** — Detects lit-ui.json "mode" field. Copy-source mode copies embedded templates (existing behavior), npm mode runs package install and shows import instructions.
-4. **TailwindElement SSR adaptation** — Uses static styles property for SSR inlining, adds isServer guards around CSSStyleSheet and adoptedStyleSheets, optimizes client-side with shared constructable stylesheets in connectedCallback.
-5. **Workspace build configuration** — Root package.json with workspaces array, per-package Vite configs with external: ['lit', '@lit-ui/core', /^@lit-labs\//], pnpm-workspace.yaml for monorepo.
+1. **Theme Configurator Page** (`apps/docs/src/pages/ThemeConfigurator.tsx`) — visual UI for adjusting design tokens, live preview of components, generates shareable URL and CLI command
+2. **Token Encoder/Decoder** (`packages/cli/src/utils/tokens.ts` + docs equivalent) — defines token schema, encodes to base64url, decodes and validates
+3. **CSS Generator** (`packages/cli/src/utils/generate-tokens.ts`) — transforms token config into CSS custom properties, generates `:root` and `.dark` blocks, writes `lit-ui-tokens.css` file
+4. **CLI Extension** (`packages/cli/src/commands/add.ts` modification) — parses `--theme` parameter, integrates decoder and generator, updates project config
 
 **Data flow:**
-- NPM mode: `npm install @lit-ui/button` → import '@lit-ui/button' → bundler resolves via exports field → @lit-ui/core loaded as peer
-- SSR mode: Server imports @lit-labs/ssr → renders components to DSD HTML → browser parses DSD (native shadow DOM) → hydration script loads → components interactive
-- Copy-source mode: Unchanged — CLI copies source to project, local imports
+```
+Docs Configurator (React UI)
+  -> Encoded Token Config (base64url string)
+  -> User's CLI Command (--theme parameter)
+  -> Token Decoder (base64url -> JSON)
+  -> CSS Generator (JSON -> CSS custom properties)
+  -> lit-ui-tokens.css (written to user project)
+  -> Components (consume via CSS cascade)
+```
+
+**Integration points:**
+- Existing token system in `@lit-ui/core/src/styles/tailwind.css` defines all tokens (primitives, semantics, component-level)
+- Generated `lit-ui-tokens.css` overrides `:root` values, cascades into Shadow DOM
+- No component changes required — they already reference tokens via `var(--color-primary)` pattern
+- Works with both copy-source and NPM distribution modes
 
 ### Critical Pitfalls
 
-**Top 6 from PITFALLS.md** — NPM and SSR sections prioritized for this milestone.
+Theme customization introduces architectural and UX pitfalls beyond the existing Lit/Tailwind Shadow DOM challenges.
 
-1. **Bundling Lit Before Publishing (NPM-1)** — Causes multiple Lit versions, breaks conditional exports, inflates bundle size. AVOID: Configure rollupOptions.external: ['lit', /^@lit\//]. Keep lit as peerDependency only. Test with npm ls lit in consumer project.
+1. **`@theme` directive scope** — Tailwind v4's `@theme` only works in the main entry file, not imported files. User-generated token files must use `:root` with CSS custom properties, not `@theme`. Prevention: structure tokens with `@theme` primitives in entry file, `:root` overrides in generated file.
 
-2. **Constructable Stylesheets Break SSR (NPM-2)** — CSSStyleSheet API unavailable in Node.js, DSD cannot serialize constructable stylesheets. AVOID: Use static styles property for SSR (inlined in template), keep constructable optimization for client-side in connectedCallback with isServer guard.
+2. **Token naming becomes permanent API** — changing token names like `--color-primary` or `--ui-button-radius` breaks user customizations and encoded configs. Prevention: treat token names as permanent from day one, use semantic naming that won't need to change, include version field in encoded configs for future migration.
 
-3. **Hydration Module Load Order (NPM-4)** — If components load before @lit-labs/ssr-client/lit-element-hydrate-support.js, Lit creates new shadow roots instead of adopting server-rendered ones. Causes double rendering, flicker, or "Shadow root cannot be created" errors. AVOID: Document strict load order, use script tag ordering or defer, load hydration support BEFORE any Lit imports.
+3. **URL encoding limits** — full design token config can exceed browser URL limits (2,000-8,000 characters depending on browser/server). Prevention: use URL-safe base64url encoding, compress with lz-string, store only DIFF from defaults (not full config), warn users when generated URL approaches safe limit.
 
-4. **ElementInternals Not Available During SSR (NPM-5)** — attachInternals() requires DOM, throws during server render. Button component uses this for form participation. AVOID: Guard with `if (typeof window !== 'undefined')`. Accept that form submission requires client-side JS (inherent SSR limitation).
+4. **Generated token file must reach Shadow DOM** — `lit-ui-tokens.css` must be imported at document level, not inside components, for CSS variables to cascade into Shadow DOM. Prevention: CLI documentation must be explicit, consider CLI modifying user's main CSS import automatically, test in real projects not just isolated components.
 
-5. **Vite ?inline Imports Break NPM Package (NPM-6)** — Current code uses `import tailwindStyles from '../styles/tailwind.css?inline'`. This Vite-specific query fails in Webpack/esbuild. AVOID: Process CSS at build time, use vite-plugin-lib-inject-css or rollup string plugin, publish pre-processed CSS.
+5. **Exposing too many customizable tokens** — making every value customizable leads to overwhelming UI, accessibility violations (users pick bad contrast), inconsistent results, and bloated configs. Prevention: layer tokens (primitive -> semantic -> component), only expose semantic layer to configurator, document "safe" vs "internal" tokens.
 
-6. **CSS @property Rules Don't Work in Shadow DOM SSR (NPM-3)** — Tailwind v4 utilities relying on @property (shadows, rings, gradients) break on server render since @property injection happens client-side in connectedCallback. AVOID: Include fallback values in CSS, document @property limitation for SSR, consider inlining @property in server HTML <head>.
+**Additional v3.0-specific pitfalls:**
+- **Color space mismatches** — existing system uses OKLCH, standard color pickers use sRGB/HSL, conversions can produce visible differences
+- **Dark mode token parity** — every customizable token must have dark mode variant, configurator must show both modes simultaneously
+- **Config size and corruption** — decode/parse operations need robust error handling, validation, user-friendly error messages
+- **FOUC in live preview** — CSS custom property updates may not apply instantly, need debouncing and smooth transitions
 
 ## Implications for Roadmap
 
-Based on research, suggested phase structure for v2.0:
+Based on research, suggested phase structure for v3.0:
 
-### Phase 1: Monorepo Infrastructure
-**Rationale:** Foundation must be in place before any packages can be built. Workspace setup, dependency externalization, and build configuration affect all subsequent work.
+### Phase 1: Token Infrastructure
+**Rationale:** Foundation must be correct before building UI. Token schema, encoding format, and CSS generation patterns are architectural decisions that affect everything downstream.
 
 **Delivers:**
-- pnpm workspace configured (pnpm-workspace.yaml, root package.json)
-- Changesets initialized (.changeset directory, versioning scripts)
-- Package directory structure (packages/core, packages/button, packages/dialog)
+- Token schema TypeScript interface defining customizable tokens
+- Base64url encoder/decoder utilities (Node.js + browser)
+- CSS generator that transforms token config to CSS custom properties
+- Compression strategy (store diffs only, use lz-string)
+- Version field in config for future migration
 
 **Addresses:**
-- NPM package structure recommendation from FEATURES.md
-- Scalability considerations from ARCHITECTURE.md
+- Token naming as permanent API (PITFALL: finalize naming convention)
+- URL encoding limitations (PITFALL: compression + diff storage)
+- `@theme` vs `:root` distinction (PITFALL: architecture decision)
 
 **Avoids:**
-- NPM-1 (bundling Lit) by configuring external dependencies upfront
-- NPM-14 (forgetting to externalize) by establishing pattern early
+- Architectural rework after UI is built
+- Breaking changes to token names later
+- Config size exceeding URL limits
 
-**Research flag:** LOW complexity, well-documented patterns. Standard monorepo setup.
+**Research flags:** Low complexity, well-established patterns. RFC 4648 for base64url, standard JSON schema validation. Skip deep research.
 
 ---
 
-### Phase 2: @lit-ui/core Package
-**Rationale:** Core package is a dependency for all component packages. Must adapt TailwindElement for SSR before components can use it.
+### Phase 2: CLI Integration
+**Rationale:** CLI must accept and process token configuration before docs can generate CLI commands. Enables end-to-end testing of encoding -> CLI -> CSS generation flow.
 
 **Delivers:**
-- SSR-aware TailwindElement with static styles and isServer guards
-- @lit-ui/core/ssr subpath with hydration utilities
-- Proper package.json with exports field
-- TypeScript declarations via vite-plugin-dts
+- `--theme` parameter parsing in `add` command
+- Token decoder integration
+- CSS generator integration
+- `lit-ui-tokens.css` file writing
+- Config file tracking in `lit-ui.config.json`
+- Error handling for corrupt/invalid configs
 
-**Addresses:**
-- Stack additions (isServer usage, static styles pattern)
-- Architecture component #4 (TailwindElement SSR adaptation)
+**Uses:**
+- Encoder/decoder from Phase 1
+- CSS generator from Phase 1
+- Existing CLI framework (citty)
+
+**Implements:**
+- CLI extension architecture component
+- Token file generation workflow
 
 **Avoids:**
-- NPM-2 (constructable stylesheets break SSR) by implementing dual-mode styling
-- NPM-6 (Vite ?inline imports) by processing CSS at build time
-- NPM-11 (exports field misconfiguration) by defining complete exports map
+- CLI config decoding crashes (PITFALL: robust error handling)
+- Missing file extensions causing import failures (PITFALL: validate generated imports)
 
-**Research flag:** MEDIUM complexity. Clear Lit SSR documentation, but Tailwind + Shadow DOM + SSR combination is custom to this project.
+**Research flags:** Low complexity, extends existing CLI patterns. Skip deep research.
 
 ---
 
-### Phase 3: Component Packages (@lit-ui/button, @lit-ui/dialog)
-**Rationale:** With core package stable, port existing components to new package structure. Validate that SSR-aware base class works for real components.
+### Phase 3: Visual Configurator UI
+**Rationale:** With infrastructure and CLI working, build user-facing UI. Requires most time/effort but depends on stable foundation.
 
 **Delivers:**
-- @lit-ui/button package with ElementInternals guarded for SSR
-- @lit-ui/dialog package with SSR compatibility verified
-- Per-package builds with proper externals
-- Custom Elements Manifest (custom-elements.json) generation
+- Theme configurator page in docs site
+- Color pickers for semantic tokens (primary, secondary, destructive, backgrounds)
+- Border radius slider
+- Light/dark mode simultaneous editing
+- Live preview with debounced updates
+- CSS output display with copy button
+- CLI command display with copy button
+- 3-4 preset themes (one-click apply)
 
 **Addresses:**
-- NPM package mode from FEATURES.md
-- Architecture component #2 (component packages)
+- Live preview (FEATURE: must-have, table stakes)
+- Color customization (FEATURE: core use case)
+- Light/dark mode support (FEATURE: industry standard)
+- Border radius control (FEATURE: high visual impact)
+- Copy-paste CSS output (FEATURE: shadcn pattern)
+- Preset themes (FEATURE: reduce decision fatigue)
 
 **Avoids:**
-- NPM-5 (ElementInternals during SSR) by adding isServer guard to Button
-- NPM-9 (custom element side effects) by separating registration if needed
-- NPM-13 (missing HTMLElementTagNameMap) by exporting type declarations
+- FOUC in preview (PITFALL: debounce rapid changes, batch token updates)
+- Color space mismatches (PITFALL: OKLCH-aware color picker or accurate conversion)
+- Overwhelming UI (PITFALL: limit to semantic tokens only, ~15-20 total)
 
-**Research flag:** LOW complexity. Components already exist, this is a packaging exercise with minor SSR guards.
+**Research flags:** Medium complexity for OKLCH color picker integration. May need color space conversion library research. Otherwise standard React patterns.
 
 ---
 
-### Phase 4: SSR Validation
-**Rationale:** Before claiming SSR support, must verify components actually render and hydrate correctly. Test with @lit-labs/ssr directly, not just assume it works.
+### Phase 4: Enhanced Features
+**Rationale:** Competitive differentiators after core functionality works. These are nice-to-have features that increase value but aren't essential for launch.
 
 **Delivers:**
-- SSR test harness (Node.js script using @lit-labs/ssr)
-- Verification that Button and Dialog render with DSD
-- Hydration test confirming interactivity after hydration
-- Documentation of SSR limitations (form participation, @property rules)
+- Shareable theme URL (encode config in query params, hydrate on load)
+- WCAG contrast validation (real-time warnings, AA/AAA indicators)
+- JSON export format (design tool workflows)
+- Component-specific token preview (show how tokens affect each component)
 
 **Addresses:**
-- SSR compatibility from FEATURES.md
-- Hydration support requirement from FEATURES.md
+- Shareable theme URL (FEATURE: competitive advantage)
+- WCAG contrast validation (FEATURE: accessibility credibility)
+- JSON export (FEATURE: design tool integration)
 
 **Avoids:**
-- NPM-4 (hydration module load order) by testing different load scenarios
-- NPM-10 (CSS duplication) by measuring HTML output size
-- NPM-12 (defer-hydration not removed) by validating hydration completes
+- Accessibility of generated themes (PITFALL: contrast warnings prevent violations)
+- URL encoding limits (already addressed in Phase 1, but validate with full feature set)
 
-**Research flag:** MEDIUM complexity. @lit-labs/ssr is experimental, may encounter edge cases. Need to test framework integrations (Next.js example).
+**Research flags:** Medium complexity for WCAG contrast calculation (OKLCH contrast math). Otherwise straightforward.
 
 ---
 
-### Phase 5: CLI Enhancement for Dual Mode
-**Rationale:** Users need both copy-source and npm modes available. CLI must detect mode and behave accordingly. Can be done in parallel with SSR validation.
+### Phase 5: Documentation and Testing
+**Rationale:** Complete user experience requires clear documentation, especially for file path requirements and Shadow DOM constraints.
 
 **Delivers:**
-- lit-ui.json "mode" field support
-- `lit-ui init` prompts for copy-source vs npm mode
-- `lit-ui add <component>` npm mode (runs install, shows import instructions)
-- `lit-ui migrate` command for copy-source to npm conversion
-- Updated documentation for both modes
+- Installation guide updates with theme customization workflow
+- Theming guide (token concepts, customization patterns)
+- Troubleshooting section (common issues like token file not loading)
+- Framework-specific examples (how to import token file in React/Vue/Svelte)
+- SSR considerations (token file must be in build output)
+- Testing across distribution modes (copy-source vs NPM)
 
 **Addresses:**
-- CLI dual-mode support from ARCHITECTURE.md
-- Both copy-source and npm distribution from FEATURES.md
+- Generated token file must reach Shadow DOM (PITFALL: document import requirements)
+- Token file not included in build (PITFALL: bundler configuration notes)
+- Generated CSS not available during SSR (PITFALL: file path documentation)
 
 **Avoids:**
-- User confusion by providing clear mode selection
-- Breaking existing copy-source users by keeping it as default
+- User confusion about where to import token file
+- Production build failures due to missing token CSS
+- SSR rendering without custom theme
 
-**Research flag:** LOW complexity. CLI framework (citty) already in place, this is feature addition.
-
----
-
-### Phase 6: Publishing & Documentation
-**Rationale:** With all packages built and tested, publish to NPM and document SSR setup for consumers. Final validation in real-world usage.
-
-**Delivers:**
-- Published @lit-ui/core, @lit-ui/button, @lit-ui/dialog to NPM
-- SSR setup guide (Next.js, Astro, basic Node.js examples)
-- Hydration documentation with module load order requirements
-- Framework integration updates (React wrappers documentation)
-- Changelog and version 2.0.0 release
-
-**Addresses:**
-- Semantic versioning from FEATURES.md
-- Documentation requirement from FEATURES.md
-- Framework SSR integrations from FEATURES.md (documentation level)
-
-**Avoids:**
-- NPM-15 (FOUC) by providing `:not(:defined)` CSS snippet in docs
-- NPM-8 (:host-context browser support) by documenting browser matrix
-
-**Research flag:** LOW complexity. Standard publishing workflow, @changesets/cli automates versioning.
+**Research flags:** Low complexity, documentation patterns. Skip deep research.
 
 ---
 
 ### Phase Ordering Rationale
 
-**Dependency-driven order:**
-- Monorepo infrastructure enables all package work (Phase 1 → 2/3)
-- Core package is dependency for component packages (Phase 2 → 3)
-- SSR validation requires built components (Phase 3 → 4)
-- Publishing requires complete, tested packages (Phases 1-5 → 6)
+**Why this order:**
+1. **Infrastructure first** (Phase 1) — token schema, encoding, CSS generation are architectural foundations. Getting these wrong requires rebuilding everything.
+2. **CLI before UI** (Phase 2) — enables testing the full workflow (encode -> CLI -> CSS) before building visual interface. Docs can't generate working CLI commands without working CLI.
+3. **Core UI before enhancements** (Phase 3) — must-have features (live preview, color pickers, copy-paste) before nice-to-have features (shareability, contrast validation).
+4. **Enhancements independently** (Phase 4) — competitive differentiators can be developed in parallel or deferred without blocking core functionality.
+5. **Documentation last** (Phase 5) — requires complete feature set to document accurately.
 
-**Parallelization opportunities:**
-- Phase 4 (SSR validation) and Phase 5 (CLI enhancement) can overlap after Phase 3
-- Component packages (Phase 3) could be split into parallel tasks if team size permits
+**Why this grouping:**
+- **Phase 1+2 together** address encoding/CLI concerns, can be developed by same engineer
+- **Phase 3+4 together** are UI-focused, different skillset from backend/CLI work
+- **Phase 5** is cross-cutting, requires feature freeze
 
-**Pitfall avoidance sequencing:**
-- Build configuration pitfalls (NPM-1, NPM-6, NPM-11, NPM-14) addressed in Phases 1-2 before component work
-- SSR pitfalls (NPM-2, NPM-3, NPM-4, NPM-5) addressed in Phases 2-4 with validation
-- Documentation pitfalls (NPM-15, NPM-8) deferred to Phase 6 after implementation proven
-
-**Architecture alignment:**
-- Follows "build from foundation up" approach from ARCHITECTURE.md
-- Matches suggested build order from ARCHITECTURE.md (infrastructure → core → components → SSR → CLI → publish)
+**How this avoids pitfalls:**
+- Token naming finalized in Phase 1 before any UI references it
+- URL encoding strategy proven in Phase 2 before UI generates URLs
+- Shadow DOM token cascade tested in Phase 2 before UI claims success
+- Accessibility validation in Phase 4 prevents shipping inaccessible configurator
 
 ### Research Flags
 
-**Phases needing deeper research during planning:**
-- **Phase 2 (@lit-ui/core):** Tailwind v4 + Shadow DOM + SSR combination is project-specific. May need phase-research for CSS processing strategy, @property rule handling.
-- **Phase 4 (SSR Validation):** @lit-labs/ssr is experimental. Framework integration (Next.js, Astro) may have undocumented edge cases. Consider phase-research for framework-specific SSR setup.
+**Phases likely needing deeper research during planning:**
+- **Phase 3 (Visual Configurator):** OKLCH color picker library options, color space conversion accuracy, React color picker component evaluation
+- **Phase 4 (WCAG Validation):** OKLCH contrast ratio calculation algorithms, perceptual vs mathematical contrast
 
 **Phases with standard patterns (skip research-phase):**
-- **Phase 1 (Monorepo):** Well-documented pnpm + changesets patterns. Standard monorepo setup.
-- **Phase 3 (Component Packages):** Straightforward port of existing components. Minor SSR guards based on clear Lit documentation.
-- **Phase 5 (CLI):** Feature addition to existing citty CLI. No new domain knowledge needed.
-- **Phase 6 (Publishing):** Standard NPM publishing workflow. Changesets automates complexity.
+- **Phase 1 (Token Infrastructure):** Base64 encoding is RFC standard, JSON schema validation is well-documented
+- **Phase 2 (CLI Integration):** Extends existing citty patterns, file writing is straightforward
+- **Phase 5 (Documentation):** Standard documentation patterns
 
 ## Confidence Assessment
 
 | Area | Confidence | Notes |
 |------|------------|-------|
-| Stack | HIGH | All packages verified via npm (versions confirmed). Official Lit SSR docs cover usage. pnpm + changesets is industry standard. |
-| Features | HIGH | NPM packaging table stakes well-established. SSR requirements clear from Lit documentation. Browser support for DSD is now universal. |
-| Architecture | MEDIUM | Package structure follows Shoelace/Lit patterns (HIGH confidence). TailwindElement SSR adaptation is custom logic (MEDIUM - needs testing). Dual-mode CLI is novel (MEDIUM - needs validation). |
-| Pitfalls | HIGH | SSR pitfalls verified against official docs and community experience. NPM bundling pitfalls are common, well-documented. Constructable stylesheet limitation is architectural constraint. |
+| Stack | HIGH | Existing Lit 3.x + Tailwind v4 foundation is proven. React for docs site already in use. Base64url encoding is standard. |
+| Features | HIGH | Feature requirements verified against shadcn/ui themes, tweakcn, Radix themes. Table stakes vs differentiators clearly defined based on competitive analysis. |
+| Architecture | HIGH | Leverages existing CSS custom property system in `@lit-ui/core`. Separation of concerns (docs UI, CLI generation, component consumption) is clean. Token cascade into Shadow DOM already working. |
+| Pitfalls | HIGH | Critical pitfalls identified from Tailwind v4 GitHub issues, existing codebase analysis, and community reports. Prevention strategies validated against official docs. |
 
 **Overall confidence:** HIGH
 
-Research is based on official Lit documentation, verified package versions, and established monorepo patterns. The primary uncertainty is in the custom TailwindElement SSR adaptation (dual-mode styling), which is well-reasoned but needs implementation validation.
+All research areas have authoritative sources. Stack choices build on existing working foundation. Feature prioritization informed by direct competitive analysis. Architecture integrates cleanly with proven patterns. Pitfalls are known issues with documented solutions.
 
 ### Gaps to Address
 
-**SSR CSS duplication impact:**
-- Research identifies the issue (NPM-10) but doesn't quantify impact. During Phase 4 (SSR Validation), measure actual HTML size with 10-50 component instances. If problematic, investigate CSS extraction to document <head> approach.
+While confidence is high, a few areas need validation during implementation:
 
-**Framework-specific SSR integrations:**
-- STACK.md mentions @lit-labs/nextjs but doesn't detail integration. During Phase 4, validate whether basic @lit-labs/ssr works in Next.js 15+ without specialized package, or if framework-specific adapters are needed.
+- **OKLCH color picker options:** Research identified the need but didn't evaluate specific libraries. During Phase 3 planning, evaluate Culori-based pickers vs conversion layers. Test color accuracy with wide gamut displays.
 
-**Custom Elements Manifest tooling:**
-- FEATURES.md lists CEM as "should have" but research doesn't specify tooling (@custom-elements-manifest/analyzer). During Phase 3, verify which tool generates CEM and how to integrate with Vite build.
+- **Compression algorithm performance:** Research suggests lz-string but didn't benchmark compression ratios or performance. During Phase 1, validate compression achieves 60-80% reduction and decompression is fast enough for CLI usage (<100ms).
 
-**React wrappers implementation:**
-- FEATURES.md includes @lit-ui/react as differentiator, but ARCHITECTURE.md doesn't detail package structure. Decide during Phase 6 planning whether React wrappers ship with v2.0 or defer to v2.1.
+- **Config size limits in practice:** Theoretical URL limits are known (2KB-8KB) but actual safe limit depends on server configurations users deploy to. During Phase 4 testing, validate with various hosting providers (Vercel, Netlify, AWS).
 
-**@property rule fallback strategy:**
-- NPM-3 identifies the issue but doesn't provide complete solution. During Phase 2, audit which Tailwind v4 utilities depend on @property and add explicit fallbacks to host-defaults.css.
+- **OKLCH contrast calculation:** Research identified need for perceptual contrast but didn't specify exact algorithm. During Phase 4 planning, choose between WCAG 2.x (mathematical) vs APCA (perceptual). OKLCH makes this more complex than sRGB.
+
+- **Token count vs URL length:** Research recommends storing diffs only, but actual token count determines maximum customization before hitting limits. During Phase 1, model worst-case scenario (user customizes all exposed tokens + all dark mode variants).
 
 ## Sources
 
 ### Primary (HIGH confidence)
-- [Lit SSR Overview](https://lit.dev/docs/ssr/overview/) — SSR architecture, DSD output, lifecycle
-- [Lit SSR Authoring](https://lit.dev/docs/ssr/authoring/) — isServer guards, static styles requirement
-- [Lit SSR Client Usage](https://lit.dev/docs/ssr/client-usage/) — Hydration module load order
-- [Lit Publishing Guide](https://lit.dev/docs/tools/publishing/) — External dependencies, file extensions
-- [Node.js Package Exports](https://nodejs.org/api/packages.html) — Subpath exports specification
-- [pnpm Workspaces](https://pnpm.io/workspaces) — Monorepo configuration
-- [Changesets](https://github.com/changesets/changesets) — Versioning workflow
-- [@lit-labs/ssr NPM](https://www.npmjs.com/package/@lit-labs/ssr) — v4.0.0 verified 2026-01-24
-- [@lit-labs/ssr-client NPM](https://www.npmjs.com/package/@lit-labs/ssr-client) — v1.1.8 verified 2026-01-24
-- [pnpm NPM](https://www.npmjs.com/package/pnpm) — v10.28.1 verified 2026-01-24
-- [@changesets/cli NPM](https://www.npmjs.com/package/@changesets/cli) — v2.29.8 verified 2026-01-24
+
+**Official Documentation:**
+- [Tailwind CSS v4 Documentation](https://tailwindcss.com/docs/theme) — `@theme` directive usage, CSS-first configuration, variable scoping
+- [Tailwind CSS v4 Announcement](https://tailwindcss.com/blog/tailwindcss-v4) — v4 features, performance improvements, Vite plugin
+- [shadcn/ui Theming](https://ui.shadcn.com/docs/theming) — CSS variable architecture for component theming, OKLCH color format
+- [Lit SSR Overview](https://lit.dev/docs/ssr/overview/) — SSR considerations for token file loading
+
+**Web Standards:**
+- [RFC 4648 Base64URL](https://datatracker.ietf.org/doc/html/rfc4648) — URL-safe encoding specification
+
+**Existing Codebase:**
+- `/packages/core/src/styles/tailwind.css` — current token definitions, `@theme` and `:root` patterns
+- `/packages/cli/src/commands/add.ts` — CLI command patterns, citty framework usage
+- `/apps/docs/src/pages/components/ButtonPage.tsx` — docs page patterns, live preview implementation
 
 ### Secondary (MEDIUM confidence)
-- [Declarative Shadow DOM - web.dev](https://web.dev/articles/declarative-shadow-dom) — DSD browser support, usage patterns
-- [Web Components Tailwind SSR - Konnor Rogers](https://www.konnorrogers.com/posts/2023/web-components-tailwind-and-ssr) — Tailwind Shadow DOM SSR challenges
-- [Sharing Styles in DSD - Eisenberg](https://eisenbergeffect.medium.com/sharing-styles-in-declarative-shadow-dom-c5bf84ffd311) — CSS duplication strategies
-- [Custom Elements Manifest](https://github.com/webcomponents/custom-elements-manifest) — CEM specification
-- [Building npm package ESM/CJS - Snyk](https://snyk.io/blog/building-npm-package-compatible-with-esm-and-cjs-2024/) — Exports field best practices
-- [Tailwind Shadow DOM Discussion #1935](https://github.com/tailwindlabs/tailwindcss/discussions/1935) — Shadow DOM integration approaches
-- [Lit Tree Shaking Discussion](https://github.com/lit/lit/discussions/4772) — Side effects and tree shaking
+
+**Third-Party Tools (Competitive Reference):**
+- [tweakcn](https://tweakcn.com/) — live theme editor for shadcn/ui, demonstrates live preview UX
+- [Radix Themes Overview](https://www.radix-ui.com/themes/docs/theme/overview) — theme component props, token access patterns
+
+**Community Resources:**
+- [Tailwind @theme in imported files - Issue #18966](https://github.com/tailwindlabs/tailwindcss/issues/18966) — `@theme` scope limitation
+- [Nucleus Design System - CSS Custom Properties Gotchas](https://blog.nucleus.design/be-aware-of-css-custom-properties/) — token exposure anti-patterns
+- [Component-level Design Tokens - Nate Baldwin](https://medium.com/@NateBaldwin/component-level-design-tokens-are-they-worth-it-d1ae4c6b19d4) — token naming as API
+- [Base64URL Encoding Guide](https://thetexttool.com/blog/base64-vs-base58-vs-base64url) — encoding best practices
+- [json-url GitHub](https://github.com/masotime/json-url) — compact JSON encoding with compression
+
+**Design Best Practices:**
+- [Tailwind CSS Best Practices 2025](https://www.frontendtools.tech/blog/tailwind-css-best-practices-design-system-patterns) — token organization patterns
+- [Design Tokens Problems - Andre Torgal](https://andretorgal.com/posts/2025-01/the-problem-with-design-tokens) — anti-patterns, complexity issues
 
 ### Tertiary (LOW confidence)
-- [NPM Workspaces Guide - NPM Blog](https://blog.npmjs.org/post/186494959890/monorepos-and-npm.html) — Older but foundational monorepo patterns
-- [TypeScript Mono-repo Setup](https://blog.frankdejonge.nl/setting-up-a-typescript-mono-repo-for-scoped-packages/) — Scoped package patterns
-- [Tailwind @property Discussion #16772](https://github.com/tailwindlabs/tailwindcss/discussions/16772) — @property Shadow DOM issues (GitHub discussion, not official)
+
+**Accessibility:**
+- [WCAG Color Contrast Accessibility Guide 2025](https://www.allaccessible.org/blog/color-contrast-accessibility-wcag-guide-2025) — contrast ratios, WCAG 2.2 vs APCA
+- [Design.dev Contrast Checker](https://design.dev/tools/color-contrast-checker/) — example tool for validation patterns
+
+Note: Contrast calculation in OKLCH color space may require additional research during Phase 4 implementation.
 
 ---
-*Research completed: 2026-01-24*
+*Research completed: 2026-01-25*
 *Ready for roadmap: yes*

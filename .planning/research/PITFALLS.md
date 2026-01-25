@@ -767,6 +767,626 @@ Issues that cause annoyance but are quickly fixable.
 - [Lit Tree Shaking Discussion](https://github.com/lit/lit/discussions/4772)
 
 ---
+
+# v3.0 Theme Customization Pitfalls
+
+**Focus:** Adding visual theme configurator and design token system to existing library
+**Researched:** 2026-01-25
+**Confidence:** HIGH (verified with existing codebase patterns and authoritative sources)
+
+This section covers pitfalls specific to the v3.0 milestone: adding theme customization with a visual configurator, design token system, CLI token parameters, and generated CSS.
+
+---
+
+## Critical Pitfalls (Theme Customization)
+
+High-impact mistakes that cause rewrites or major architectural issues.
+
+---
+
+### THEME-1: @theme Directive Scope in Imported Files
+
+**What goes wrong:** Tailwind CSS v4's `@theme` directive only works in the main entry file that Tailwind directly processes. When a file containing `@theme` is imported via `@import` from another CSS file, the directive is not recognized.
+
+**Why it happens:** Tailwind v4's CSS-first configuration processes `@theme` blocks during compilation, but only in the primary entry point. Imported files don't receive the same processing.
+
+**Consequences:**
+- Custom tokens defined in imported files produce no utility classes
+- Theme variables appear undefined in the inspector
+- Components can't use token-based utilities like `bg-brand-500`
+
+**Warning signs:**
+- Tailwind utilities showing "undefined" in browser inspector
+- Token-based classes having no effect
+- Working in development but failing in build
+
+**Prevention:**
+- Define ALL `@theme` tokens in the main CSS entry file (currently `tailwind.css`)
+- For generated token files, use `:root` with CSS custom properties instead of `@theme`
+- Structure: `@theme` in entry file references `:root` variables from generated file
+
+**Which phase should address:** Phase 1 (Token System Architecture) - establish correct file structure from the start.
+
+**Source:** [Tailwind CSS GitHub Issue #18966](https://github.com/tailwindlabs/tailwindcss/issues/18966)
+
+---
+
+### THEME-2: CSS Custom Properties vs @theme Confusion
+
+**What goes wrong:** Using `:root` for tokens that should generate Tailwind utilities, or using `@theme` for values that should just be CSS variables.
+
+**Why it happens:** Tailwind v4 has two distinct mechanisms:
+- `@theme` - Creates CSS variables AND generates utility classes
+- `:root` - Creates CSS variables only (no utilities)
+
+**Consequences:**
+- Missing utility classes for theming (if used `:root` when `@theme` needed)
+- Unnecessary utility class bloat (if used `@theme` when `:root` sufficient)
+- Confusion about which tokens are "themeable" vs "configurable"
+
+**Warning signs:**
+- Unable to use `bg-{token}` syntax in templates
+- Generated CSS much larger than expected
+- Inconsistent token access patterns across components
+
+**Prevention:**
+- Use `@theme` for primitive tokens that need utilities (colors, spacing, radii)
+- Use `:root` for semantic/component tokens (--ui-button-radius)
+- Document which layer each token belongs to
+- The existing `tailwind.css` pattern is correct: `@theme` for primitives, `:root` for component tokens
+
+**Which phase should address:** Phase 1 (Token System Architecture)
+
+**Source:** [Tailwind CSS Theme Documentation](https://tailwindcss.com/docs/theme)
+
+---
+
+### THEME-3: Token Names Become API (Breaking Changes)
+
+**What goes wrong:** Changing token names after users have customized them breaks their configurations.
+
+**Why it happens:** Token names like `--color-primary` or `--ui-button-radius` become part of your public API. Users override these in their projects. Encoded configs reference these names.
+
+**Consequences:**
+- User customizations silently stop working
+- Encoded CLI configs become invalid
+- Migration required for every token name change
+- Support burden explaining "why did my theme break?"
+
+**Warning signs:**
+- Desire to "clean up" or "rename" tokens after v1
+- Adding new token variants that change naming patterns
+- Component redesigns requiring different token structure
+
+**Prevention:**
+- Treat token names as permanent API from day one
+- Use semantic naming that won't need to change (`--color-primary` not `--color-blue`)
+- Document token naming convention before implementation
+- For new tokens: add new names, deprecate old ones, support both
+- Include version field in encoded config for migration
+
+**Which phase should address:** Phase 1 (Token System Architecture) - naming convention must be finalized before implementation.
+
+**Source:** [Adobe Spectrum token migration experience](https://medium.com/@NateBaldwin/component-level-design-tokens-are-they-worth-it-d1ae4c6b19d4)
+
+---
+
+### THEME-4: Exposing Too Many Customizable Tokens
+
+**What goes wrong:** Making every possible value a customizable token leads to:
+- Users overriding values that break accessibility (contrast, touch targets)
+- Inconsistent results across different customizations
+- Bloated generated CSS files
+- Overwhelming configurator UI
+
+**Why it happens:** Desire for "maximum flexibility" without considering consequences.
+
+**Consequences:**
+- Accessibility violations when users customize poorly
+- Brand dilution (defeats purpose of design system)
+- Hard to maintain consistency across components
+- Generated token file becomes unwieldy
+- Encoded config too large for URL
+
+**Warning signs:**
+- Token count growing unbounded
+- Users asking "which tokens should I customize?"
+- Accessibility issues in customized themes
+- Config encoding hitting URL length limits
+
+**Prevention:**
+- Layer tokens: primitive (internal) -> semantic (safe to customize) -> component (internal)
+- Only expose semantic tokens to configurator
+- Document which tokens are "safe" to customize
+- Current codebase has good pattern: `--color-primary` (expose) vs `--ui-button-primary-bg: var(--color-primary)` (internal)
+- Limit configurator to semantic tokens only
+
+**Which phase should address:** Phase 2 (Design Token Definitions) - define what's exposed vs internal.
+
+**Source:** [Nucleus Design System - CSS Custom Properties](https://blog.nucleus.design/be-aware-of-css-custom-properties/)
+
+---
+
+### THEME-5: @theme inline vs static vs Default Mode Confusion
+
+**What goes wrong:** Misunderstanding when to use `@theme inline`, `@theme static`, or plain `@theme`.
+
+**Why it happens:** Tailwind v4 has three modes:
+- `@theme` (default): Generate utilities, tree-shake unused variables
+- `@theme static`: Generate ALL variables regardless of usage
+- `@theme inline`: Use variable VALUE instead of reference (for referencing other variables)
+
+**Consequences:**
+- Missing CSS variables in production (tree-shaken away)
+- Variables referencing other variables not resolving
+- Unexpected values in generated CSS
+- JavaScript theme access failing
+
+**Warning signs:**
+- Token works in dev but not production
+- Token shows `var(--color-primary)` instead of actual color value
+- Generated CSS much smaller than expected
+- `getComputedStyle()` returns wrong values
+
+**Prevention:**
+- Use `@theme static` for tokens that might be accessed via JavaScript or inline styles
+- Use `@theme inline` when defining tokens that reference other tokens:
+  ```css
+  @theme inline {
+    --font-sans: var(--font-inter);  /* Uses value, not reference */
+  }
+  ```
+- For generated token file that users might customize: use `static` to ensure all tokens included
+
+**Which phase should address:** Phase 1 (Token System Architecture) and Phase 3 (CSS Generation)
+
+**Source:** [Tailwind CSS Theme Documentation](https://tailwindcss.com/docs/theme)
+
+---
+
+## Shadow DOM Integration Pitfalls
+
+CSS isolation issues when adding theme customization to existing Shadow DOM components.
+
+---
+
+### THEME-6: Generated Token File Must Reach Shadow DOM
+
+**What goes wrong:** User's generated `lit-ui-tokens.css` file defines `:root` variables, but components in Shadow DOM can't access them if file isn't loaded at document level.
+
+**Why it happens:** Shadow DOM inherits CSS custom properties from the document, but only if those properties are defined on an ancestor element. If the token file is imported inside a component, it doesn't reach `:root`.
+
+**Consequences:**
+- Custom theme tokens not applied to components
+- Components showing default theme despite custom tokens
+- Token file loaded but having no effect
+
+**Warning signs:**
+- Tokens work in configurator preview but not in actual project
+- Computed styles show default values not custom values
+- Token file definitely loaded but no visual change
+
+**Prevention:**
+- Token file MUST be imported at document level (e.g., in app's main CSS)
+- Document this requirement clearly for CLI users
+- Consider having CLI add import statement to user's main CSS
+- Test token file loading in real project, not just isolated component
+
+**Which phase should address:** Phase 3 (CLI Token Parameter) and Phase 4 (Component Integration)
+
+---
+
+### THEME-7: @property Rules Still Don't Work in Shadow DOM
+
+**What goes wrong:** Any new `@property` declarations for custom tokens won't work inside Shadow DOM. This is already handled for existing tokens, but new token categories may introduce new `@property` needs.
+
+**Why it happens:** W3C specification limitation. `@property` only works at document level.
+
+**Consequences:**
+- Advanced token features (animations, gradients) may not work correctly in components
+- Fallback values required for all `@property`-dependent tokens
+
+**Warning signs:**
+- New token category working in light DOM but not components
+- Gradient or animation tokens behaving unexpectedly
+
+**Prevention:**
+- Extend existing pattern in `tailwind-element.ts` to extract new `@property` rules
+- Include fallback values in all `@property`-dependent token definitions
+- Test all new tokens inside Shadow DOM, not just light DOM previews
+
+**Which phase should address:** Phase 4 (Component Integration) - verify new tokens work correctly.
+
+---
+
+### THEME-8: Dark Mode Token Overrides Must Use Same Pattern
+
+**What goes wrong:** Adding custom tokens without corresponding dark mode overrides leaves dark mode broken.
+
+**Why it happens:** Current system uses `.dark` selector to override token values. New tokens need same treatment.
+
+**Consequences:**
+- Custom theme looks good in light mode, broken in dark mode
+- Accessibility issues with insufficient contrast in dark mode
+- Inconsistent dark mode appearance
+
+**Warning signs:**
+- Configurator preview only shows light mode
+- Dark mode testing reveals broken colors
+- Users report "dark mode doesn't work with my theme"
+
+**Prevention:**
+- Every customizable token must have dark mode variant
+- Configurator should show both light and dark previews
+- Validate contrast ratios in both modes
+- Include dark mode overrides in generated token file
+
+**Which phase should address:** Phase 2 (Design Token Definitions) and Phase 5 (Docs Configurator)
+
+---
+
+## Encoding/CLI Pitfalls
+
+URL encoding, CLI parameter, and config persistence issues.
+
+---
+
+### THEME-9: URL-Unsafe Characters in Base64
+
+**What goes wrong:** Standard Base64 uses `+`, `/`, and `=` which break URLs or require extra escaping.
+
+**Why it happens:** Base64 was designed for data encoding, not URL safety.
+
+**Consequences:**
+- Encoded config corrupted when copied/pasted
+- URL parsing errors in browsers or servers
+- Config truncated at special characters
+- Shareable links broken
+
+**Warning signs:**
+- Config works when short but breaks when longer
+- Different behavior in different browsers
+- `+` becoming spaces, `/` breaking path parsing
+- Config works in CLI but not in URL
+
+**Prevention:**
+- Use URL-safe Base64 (Base64URL): replaces `+` with `-`, `/` with `_`, omits padding `=`
+- Implementation:
+  ```javascript
+  // Encode
+  btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  // Decode
+  atob(str.replace(/-/g, '+').replace(/_/g, '/'));
+  ```
+- Test with configs containing all character types
+- Use established library like `base64url` npm package
+
+**Which phase should address:** Phase 3 (CLI Token Parameter)
+
+**Source:** [Base64URL Guide](https://thetexttool.com/blog/base64-vs-base58-vs-base64url)
+
+---
+
+### THEME-10: Config Size Exceeds URL Length Limits
+
+**What goes wrong:** Encoded theme config makes URL too long for browsers or servers.
+
+**Why it happens:**
+- Browser URL limits: ~2,000-8,000 characters depending on browser
+- Server URL limits: Often 2KB-8KB
+- Full design token set can easily exceed this when Base64 encoded
+
+**Consequences:**
+- URL truncated, config corrupted
+- Server rejecting request with 414 URI Too Long
+- "URL too long" errors
+- Shareable links broken for complex themes
+
+**Warning signs:**
+- Works with simple themes but fails with full customization
+- Different behavior on different servers/CDNs
+- Config cut off mid-value
+- Works locally but fails in production
+
+**Prevention:**
+- Compress before encoding: LZW or similar lightweight algorithm
+- Only include CHANGED values (diff from defaults) - critical optimization
+- Add config size check with user warning in configurator
+- Show warning when generated URL exceeds safe limits
+- Libraries: `lz-string`, `json-url`, `pako`
+
+**Which phase should address:** Phase 3 (CLI Token Parameter)
+
+**Source:** [json-url GitHub](https://github.com/masotime/json-url)
+
+---
+
+### THEME-11: Config Schema Versioning
+
+**What goes wrong:** Changing config schema breaks old encoded configs.
+
+**Why it happens:** As token system evolves, config format may change. Old bookmarked URLs or shared configs become invalid.
+
+**Consequences:**
+- Old shared URLs stop working
+- CLI errors when parsing outdated config
+- User frustration with broken bookmarks
+- Support burden for "my config doesn't work anymore"
+
+**Warning signs:**
+- Adding new token categories
+- Renaming config fields
+- Changing encoding/compression algorithm
+- Any structural change to config format
+
+**Prevention:**
+- Include version number in encoded config header
+- Maintain backward compatibility for at least 2 major versions
+- Document migration path for breaking changes
+- Validate config version before processing
+- Show user-friendly error for outdated config versions
+
+**Which phase should address:** Phase 3 (CLI Token Parameter) - build versioning from start.
+
+---
+
+### THEME-12: CLI Config Decoding Error Handling
+
+**What goes wrong:** Corrupted or invalid config causes CLI crash instead of graceful error.
+
+**Why it happens:** URL-encoded configs can be truncated, corrupted, or manually edited incorrectly.
+
+**Consequences:**
+- Poor user experience with cryptic error messages
+- Users confused about what went wrong
+- No recovery path for invalid configs
+
+**Warning signs:**
+- No try/catch around decode logic
+- Generic "parse error" messages
+- Stack traces exposed to users
+
+**Prevention:**
+- Wrap all decode/parse operations in try/catch
+- Provide specific error messages: "Config appears truncated", "Invalid config version"
+- Suggest running with defaults on error
+- Log detailed error for debugging, show user-friendly message
+- Validate config structure after decode
+
+**Which phase should address:** Phase 3 (CLI Token Parameter)
+
+---
+
+## Configurator UX Pitfalls
+
+Visual theme configurator issues.
+
+---
+
+### THEME-13: Flash of Unstyled Content (FOUC) in Live Preview
+
+**What goes wrong:** Live preview shows unstyled content briefly when theme changes.
+
+**Why it happens:**
+- CSS custom property updates may not apply instantly to all components
+- Component re-renders not synchronized with style updates
+- Style injection timing issues
+- Large token set takes time to apply
+
+**Consequences:**
+- Poor UX in theme configurator
+- Jarring visual experience when changing colors
+- Users unsure if change applied correctly
+
+**Warning signs:**
+- Brief flash between theme changes
+- Components flickering during updates
+- Delay between picker change and preview update
+- Different components updating at different times
+
+**Prevention:**
+- Update CSS variables on `:root`, not individual components
+- Use CSS transitions for smooth color changes
+- Consider brief `opacity: 0` during transition if flash unavoidable
+- Debounce rapid changes (e.g., while dragging color picker)
+- Batch token updates, apply all at once
+
+**Which phase should address:** Phase 5 (Docs Configurator)
+
+---
+
+### THEME-14: Color Picker Color Space Mismatches
+
+**What goes wrong:** Colors look different in color picker vs rendered components.
+
+**Why it happens:** Current system uses OKLCH color space for wide gamut support. Standard color pickers use sRGB or HSL. Conversion between spaces can produce visible differences.
+
+**Consequences:**
+- User picks a color, sees different color in preview
+- Confusion about "correct" color value
+- Mismatch between design tool colors and web colors
+
+**Warning signs:**
+- Same hex value looks different in picker vs preview
+- OKLCH values hard for users to understand
+- Export to design tools produces different colors
+
+**Prevention:**
+- Use color picker that supports OKLCH natively (e.g., Culori-based)
+- Show both OKLCH and hex values
+- Consider offering multiple color input formats
+- Document color space usage for users
+- Test with wide gamut displays
+
+**Which phase should address:** Phase 5 (Docs Configurator)
+
+---
+
+### THEME-15: Accessibility of Generated Themes
+
+**What goes wrong:** User creates theme with insufficient color contrast, breaking accessibility.
+
+**Why it happens:** Configurator allows any color combination. Users may not understand WCAG contrast requirements.
+
+**Consequences:**
+- Inaccessible themes distributed
+- Legal liability for some users
+- Poor UX for users with visual impairments
+
+**Warning signs:**
+- No contrast validation in configurator
+- Light text on light backgrounds
+- Small text with insufficient contrast
+
+**Prevention:**
+- Show real-time contrast ratio warnings in configurator
+- Flag combinations that fail WCAG AA
+- Consider "accessibility mode" that limits choices to accessible combinations
+- Include accessibility notes in generated CSS comments
+- Test configurator output with axe-core
+
+**Which phase should address:** Phase 5 (Docs Configurator)
+
+---
+
+## SSR/Build Integration Pitfalls
+
+Server-side rendering and build process issues.
+
+---
+
+### THEME-16: Generated CSS Not Available During SSR
+
+**What goes wrong:** User-generated token CSS file not present when SSR runs.
+
+**Why it happens:** CLI generates CSS at install time, but SSR server may not have access or file path differs between build and runtime.
+
+**Consequences:**
+- SSR output missing custom theme
+- Components render with default theme server-side
+- Hydration shows theme flash as custom tokens apply
+
+**Warning signs:**
+- Production SSR looking different from local dev
+- Theme working client-side but not in initial HTML
+- Initial page load shows default theme, then switches
+
+**Prevention:**
+- Generated token file must be in build output, not gitignored
+- Document file path requirements clearly
+- Verify file path works in both dev and production
+- Test SSR specifically with custom tokens applied
+
+**Which phase should address:** Phase 4 (Component Integration) and documentation
+
+---
+
+### THEME-17: Token File Not Included in Build
+
+**What goes wrong:** `lit-ui-tokens.css` excluded from build by bundler configuration.
+
+**Why it happens:** Bundler may not process CSS files that aren't explicitly imported, or may tree-shake "unused" CSS.
+
+**Consequences:**
+- Production build missing custom theme entirely
+- Works in development, breaks in production
+
+**Warning signs:**
+- Vite/Webpack excluding CSS files
+- Token file not in dist folder
+- CSS optimization removing "unused" tokens
+
+**Prevention:**
+- Document explicit import requirement
+- Consider having CLI modify user's build config
+- Test production build, not just development
+- Add verification step to CLI
+
+**Which phase should address:** Phase 3 (CLI Token Parameter) - documentation
+
+---
+
+## Prevention Strategies Summary
+
+### Strategy 1: Token System Architecture Review
+
+Before implementation, validate:
+- [ ] `@theme` in main entry file only
+- [ ] `:root` for component tokens (no utility generation needed)
+- [ ] Token naming convention finalized (won't change)
+- [ ] Layer structure: primitives -> semantic -> component
+- [ ] Which tokens exposed to configurator vs internal
+- [ ] Dark mode variants for all customizable tokens
+- [ ] Version field planned for config encoding
+
+### Strategy 2: Encoding Safety Checks
+
+Implement in CLI:
+- [ ] Use URL-safe Base64 encoding (Base64URL)
+- [ ] Compress config before encoding (lz-string or similar)
+- [ ] Include version number in encoded config
+- [ ] Store only DIFF from defaults, not full config
+- [ ] Validate config size before generating URL
+- [ ] Warn user if URL exceeds safe limits (~2000 chars)
+- [ ] Graceful error handling for corrupt configs
+
+### Strategy 3: Shadow DOM Compatibility Testing
+
+Test each token system feature:
+- [ ] Generated token values cascade into Shadow DOM
+- [ ] Dark mode tokens apply correctly in Shadow DOM
+- [ ] New `@property` rules extracted and applied to document
+- [ ] SSR output includes correct token values
+- [ ] Hydration completes without visible theme flash
+
+### Strategy 4: Configurator UX Validation
+
+Before shipping configurator:
+- [ ] Color picker supports OKLCH or converts correctly
+- [ ] Live preview updates smoothly without FOUC
+- [ ] Contrast ratio warnings for accessibility
+- [ ] Both light and dark mode previews
+- [ ] Copy command includes all customizations
+- [ ] Generated URL doesn't exceed limits
+
+---
+
+## Phase-Specific Warnings (Theme Customization)
+
+| Phase | Likely Pitfall | Priority | Mitigation |
+|-------|---------------|----------|------------|
+| Token System Architecture | THEME-1 @theme scope, THEME-2 @theme vs :root | CRITICAL | Validate file structure, test early |
+| Design Token Definitions | THEME-3 naming, THEME-4 over-exposure, THEME-8 dark mode | HIGH | Finalize names, define exposure policy |
+| CLI Token Parameter | THEME-9 encoding, THEME-10 size, THEME-11 versioning, THEME-12 errors | HIGH | URL-safe Base64, compression, diffing, error handling |
+| Component Integration | THEME-6 document level, THEME-7 @property, THEME-16 SSR | HIGH | Test in Shadow DOM, document requirements |
+| Docs Configurator | THEME-13 FOUC, THEME-14 colors, THEME-15 accessibility | MEDIUM | Debounce, OKLCH support, contrast checks |
+
+---
+
+## Sources (Theme Customization)
+
+### Authoritative
+- [Tailwind CSS v4 Theme Documentation](https://tailwindcss.com/docs/theme)
+- [Tailwind CSS v4 Announcement](https://tailwindcss.com/blog/tailwindcss-v4)
+- [web.dev - Constructable Stylesheets](https://web.dev/articles/constructable-stylesheets)
+- [MDN - Shadow DOM](https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_shadow_DOM)
+
+### Issues and Discussions
+- [Tailwind @theme in imported files - Issue #18966](https://github.com/tailwindlabs/tailwindcss/issues/18966)
+- [ShadCN tailwind-merge with custom tokens - Discussion #6939](https://github.com/shadcn-ui/ui/discussions/6939)
+- [ShadCN shareable themes feature request - Issue #3016](https://github.com/shadcn-ui/ui/issues/3016)
+
+### Community Insights
+- [Nucleus Design System - CSS Custom Properties Gotchas](https://blog.nucleus.design/be-aware-of-css-custom-properties/)
+- [Component-level Design Tokens - Nate Baldwin](https://medium.com/@NateBaldwin/component-level-design-tokens-are-they-worth-it-d1ae4c6b19d4)
+- [Design Tokens Problems - Andre Torgal](https://andretorgal.com/posts/2025-01/the-problem-with-design-tokens)
+- [FOUC in Next.js 2025](https://dev.to/amritapadhy/understanding-fixing-fouc-in-nextjs-app-router-2025-guide-ojk)
+- [Base64URL Encoding Guide](https://thetexttool.com/blog/base64-vs-base58-vs-base64url)
+- [json-url - Compact JSON encoding](https://github.com/masotime/json-url)
+- [Tailwind CSS Best Practices 2025](https://www.frontendtools.tech/blog/tailwind-css-best-practices-design-system-patterns)
+
+---
 *Pitfalls research for: Lit.js Framework-Agnostic Component Library*
 *Original research: 2026-01-23*
 *NPM + SSR research added: 2026-01-24*
+*Theme Customization research added: 2026-01-25*

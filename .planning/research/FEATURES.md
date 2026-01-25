@@ -212,6 +212,217 @@ Features to deliberately avoid - common mistakes or over-engineering.
 
 ---
 
+## v3.0 Theme Customization Feature Research
+
+**Researched:** 2026-01-25
+**Focus:** Visual theme configurator and design token system for build-time customization
+**Confidence:** HIGH (verified against shadcn, Radix, Tailwind v4 official docs)
+
+### Context
+
+LitUI v3.0 adds:
+- Visual theme configurator page on docs site with live preview
+- Full design token customization (colors, sizing, shadows, animations, typography)
+- CLI accepts encoded token config via command parameters
+- Generated `lit-ui-tokens.css` file with user's design token values
+- Components consume shared tokens file for consistent theming
+
+Existing token system in `packages/core/src/styles/tailwind.css` already defines:
+- Primitive tokens (color scales, spacing, shadows, radii)
+- Semantic tokens (primary, secondary, destructive, muted, accent, etc.)
+- Component tokens (--ui-button-*, --ui-dialog-*)
+- Dark mode overrides via `.dark` class
+
+---
+
+### Table Stakes for Theme Configurator
+
+Features users expect from a visual theme configurator. Missing = product feels incomplete.
+
+| Feature | Why Expected | Complexity | Dependencies | Notes |
+|---------|--------------|------------|--------------|-------|
+| **Live preview of changes** | Every comparable tool (shadcn themes, tweakcn, Radix themes) shows instant updates. Users expect to see changes before committing. | Medium | Docs site, component rendering | Must update preview without page reload. CSS variables enable this naturally by updating `:root` styles. |
+| **Color customization (primary, secondary, destructive)** | Core of any theming system. shadcn defines ~15 semantic color tokens. Radix provides accent/gray selection. | Low | Existing token system in `tailwind.css` | Already have token structure. Need UI to modify values. |
+| **Light/dark mode support** | Industry standard. shadcn, Radix, MUI all provide dual-mode themes. Users expect both modes configured together. | Low | Existing `.dark` CSS block | Already implemented. Configurator needs to edit both modes simultaneously. |
+| **Copy-paste CSS output** | shadcn pattern: user copies CSS and pastes into project. Zero friction adoption. | Low | None | Output format: CSS custom properties block for `:root` and `.dark`. |
+| **Border radius control** | Universal customization point. shadcn, Radix both expose radius. Small change = large visual impact. | Low | `--ui-*-radius` tokens | Single value that cascades to all components. |
+| **Preset themes** | shadcn offers blue, green, orange, red, rose, violet, yellow. Users want quick starting points. | Low | Color palettes | 4-6 curated presets reduce decision fatigue. |
+| **CLI accepts configuration** | User shouldn't re-copy CSS each time. CLI should accept theme config to generate tokens file. | Medium | CLI (`lit-ui` package) | Encode config in URL-safe format or accept config file path. |
+| **Generated tokens file** | Output: `lit-ui-tokens.css` that user imports. Components reference these tokens. | Low | None | File generation is straightforward string templating. |
+
+---
+
+### Differentiators for Theme Configurator
+
+Features that set LitUI apart. Not expected, but valued.
+
+| Feature | Value Proposition | Complexity | Dependencies | Notes |
+|---------|-------------------|------------|--------------|-------|
+| **WCAG contrast validation** | Real-time accessibility feedback. Shows if color combinations meet AA/AAA standards. Competitors rarely include this. | Medium | Color math library (oklch contrast calculation) | oklch makes perceptual contrast easier to calculate. Show pass/fail badges next to color pairs. |
+| **Component-specific token preview** | Show how token changes affect each component (Button, Dialog) separately. Beyond just "see a demo page." | Medium | Component registry, isolated previews | Existing docs site has component pages. Leverage that structure. |
+| **Shareable theme URL** | Encode entire theme in URL. User can share link, recipient sees exact theme. Like codepen but for themes. | Medium | URL encoding/decoding, state hydration | Base64 + compression for compact URLs. Enables collaboration and showcasing. |
+| **Animation/transition customization** | Control transition duration, easing. Most configurators ignore animation tokens. | Low | Add `--ui-*-transition-*` tokens | Small addition, meaningful personalization. |
+| **Shadow depth customization** | Control shadow intensity/spread. Visual depth is often overlooked in configurators. | Low | `--shadow-*` tokens already exist | Expose existing tokens in UI. |
+| **Typography scale preview** | Show how font size/weight changes affect hierarchy. Visualize heading vs body relationships. | Medium | Font loading, scale preview | Google Fonts integration for custom font preview. |
+| **Export to multiple formats** | CSS variables (default), JSON tokens, Tailwind v4 @theme block. Different teams have different needs. | Low | Template generation | JSON export enables design tool integration. |
+| **Undo/redo history** | Let users experiment freely. Reduces anxiety about "breaking" the theme. | Medium | State history stack | React/Lit state management pattern. 10-20 step history sufficient. |
+
+---
+
+### Anti-Features for Theme Configurator
+
+Features to explicitly NOT build. Common mistakes in this domain.
+
+| Anti-Feature | Why Avoid | What to Do Instead |
+|--------------|-----------|-------------------|
+| **Runtime theme switching** | v3.0 is explicitly build-time customization. Runtime adds JS overhead, SSR complexity, and conflicts with Tailwind's build-time approach. | Generate static CSS file. Runtime switching is v3.1+ if ever. Project explicitly deferred this. |
+| **Hundreds of individual component tokens** | Creates overwhelming UI. IBM Carbon's approach (hundreds of variables) makes theming "tedious" and "encyclopedic." Users don't want to configure 50 button properties individually. | Use semantic layering: primitives -> semantic -> component. Expose semantic layer (10-20 tokens), components inherit automatically. |
+| **Color picker for every shade** | Generating full 11-step color palettes manually is error-prone. Users pick wrong shades, break consistency. | Accept 1-2 reference colors, auto-generate palette algorithmically. Like Radix's custom color tool. |
+| **Server-side theme storage** | Project constraint explicitly rules this out. Adds backend complexity, auth requirements, storage costs. | URL-encoded params for sharing. LocalStorage for persistence. CLI parameter for installation. |
+| **CSS-in-JS output** | Project constraint: conflicts with Tailwind approach. Runtime overhead, SSR complications. | CSS custom properties only. Works everywhere, zero runtime. |
+| **Real-time font loading from arbitrary URLs** | Security risk (XSS via font injection), performance unpredictability, licensing issues. | Curated Google Fonts list. Validate font names server-side. |
+| **Design token file format (W3C DTCG)** | Adds complexity for interoperability that most users won't need. Over-engineering for current scope. | Simple CSS output. JSON as secondary export. DTCG format can be added later if demand exists. |
+| **Full Figma/design tool sync** | Massive scope creep. Requires Figma plugin development, token sync infrastructure. | One-way export (configurator -> CSS/JSON). Users can manually import into Figma if needed. |
+| **AI-generated themes** | Trendy but unreliable. AI themes often lack coherence, accessibility issues. Adds API dependency. | Curated presets by humans. User customization with guardrails (contrast warnings). |
+
+---
+
+### Theme Configurator Feature Dependencies
+
+```
+Existing Features (v1-v2)
+    |
+    v
+Token System (tailwind.css)  <--- Components already consume these
+    |
+    +---> Visual Configurator Page (new)
+    |         |
+    |         +---> Live Preview (requires component rendering)
+    |         |
+    |         +---> Export UI (generates CSS/JSON)
+    |         |
+    |         +---> Shareable URL (encodes config)
+    |
+    +---> CLI Token Parameter (new)
+              |
+              +---> Token CSS Generation (string templating)
+              |
+              +---> lit-ui-tokens.css output
+
+Dependencies Flow:
+1. Token system exists (done)
+2. Configurator UI built on docs site
+3. CLI extended to accept token config
+4. Components already work (no changes needed if tokens structured correctly)
+```
+
+---
+
+### v3.0 MVP Recommendation
+
+For MVP (v3.0), prioritize:
+
+#### Must Ship
+1. **Live preview** - Non-negotiable for a visual configurator
+2. **Color customization** (primary, secondary, destructive, background, foreground) - Core use case
+3. **Light/dark mode editing** - Expected behavior
+4. **Border radius control** - High visual impact, low effort
+5. **Copy-paste CSS output** - Zero-friction adoption
+6. **3-4 preset themes** - Quick starting points
+7. **CLI `--tokens` parameter** - Accepts encoded config string
+8. **`lit-ui-tokens.css` generation** - The deliverable
+
+#### Should Ship (if time permits)
+1. **Shareable theme URL** - Competitive advantage
+2. **WCAG contrast indicators** - Accessibility credibility
+3. **JSON export** - Enables design tool workflows
+
+#### Defer to v3.1+
+- Typography customization (font family, scale)
+- Animation tokens
+- Shadow customization
+- Undo/redo history
+- Component-specific previews
+
+---
+
+### Theme Configurator Complexity Notes
+
+#### Low Complexity (1-2 days each)
+- **Preset themes**: Curated CSS blocks, button to apply
+- **Border radius slider**: Single value, immediate preview
+- **Copy button**: Clipboard API, straightforward
+- **CSS output generation**: String template with current values
+- **JSON export**: Object serialization
+
+#### Medium Complexity (3-5 days each)
+- **Live preview system**: React/Lit state management, CSS variable updates on root
+- **Color picker with oklch**: Requires oklch <-> hex conversion, color space math
+- **CLI token parameter**: URL encoding/decoding, parameter parsing, file generation
+- **WCAG contrast validation**: Color contrast ratio calculation, AA/AAA thresholds
+- **Shareable URL**: Compression, encoding, URL length limits, hydration on load
+
+#### High Complexity (1+ week)
+- **Full typography preview with custom fonts**: Google Fonts API integration, font loading states, fallback handling
+- **Undo/redo system**: State history management, serialization of theme states
+
+---
+
+### Competitive Analysis: Theme Configurators
+
+| Tool | Strengths | Weaknesses | LitUI Opportunity |
+|------|-----------|------------|-------------------|
+| **shadcn/ui Themes** | Clean UI, preset themes, copy-paste | Limited customization (presets only), no live editing | Full live configurator with same simplicity |
+| **tweakcn** | Live editing, Tailwind v4 support, real-time code | Third-party (not official), complex UI | First-party experience, CLI integration |
+| **Radix Themes** | Theme component props, token access | React-only, not visual configurator | Framework-agnostic, visual approach |
+| **Designsystemet** | CLI token generation, comprehensive | Complex setup, Norwegian-focused | Simpler CLI, broader audience |
+| **Material Theme Builder** | Figma integration, comprehensive tokens | Google ecosystem lock-in, complexity | Lightweight, framework-agnostic |
+
+---
+
+### Token Structure Recommendation
+
+The existing token structure in `tailwind.css` follows best practices. Validate and maintain:
+
+```css
+/* Primitives - raw values (don't expose in configurator) */
+--color-brand-500: oklch(0.62 0.18 250);
+
+/* Semantic - meaningful names (EXPOSE in configurator) */
+--color-primary: var(--color-brand-500);
+--color-primary-foreground: white;
+
+/* Component - specific usage (auto-derived, don't expose) */
+--ui-button-primary-bg: var(--color-primary);
+```
+
+#### Tokens to Expose in Configurator
+- `--color-primary` / `--color-primary-foreground`
+- `--color-secondary` / `--color-secondary-foreground`
+- `--color-destructive` / `--color-destructive-foreground`
+- `--color-background` / `--color-foreground`
+- `--color-muted` / `--color-muted-foreground`
+- `--color-accent` / `--color-accent-foreground`
+- `--color-border` / `--color-input` / `--color-ring`
+- `--radius-*` (single control, applies to all)
+
+#### URL Encoding Strategy
+```
+Base config object:
+{
+  primary: "oklch(0.62 0.18 250)",
+  primaryFg: "white",
+  ...
+}
+
+Encode: JSON.stringify -> gzip -> base64url
+Result: ?theme=H4sIAAAAA...
+
+CLI accepts: npx lit-ui add button --tokens=H4sIAAAAA...
+```
+
+---
+
 ## Feature Dependencies
 
 ```
@@ -327,7 +538,7 @@ Minimum viable product to validate the concept.
   - CSS custom properties for theming
   - Example with Tailwind v4
 
-### v2.0 MVP: NPM + SSR
+### v2.0 MVP: NPM + SSR - SHIPPED
 
 Features to add for v2.0 milestone.
 
@@ -355,6 +566,36 @@ Nice-to-have features:
 1. `@lit-ui/react` wrappers package
 2. Bundle size CI checks
 3. Framework-specific SSR integration packages
+
+### v3.0 MVP: Theme Customization - ACTIVE
+
+Features to add for v3.0 milestone.
+
+#### Phase 1: Visual Configurator (Priority: HIGH)
+
+Must-have features:
+1. Configurator page on docs site
+2. Live preview of token changes
+3. Color pickers for semantic tokens (primary, secondary, destructive)
+4. Light/dark mode simultaneous editing
+5. Border radius control
+6. Copy-paste CSS output
+7. 3-4 preset themes
+
+#### Phase 2: CLI Integration (Priority: HIGH)
+
+Must-have features:
+1. `--tokens` parameter accepting encoded config
+2. Token decoding and validation
+3. `lit-ui-tokens.css` file generation
+4. Integration with both `init` and `add` commands
+
+#### Phase 3: Enhanced Features (Priority: MEDIUM)
+
+Nice-to-have features:
+1. Shareable theme URL
+2. WCAG contrast validation
+3. JSON export format
 
 ### Add After Validation (v1.x / v2.x)
 
@@ -406,9 +647,15 @@ Features to defer until product-market fit is established.
 | Dark/Light Theme | MEDIUM | LOW | P1 - DONE |
 | Documentation | HIGH | MEDIUM | P1 - DONE |
 | Framework Agnostic Verification | HIGH | MEDIUM | P1 - DONE |
-| **NPM Package Distribution** | HIGH | MEDIUM | **P1 - v2.0** |
-| **SSR Compatibility** | HIGH | MEDIUM | **P1 - v2.0** |
+| NPM Package Distribution | HIGH | MEDIUM | P1 - v2.0 DONE |
+| SSR Compatibility | HIGH | MEDIUM | P1 - v2.0 DONE |
 | Custom Elements Manifest | MEDIUM | LOW | P1 - v2.0 |
+| **Visual Theme Configurator** | HIGH | MEDIUM | **P1 - v3.0** |
+| **CLI Token Parameter** | HIGH | MEDIUM | **P1 - v3.0** |
+| **Token CSS Generation** | HIGH | LOW | **P1 - v3.0** |
+| **Preset Themes** | MEDIUM | LOW | **P1 - v3.0** |
+| **Shareable Theme URL** | MEDIUM | MEDIUM | **P2 - v3.0** |
+| **WCAG Contrast Validation** | MEDIUM | MEDIUM | **P2 - v3.0** |
 | Input Component | HIGH | LOW | P2 |
 | Select/Dropdown | HIGH | HIGH | P2 |
 | Loading States | MEDIUM | LOW | P2 |
@@ -439,6 +686,7 @@ Features to defer until product-market fit is established.
 | **Dark Mode** | Built-in | Built-in | User handles | Built-in with prefers-color-scheme |
 | **Bundle Size** | Zero runtime (copy-paste) | ~60KB for all | Small per-component | Minimal (Lit ~5KB + component) |
 | **NPM Packages** | Single package (copy-paste focus) | Monorepo scoped packages | Single package | Monorepo scoped packages (v2.0) |
+| **Theme Configurator** | Preset picker, copy CSS | None | Theme component props | Visual configurator + CLI integration (v3.0) |
 
 ### Competitive Positioning
 
@@ -448,7 +696,9 @@ Features to defer until product-market fit is established.
 
 **vs. Radix:** We offer styled defaults. Radix is headless-only; great for design teams but requires significant styling work. We provide styled components with customization escape hatches.
 
-**Unique Value Proposition:** Framework-agnostic components with ShadCN-style copy-source distribution, Tailwind compatibility, AND NPM package mode with SSR support.
+**v3.0 Theme Configurator Positioning:** We offer a first-party visual configurator with CLI integration. shadcn has only preset themes (no live editing). Third-party tools like tweakcn exist but aren't integrated with the CLI. Our approach combines visual configuration with seamless CLI workflow.
+
+**Unique Value Proposition:** Framework-agnostic components with ShadCN-style copy-source distribution, Tailwind compatibility, AND NPM package mode with SSR support, AND integrated theme configurator with CLI.
 
 ---
 
@@ -516,7 +766,30 @@ Features to defer until product-market fit is established.
 - [How to Reduce JavaScript Bundle Size in 2025](https://dev.to/frontendtoolstech/how-to-reduce-javascript-bundle-size-in-2025-2n77)
 - [8 Ways to Optimize JavaScript Bundle Size](https://about.codecov.io/blog/8-ways-to-optimize-your-javascript-bundle-size/)
 
+### v3.0 Theme Configurator Research
+
+#### Official Documentation
+- [shadcn/ui Theming](https://ui.shadcn.com/docs/theming) - CSS variable structure, oklch color format
+- [shadcn/ui Themes Page](https://ui.shadcn.com/themes) - Preset themes, copy-paste pattern
+- [Radix Themes Overview](https://www.radix-ui.com/themes/docs/theme/overview) - Theme component props, token access
+- [Tailwind CSS v4 Theme Variables](https://tailwindcss.com/docs/theme) - @theme directive, CSS-first configuration
+
+#### Third-Party Tools (Competitive Reference)
+- [tweakcn](https://tweakcn.com/) - Live theme editor for shadcn/ui
+- [Shadcn Studio](https://shadcnstudio.com/theme-generator) - Advanced theme editor
+- [DesignRift](https://designrift.vercel.app/) - Radix Colors theme builder
+
+#### Design Token Best Practices
+- [The Problem with Design Tokens](https://andretorgal.com/posts/2025-01/the-problem-with-design-tokens) - Anti-patterns, complexity issues
+- [Design Tokens & Theming Scalable UI 2025](https://materialui.co/blog/design-tokens-and-theming-scalable-ui-2025) - Layering approach
+- [W3C Design Tokens Specification](https://www.w3.org/community/design-tokens/2025/10/28/design-tokens-specification-reaches-first-stable-version/) - Stable spec reference
+
+#### Accessibility
+- [WCAG Color Contrast Accessibility Guide 2025](https://www.allaccessible.org/blog/color-contrast-accessibility-wcag-guide-2025) - Contrast ratios, validation
+- [Design.dev Contrast Checker](https://design.dev/tools/color-contrast-checker/) - WCAG 2.2 and APCA support
+
 ---
 *Feature research for: lit-ui framework-agnostic component library*
 *v1.0 researched: 2026-01-23*
 *v2.0 NPM + SSR researched: 2026-01-24*
+*v3.0 Theme Customization researched: 2026-01-25*
