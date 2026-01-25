@@ -81,37 +81,37 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CONFIG-01 | TBD | Pending |
-| CONFIG-02 | TBD | Pending |
-| CONFIG-03 | TBD | Pending |
-| CONFIG-04 | TBD | Pending |
-| CONFIG-05 | TBD | Pending |
-| CONFIG-06 | TBD | Pending |
-| CONFIG-07 | TBD | Pending |
-| CONFIG-08 | TBD | Pending |
-| CONFIG-09 | TBD | Pending |
-| CONFIG-10 | TBD | Pending |
-| CONFIG-11 | TBD | Pending |
-| CONFIG-12 | TBD | Pending |
-| CLI-01 | TBD | Pending |
-| CLI-02 | TBD | Pending |
-| CLI-03 | TBD | Pending |
-| CLI-04 | TBD | Pending |
-| CLI-05 | TBD | Pending |
-| THEME-01 | TBD | Pending |
-| THEME-02 | TBD | Pending |
-| THEME-03 | TBD | Pending |
-| THEME-04 | TBD | Pending |
-| THEME-05 | TBD | Pending |
-| COMP-01 | TBD | Pending |
-| COMP-02 | TBD | Pending |
-| COMP-03 | TBD | Pending |
+| CONFIG-01 | Phase 23 | Pending |
+| CONFIG-02 | Phase 23 | Pending |
+| CONFIG-03 | Phase 23 | Pending |
+| CONFIG-04 | Phase 23 | Pending |
+| CONFIG-05 | Phase 23 | Pending |
+| CONFIG-06 | Phase 23 | Pending |
+| CONFIG-07 | Phase 24 | Pending |
+| CONFIG-08 | Phase 24 | Pending |
+| CONFIG-09 | Phase 24 | Pending |
+| CONFIG-10 | Phase 24 | Pending |
+| CONFIG-11 | Phase 21 | Pending |
+| CONFIG-12 | Phase 24 | Pending |
+| CLI-01 | Phase 22 | Pending |
+| CLI-02 | Phase 22 | Pending |
+| CLI-03 | Phase 22 | Pending |
+| CLI-04 | Phase 22 | Pending |
+| CLI-05 | Phase 22 | Pending |
+| THEME-01 | Phase 21 | Pending |
+| THEME-02 | Phase 21 | Pending |
+| THEME-03 | Phase 21 | Pending |
+| THEME-04 | Phase 21 | Pending |
+| THEME-05 | Phase 21 | Pending |
+| COMP-01 | Phase 23 | Pending |
+| COMP-02 | Phase 23 | Pending |
+| COMP-03 | Phase 23 | Pending |
 
 **Coverage:**
 - v3.0 requirements: 25 total
-- Mapped to phases: 0 (pending roadmap)
-- Unmapped: 25 ⚠️
+- Mapped to phases: 25
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-01-25*
-*Last updated: 2026-01-25 after clarification*
+*Last updated: 2026-01-25 (traceability completed)*
