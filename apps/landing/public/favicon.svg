@@ -1,10 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
-  <defs>
-    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#8b5cf6"/>
-      <stop offset="100%" style="stop-color:#3b82f6"/>
-    </linearGradient>
-  </defs>
-  <rect width="32" height="32" rx="8" fill="url(#grad)"/>
-  <path d="M10 8h4v16h-4V8zm8 6h4v10h-4V14z" fill="white"/>
+<svg width="290" height="290" viewBox="0 0 290 290" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_1191_233)">
+<rect width="290" height="290" rx="80" fill="#050505"/>
+<path d="M139.651 224.959C141.06 225.969 142.753 226.509 144.487 226.5C146.222 226.491 147.909 225.934 149.307 224.908C164.667 213.778 211.5 175.889 211.5 127.75C211.5 100.556 195.186 77.1398 171.853 66.646C175.845 72.2639 177.993 78.9832 178 85.875C178.142 112.851 148.202 143.604 146.929 144.5C146.222 145.007 145.374 145.279 144.504 145.279C143.634 145.279 142.787 145.007 142.08 144.5C140.807 143.604 111 119.593 111 85.8582C111 78.7059 113.303 72.0981 117.139 66.646C93.8145 77.1398 77.5 100.548 77.5 127.708C77.5 176.794 124.249 214.029 139.651 224.959Z" fill="white"/>
+</g>
+<defs>
+<clipPath id="clip0_1191_233">
+<rect width="290" height="290" fill="white"/>
+</clipPath>
+</defs>
 </svg>
