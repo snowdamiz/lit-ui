@@ -103,6 +103,10 @@ Key decisions are logged in PROJECT.md Key Decisions table.
 - fouc.css shipped as source file for direct CSS import
 - Skeleton placeholder styles commented as optional pattern
 
+**v2.0 Plan 15-01 Decisions:**
+- Use import.meta.env?.DEV instead of process.env.NODE_ENV (Vite pattern)
+- vite-env.d.ts required for Vite client types in component packages
+
 **v2.0 Plan 15-02 Decisions:**
 - Remove rollupTypes from vite-plugin-dts (api-extractor Map bug)
 - Remove process.env.NODE_ENV check (requires @types/node)
