@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-01-24)
 
 ## Current Position
 
-Phase: 16 of 20 (SSR Package) - COMPLETE
-Plan: 02 of 02
-Status: Phase complete
-Last activity: 2026-01-25 - Completed 16-02-PLAN.md (Hydration and verification)
+Phase: 17 of 20 (Framework Integration)
+Plan: 02 of 03 complete (17-01 and 17-03 in parallel)
+Status: In progress
+Last activity: 2026-01-25 - Completed 17-02-PLAN.md (Next.js SSR example)
 
-Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [#############] 13/40 plans
+Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [##############] 14/40 plans
 
 ## Performance Metrics
 
@@ -126,6 +126,10 @@ Key decisions are logged in PROJECT.md Key Decisions table.
 - Hydration import order: @lit-ui/ssr/hydration must be first import (before any Lit components)
 - Lockfile committed during verification (was missed in 16-01)
 
+**v2.0 Plan 17-02 Decisions:**
+- JSX type declarations for custom elements in client component file
+- 'use client' boundary pattern for Lit in Next.js App Router
+
 ### Pending Todos
 
 None.
@@ -137,15 +141,20 @@ Consider completing v1.1 before or in parallel with v2.0.
 
 ## Session Continuity
 
-Last session: 2026-01-25 05:39 UTC
-Stopped at: Completed 16-02-PLAN.md (Hydration and verification) - Phase 16 COMPLETE
+Last session: 2026-01-25 06:19 UTC
+Stopped at: Completed 17-02-PLAN.md (Next.js SSR example)
 Resume file: None
 
 ## Next Steps
 
-Phase 16 (SSR Package) is complete. Ready for Phase 17 (Framework Integration).
+Phase 17 (Framework Integration) in progress. Plans 17-01 and 17-03 executing in parallel.
 
 ### @lit-ui/ssr Package Summary
 - **Server rendering:** `import { render, html, renderToString, isServer } from '@lit-ui/ssr'`
 - **Client hydration:** `import '@lit-ui/ssr/hydration'` (MUST be first import)
 - **Manual hydration:** `import { hydrate } from '@lit-ui/ssr/hydration'`
+
+### Next.js Example Summary (17-02)
+- **Pattern:** 'use client' boundary for all Lit component usage
+- **Critical:** Import @lit-ui/ssr/hydration before any Lit components
+- **Location:** examples/nextjs/
