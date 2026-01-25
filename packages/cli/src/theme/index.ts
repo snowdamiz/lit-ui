@@ -10,3 +10,6 @@ export { themeConfigSchema, type ThemeConfig, type PartialThemeConfig } from "./
 
 // Default theme and merge utility
 export { defaultTheme, mergeThemeConfig } from "./defaults.js";
+
+// Color utilities
+export { generateScale, deriveDarkMode, deriveForeground } from "./color-scale.js";
