@@ -1,5 +1,22 @@
-import { createLibraryConfig } from '@lit-ui/vite-config/library';
+import { defineConfig } from 'vite';
+import tailwindcss from '@tailwindcss/vite';
+import dts from 'vite-plugin-dts';
 
-export default createLibraryConfig({
-  entry: 'src/index.ts'
+export default defineConfig({
+  plugins: [
+    tailwindcss(),
+    dts({
+      entryRoot: 'src',
+    }),
+  ],
+  build: {
+    lib: {
+      entry: 'src/index.ts',
+      formats: ['es'],
+      fileName: 'index',
+    },
+    rollupOptions: {
+      external: ['lit', /^lit\//, /^@lit\//, /^@lit-ui\//],
+    },
+  },
 });

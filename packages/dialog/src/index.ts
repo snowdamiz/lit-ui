@@ -14,11 +14,6 @@ import { Dialog } from './dialog.js';
 if (!isServer && typeof customElements !== 'undefined') {
   if (!customElements.get('lui-dialog')) {
     customElements.define('lui-dialog', Dialog);
-  } else if (process.env.NODE_ENV === 'development') {
-    console.warn(
-      '[lui-dialog] Custom element already registered. ' +
-        'This may indicate duplicate imports or version conflicts.'
-    );
   }
 }
 
