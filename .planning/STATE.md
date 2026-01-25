@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-24)
 ## Current Position
 
 Phase: 20 of 20 (Documentation)
-Plan: 02 of 03
-Status: In progress
-Last activity: 2026-01-25 - Completed 20-02-PLAN.md (SSR Guide)
+Plan: 03 of 03
+Status: Phase complete
+Last activity: 2026-01-25 - Completed 20-03-PLAN.md (Migration Guide)
 
-Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [##########################] 26/27 plans
+Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [###########################] 27/27 plans
 
 ## Performance Metrics
 
@@ -50,7 +50,7 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [#################
 | 17-framework-integration | 3 | 20 min | 6.7 min |
 | 18-cli-enhancement | 4 | 10 min | 2.5 min |
 | 19-publishing | 4 | 7 min | 1.8 min |
-| 20-documentation | 2 | 6 min | 3.0 min |
+| 20-documentation | 3 | 9 min | 3.0 min |
 
 ## Accumulated Context
 
@@ -186,6 +186,11 @@ Key decisions are logged in PROJECT.md Key Decisions table.
 - Four-section structure: hydration import order, Next.js, Astro, FOUC
 - Navigation flow: Installation <- SSR -> Migration
 
+**v2.0 Plan 20-03 Decisions:**
+- Four-section structure: When to Migrate, Run the Migration, Update Imports, Modified Files
+- CLI-focused content showing npx lit-ui migrate workflow
+- Before/after import examples for local path to @lit-ui package
+
 ### Pending Todos
 
 None.
@@ -198,12 +203,12 @@ Consider completing v1.1 before or in parallel with v2.0.
 ## Session Continuity
 
 Last session: 2026-01-25
-Stopped at: Completed 20-02-PLAN.md (SSR Guide)
+Stopped at: Completed 20-03-PLAN.md (Migration Guide)
 Resume file: None
 
 ## Next Steps
 
-Phase 20 (Documentation) in progress. Plans 01-02 complete.
+Phase 20 (Documentation) COMPLETE. All v2.0 plans complete.
 
 ### Documentation Phase Progress
 
@@ -216,12 +221,13 @@ Phase 20 (Documentation) in progress. Plans 01-02 complete.
 - SSR Setup guide with hydration, Next.js, Astro, FOUC sections
 - Route /guides/ssr now renders SSRGuide component
 
-**20-03 (Pending):**
-- Migration guide for copy-source to npm
+**20-03 (Complete):**
+- Migration guide for copy-source to npm conversion
+- Route /guides/migration now renders MigrationGuide component
 
 ### Ready for First Release
 
-To publish first version:
+v2.0 NPM + SSR implementation complete. To publish first version:
 1. Create changeset: `pnpm changeset`
 2. Commit and push
 3. Merge "Version Packages" PR
