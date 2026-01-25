@@ -1,4 +1,4 @@
-# lit-ui
+# LitUI
 
 ## What This Is
 
@@ -32,10 +32,8 @@ Developers can use polished, accessible UI components in any framework without l
 - [ ] Theming documentation (design tokens, customization)
 - [ ] Accessibility documentation (WCAG patterns, keyboard navigation)
 
-### Deferred (v2+)
+### Deferred (v2.1+)
 
-- NPM package mode (in addition to copy-source)
-- SSR compatibility (Declarative Shadow DOM)
 - Auto-update mechanism for installed components
 
 ### Out of Scope
@@ -87,16 +85,15 @@ Developers can use polished, accessible UI components in any framework without l
 | ESM-only library output | Modern standard, tree-shaking | ✓ Good — clean imports |
 | :host-context(.dark) for dark mode | Shadow DOM can't see .dark class | ✓ Good — solves dark mode in WC |
 
-## Current Milestone: v1.1 Documentation Site
+## Current Milestone: v2.0 NPM + SSR
 
-**Goal:** Create a comprehensive documentation site that matches the landing page theme, enabling developers to learn lit-ui through clear guides, API reference, and live examples.
+**Goal:** Enable NPM package distribution and SSR compatibility, giving developers the choice between copy-source ownership and traditional npm install.
 
 **Target features:**
-- Getting Started guide with installation and first component setup
-- Button and Dialog API reference with interactive examples
-- Framework-specific guides for React, Vue, and Svelte
-- Theming documentation covering design tokens and customization
-- Accessibility documentation for WCAG compliance
+- NPM package mode (@lit-ui/core, @lit-ui/button, @lit-ui/dialog)
+- SSR compatibility via Declarative Shadow DOM
+- CLI support for both copy-source and npm install modes
+- Updated documentation for both distribution methods
 
 ---
-*Last updated: 2026-01-24 after milestone v1.1 started*
+*Last updated: 2026-01-24 after milestone v2.0 started*

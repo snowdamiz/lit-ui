@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-24)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** v1.1 Documentation Site - Phase 8 Complete
+**Current focus:** v2.0 NPM + SSR - Not started
 
 ## Current Position
 
-Phase: 8 of 12 (Component Documentation)
-Plan: 4 of 4 in phase (all plans complete)
-Status: Phase complete
-Last activity: 2026-01-24 - Completed 08-04-PLAN.md (Dialog Documentation)
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-01-24 — Milestone v2.0 started
 
-Progress: v1.0 SHIPPED | v1.1 [#########] 9/9+ plans
+Progress: v1.0 SHIPPED | v1.1 [########░░] 8/12 phases | v2.0 [░░░░░░░░░░] 0%
 
 ## Performance Metrics
 
@@ -46,32 +46,11 @@ Progress: v1.0 SHIPPED | v1.1 [#########] 9/9+ plans
 
 Key decisions are logged in PROJECT.md Key Decisions table.
 
-**Phase 6 Decisions:**
-- Used react-router v7 (single package import, not react-router-dom)
-- Copied landing page theme variables for visual consistency
-- Navigation data in separate nav.ts for easy modification
-- First section (Getting Started) defaults open for discoverability
-- Mobile sheet closes on route change via useLocation effect
-- Docs app runs at / (not /docs) for simpler URLs
-
-**Phase 7 Decisions:**
-- Used nightOwl theme for syntax highlighting (dark, matches .code-block CSS)
-- 2-second copy feedback timeout (standard UX pattern)
-- Simple button tabs with ARIA attributes (no Radix Tabs needed)
-- Index route shows GettingStarted (docs landing page = getting started)
-- Standalone TailwindElement with minimal inline styles for preview
-- CSS custom properties on ui-button element for theme tokens
-- tsconfig updated with experimentalDecorators for Lit support
-
-**Phase 8 Decisions:**
-- Tables use simple HTML table elements with Tailwind styling
-- Default values show em dash when undefined for clear visual indicator
-- Empty div elements for flex spacing in PrevNextNav
-- Try/catch pattern for context detection in FrameworkTabs (backward compatibility)
-- HTML tab hidden when html prop not provided (graceful degradation)
-- ExampleBlock uses lg:flex-row for responsive side-by-side layout
-- useEffect with ref for dialog close event listener (React doesn't support custom events on JSX)
-- Centralized ui-button types in LivePreview.tsx to avoid duplicate declarations
+**v1.1 Decisions carried forward:**
+- react-router v7 single package import
+- Landing page theme variables for docs consistency
+- nightOwl theme for syntax highlighting
+- Tables use simple HTML with Tailwind styling
 
 ### Pending Todos
 
@@ -79,19 +58,15 @@ None.
 
 ### Blockers/Concerns
 
-None.
+**v1.1 incomplete:** Phases 9-12 (Framework Guides, Theming, Accessibility, Polish) not yet done.
+Consider completing v1.1 before or in parallel with v2.0.
 
 ## Session Continuity
 
 Last session: 2026-01-24
-Stopped at: Completed 08-04-PLAN.md (Dialog Documentation)
+Stopped at: Starting milestone v2.0
 Resume file: None
 
 ## Next Steps
 
-Phase 8 complete. All component documentation pages functional:
-- Getting Started page with installation and quick start
-- Button page with variants, sizes, loading, icons, disabled states
-- Dialog page with basic and confirmation examples
-
-Continue with Phase 9 (Framework Guides) or later phases.
+Define requirements for v2.0 NPM + SSR milestone.
