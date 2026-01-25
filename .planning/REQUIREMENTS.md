@@ -36,11 +36,11 @@ Requirements for NPM package distribution and SSR compatibility.
 
 ### SSR Package (@lit-ui/ssr)
 
-- [ ] **SSR-01**: @lit-ui/ssr package provides SSR render utilities
-- [ ] **SSR-02**: Render function outputs Declarative Shadow DOM HTML
-- [ ] **SSR-03**: Hydration helper ensures correct module load order
-- [ ] **SSR-04**: isServer utility exported for component authors
-- [ ] **SSR-05**: SSR package re-exports @lit-labs/ssr essentials
+- [x] **SSR-01**: @lit-ui/ssr package provides SSR render utilities
+- [x] **SSR-02**: Render function outputs Declarative Shadow DOM HTML
+- [x] **SSR-03**: Hydration helper ensures correct module load order
+- [x] **SSR-04**: isServer utility exported for component authors
+- [x] **SSR-05**: SSR package re-exports @lit-labs/ssr essentials
 
 ### SSR Framework Integration
 
@@ -110,11 +110,11 @@ Deferred to future milestone.
 | COMP-05 | Phase 15 | Complete |
 | COMP-06 | Phase 15 | Complete |
 | COMP-07 | Phase 15 | Complete |
-| SSR-01 | Phase 16 | Pending |
-| SSR-02 | Phase 16 | Pending |
-| SSR-03 | Phase 16 | Pending |
-| SSR-04 | Phase 16 | Pending |
-| SSR-05 | Phase 16 | Pending |
+| SSR-01 | Phase 16 | Complete |
+| SSR-02 | Phase 16 | Complete |
+| SSR-03 | Phase 16 | Complete |
+| SSR-04 | Phase 16 | Complete |
+| SSR-05 | Phase 16 | Complete |
 | FRAME-01 | Phase 17 | Pending |
 | FRAME-02 | Phase 17 | Pending |
 | FRAME-03 | Phase 17 | Pending |
@@ -138,4 +138,4 @@ Deferred to future milestone.
 
 ---
 *Requirements defined: 2026-01-24*
-*Last updated: 2026-01-25 after Phase 15 completion*
+*Last updated: 2026-01-25 after Phase 16 completion*
