@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-24)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** v2.0 NPM + SSR - Phase 13 in progress
+**Current focus:** v2.0 NPM + SSR - Phase 13 complete
 
 ## Current Position
 
-Phase: 13 of 20 (Monorepo Infrastructure)
-Plan: 04 of 05
-Status: In progress
-Last activity: 2026-01-25 - Completed 13-04-PLAN.md
+Phase: 13 of 20 (Monorepo Infrastructure) - COMPLETE
+Plan: 05 of 05
+Status: Phase complete
+Last activity: 2026-01-25 - Completed 13-05-PLAN.md
 
-Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [####......] 4/40 plans
+Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [#####.....] 5/40 plans
 
 ## Performance Metrics
 
@@ -28,8 +28,8 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [####......] 4/40 
 - Total execution time: 22 min
 
 **v2.0 Velocity:**
-- Plans completed: 4
-- Total execution time: 7 min
+- Plans completed: 5
+- Total execution time: 11 min
 
 **By Phase:**
 
@@ -43,7 +43,7 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [####......] 4/40 
 | 06-docs-foundation | 3 | 5 min | 1.7 min |
 | 07-getting-started | 2 | 4 min | 2.0 min |
 | 08-component-documentation | 4 | 10 min | 2.5 min |
-| 13-monorepo-infrastructure | 4 | 7 min | 1.8 min |
+| 13-monorepo-infrastructure | 5 | 11 min | 2.2 min |
 
 ## Accumulated Context
 
@@ -83,6 +83,10 @@ Key decisions are logged in PROJECT.md Key Decisions table.
 - Docs app serves as component testbed (examples/ removed)
 - Apps remain private workspace packages (not published)
 
+**v2.0 Plan 13-05 Decisions:**
+- Use privatePackages config instead of ignore for private workspace deps
+- Keep src.old/ for Phase 14-15 migration reference
+
 ### Pending Todos
 
 None.
@@ -94,10 +98,12 @@ Consider completing v1.1 before or in parallel with v2.0.
 
 ## Session Continuity
 
-Last session: 2026-01-25 02:54 UTC
-Stopped at: Completed 13-04-PLAN.md
+Last session: 2026-01-25 03:00 UTC
+Stopped at: Completed 13-05-PLAN.md (Phase 13 complete)
 Resume file: None
 
 ## Next Steps
 
-Run `/gsd:execute-plan 13-05` to continue with pnpm scripts setup.
+Phase 13 (Monorepo Infrastructure) complete. Ready to proceed with:
+- Phase 14: Button Migration (migrate src.old/components/button to packages/button)
+- Phase 15: Dialog Migration (migrate src.old/components/dialog to packages/dialog)
