@@ -184,29 +184,17 @@ Resume file: None
 
 ## Next Steps
 
-Phase 18 (CLI Enhancement) complete. All 4 plans finished.
+Phase 19 (Publishing) in progress. Plans 01-02 complete.
 
-### CLI Enhancement Summary
+### Publishing Progress
 
-**18-01 (Complete):**
-- Mode field added to LitUIConfig
-- Init command prompts for mode selection
-- npm mode skips base file copying
+**19-01 (Complete):**
+- npm publishing metadata added to all 5 publishable packages
+- @lit-ui/ssr added to changeset fixed array for lockstep versioning
+- Repository URLs use placeholder (update when repo created)
 
-**18-02 (Complete):**
-- installComponent utility for npm mode installations
-- Add command branches on mode with --npm and --copy flags
-- Auto-detects package manager for install command
+**19-02 (Complete):**
+- Package READMEs added
 
-**18-03 (Complete):**
-- Migrate command converts copy-source to npm mode
-- Diff detection for modified source files
-- Confirmation prompts before replacing modified files
-- Source files deleted after successful npm install
-
-**18-04 (Complete):**
-- Mode-aware list command with package name display
-- Full CLI verification passed
-- All commands work with lit-ui.config.json
-
-**Next Phase: 19** - To be planned
+**19-03:** GitHub Actions CI/CD
+**19-04:** Final verification
