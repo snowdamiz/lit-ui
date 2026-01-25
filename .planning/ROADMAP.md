@@ -163,7 +163,13 @@ Plans:
   2. In npm mode, `lit-ui add button` runs `npm install @lit-ui/button`
   3. In copy-source mode, `lit-ui add button` copies source files (existing behavior)
   4. User can migrate existing copy-source project to npm with `lit-ui migrate`
-**Plans**: TBD
+**Plans**: 4 plans
+
+Plans:
+- [ ] 18-01-PLAN.md - Config schema update and init mode prompt
+- [ ] 18-02-PLAN.md - Add command mode branching with npm install
+- [ ] 18-03-PLAN.md - Migrate command with diff detection
+- [ ] 18-04-PLAN.md - List command update and verification
 
 ### Phase 19: Publishing
 **Goal**: All packages published to npm under @lit-ui scope
