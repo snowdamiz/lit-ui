@@ -2,7 +2,24 @@
 
 This example demonstrates how to use @lit-ui components with Astro 5+ and server-side rendering.
 
-## Quick Start
+## Setup from Scratch (CLI Workflow)
+
+```bash
+# Create a new Astro project
+npm create astro@latest my-astro-app
+cd my-astro-app
+
+# Initialize Lit UI (choose npm mode)
+npx lit-ui init
+
+# Add components
+npx lit-ui add button dialog
+
+# Install Astro Lit integration
+npm install @semantic-ui/astro-lit
+```
+
+## Quick Start (This Example)
 
 ```bash
 cd examples/astro

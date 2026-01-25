@@ -1,4 +1,5 @@
 // @lit-ui/button - Button component with SSR support
+/// <reference path="./jsx.d.ts" />
 import { isServer } from 'lit';
 
 // Export component class and types

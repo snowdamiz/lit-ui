@@ -2,7 +2,24 @@
 
 This example demonstrates server-side rendering (SSR) of Lit UI components in Next.js 15+ using the App Router.
 
-## Quick Start
+## Setup from Scratch (CLI Workflow)
+
+```bash
+# Create a new Next.js project
+npx create-next-app@latest my-nextjs-app
+cd my-nextjs-app
+
+# Initialize Lit UI (choose npm mode)
+npx lit-ui init
+
+# Add components
+npx lit-ui add button dialog
+
+# Install Next.js Lit SSR support
+npm install @lit-labs/nextjs
+```
+
+## Quick Start (This Example)
 
 ```bash
 cd examples/nextjs

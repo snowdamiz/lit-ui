@@ -2,7 +2,25 @@
 
 Server-side rendering @lit-ui components in a generic Node.js environment.
 
-## Quick Start
+## Setup from Scratch (CLI Workflow)
+
+```bash
+# Create a new project
+mkdir my-node-app && cd my-node-app
+npm init -y
+
+# Initialize Lit UI (choose npm mode)
+npx lit-ui init
+
+# Add components
+npx lit-ui add button dialog
+
+# Install Express and dev dependencies
+npm install express
+npm install -D typescript tsx vite
+```
+
+## Quick Start (This Example)
 
 ```bash
 cd examples/node

@@ -12,10 +12,10 @@
     "express": "^5.2.0"
   },
   "devDependencies": {
-    "@lit-ui/button": "workspace:*",
-    "@lit-ui/core": "workspace:*",
-    "@lit-ui/dialog": "workspace:*",
-    "@lit-ui/ssr": "workspace:*",
+    "@lit-ui/button": "^0.0.1",
+    "@lit-ui/core": "^0.0.1",
+    "@lit-ui/dialog": "^0.0.1",
+    "@lit-ui/ssr": "^0.0.1",
     "@types/express": "^5.0.0",
     "tsx": "^4.19.0",
     "typescript": "^5.9.3",

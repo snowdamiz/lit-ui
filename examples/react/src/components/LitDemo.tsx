@@ -1,23 +1,5 @@
-'use client';
-
-// CRITICAL: This must be a client component
-// React Server Components (RSC) can't serialize Declarative Shadow DOM templates.
-// When RSC serializes component output, it includes the <template shadowrootmode="open">
-// elements in the payload, which causes hydration mismatches when React tries to
-// reconcile the DOM.
-
-// CRITICAL: Hydration support MUST be imported first
-// This import patches LitElement before any component classes are defined.
-// If you import components before this, hydration will fail silently -
-// components will still work but may flash or re-render incorrectly.
-import '@lit-ui/ssr/hydration';
-
-// Now import components (order doesn't matter after hydration import)
-import '@lit-ui/button';
-import '@lit-ui/dialog';
-import type { Dialog } from '@lit-ui/dialog';
-
 import { useState, useRef, useEffect } from 'react';
+import type { Dialog } from '@lit-ui/dialog';
 
 export default function LitDemo() {
   const [count, setCount] = useState(0);
@@ -72,8 +54,8 @@ export default function LitDemo() {
 
       <lui-dialog ref={dialogRef}>
         <span slot="title">Hello from Lit UI</span>
-        <p>This dialog is a Lit component that was server-side rendered and hydrated on the client.</p>
-        <p>The showModal/close APIs work correctly after hydration.</p>
+        <p>This dialog is a Lit component rendered in React.</p>
+        <p>The showModal/close APIs work correctly with React state.</p>
         <div slot="footer" style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
           <lui-button variant="secondary" onClick={() => setDialogOpen(false)}>
             Close

@@ -1,0 +1,4 @@
+{
+  "mode": "npm",
+  "components": ["button", "dialog"]
+}
