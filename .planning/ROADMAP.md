@@ -2,9 +2,9 @@
 
 ## Milestones
 
-- v1.0 MVP - Phases 1-5 (shipped 2026-01-24)
-- v1.1 Documentation Site - Phases 6-12 (in progress)
-- **v2.0 NPM + SSR** - Phases 13-20 (shipped 2026-01-25)
+- ✅ **v1.0 MVP** — Phases 1-5 (shipped 2026-01-24)
+- 🚧 **v1.1 Documentation Site** — Phases 6-12 (in progress)
+- ✅ **v2.0 NPM + SSR** — Phases 13-20 (shipped 2026-01-25) → [archive](milestones/v2.0-ROADMAP.md)
 
 ## Phases
 
@@ -68,140 +68,21 @@
 
 ---
 
-## v2.0 NPM + SSR (Phases 13-20)
+<details>
+<summary>✅ v2.0 NPM + SSR (Phases 13-20) — SHIPPED 2026-01-25</summary>
 
-**Milestone Goal:** Enable NPM package distribution and SSR compatibility, giving developers the choice between copy-source ownership and traditional npm install.
+- [x] Phase 13: Monorepo Infrastructure (5/5 plans) — completed 2026-01-25
+- [x] Phase 14: Core Package (3/3 plans) — completed 2026-01-25
+- [x] Phase 15: Component Packages (3/3 plans) — completed 2026-01-25
+- [x] Phase 16: SSR Package (2/2 plans) — completed 2026-01-25
+- [x] Phase 17: Framework Integration (3/3 plans) — completed 2026-01-25
+- [x] Phase 18: CLI Enhancement (4/4 plans) — completed 2026-01-25
+- [x] Phase 19: Publishing (4/4 plans) — completed 2026-01-25
+- [x] Phase 20: Documentation (3/3 plans) — completed 2026-01-25
 
-### Phase 13: Monorepo Infrastructure
-**Goal**: Project restructured as pnpm monorepo with changesets for version management
-**Depends on**: v1.0 complete
-**Requirements**: MONO-01, MONO-02, MONO-03, MONO-04
-**Success Criteria** (what must be TRUE):
-  1. Developer runs `pnpm install` at root and all packages install correctly
-  2. Developer can build any package independently with `pnpm --filter @lit-ui/X build`
-  3. Changeset version bump updates all affected packages with changelog
-  4. TypeScript errors in one package are caught at compile time across workspace
-**Plans**: 5 plans
+Full details: [milestones/v2.0-ROADMAP.md](milestones/v2.0-ROADMAP.md)
 
-Plans:
-- [x] 13-01-PLAN.md - Workspace foundation (pnpm-workspace.yaml, root package.json, changesets)
-- [x] 13-02-PLAN.md - Shared configs (@lit-ui/typescript-config, @lit-ui/vite-config)
-- [x] 13-03-PLAN.md - Package scaffolding (core, button, dialog stubs)
-- [x] 13-04-PLAN.md - Apps migration (docs, landing to apps/)
-- [x] 13-05-PLAN.md - Verification and cleanup (install, build, changeset test)
-
-### Phase 14: Core Package
-**Goal**: @lit-ui/core exports SSR-aware TailwindElement with dual-mode styling
-**Depends on**: Phase 13
-**Requirements**: CORE-01, CORE-02, CORE-03, CORE-04, CORE-05, CORE-06, CORE-07
-**Success Criteria** (what must be TRUE):
-  1. Consumer imports `import { TailwindElement } from '@lit-ui/core'` successfully
-  2. TailwindElement renders with inline styles during SSR (no constructable stylesheets)
-  3. After hydration, component uses shared constructable stylesheets (memory optimization)
-  4. Design tokens available via CSS custom properties from @lit-ui/core/tokens
-  5. Tree shaking removes unused exports when bundling consumer app
-**Plans**: 3 plans
-
-Plans:
-- [x] 14-01-PLAN.md - SSR-aware TailwindElement with dual-mode styling
-- [x] 14-02-PLAN.md - Design tokens module and utility helpers
-- [x] 14-03-PLAN.md - Build verification and FOUC prevention
-
-### Phase 15: Component Packages
-**Goal**: Button and Dialog published as independent packages with SSR compatibility
-**Depends on**: Phase 14
-**Requirements**: COMP-01, COMP-02, COMP-03, COMP-04, COMP-05, COMP-06, COMP-07
-**Success Criteria** (what must be TRUE):
-  1. Consumer installs `@lit-ui/button` and imports Button component
-  2. Consumer installs `@lit-ui/dialog` and imports Dialog component
-  3. Button form participation works client-side (gracefully skipped during SSR)
-  4. Dialog showModal() works client-side (gracefully skipped during SSR)
-  5. TypeScript autocomplete shows component props and events
-**Plans**: 3 plans
-
-Plans:
-- [x] 15-01-PLAN.md - Button package migration with SSR guards
-- [x] 15-02-PLAN.md - Dialog package migration with SSR guards
-- [x] 15-03-PLAN.md - Build verification and FOUC CSS update
-
-### Phase 16: SSR Package
-**Goal**: @lit-ui/ssr provides utilities for server-rendering components
-**Depends on**: Phase 15
-**Requirements**: SSR-01, SSR-02, SSR-03, SSR-04, SSR-05
-**Success Criteria** (what must be TRUE):
-  1. Developer imports `import { render } from '@lit-ui/ssr'` and renders component to DSD HTML
-  2. Rendered HTML contains `<template shadowrootmode="open">` with component markup
-  3. Developer follows hydration guide and components become interactive after page load
-  4. Component author uses `import { isServer } from '@lit-ui/ssr'` for conditional logic
-**Plans**: 2 plans
-
-Plans:
-- [x] 16-01-PLAN.md - SSR package structure and render utilities
-- [x] 16-02-PLAN.md - Hydration support and build verification
-
-### Phase 17: Framework Integration
-**Goal**: Working SSR examples for Next.js, Astro, and generic Node.js
-**Depends on**: Phase 16
-**Requirements**: FRAME-01, FRAME-02, FRAME-03
-**Success Criteria** (what must be TRUE):
-  1. Next.js example repo demonstrates SSR with lit-ui components
-  2. Astro example repo demonstrates SSR with lit-ui components
-  3. Generic Node.js example shows how to SSR in any framework
-**Plans**: 3 plans
-
-Plans:
-- [x] 17-01-PLAN.md - Node.js/Express SSR example (direct @lit-ui/ssr usage)
-- [x] 17-02-PLAN.md - Next.js App Router SSR example (withLitSSR + 'use client')
-- [x] 17-03-PLAN.md - Astro SSR example (@semantic-ui/astro-lit + client:visible)
-
-### Phase 18: CLI Enhancement
-**Goal**: CLI supports both copy-source and npm installation modes
-**Depends on**: Phase 15
-**Requirements**: CLI-01, CLI-02, CLI-03, CLI-04, CLI-05
-**Success Criteria** (what must be TRUE):
-  1. User runs `lit-ui init` and chooses between copy-source and npm mode
-  2. In npm mode, `lit-ui add button` runs `npm install @lit-ui/button`
-  3. In copy-source mode, `lit-ui add button` copies source files (existing behavior)
-  4. User can migrate existing copy-source project to npm with `lit-ui migrate`
-**Plans**: 4 plans
-
-Plans:
-- [x] 18-01-PLAN.md - Config schema update and init mode prompt
-- [x] 18-02-PLAN.md - Add command mode branching with npm install
-- [x] 18-03-PLAN.md - Migrate command with diff detection
-- [x] 18-04-PLAN.md - List command update and verification
-
-### Phase 19: Publishing
-**Goal**: All packages published to npm under @lit-ui scope
-**Depends on**: Phase 16, Phase 17, Phase 18
-**Requirements**: PUB-01, PUB-02, PUB-03, PUB-04
-**Success Criteria** (what must be TRUE):
-  1. `npm install @lit-ui/core @lit-ui/button @lit-ui/dialog` succeeds from npm registry
-  2. Published packages show proper README on npm package page
-  3. Version numbers follow semver (major.minor.patch)
-  4. Changelog published with each release via changesets
-**Plans**: 4 plans
-
-Plans:
-- [x] 19-01-PLAN.md — Package metadata (repository, description, license, changeset config)
-- [x] 19-02-PLAN.md — README files for all publishable packages
-- [x] 19-03-PLAN.md — GitHub Actions release workflow
-- [x] 19-04-PLAN.md — npm organization setup and verification (checkpoint)
-
-### Phase 20: Documentation
-**Goal**: Docs site updated with NPM and SSR guides
-**Depends on**: Phase 19
-**Requirements**: DOC-01, DOC-02, DOC-03
-**Success Criteria** (what must be TRUE):
-  1. User finds NPM installation guide as alternative to copy-source
-  2. User finds SSR setup guide with hydration instructions and module load order
-  3. User finds migration guide for converting copy-source projects to npm mode
-**Plans**: 3 plans
-
-Plans:
-- [x] 20-01-PLAN.md — Installation page (NPM primary + copy-source alternative)
-- [x] 20-02-PLAN.md — SSR Guide (Next.js + Astro setup)
-- [x] 20-03-PLAN.md — Migration Guide (copy-source to npm)
+</details>
 
 ---
 
@@ -237,4 +118,4 @@ Plans:
 
 ---
 *Roadmap created: 2026-01-24*
-*Last updated: 2026-01-25 (v2.0 milestone complete)*
+*Last updated: 2026-01-25 (v2.0 milestone archived)*
