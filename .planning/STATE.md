@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-24)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** v2.0 NPM + SSR - Phase 17 COMPLETE
+**Current focus:** v2.0 NPM + SSR - Phase 18 in progress
 
 ## Current Position
 
-Phase: 17 of 20 (Framework Integration) - COMPLETE
-Plan: 03 of 03
-Status: Phase complete, verified
-Last activity: 2026-01-25 - Completed 17-03-PLAN.md (Astro SSR example)
+Phase: 18 of 20 (CLI Enhancement)
+Plan: 01 of 04
+Status: In progress
+Last activity: 2026-01-25 - Completed 18-01-PLAN.md (Config schema and init mode)
 
-Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [################] 16/40 plans
+Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [#################] 17/40 plans
 
 ## Performance Metrics
 
@@ -48,6 +48,7 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [################]
 | 15-component-packages | 3 | 10 min | 3.3 min |
 | 16-ssr-package | 2 | 4 min | 2.0 min |
 | 17-framework-integration | 3 | 20 min | 6.7 min |
+| 18-cli-enhancement | 1 | 2 min | 2.0 min |
 
 ## Accumulated Context
 
@@ -140,6 +141,11 @@ Key decisions are logged in PROJECT.md Key Decisions table.
 - Self-registering custom elements don't use client:* directives
 - Hydration import goes in page script tag, not separate entry file
 
+**v2.0 Plan 18-01 Decisions:**
+- Config file renamed to lit-ui.config.json for clarity
+- Default mode is copy-source for backward compatibility
+- npm mode skips base files (TailwindElement, host-defaults.css, tailwind.css)
+
 ### Pending Todos
 
 None.
@@ -151,30 +157,19 @@ Consider completing v1.1 before or in parallel with v2.0.
 
 ## Session Continuity
 
-Last session: 2026-01-25 06:24 UTC
-Stopped at: Completed 17-03-PLAN.md (Astro SSR example) - Phase 17 COMPLETE
+Last session: 2026-01-25 07:01 UTC
+Stopped at: Completed 18-01-PLAN.md (Config schema and init mode)
 Resume file: None
 
 ## Next Steps
 
-Phase 17 (Framework Integration) is COMPLETE. Ready for Phase 18 (NPM Publishing).
+Phase 18 (CLI Enhancement) in progress. 1 of 4 plans complete.
 
-### Framework Integration Summary
+### CLI Enhancement Progress
 
-**Node.js (17-01):**
-- Express server with renderToString
-- Client entry with hydration first
-- Location: examples/node/
+**18-01 (Complete):**
+- Mode field added to LitUIConfig
+- Init command prompts for mode selection
+- npm mode skips base file copying
 
-**Next.js (17-02):**
-- App Router with 'use client' boundary
-- withLitSSR plugin in next.config.mjs
-- Location: examples/nextjs/
-
-**Astro (17-03):**
-- @semantic-ui/astro-lit integration
-- Frontmatter imports for SSR, script imports for hydration
-- Location: examples/astro/
-
-### Common Pattern
-All frameworks require `import '@lit-ui/ssr/hydration'` as FIRST import in client-side code.
+**Next: 18-02-PLAN.md** - Add command mode branching with npm install
