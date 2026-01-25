@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-24)
 ## Current Position
 
 Phase: 20 of 20 (Documentation)
-Plan: 01 of 03
+Plan: 02 of 03
 Status: In progress
-Last activity: 2026-01-25 - Completed 20-01-PLAN.md (Installation Documentation)
+Last activity: 2026-01-25 - Completed 20-02-PLAN.md (SSR Guide)
 
-Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [#########################] 25/40 plans
+Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [##########################] 26/27 plans
 
 ## Performance Metrics
 
@@ -50,7 +50,7 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [#################
 | 17-framework-integration | 3 | 20 min | 6.7 min |
 | 18-cli-enhancement | 4 | 10 min | 2.5 min |
 | 19-publishing | 4 | 7 min | 1.8 min |
-| 20-documentation | 1 | 3 min | 3.0 min |
+| 20-documentation | 2 | 6 min | 3.0 min |
 
 ## Accumulated Context
 
@@ -182,6 +182,10 @@ Key decisions are logged in PROJECT.md Key Decisions table.
 - Copy-source documented as alternative with link to Getting Started
 - Guides section added to navigation for SSR and Migration docs
 
+**v2.0 Plan 20-02 Decisions:**
+- Four-section structure: hydration import order, Next.js, Astro, FOUC
+- Navigation flow: Installation <- SSR -> Migration
+
 ### Pending Todos
 
 None.
@@ -194,12 +198,12 @@ Consider completing v1.1 before or in parallel with v2.0.
 ## Session Continuity
 
 Last session: 2026-01-25
-Stopped at: Completed 20-01-PLAN.md (Installation Documentation)
+Stopped at: Completed 20-02-PLAN.md (SSR Guide)
 Resume file: None
 
 ## Next Steps
 
-Phase 20 (Documentation) in progress. Plan 01 complete.
+Phase 20 (Documentation) in progress. Plans 01-02 complete.
 
 ### Documentation Phase Progress
 
@@ -208,8 +212,9 @@ Phase 20 (Documentation) in progress. Plan 01 complete.
 - Guides section added to navigation (SSR Setup, Migration)
 - GettingStarted links to Installation page
 
-**20-02 (Pending):**
-- SSR Setup guide for Next.js and Astro
+**20-02 (Complete):**
+- SSR Setup guide with hydration, Next.js, Astro, FOUC sections
+- Route /guides/ssr now renders SSRGuide component
 
 **20-03 (Pending):**
 - Migration guide for copy-source to npm
