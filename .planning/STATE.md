@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-24)
 ## Current Position
 
 Phase: 18 of 20 (CLI Enhancement)
-Plan: 01 of 04
+Plan: 02 of 04
 Status: In progress
-Last activity: 2026-01-25 - Completed 18-01-PLAN.md (Config schema and init mode)
+Last activity: 2026-01-25 - Completed 18-02-PLAN.md (Add command mode branching)
 
-Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [#################] 17/40 plans
+Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [##################] 18/40 plans
 
 ## Performance Metrics
 
@@ -48,7 +48,7 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [#################
 | 15-component-packages | 3 | 10 min | 3.3 min |
 | 16-ssr-package | 2 | 4 min | 2.0 min |
 | 17-framework-integration | 3 | 20 min | 6.7 min |
-| 18-cli-enhancement | 1 | 2 min | 2.0 min |
+| 18-cli-enhancement | 2 | 5 min | 2.5 min |
 
 ## Accumulated Context
 
@@ -146,6 +146,12 @@ Key decisions are logged in PROJECT.md Key Decisions table.
 - Default mode is copy-source for backward compatibility
 - npm mode skips base files (TailwindElement, host-defaults.css, tailwind.css)
 
+**v2.0 Plan 18-02 Decisions:**
+- Install @lit-ui/core peer dependency automatically before component
+- npm mode shows import and usage instructions after install
+- lui-* prefix for component tag names in usage hints
+- Flag overrides config: --npm or --copy takes precedence over config mode
+
 ### Pending Todos
 
 None.
@@ -157,13 +163,13 @@ Consider completing v1.1 before or in parallel with v2.0.
 
 ## Session Continuity
 
-Last session: 2026-01-25 07:01 UTC
-Stopped at: Completed 18-01-PLAN.md (Config schema and init mode)
+Last session: 2026-01-25 07:18 UTC
+Stopped at: Completed 18-02-PLAN.md (Add command mode branching)
 Resume file: None
 
 ## Next Steps
 
-Phase 18 (CLI Enhancement) in progress. 1 of 4 plans complete.
+Phase 18 (CLI Enhancement) in progress. 2 of 4 plans complete.
 
 ### CLI Enhancement Progress
 
@@ -172,4 +178,9 @@ Phase 18 (CLI Enhancement) in progress. 1 of 4 plans complete.
 - Init command prompts for mode selection
 - npm mode skips base file copying
 
-**Next: 18-02-PLAN.md** - Add command mode branching with npm install
+**18-02 (Complete):**
+- installComponent utility for npm mode installations
+- Add command branches on mode with --npm and --copy flags
+- Auto-detects package manager for install command
+
+**Next: 18-03-PLAN.md** - Update command for package updates
