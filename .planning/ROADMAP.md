@@ -101,7 +101,13 @@ Full details: [milestones/v2.0-ROADMAP.md](milestones/v2.0-ROADMAP.md)
   3. Decoding utility reconstructs token config from encoded string with validation
   4. CSS generator produces valid :root and .dark blocks from token config
   5. Generated CSS integrates with Tailwind v4 (cascades into Shadow DOM)
-**Plans**: TBD
+**Plans**: 5 plans
+Plans:
+- [ ] 21-01-PLAN.md — Token schema and default theme (TDD)
+- [ ] 21-02-PLAN.md — OKLCH color utilities (TDD)
+- [ ] 21-03-PLAN.md — URL encoding/decoding (TDD)
+- [ ] 21-04-PLAN.md — CSS generator (TDD)
+- [ ] 21-05-PLAN.md — Integration tests and finalization
 
 ### Phase 22: CLI Theme Integration
 **Goal**: CLI accepts encoded theme configuration and generates CSS file with user's design tokens
@@ -171,11 +177,11 @@ Full details: [milestones/v2.0-ROADMAP.md](milestones/v2.0-ROADMAP.md)
 | 18. CLI Enhancement | v2.0 | 4/4 | Complete | 2026-01-25 |
 | 19. Publishing | v2.0 | 4/4 | Complete | 2026-01-25 |
 | 20. Documentation | v2.0 | 3/3 | Complete | 2026-01-25 |
-| 21. Theme System Foundation | v3.0 | 0/? | Not started | - |
+| 21. Theme System Foundation | v3.0 | 0/5 | Planned | - |
 | 22. CLI Theme Integration | v3.0 | 0/? | Not started | - |
 | 23. Visual Configurator Core | v3.0 | 0/? | Not started | - |
 | 24. Presets and Enhanced Features | v3.0 | 0/? | Not started | - |
 
 ---
 *Roadmap created: 2026-01-24*
-*Last updated: 2026-01-25 (v3.0 phases added)*
+*Last updated: 2026-01-25 (Phase 21 planned: 5 plans in 3 waves)*
