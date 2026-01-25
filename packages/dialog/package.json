@@ -1,6 +1,15 @@
 {
   "name": "@lit-ui/dialog",
   "version": "0.0.1",
+  "description": "Accessible dialog/modal component built with Lit and Tailwind CSS",
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/user/lit-ui.git",
+    "directory": "packages/dialog"
+  },
+  "keywords": ["lit", "web-components", "ui", "tailwind", "ssr"],
   "type": "module",
   "main": "dist/index.js",
   "module": "dist/index.js",

@@ -2,6 +2,11 @@
   "name": "lit-ui",
   "version": "0.0.1",
   "description": "Add lit-ui components to your project",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/user/lit-ui.git",
+    "directory": "packages/cli"
+  },
   "type": "module",
   "bin": {
     "lit-ui": "./dist/index.js"
