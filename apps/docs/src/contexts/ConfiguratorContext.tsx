@@ -76,6 +76,8 @@ interface ConfiguratorContextValue extends ConfiguratorState {
   getGeneratedCSS: () => string;
   /** Get the encoded theme config string for CLI */
   getEncodedConfig: () => string;
+  /** Load a complete theme config (from preset or URL) */
+  loadThemeConfig: (config: ThemeConfig) => void;
 }
 
 const ConfiguratorContext = createContext<ConfiguratorContextValue | undefined>(
@@ -280,6 +282,26 @@ export function ConfiguratorProvider({ children }: ConfiguratorProviderProps) {
     [darkColors]
   );
 
+  // Load a complete theme config (from preset or URL)
+  const loadThemeConfig = useCallback((config: ThemeConfig) => {
+    // Set light colors from config
+    setLightColors({ ...config.colors });
+
+    // Re-derive dark colors from the new light colors
+    const derivedDark: Record<ColorKey, string> = {} as Record<ColorKey, string>;
+    for (const key of Object.keys(config.colors) as ColorKey[]) {
+      derivedDark[key] = deriveDarkMode(config.colors[key]);
+    }
+    setDarkColors(derivedDark);
+
+    // Clear all overrides (fresh start from preset)
+    setDarkOverrides(new Set());
+    setLightOverrides(new Set());
+
+    // Set radius
+    setRadius(config.radius);
+  }, []);
+
   // Build ThemeConfig from current state
   const getThemeConfig = useCallback((): ThemeConfig => {
     return {
@@ -317,6 +339,7 @@ export function ConfiguratorProvider({ children }: ConfiguratorProviderProps) {
       getThemeConfig,
       getGeneratedCSS,
       getEncodedConfig,
+      loadThemeConfig,
     }),
     [
       activeMode,
@@ -332,6 +355,7 @@ export function ConfiguratorProvider({ children }: ConfiguratorProviderProps) {
       getThemeConfig,
       getGeneratedCSS,
       getEncodedConfig,
+      loadThemeConfig,
     ]
   );
 
