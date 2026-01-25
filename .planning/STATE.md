@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-25)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** v3.0 Theme Customization - Phase 21
+**Current focus:** v3.0 Theme Customization - Phase 21 COMPLETE
 
 ## Current Position
 
-Phase: 21 of 24 (Theme System Foundation)
-Plan: 4 of 5 in current phase
-Status: In progress
-Last activity: 2026-01-25 — Completed 21-04-PLAN.md
+Phase: 21 of 24 (Theme System Foundation) - COMPLETE
+Plan: 5 of 5 in current phase
+Status: Phase complete
+Last activity: 2026-01-25 — Completed 21-05-PLAN.md
 
-Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 [####......] 4/5 plans (Phase 21)
+Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 [#####.....] 5/5 plans (Phase 21 COMPLETE)
 
 ## Performance Metrics
 
@@ -32,8 +32,8 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 [##
 - Total execution time: ~86 min
 
 **v3.0 Velocity:**
-- Plans completed: 4
-- Total execution time: 9 min
+- Plans completed: 5
+- Total execution time: 11 min
 
 ## Accumulated Context
 
@@ -70,6 +70,11 @@ Key decisions are logged in PROJECT.md Key Decisions table.
 - Both .dark class AND @media prefers-color-scheme for dark mode
 - :root:not(.light) selector for opt-out capability
 
+**21-05 decisions:**
+- Public API exports only high-level functions, not internal utilities
+- Module-level JSDoc with complete usage examples
+- Integration tests simulate actual CLI workflow
+
 ### Pending Todos
 
 None.
@@ -80,14 +85,15 @@ None currently.
 
 ## Session Continuity
 
-Last session: 2026-01-25T20:35:26Z
-Stopped at: Completed 21-03-PLAN.md (+ 21-04-PLAN.md parallel)
+Last session: 2026-01-25T20:40:00Z
+Stopped at: Completed 21-05-PLAN.md (Phase 21 complete)
 Resume file: None
 
 ## Next Steps
 
 ### Milestone v3.0 in progress
 
-1. Execute 21-05-PLAN.md (Integration tests)
-2. Verify phase with `/gsd:verify-phase 21`
-3. Continue to Phase 22 (CLI commands)
+1. Verify phase with `/gsd:verify-phase 21`
+2. Continue to Phase 22 (CLI commands)
+3. Continue to Phase 23 (Web configurator)
+4. Continue to Phase 24 (Documentation)
