@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-24)
 ## Current Position
 
 Phase: 19 of 20 (Publishing)
-Plan: 03 of 04
-Status: In progress
-Last activity: 2026-01-25 - Completed 19-03-PLAN.md (CI/CD Pipeline)
+Plan: 04 of 04
+Status: Phase complete
+Last activity: 2026-01-25 - Completed 19-04-PLAN.md (Final Verification)
 
-Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [#######################] 23/40 plans
+Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [########################] 24/40 plans
 
 ## Performance Metrics
 
@@ -28,8 +28,8 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [#################
 - Total execution time: 22 min
 
 **v2.0 Velocity:**
-- Plans completed: 20
-- Total execution time: 58 min
+- Plans completed: 24
+- Total execution time: 65 min
 
 **By Phase:**
 
@@ -49,7 +49,7 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 [#################
 | 16-ssr-package | 2 | 4 min | 2.0 min |
 | 17-framework-integration | 3 | 20 min | 6.7 min |
 | 18-cli-enhancement | 4 | 10 min | 2.5 min |
-| 19-publishing | 3 | 6 min | 2.0 min |
+| 19-publishing | 4 | 7 min | 1.8 min |
 
 ## Accumulated Context
 
@@ -171,6 +171,11 @@ Key decisions are logged in PROJECT.md Key Decisions table.
 - Static output for Astro example (CI build compatibility)
 - Standard NPM_TOKEN secret approach (not OIDC trusted publishing)
 
+**v2.0 Plan 19-04 Decisions:**
+- npm organization 'lit-ui' created for @lit-ui scoped packages
+- Automation token (not granular) for CI publishing
+- NPM_TOKEN stored as GitHub repository secret
+
 ### Pending Todos
 
 None.
@@ -183,14 +188,14 @@ Consider completing v1.1 before or in parallel with v2.0.
 ## Session Continuity
 
 Last session: 2026-01-25
-Stopped at: Completed 19-03-PLAN.md (CI/CD Pipeline)
+Stopped at: Completed 19-04-PLAN.md (Final Verification)
 Resume file: None
 
 ## Next Steps
 
-Phase 19 (Publishing) in progress. Plans 01-03 complete.
+Phase 19 (Publishing) COMPLETE. All 4 plans finished.
 
-### Publishing Progress
+### Publishing Phase Complete
 
 **19-01 (Complete):**
 - npm publishing metadata added to all 5 publishable packages
@@ -205,4 +210,19 @@ Phase 19 (Publishing) in progress. Plans 01-03 complete.
 - Uses changesets/action for automated version PRs and npm publishing
 - Requires NPM_TOKEN secret in repository settings
 
-**19-04:** Final verification
+**19-04 (Complete):**
+- npm organization 'lit-ui' created
+- NPM_TOKEN secret added to GitHub repository
+- All 5 packages verified ready for publishing
+
+### Ready for First Release
+
+To publish first version:
+1. Create changeset: `pnpm changeset`
+2. Commit and push
+3. Merge "Version Packages" PR
+4. GitHub Actions publishes to npm
+
+### Remaining v2.0 Work
+
+Phase 20 (Documentation Updates) is the final phase.
