@@ -11,10 +11,10 @@
   "dependencies": {
     "astro": "^5.0.0",
     "@semantic-ui/astro-lit": "^5.1.1",
-    "@lit-ui/ssr": "^0.0.1",
-    "@lit-ui/button": "^0.0.1",
-    "@lit-ui/dialog": "^0.0.1",
-    "@lit-ui/core": "^0.0.1",
+    "@lit-ui/ssr": "workspace:*",
+    "@lit-ui/button": "workspace:*",
+    "@lit-ui/dialog": "workspace:*",
+    "@lit-ui/core": "workspace:*",
     "lit": "^3.3.2"
   },
   "devDependencies": {
