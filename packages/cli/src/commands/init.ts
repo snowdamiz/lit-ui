@@ -364,7 +364,7 @@ export const init = defineCommand({
 
     // Check if already initialized
     if (await configExists(cwd)) {
-      warn('lit-ui.json already exists. Reinitializing will overwrite settings.');
+      warn('lit-ui.config.json already exists. Reinitializing will overwrite settings.');
       if (!args.yes) {
         const proceed = await consola.prompt('Continue?', {
           type: 'confirm',
@@ -384,6 +384,29 @@ export const init = defineCommand({
     info(`Detected build tool: ${highlight(buildToolInfo.name)}`);
     info(`Detected package manager: ${highlight(packageManager)}`);
     console.log('');
+
+    // Get distribution mode
+    let mode: 'copy-source' | 'npm' = 'copy-source';
+
+    if (!args.yes) {
+      const selectedMode = await consola.prompt('How would you like to install components?', {
+        type: 'select',
+        options: [
+          {
+            value: 'copy-source',
+            label: 'Copy source files',
+            hint: 'Full control, customize directly, no updates',
+          },
+          {
+            value: 'npm',
+            label: 'Install from npm',
+            hint: 'Auto updates, smaller bundle, less customization',
+          },
+        ],
+        initial: 'copy-source',
+      });
+      mode = selectedMode as 'copy-source' | 'npm';
+    }
 
     // Get configuration
     let componentsPath = DEFAULT_CONFIG.componentsPath;
@@ -407,6 +430,7 @@ export const init = defineCommand({
 
     // Prepare config
     const config: Partial<LitUIConfig> = {
+      mode,
       componentsPath,
       aliases: {
         components: `@/${componentsPath.replace(/^src\//, '')}`,
@@ -415,43 +439,47 @@ export const init = defineCommand({
     };
 
     // Write config file
-    const spin = spinner('Writing lit-ui.json...');
+    const spin = spinner('Writing lit-ui.config.json...');
     try {
       await writeConfig(cwd, config);
-      spin.succeed('Created lit-ui.json');
+      spin.succeed('Created lit-ui.config.json');
     } catch (err) {
-      spin.fail('Failed to create lit-ui.json');
+      spin.fail('Failed to create lit-ui.config.json');
       throw err;
     }
 
-    // Copy base files
-    const spin2 = spinner('Copying base files...');
-    try {
-      const libDir = resolve(cwd, libPath);
-      await ensureDir(libDir);
+    // Copy base files (only for copy-source mode)
+    if (mode === 'copy-source') {
+      const spin2 = spinner('Copying base files...');
+      try {
+        const libDir = resolve(cwd, libPath);
+        await ensureDir(libDir);
 
-      // Write TailwindElement
-      await writeFile(
-        resolve(libDir, 'tailwind-element.ts'),
-        TAILWIND_ELEMENT_TEMPLATE
-      );
+        // Write TailwindElement
+        await writeFile(
+          resolve(libDir, 'tailwind-element.ts'),
+          TAILWIND_ELEMENT_TEMPLATE
+        );
 
-      // Write host-defaults.css
-      await writeFile(
-        resolve(libDir, 'host-defaults.css'),
-        HOST_DEFAULTS_TEMPLATE
-      );
+        // Write host-defaults.css
+        await writeFile(
+          resolve(libDir, 'host-defaults.css'),
+          HOST_DEFAULTS_TEMPLATE
+        );
 
-      // Write tailwind.css
-      await writeFile(
-        resolve(libDir, 'tailwind.css'),
-        TAILWIND_CSS_TEMPLATE
-      );
+        // Write tailwind.css
+        await writeFile(
+          resolve(libDir, 'tailwind.css'),
+          TAILWIND_CSS_TEMPLATE
+        );
 
-      spin2.succeed('Copied base files to ' + file(libPath));
-    } catch (err) {
-      spin2.fail('Failed to copy base files');
-      throw err;
+        spin2.succeed('Copied base files to ' + file(libPath));
+      } catch (err) {
+        spin2.fail('Failed to copy base files');
+        throw err;
+      }
+    } else {
+      info('Skipping base files (npm mode uses @lit-ui/core package)');
     }
 
     // Create components directory
@@ -463,15 +491,26 @@ export const init = defineCommand({
 
     console.log('');
 
-    // Show dependencies
-    const deps = ['lit'];
+    // Show dependencies based on mode
+    const deps = mode === 'npm' ? ['@lit-ui/core', 'lit'] : ['lit'];
     console.log(highlight('Dependencies:'));
     console.log(`  ${command(getInstallCommand(packageManager, deps))}`);
     console.log('');
 
-    // Show setup instructions
-    console.log(highlight('Next steps:'));
-    console.log(SETUP_INSTRUCTIONS[buildToolInfo.name]);
+    // Show setup instructions (only for copy-source mode)
+    if (mode === 'copy-source') {
+      console.log(highlight('Next steps:'));
+      console.log(SETUP_INSTRUCTIONS[buildToolInfo.name]);
+    } else {
+      console.log(highlight('Next steps:'));
+      console.log(`
+Import and use components from @lit-ui packages:
+
+  import '@lit-ui/button';
+
+Components are ready to use - no additional setup required.
+`);
+    }
 
     console.log(highlight('Add your first component:'));
     console.log(`  ${command('lit-ui add button')}`);
