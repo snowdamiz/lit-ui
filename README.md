@@ -169,6 +169,37 @@ pnpm build      # Build library
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
+## Publishing
+
+This project uses [Changesets](https://github.com/changesets/changesets) for versioning and npm publishing.
+
+### Adding a changeset
+
+When you make changes that should be released, create a changeset:
+
+```bash
+pnpm changeset
+```
+
+Select the affected packages, choose a semver bump type (patch/minor/major), and describe the change.
+
+### When to add a changeset
+
+- New features, bug fixes, or breaking changes to public packages
+- API changes that consumers need to know about
+
+### When NOT to add a changeset
+
+- Internal tooling or CI fixes
+- Documentation-only changes
+- Changes to private or example packages
+
+### Release flow
+
+1. PRs with changesets are merged to `main`
+2. CI automatically creates a "Version Packages" PR that bumps versions and updates changelogs
+3. Merging the version PR triggers npm publish
+
 ## License
 
 [MIT](LICENSE)

@@ -1079,6 +1079,15 @@
 .bg-black { background-color: rgb(0 0 0); }
 .bg-white { background-color: rgb(255 255 255); }
 
+/* Semantic Colors (CSS custom properties from @theme) */
+.bg-primary { background-color: var(--color-primary); }
+.bg-secondary { background-color: var(--color-secondary); }
+.bg-destructive { background-color: var(--color-destructive); }
+.bg-muted { background-color: var(--color-muted); }
+.bg-accent { background-color: var(--color-accent); }
+.bg-background { background-color: var(--color-background); }
+.bg-card { background-color: var(--color-card); }
+
 /* Slate */
 .bg-slate-50 { background-color: rgb(248 250 252); }
 .bg-slate-100 { background-color: rgb(241 245 249); }
@@ -1387,6 +1396,20 @@
 .text-black { color: rgb(0 0 0); }
 .text-white { color: rgb(255 255 255); }
 
+/* Semantic Colors (CSS custom properties from @theme) */
+.text-primary { color: var(--color-primary); }
+.text-primary-foreground { color: var(--color-primary-foreground); }
+.text-secondary { color: var(--color-secondary); }
+.text-secondary-foreground { color: var(--color-secondary-foreground); }
+.text-destructive { color: var(--color-destructive); }
+.text-destructive-foreground { color: var(--color-destructive-foreground); }
+.text-muted { color: var(--color-muted); }
+.text-muted-foreground { color: var(--color-muted-foreground); }
+.text-accent { color: var(--color-accent); }
+.text-accent-foreground { color: var(--color-accent-foreground); }
+.text-foreground { color: var(--color-foreground); }
+.text-card-foreground { color: var(--color-card-foreground); }
+
 /* Slate */
 .text-slate-50 { color: rgb(248 250 252); }
 .text-slate-100 { color: rgb(241 245 249); }
@@ -1650,6 +1673,12 @@
 .border-transparent { border-color: transparent; }
 .border-black { border-color: rgb(0 0 0); }
 .border-white { border-color: rgb(255 255 255); }
+
+/* Semantic Colors (CSS custom properties from @theme) */
+.border-border { border-color: var(--color-border); }
+.border-input { border-color: var(--color-input); }
+.border-primary { border-color: var(--color-primary); }
+.border-destructive { border-color: var(--color-destructive); }
 
 /* Slate */
 .border-slate-50 { border-color: rgb(248 250 252); }
