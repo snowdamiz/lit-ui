@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@lit-ui/button": "workspace:*",
+    "@lit-ui/cli": "workspace:^",
     "@lit-ui/core": "workspace:*",
     "@lit-ui/dialog": "workspace:*",
     "@radix-ui/react-collapsible": "^1.1.12",
