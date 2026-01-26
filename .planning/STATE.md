@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 Phase: 33 - Select Enhancements
 Plan: 02 of 4 complete
 Status: In progress
-Last activity: 2026-01-26 - Completed 33-02-PLAN.md (Option Groups)
+Last activity: 2026-01-26 - Completed 33-01-PLAN.md (Option Slot Support)
 
 Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 SHIPPED | v4.0 SHIPPED | v4.1 [#####...] 5/7 phases
 
@@ -71,6 +71,9 @@ v3.0, v3.1, v4.0 decisions validated and archived.
 | Use slot + property fallback for options | Slot always rendered, property options only when slot empty | 33-02 |
 | Register lui-option as custom element | Required for slot-based usage with groups | 33-02 |
 | MutationObserver for group content | Detect dynamic option changes inside groups | 33-02 |
+| Options property takes precedence | Backwards compatibility with existing property-based usage | 33-01 |
+| Option.getLabel() priority | label prop > textContent > value for flexible label resolution | 33-01 |
+| data-active attribute for active state | CSS ::slotted() selector can target attribute-based states | 33-01 |
 
 ### Pending Todos
 
@@ -93,8 +96,8 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-01-26 23:46Z
-Stopped at: Completed 33-02-PLAN.md (Option Groups)
+Last session: 2026-01-26 23:44Z
+Stopped at: Completed 33-01-PLAN.md (Option Slot Support)
 Resume file: None
 
 ## Next Steps
@@ -102,7 +105,7 @@ Resume file: None
 Continue Phase 33 (Select Enhancements).
 
 **Phase 33 Progress:**
-- Plan 01: Research complete
+- Plan 01: Option Slot Support complete (named slots, keyboard nav)
 - Plan 02: Option Groups complete (lui-option-group with ARIA structure)
 - Plan 03: Clearable (next)
 - Plan 04: Custom Rendering (pending)
