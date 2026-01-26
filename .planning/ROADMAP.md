@@ -6,7 +6,8 @@
 - **v1.1 Documentation Site** — Phases 6-12 (in progress)
 - **v2.0 NPM + SSR** — Phases 13-20 (shipped 2026-01-25) → [archive](milestones/v2.0-ROADMAP.md)
 - **v3.0 Theme Customization** — Phases 21-24 (shipped 2026-01-25) → [archive](milestones/v3.0-ROADMAP.md)
-- **v3.1 Docs Dark Mode** — Phase 25 (in progress)
+- **v3.1 Docs Dark Mode** — Phase 25 (shipped 2026-01-25)
+- **v4.0 Form Inputs** — Phases 26-30 (in progress)
 
 ## Phases
 
@@ -102,32 +103,102 @@ Full details: [milestones/v3.0-ROADMAP.md](milestones/v3.0-ROADMAP.md)
 
 ---
 
-## v3.1 Docs Dark Mode
+<details>
+<summary>v3.1 Docs Dark Mode (Phase 25) — SHIPPED 2026-01-25</summary>
 
-### Phase 25: Docs Site Dark Mode
+- [x] Phase 25: Docs Site Dark Mode (5/5 plans) — completed 2026-01-25
 
-**Goal:** Users can toggle between light and dark mode on the docs site with their preference persisting across sessions
+</details>
 
-**Dependencies:** None (builds on existing docs site from v1.1)
+---
 
-**Requirements:** DARK-01, DARK-02, DARK-03, DARK-04, DARK-05, DARK-06, DARK-07, DARK-08
+## v4.0 Form Inputs
 
-**Plans:** 5 plans
+### Phase 26: CSS Tokens Foundation
 
-Plans:
-- [ ] 25-01-PLAN.md — Theme infrastructure (ThemeContext, FOUC prevention, Tailwind dark mode)
-- [ ] 25-02-PLAN.md — Theme toggle component and header integration
-- [ ] 25-03-PLAN.md — Dark mode styling for navigation components
-- [ ] 25-04-PLAN.md — Dark mode styling for content components
-- [ ] 25-05-PLAN.md — Configurator toggle sync and component styling
+**Goal:** Input and Textarea styling tokens exist in the theme system for consistent visual design
+
+**Dependencies:** None (builds on existing theme system from v3.0)
+
+**Requirements:** INFRA-01
 
 **Success Criteria:**
 
-1. User sees a theme toggle button in the header on every docs page
-2. User can click toggle and entire docs site switches between light/dark immediately
-3. User closes browser, reopens docs site later, and sees their previously selected theme
-4. User with system dark mode preference visits docs for first time and sees dark theme
-5. User on configurator page can use either the header toggle or configurator's mode toggle to switch docs theme (both stay in sync)
+1. Developer can use `--ui-input-*` CSS variables to style input borders, backgrounds, and text
+2. Developer can use `--ui-textarea-*` CSS variables to style textarea elements
+3. Theme tokens integrate with existing theme system and respond to light/dark mode
+4. Visual configurator (future) can customize input/textarea colors
+
+---
+
+### Phase 27: Core Input Component
+
+**Goal:** Developers can add a fully functional text input to any form with native validation and form participation
+
+**Dependencies:** Phase 26 (CSS tokens must exist)
+
+**Requirements:** INPUT-01, INPUT-02, INPUT-03, INPUT-04, INPUT-05, INPUT-06, INPUT-07, INPUT-08, INPUT-09, INPUT-10, INPUT-11, INPUT-12, INFRA-02
+
+**Success Criteria:**
+
+1. User can type into input fields of all supported types (text, email, password, number, search) and see appropriate browser behaviors (email keyboard on mobile, number steppers, etc.)
+2. User submits form with empty required input and sees browser validation error preventing submission
+3. User fills invalid input (wrong email format, too short text, pattern mismatch) and sees visual error state with validation message
+4. Developer wraps lui-input in native form, submits form, and receives input value in FormData
+5. User navigates to input via Tab key and sees focus ring indicating keyboard focus
+
+---
+
+### Phase 28: Input Differentiators
+
+**Goal:** Input component has enhanced UX features that distinguish it from native inputs
+
+**Dependencies:** Phase 27 (core input must exist)
+
+**Requirements:** INPUT-13, INPUT-14, INPUT-15, INPUT-16, INPUT-17
+
+**Success Criteria:**
+
+1. User can toggle password visibility using an eye icon button inside the password input
+2. User typing in search input sees a clear button that empties the field when clicked
+3. Developer can add prefix content (icon, currency symbol) that appears before the input text
+4. Developer can add suffix content (icon, unit label) that appears after the input text
+5. User with maxlength input sees character count (e.g., "42/100") updating as they type
+
+---
+
+### Phase 29: Textarea Component
+
+**Goal:** Developers can add a multi-line text input with the same form participation and validation as the Input component
+
+**Dependencies:** Phase 26 (CSS tokens), Phase 27 patterns (validation, form participation)
+
+**Requirements:** TEXTAREA-01, TEXTAREA-02, TEXTAREA-03, TEXTAREA-04, TEXTAREA-05, TEXTAREA-06, TEXTAREA-07, TEXTAREA-08, TEXTAREA-09, TEXTAREA-10, TEXTAREA-11, INFRA-03
+
+**Success Criteria:**
+
+1. User can type multiple lines of text and see content wrap naturally within the textarea
+2. Developer can control initial textarea height via rows attribute and resize behavior via resize property
+3. User submits form with empty required textarea and sees browser validation error preventing submission
+4. Developer enables auto-resize and textarea grows taller as user types more content
+5. User with maxlength textarea sees character count updating as they type
+
+---
+
+### Phase 30: CLI and Documentation
+
+**Goal:** Developers can install Input and Textarea via CLI and learn usage from docs
+
+**Dependencies:** Phase 27 (Input package), Phase 29 (Textarea package)
+
+**Requirements:** INFRA-04, INFRA-05
+
+**Success Criteria:**
+
+1. Developer runs `npx lit-ui add input` and input component is installed in their project
+2. Developer runs `npx lit-ui add textarea` and textarea component is installed in their project
+3. Developer visits docs Input page and sees usage examples, props table, and validation patterns
+4. Developer visits docs Textarea page and sees usage examples, props table, and auto-resize demo
 
 ---
 
@@ -138,7 +209,8 @@ Plans:
 - v1.1: Phases 6-12 (6->7->8->9->10->11->12)
 - v2.0: Phases 13-20 (complete)
 - v3.0: Phases 21-24 (complete)
-- v3.1: Phase 25
+- v3.1: Phase 25 (complete)
+- v4.0: Phases 26-30 (26->27->28->29->30)
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
@@ -166,8 +238,13 @@ Plans:
 | 22. CLI Theme Integration | v3.0 | 4/4 | Complete | 2026-01-25 |
 | 23. Visual Configurator Core | v3.0 | 4/4 | Complete | 2026-01-25 |
 | 24. Presets and Enhanced Features | v3.0 | 3/3 | Complete | 2026-01-25 |
-| 25. Docs Site Dark Mode | v3.1 | 0/5 | Planned | - |
+| 25. Docs Site Dark Mode | v3.1 | 5/5 | Complete | 2026-01-25 |
+| 26. CSS Tokens Foundation | v4.0 | 0/? | Planned | - |
+| 27. Core Input Component | v4.0 | 0/? | Planned | - |
+| 28. Input Differentiators | v4.0 | 0/? | Planned | - |
+| 29. Textarea Component | v4.0 | 0/? | Planned | - |
+| 30. CLI and Documentation | v4.0 | 0/? | Planned | - |
 
 ---
 *Roadmap created: 2026-01-24*
-*Last updated: 2026-01-25 (Phase 25 plans created)*
+*Last updated: 2026-01-26 (v4.0 Form Inputs phases 26-30 added)*

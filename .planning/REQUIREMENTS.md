@@ -94,6 +94,7 @@ Deferred to later milestones.
 | INPUT-10 | Phase 27 | Pending |
 | INPUT-11 | Phase 27 | Pending |
 | INPUT-12 | Phase 27 | Pending |
+| INFRA-02 | Phase 27 | Pending |
 | INPUT-13 | Phase 28 | Pending |
 | INPUT-14 | Phase 28 | Pending |
 | INPUT-15 | Phase 28 | Pending |
@@ -110,7 +111,6 @@ Deferred to later milestones.
 | TEXTAREA-09 | Phase 29 | Pending |
 | TEXTAREA-10 | Phase 29 | Pending |
 | TEXTAREA-11 | Phase 29 | Pending |
-| INFRA-02 | Phase 27 | Pending |
 | INFRA-03 | Phase 29 | Pending |
 | INFRA-04 | Phase 30 | Pending |
 | INFRA-05 | Phase 30 | Pending |
@@ -122,4 +122,4 @@ Deferred to later milestones.
 
 ---
 *Requirements defined: 2026-01-26*
-*Last updated: 2026-01-26 after initial definition*
+*Last updated: 2026-01-26 after roadmap creation*
