@@ -4,9 +4,11 @@
  * This component represents a selectable option in the dropdown.
  * It provides visual states for selected, disabled, and active (keyboard navigation).
  *
- * Note: In Phase 32, options are rendered inline by the Select component
- * using the SelectOption interface. This component is created for potential
- * future slot-based usage where consumers provide <lui-option> children.
+ * Supports custom content via named slots:
+ * - slot="start": Icon or content before the label
+ * - slot="end": Icon or content after the label
+ * - slot="description": Description text below the label
+ * - default slot: Custom label content (alternative to label property)
  */
 import { html, css } from 'lit';
 import { property } from 'lit/decorators.js';
@@ -15,6 +17,7 @@ import { TailwindElement, tailwindBaseStyles } from '@lit-ui/core';
 /**
  * An option element for use within lui-select.
  * Provides value, label, disabled, and selected states.
+ * Supports named slots for custom content (icons, descriptions).
  */
 export class Option extends TailwindElement {
   /**
@@ -25,7 +28,7 @@ export class Option extends TailwindElement {
   value = '';
 
   /**
-   * Display label for the option. Falls back to value if not provided.
+   * Display label for the option. Falls back to textContent or value if not provided.
    * @default ''
    */
   @property({ type: String })
@@ -64,6 +67,7 @@ export class Option extends TailwindElement {
       .option {
         display: flex;
         align-items: center;
+        gap: 0.5rem;
         padding: var(--ui-select-option-padding-y, 0.5rem)
           var(--ui-select-option-padding-x, 0.75rem);
         cursor: pointer;
@@ -94,13 +98,47 @@ export class Option extends TailwindElement {
       .check-icon {
         width: 1em;
         height: 1em;
-        margin-right: 0.5rem;
+        flex-shrink: 0;
         color: var(--ui-select-option-check);
         visibility: hidden;
       }
 
       .option-selected .check-icon {
         visibility: visible;
+      }
+
+      .slot-start,
+      .slot-end {
+        display: flex;
+        align-items: center;
+        flex-shrink: 0;
+      }
+
+      .option-content {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .option-label {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      ::slotted([slot='start']),
+      ::slotted([slot='end']) {
+        width: 1.25em;
+        height: 1.25em;
+      }
+
+      ::slotted([slot='description']) {
+        font-size: 0.75rem;
+        color: var(--ui-select-option-text-disabled);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
     `,
   ];
@@ -110,6 +148,14 @@ export class Option extends TailwindElement {
    */
   getId(): string {
     return this.optionId;
+  }
+
+  /**
+   * Get the display label for this option.
+   * Priority: label property > textContent > value
+   */
+  getLabel(): string {
+    return this.label || this.textContent?.trim() || this.value;
   }
 
   override render() {
@@ -139,7 +185,12 @@ export class Option extends TailwindElement {
             stroke-linejoin="round"
           />
         </svg>
-        <span>${this.label || this.value}</span>
+        <span class="slot-start"><slot name="start"></slot></span>
+        <span class="option-content">
+          <span class="option-label">${this.label || html`<slot></slot>`}</span>
+          <slot name="description"></slot>
+        </span>
+        <span class="slot-end"><slot name="end"></slot></span>
       </div>
     `;
   }
