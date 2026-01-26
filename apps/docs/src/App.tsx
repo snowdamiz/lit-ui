@@ -9,6 +9,7 @@ import { MigrationGuide } from './pages/MigrationGuide'
 import { Placeholder } from './pages/Placeholder'
 import { ButtonPage } from './pages/components/ButtonPage'
 import { DialogPage } from './pages/components/DialogPage'
+import { InputPage } from './pages/components/InputPage'
 import { ConfiguratorPage } from './pages/configurator/ConfiguratorPage'
 
 export default function App() {
@@ -37,6 +38,7 @@ export default function App() {
             {/* Components */}
             <Route path="components/button" element={<ButtonPage />} />
             <Route path="components/dialog" element={<DialogPage />} />
+            <Route path="components/input" element={<InputPage />} />
 
             {/* Catch-all for undefined routes */}
             <Route path="*" element={<Placeholder />} />
