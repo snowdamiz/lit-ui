@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-26)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** v4.0 Form Inputs - Phase 29 Textarea Component
+**Current focus:** v4.0 Form Inputs - Phase 30 Select Component
 
 ## Current Position
 
-Phase: 29 - Textarea Component (In Progress)
-Plan: 1/2 complete
-Status: In progress
-Last activity: 2026-01-26 — Completed 29-01-PLAN.md
+Phase: 29 - Textarea Component (COMPLETE)
+Plan: 2/2 complete
+Status: Phase complete
+Last activity: 2026-01-26 - Completed 29-02-PLAN.md
 
-Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 SHIPPED | v4.0 [#######...] 4/5
+Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 SHIPPED | v4.0 [########..] 5/5
 
 ## Performance Metrics
 
@@ -40,8 +40,8 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHI
 - Total execution time: 11 min
 
 **v4.0 Velocity (in progress):**
-- Plans completed: 6
-- Total execution time: 13 min
+- Plans completed: 8
+- Total execution time: 16 min
 
 ## Accumulated Context
 
@@ -72,6 +72,9 @@ v3.0, v3.1 decisions validated and archived.
 - Default resize mode is 'vertical' per CONTEXT.md specification
 - Default rows is 3 for reasonable initial height
 - Textarea validation uses native validity mirrored to ElementInternals
+- Autoresize transition uses 150ms ease-out to match Button component
+- Character counter: absolute positioned for Textarea, inline flex for Input
+- maxHeight CSS value takes precedence over maxRows when both set
 
 ### Pending Todos
 
@@ -85,8 +88,8 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-01-26T11:40:53Z
-Stopped at: Completed 29-01-PLAN.md
+Last session: 2026-01-26T11:45:41Z
+Stopped at: Completed 29-02-PLAN.md
 Resume file: None
 
 ## Next Steps
@@ -112,11 +115,16 @@ Roadmap complete with 5 phases (26-30), 33 requirements mapped.
 - Plan 02: Complete - Password toggle, Clear button
 - Status: Complete (verified)
 
-**Phase 29: Textarea Component** - IN PROGRESS
+**Phase 29: Textarea Component** - COMPLETE
 - Goal: Multi-line text input with form participation and auto-resize
 - Requirements: TEXTAREA-01 through TEXTAREA-11, INFRA-03, INPUT-17
 - Plan 01: Complete - Core textarea component with form participation
-- Plan 02: Pending - Auto-resize and character count
-- Status: In progress
+- Plan 02: Complete - Auto-resize and character count
+- Status: Complete (verified)
 
-**Next action:** Run `/gsd:execute-phase 29` to continue with plan 02
+**Phase 30: Select Component** - PENDING
+- Goal: Dropdown selection component with accessibility
+- Requirements: SELECT-01 through SELECT-10, INFRA-04
+- Status: Not started
+
+**Next action:** Run `/gsd:research-phase 30` to begin Select Component phase
