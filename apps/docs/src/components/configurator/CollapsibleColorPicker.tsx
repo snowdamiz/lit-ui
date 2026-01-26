@@ -124,27 +124,27 @@ export function CollapsibleColorPicker({
   }, [activeMode, colorKey, resetDarkColor, resetLightColor]);
 
   return (
-    <div className="group rounded-xl border border-gray-200 bg-white overflow-hidden transition-all card-elevated">
+    <div className="group rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 overflow-hidden transition-all card-elevated">
       {/* Collapsed header - always visible */}
       <button
         onClick={onToggle}
-        className="w-full flex items-center gap-3 p-4 text-left hover:bg-gray-50 transition-colors"
+        className="w-full flex items-center gap-3 p-4 text-left hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
         type="button"
       >
         {/* Color swatch */}
         <div
-          className="w-10 h-10 rounded-lg border border-gray-200 shrink-0 shadow-sm"
+          className="w-10 h-10 rounded-lg border border-gray-200 dark:border-gray-700 shrink-0 shadow-sm"
           style={{ backgroundColor: hexValue }}
         />
 
         {/* Label and description */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <span className="font-medium text-gray-900">{label}</span>
+            <span className="font-medium text-gray-900 dark:text-gray-100">{label}</span>
             {isOverridden && (
               <button
                 onClick={handleReset}
-                className="p-1 text-gray-400 hover:text-gray-600 transition-colors rounded"
+                className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors rounded"
                 title="Reset to auto-derived value"
                 type="button"
               >
@@ -153,12 +153,12 @@ export function CollapsibleColorPicker({
             )}
           </div>
           {description && (
-            <p className="text-xs text-gray-500 truncate">{description}</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{description}</p>
           )}
         </div>
 
         {/* Hex value display */}
-        <code className="text-xs font-mono text-gray-500 bg-gray-100 px-2 py-1 rounded">
+        <code className="text-xs font-mono text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
           {hexValue}
         </code>
 
@@ -171,7 +171,7 @@ export function CollapsibleColorPicker({
 
       {/* Expanded picker panel */}
       {expanded && (
-        <div className="px-4 pb-4 pt-2 border-t border-gray-100 bg-gray-50/50 animate-fade-in-up"
+        <div className="px-4 pb-4 pt-2 border-t border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-950/50 animate-fade-in-up"
           style={{ animationDuration: '0.2s' }}
         >
           {/* Saturation picker */}
@@ -194,7 +194,7 @@ export function CollapsibleColorPicker({
 
           {/* Hex input row */}
           <div className="flex items-center gap-3">
-            <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+            <label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
               Hex
             </label>
             <input
@@ -203,7 +203,7 @@ export function CollapsibleColorPicker({
               onChange={handleHexInputChange}
               onBlur={handleHexBlur}
               onKeyDown={handleHexKeyDown}
-              className="flex-1 px-3 py-2 text-sm font-mono border border-gray-200 rounded-lg bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+              className="flex-1 px-3 py-2 text-sm font-mono border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100 focus:border-transparent"
               placeholder="#000000"
             />
           </div>

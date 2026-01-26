@@ -35,11 +35,11 @@ export function ShareButton({ variant = "default" }: ShareButtonProps) {
 
   const variantClasses = {
     default: copied
-      ? "bg-green-100 text-green-700"
-      : "bg-gray-100 text-gray-700 hover:bg-gray-200",
+      ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
+      : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700",
     outline: copied
-      ? "border border-green-300 text-green-700 bg-green-50"
-      : "border border-gray-200 text-gray-700 hover:bg-gray-50",
+      ? "border border-green-300 dark:border-green-700 text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-900/20"
+      : "border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800",
   };
 
   return (

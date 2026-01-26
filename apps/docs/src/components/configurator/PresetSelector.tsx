@@ -35,39 +35,39 @@ export function PresetSelector() {
               group relative p-4 rounded-xl text-left transition-all border
               ${
                 isActive
-                  ? "bg-gray-100 border-gray-300"
-                  : "bg-gray-50 hover:bg-gray-100 border-gray-200"
+                  ? "bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-600"
+                  : "bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 border-gray-200 dark:border-gray-700"
               }
             `}
           >
             {/* Color preview dots */}
             <div className="flex gap-1.5 mb-3">
               <div
-                className="w-5 h-5 rounded-full ring-1 ring-gray-300"
+                className="w-5 h-5 rounded-full ring-1 ring-gray-300 dark:ring-gray-600"
                 style={{
                   backgroundColor: oklchToHex(preset.config.colors.primary),
                 }}
                 title="Primary"
               />
               <div
-                className="w-5 h-5 rounded-full ring-1 ring-gray-300"
+                className="w-5 h-5 rounded-full ring-1 ring-gray-300 dark:ring-gray-600"
                 style={{
                   backgroundColor: oklchToHex(preset.config.colors.secondary),
                 }}
                 title="Secondary"
               />
               <div
-                className="w-5 h-5 rounded-full ring-1 ring-gray-300"
+                className="w-5 h-5 rounded-full ring-1 ring-gray-300 dark:ring-gray-600"
                 style={{
                   backgroundColor: oklchToHex(preset.config.colors.destructive),
                 }}
                 title="Destructive"
               />
             </div>
-            <div className="text-sm font-semibold text-gray-900">
+            <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">
               {preset.name}
             </div>
-            <div className="text-xs text-gray-500">
+            <div className="text-xs text-gray-500 dark:text-gray-400">
               {preset.description}
             </div>
           </button>
