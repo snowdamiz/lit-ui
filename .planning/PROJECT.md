@@ -52,13 +52,16 @@ Developers can use polished, accessible UI components in any framework without l
 
 ### Active
 
-- [ ] Docs site dark mode with global header toggle
-- [ ] Theme toggle on configurator page controls entire docs site
-- [ ] User theme preference persists in localStorage
-- [ ] Dark mode styling for all docs pages (navigation, content, code blocks)
+- [ ] Input component with text, email, password, number, search types
+- [ ] Textarea component for multiline text input
+- [ ] Built-in validation (required, min/max, pattern, email format)
+- [ ] Standalone and native form participation (ElementInternals)
+- [ ] Visual states (error, success, disabled) with error messages
 
-### Deferred (v3.1+)
+### Deferred (v4.1+)
 
+- Select/Dropdown component
+- Checkbox, Radio, Switch toggle controls
 - Framework integration guides (React, Vue, Svelte) — from v1.1
 - Accessibility documentation — from v1.1
 - Search functionality in docs — from v1.1
@@ -138,16 +141,18 @@ Developers can use polished, accessible UI components in any framework without l
 - **v1.0 MVP** (2026-01-24): Button, Dialog, CLI with copy-source distribution
 - **v2.0 NPM + SSR** (2026-01-25): NPM packages, SSR support, dual distribution
 - **v3.0 Theme Customization** (2026-01-25): Visual configurator, OKLCH themes, preset themes, shareable URLs
+- **v3.1 Docs Dark Mode** (2026-01-25): Global theme toggle, localStorage persistence, full dark mode styling
 
-## Current Milestone: v3.1 Docs Dark Mode
+## Current Milestone: v4.0 Form Inputs
 
-**Goal:** Docs site supports dark mode with global toggle and localStorage persistence, matching the polished experience of shadcn's documentation.
+**Goal:** Add Input and Textarea components with full form participation, built-in validation, and visual states — extending the component library with essential form primitives.
 
 **Target features:**
-- Global header theme toggle (available on every page)
-- Configurator page toggle controls entire docs site (not just component previews)
-- localStorage persistence for user preference
-- Full dark mode styling for all docs pages
+- Input component (text, email, password, number, search types)
+- Textarea component for multiline text input
+- Built-in validation (required, min/max, pattern, email format)
+- Standalone and native form participation via ElementInternals
+- Visual states (error, success, disabled) with error message display
 
 ---
-*Last updated: 2026-01-25 after v3.1 milestone started*
+*Last updated: 2026-01-26 after v4.0 milestone started*
