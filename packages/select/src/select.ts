@@ -393,6 +393,65 @@ export class Select extends TailwindElement {
         visibility: visible;
         color: var(--ui-select-option-check);
       }
+
+      /* Select wrapper for label structure */
+      .select-wrapper {
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* Label styling - scales with size */
+      .select-label {
+        font-weight: 500;
+        color: var(--ui-select-text);
+        margin-bottom: 0.25rem;
+      }
+
+      .label-sm {
+        font-size: var(--ui-select-font-size-sm);
+      }
+
+      .label-md {
+        font-size: var(--ui-select-font-size-md);
+      }
+
+      .label-lg {
+        font-size: var(--ui-select-font-size-lg);
+      }
+
+      .required-indicator {
+        color: var(--ui-select-text-error, var(--color-destructive));
+        margin-left: 0.125rem;
+      }
+
+      /* Error state */
+      .trigger-error {
+        border-color: var(--ui-select-border-error);
+      }
+
+      .trigger-error:focus {
+        border-color: var(--ui-select-border-error);
+      }
+
+      /* Error text below select */
+      .error-text {
+        font-size: 0.875em;
+        color: var(--ui-select-text-error, var(--color-destructive));
+        margin-top: 0.25rem;
+      }
+
+      /* Visually hidden for screen reader only text */
+      .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
     `,
   ];
 
@@ -491,6 +550,172 @@ export class Select extends TailwindElement {
   }
 
   /**
+   * Handle keydown events for keyboard navigation following W3C APG.
+   */
+  private handleKeydown(e: KeyboardEvent): void {
+    const key = e.key;
+
+    // Handle closed state
+    if (!this.open) {
+      switch (key) {
+        case 'ArrowDown':
+        case 'ArrowUp':
+        case 'Enter':
+        case ' ':
+          e.preventDefault();
+          this.openDropdown();
+          if (key === 'ArrowUp') {
+            this.focusLastEnabledOption();
+          } else {
+            this.focusFirstEnabledOption();
+          }
+          break;
+        case 'Home':
+          e.preventDefault();
+          this.openDropdown();
+          this.focusFirstEnabledOption();
+          break;
+        case 'End':
+          e.preventDefault();
+          this.openDropdown();
+          this.focusLastEnabledOption();
+          break;
+        default:
+          // Printable character - type-ahead
+          if (this.isPrintableCharacter(key)) {
+            e.preventDefault();
+            this.openDropdown();
+            this.handleTypeahead(key);
+          }
+      }
+      return;
+    }
+
+    // Handle open state
+    switch (key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        this.focusNextEnabledOption();
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        this.focusPreviousEnabledOption();
+        break;
+      case 'Home':
+        e.preventDefault();
+        this.focusFirstEnabledOption();
+        break;
+      case 'End':
+        e.preventDefault();
+        this.focusLastEnabledOption();
+        break;
+      case 'Enter':
+      case ' ':
+        e.preventDefault();
+        if (this.activeIndex >= 0) {
+          this.selectOption(this.activeIndex);
+        }
+        break;
+      case 'Escape':
+        e.preventDefault();
+        this.closeDropdown();
+        break;
+      case 'Tab':
+        // Select current and close on Tab (don't prevent default - let Tab proceed)
+        if (this.activeIndex >= 0) {
+          this.selectOption(this.activeIndex);
+        } else {
+          this.closeDropdown();
+        }
+        break;
+      default:
+        // Printable character - type-ahead
+        if (this.isPrintableCharacter(key)) {
+          e.preventDefault();
+          this.handleTypeahead(key);
+        }
+    }
+  }
+
+  /**
+   * Check if a key is a printable character (for type-ahead).
+   */
+  private isPrintableCharacter(key: string): boolean {
+    return key.length === 1 && !key.match(/[\x00-\x1f\x7f]/);
+  }
+
+  /**
+   * Placeholder for type-ahead handling (implemented in Task 2).
+   */
+  private handleTypeahead(_char: string): void {
+    // Implemented in Task 2
+  }
+
+  /**
+   * Focus the first enabled option.
+   */
+  private focusFirstEnabledOption(): void {
+    const index = this.options.findIndex((o) => !o.disabled);
+    if (index >= 0) {
+      this.setActiveIndex(index);
+    }
+  }
+
+  /**
+   * Focus the last enabled option.
+   */
+  private focusLastEnabledOption(): void {
+    for (let i = this.options.length - 1; i >= 0; i--) {
+      if (!this.options[i].disabled) {
+        this.setActiveIndex(i);
+        return;
+      }
+    }
+  }
+
+  /**
+   * Focus the next enabled option (wraps to first).
+   */
+  private focusNextEnabledOption(): void {
+    for (let i = this.activeIndex + 1; i < this.options.length; i++) {
+      if (!this.options[i].disabled) {
+        this.setActiveIndex(i);
+        return;
+      }
+    }
+    // Wrap to first if at end
+    this.focusFirstEnabledOption();
+  }
+
+  /**
+   * Focus the previous enabled option (wraps to last).
+   */
+  private focusPreviousEnabledOption(): void {
+    for (let i = this.activeIndex - 1; i >= 0; i--) {
+      if (!this.options[i].disabled) {
+        this.setActiveIndex(i);
+        return;
+      }
+    }
+    // Wrap to last if at beginning
+    this.focusLastEnabledOption();
+  }
+
+  /**
+   * Set the active option index and scroll into view.
+   */
+  private setActiveIndex(index: number): void {
+    this.activeIndex = index;
+    // Scroll into view
+    this.updateComplete.then(() => {
+      const optionEl = this.shadowRoot?.getElementById(
+        `${this.selectId}-option-${index}`
+      );
+      optionEl?.scrollIntoView({ block: 'nearest' });
+    });
+  }
+
+  /**
    * Select an option by index.
    */
   private selectOption(index: number): void {
@@ -553,6 +778,7 @@ export class Select extends TailwindElement {
         aria-disabled=${this.disabled ? 'true' : 'false'}
         tabindex=${this.disabled ? '-1' : '0'}
         @click=${this.handleTriggerClick}
+        @keydown=${this.handleKeydown}
       >
         ${selectedLabel
           ? html`<span class="selected-value">${selectedLabel}</span>`
