@@ -206,6 +206,18 @@ export class Input extends TailwindElement {
   private passwordVisible = false;
 
   /**
+   * Whether the prefix slot has content.
+   */
+  @state()
+  private hasPrefixContent = false;
+
+  /**
+   * Whether the suffix slot has content.
+   */
+  @state()
+  private hasSuffixContent = false;
+
+  /**
    * Eye icon SVG (password hidden state - click to show).
    */
   private eyeIcon = svg`
@@ -338,34 +350,38 @@ export class Input extends TailwindElement {
         font-size: var(--ui-input-font-size-lg);
       }
 
-      /* Slot styling */
+      /* Slot styling - hidden by default, shown when has content */
       .input-slot {
-        display: flex;
+        display: none;
         align-items: center;
       }
 
-      .prefix-slot {
+      .input-slot.has-content {
+        display: flex;
+      }
+
+      .prefix-slot.has-content {
         padding-left: var(--ui-input-padding-x-md);
       }
 
-      .suffix-slot {
+      .suffix-slot.has-content {
         padding-right: var(--ui-input-padding-x-md);
       }
 
       /* Size-specific slot padding */
-      .container-sm .prefix-slot {
+      .container-sm .prefix-slot.has-content {
         padding-left: var(--ui-input-padding-x-sm);
       }
 
-      .container-sm .suffix-slot {
+      .container-sm .suffix-slot.has-content {
         padding-right: var(--ui-input-padding-x-sm);
       }
 
-      .container-lg .prefix-slot {
+      .container-lg .prefix-slot.has-content {
         padding-left: var(--ui-input-padding-x-lg);
       }
 
-      .container-lg .suffix-slot {
+      .container-lg .suffix-slot.has-content {
         padding-right: var(--ui-input-padding-x-lg);
       }
 
@@ -595,6 +611,22 @@ export class Input extends TailwindElement {
   }
 
   /**
+   * Handle prefix slot change to track if content exists.
+   */
+  private handlePrefixSlotChange(e: Event): void {
+    const slot = e.target as HTMLSlotElement;
+    this.hasPrefixContent = slot.assignedNodes().length > 0;
+  }
+
+  /**
+   * Handle suffix slot change to track if content exists.
+   */
+  private handleSuffixSlotChange(e: Event): void {
+    const slot = e.target as HTMLSlotElement;
+    this.hasSuffixContent = slot.assignedNodes().length > 0;
+  }
+
+  /**
    * Toggle password visibility between hidden and visible.
    */
   private togglePasswordVisibility(): void {
@@ -778,7 +810,12 @@ export class Input extends TailwindElement {
           part="container"
           @click=${this.handleContainerClick}
         >
-          <slot name="prefix" part="prefix" class="input-slot prefix-slot"></slot>
+          <slot
+            name="prefix"
+            part="prefix"
+            class="input-slot prefix-slot ${this.hasPrefixContent ? 'has-content' : ''}"
+            @slotchange=${this.handlePrefixSlotChange}
+          ></slot>
           <input
             id=${this.inputId}
             part="input"
@@ -805,7 +842,12 @@ export class Input extends TailwindElement {
           ${this.type === 'password' ? this.renderPasswordToggle() : nothing}
           ${this.clearable && this.value ? this.renderClearButton() : nothing}
           ${this.renderCharacterCount()}
-          <slot name="suffix" part="suffix" class="input-slot suffix-slot"></slot>
+          <slot
+            name="suffix"
+            part="suffix"
+            class="input-slot suffix-slot ${this.hasSuffixContent ? 'has-content' : ''}"
+            @slotchange=${this.handleSuffixSlotChange}
+          ></slot>
         </div>
 
         ${this.showError && this.errorMessage
