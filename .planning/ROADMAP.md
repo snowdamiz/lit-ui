@@ -144,6 +144,12 @@ Plans:
 
 **Requirements:** INPUT-01, INPUT-02, INPUT-03, INPUT-04, INPUT-05, INPUT-06, INPUT-07, INPUT-08, INPUT-09, INPUT-10, INPUT-11, INPUT-12, INFRA-02
 
+**Plans:** 2 plans
+
+Plans:
+- [ ] 27-01-PLAN.md — Package infrastructure + component shell with types, sizes, form association
+- [ ] 27-02-PLAN.md — Visual states, validation, label/helper/error display
+
 **Success Criteria:**
 
 1. User can type into input fields of all supported types (text, email, password, number, search) and see appropriate browser behaviors (email keyboard on mobile, number steppers, etc.)
@@ -245,11 +251,11 @@ Plans:
 | 24. Presets and Enhanced Features | v3.0 | 3/3 | Complete | 2026-01-25 |
 | 25. Docs Site Dark Mode | v3.1 | 5/5 | Complete | 2026-01-25 |
 | 26. CSS Tokens Foundation | v4.0 | 1/1 | Complete | 2026-01-26 |
-| 27. Core Input Component | v4.0 | 0/? | Planned | - |
+| 27. Core Input Component | v4.0 | 0/2 | Planned | - |
 | 28. Input Differentiators | v4.0 | 0/? | Planned | - |
 | 29. Textarea Component | v4.0 | 0/? | Planned | - |
 | 30. CLI and Documentation | v4.0 | 0/? | Planned | - |
 
 ---
 *Roadmap created: 2026-01-24*
-*Last updated: 2026-01-26 (v4.0 Form Inputs phases 26-30 added)*
+*Last updated: 2026-01-26 (Phase 27 planned with 2 plans)*
