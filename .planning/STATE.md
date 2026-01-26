@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 ## Current Position
 
 Phase: 33 - Select Enhancements
-Plan: 02 of 4 complete
+Plan: 03 of 4 complete
 Status: In progress
-Last activity: 2026-01-26 - Completed 33-01-PLAN.md (Option Slot Support)
+Last activity: 2026-01-26 - Completed 33-03-PLAN.md (Clearable Select)
 
 Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 SHIPPED | v4.0 SHIPPED | v4.1 [#####...] 5/7 phases
 
@@ -44,8 +44,8 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHI
 - Total execution time: 30 min
 
 **v4.1 Velocity (in progress):**
-- Plans completed: 8
-- Total execution time: 22 min
+- Plans completed: 9
+- Total execution time: 26 min
 
 ## Accumulated Context
 
@@ -74,6 +74,8 @@ v3.0, v3.1, v4.0 decisions validated and archived.
 | Options property takes precedence | Backwards compatibility with existing property-based usage | 33-01 |
 | Option.getLabel() priority | label prop > textContent > value for flexible label resolution | 33-01 |
 | data-active attribute for active state | CSS ::slotted() selector can target attribute-based states | 33-01 |
+| Clear button tabindex=-1 | Trigger handles all keyboard interaction, following combobox pattern | 33-03 |
+| Delete/Backspace for keyboard clear | Keyboard accessible clear without adding button to tab order | 33-03 |
 
 ### Pending Todos
 
@@ -96,8 +98,8 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-01-26 23:44Z
-Stopped at: Completed 33-01-PLAN.md (Option Slot Support)
+Last session: 2026-01-26 23:54Z
+Stopped at: Completed 33-03-PLAN.md (Clearable Select)
 Resume file: None
 
 ## Next Steps
@@ -107,11 +109,11 @@ Continue Phase 33 (Select Enhancements).
 **Phase 33 Progress:**
 - Plan 01: Option Slot Support complete (named slots, keyboard nav)
 - Plan 02: Option Groups complete (lui-option-group with ARIA structure)
-- Plan 03: Clearable (next)
-- Plan 04: Custom Rendering (pending)
+- Plan 03: Clearable complete (X button, Delete/Backspace keyboard)
+- Plan 04: Custom Rendering (next)
 
 **Remaining phases in v4.1:**
-- Phase 33: Select Enhancements (2/4 plans complete)
+- Phase 33: Select Enhancements (3/4 plans complete)
 - Phase 34: Multi-Select
 - Phase 35: Combobox
 - Phase 36: Async Loading
