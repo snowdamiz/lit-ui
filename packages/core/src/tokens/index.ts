@@ -158,6 +158,60 @@ export const tokens = {
     textDisabled: 'var(--ui-textarea-text-disabled)',
     borderDisabled: 'var(--ui-textarea-border-disabled)',
   },
+  select: {
+    // Layout
+    radius: 'var(--ui-select-radius)',
+    borderWidth: 'var(--ui-select-border-width)',
+    transition: 'var(--ui-select-transition)',
+    dropdownShadow: 'var(--ui-select-dropdown-shadow)',
+    dropdownMaxHeight: 'var(--ui-select-dropdown-max-height)',
+    optionHeight: 'var(--ui-select-option-height)',
+    zIndex: 'var(--ui-select-z-index)',
+
+    // Typography
+    fontSizeSm: 'var(--ui-select-font-size-sm)',
+    fontSizeMd: 'var(--ui-select-font-size-md)',
+    fontSizeLg: 'var(--ui-select-font-size-lg)',
+
+    // Spacing
+    paddingXSm: 'var(--ui-select-padding-x-sm)',
+    paddingYSm: 'var(--ui-select-padding-y-sm)',
+    paddingXMd: 'var(--ui-select-padding-x-md)',
+    paddingYMd: 'var(--ui-select-padding-y-md)',
+    paddingXLg: 'var(--ui-select-padding-x-lg)',
+    paddingYLg: 'var(--ui-select-padding-y-lg)',
+
+    // Trigger state
+    bg: 'var(--ui-select-bg)',
+    text: 'var(--ui-select-text)',
+    border: 'var(--ui-select-border)',
+    placeholder: 'var(--ui-select-placeholder)',
+
+    // Focus state
+    borderFocus: 'var(--ui-select-border-focus)',
+    ring: 'var(--ui-select-ring)',
+
+    // Error state
+    borderError: 'var(--ui-select-border-error)',
+    textError: 'var(--ui-select-text-error)',
+
+    // Disabled state
+    bgDisabled: 'var(--ui-select-bg-disabled)',
+    textDisabled: 'var(--ui-select-text-disabled)',
+    borderDisabled: 'var(--ui-select-border-disabled)',
+
+    // Dropdown
+    dropdownBg: 'var(--ui-select-dropdown-bg)',
+    dropdownBorder: 'var(--ui-select-dropdown-border)',
+
+    // Option
+    optionBg: 'var(--ui-select-option-bg)',
+    optionBgHover: 'var(--ui-select-option-bg-hover)',
+    optionBgActive: 'var(--ui-select-option-bg-active)',
+    optionText: 'var(--ui-select-option-text)',
+    optionTextDisabled: 'var(--ui-select-option-text-disabled)',
+    optionCheck: 'var(--ui-select-option-check)',
+  },
 } as const;
 
 // Type helpers for token paths
@@ -169,3 +223,4 @@ export type FontFamilyToken = keyof typeof tokens.fontFamily;
 export type ZIndexToken = keyof typeof tokens.zIndex;
 export type InputToken = keyof typeof tokens.input;
 export type TextareaToken = keyof typeof tokens.textarea;
+export type SelectToken = keyof typeof tokens.select;
