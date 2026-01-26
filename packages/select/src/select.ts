@@ -16,15 +16,27 @@
  */
 
 import { html, css, isServer } from 'lit';
-import { property } from 'lit/decorators.js';
+import { property, state, query } from 'lit/decorators.js';
 import { TailwindElement, tailwindBaseStyles } from '@lit-ui/core';
-// Import Floating UI to validate dependency works - used in Phase 32
+// Import Floating UI for dropdown positioning
 import { computePosition, flip, shift, offset, size } from '@floating-ui/dom';
 
 /**
  * Select size types for padding and font sizing
  */
 export type SelectSize = 'sm' | 'md' | 'lg';
+
+/**
+ * Option data interface for programmatic options
+ */
+export interface SelectOption {
+  /** The value submitted when this option is selected */
+  value: string;
+  /** Display label for the option (falls back to value if not provided) */
+  label: string;
+  /** Whether this option is disabled and cannot be selected */
+  disabled?: boolean;
+}
 
 /**
  * A customizable select component with dropdown.
@@ -88,11 +100,83 @@ export class Select extends TailwindElement {
   @property({ type: Boolean, reflect: true })
   required = false;
 
+  /**
+   * Array of options to display in the dropdown.
+   * @default []
+   */
+  @property({ type: Array })
+  options: SelectOption[] = [];
+
+  /**
+   * Whether the dropdown is currently open.
+   */
+  @state()
+  private open = false;
+
+  /**
+   * Index of the currently active (keyboard-focused) option.
+   */
+  @state()
+  private activeIndex = -1;
+
+  /**
+   * Whether the user has interacted with the select.
+   */
+  @state()
+  private touched = false;
+
+  /**
+   * Whether to show validation error state.
+   */
+  @state()
+  private showError = false;
+
+  /**
+   * Reference to the trigger element.
+   */
+  @query('.trigger')
+  private triggerEl!: HTMLElement;
+
+  /**
+   * Reference to the listbox element.
+   */
+  @query('.listbox')
+  private listboxEl!: HTMLElement;
+
+  /**
+   * Unique ID for ARIA references.
+   */
+  private selectId = `lui-select-${Math.random().toString(36).substr(2, 9)}`;
+
   constructor() {
     super();
     // Only attach internals on client (not during SSR)
     if (!isServer) {
       this.internals = this.attachInternals();
+    }
+  }
+
+  /**
+   * Handle document clicks for closing dropdown when clicking outside.
+   * Uses composedPath() to work correctly with Shadow DOM.
+   */
+  private handleDocumentClick = (e: MouseEvent): void => {
+    if (!e.composedPath().includes(this)) {
+      this.closeDropdown();
+    }
+  };
+
+  override connectedCallback(): void {
+    super.connectedCallback();
+    if (!isServer) {
+      document.addEventListener('click', this.handleDocumentClick);
+    }
+  }
+
+  override disconnectedCallback(): void {
+    super.disconnectedCallback();
+    if (!isServer) {
+      document.removeEventListener('click', this.handleDocumentClick);
     }
   }
 
@@ -167,12 +251,81 @@ export class Select extends TailwindElement {
         color: var(--ui-select-placeholder);
       }
 
+      /* Selected value text */
+      .selected-value {
+        color: var(--ui-select-text);
+      }
+
       /* Chevron icon */
       .chevron {
         flex-shrink: 0;
         width: 1em;
         height: 1em;
         opacity: 0.5;
+        transition: transform 150ms;
+      }
+
+      /* Chevron rotation when open */
+      .chevron-open {
+        transform: rotate(180deg);
+      }
+
+      /* Listbox dropdown */
+      .listbox {
+        position: fixed;
+        z-index: var(--ui-select-z-index, 50);
+        min-width: 100%;
+        max-height: var(--ui-select-dropdown-max-height, 240px);
+        overflow-y: auto;
+        border-radius: var(--ui-select-dropdown-radius);
+        border: 1px solid var(--ui-select-dropdown-border);
+        background-color: var(--ui-select-dropdown-bg);
+        box-shadow: var(--ui-select-dropdown-shadow);
+      }
+
+      .listbox[hidden] {
+        display: none;
+      }
+
+      /* Option items */
+      .option {
+        display: flex;
+        align-items: center;
+        padding: var(--ui-select-option-padding-y, 0.5rem)
+          var(--ui-select-option-padding-x, 0.75rem);
+        cursor: pointer;
+        color: var(--ui-select-option-text);
+        transition: background-color 150ms;
+      }
+
+      .option:hover:not(.option-disabled) {
+        background-color: var(--ui-select-option-bg-hover);
+      }
+
+      .option-active {
+        background-color: var(--ui-select-option-bg-active);
+      }
+
+      .option-selected {
+        font-weight: 500;
+      }
+
+      .option-disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        color: var(--ui-select-option-text-disabled);
+      }
+
+      .check-icon {
+        width: 1em;
+        height: 1em;
+        margin-right: 0.5rem;
+        visibility: hidden;
+      }
+
+      .option-selected .check-icon {
+        visibility: visible;
+        color: var(--ui-select-option-check);
       }
     `,
   ];
@@ -189,8 +342,7 @@ export class Select extends TailwindElement {
   }
 
   /**
-   * Placeholder method for positioning dropdown.
-   * Full implementation in Phase 32.
+   * Position the dropdown relative to the trigger using Floating UI.
    */
   protected async positionDropdown(
     trigger: HTMLElement,
@@ -222,19 +374,116 @@ export class Select extends TailwindElement {
     });
   }
 
+  /**
+   * Open the dropdown.
+   */
+  private openDropdown(): void {
+    if (this.disabled || this.open) return;
+
+    this.open = true;
+
+    // Set active to selected option or first enabled
+    const selectedIdx = this.options.findIndex((o) => o.value === this.value);
+    this.activeIndex =
+      selectedIdx >= 0 ? selectedIdx : this.findFirstEnabledIndex();
+
+    this.requestUpdate();
+
+    // Position after render
+    this.updateComplete.then(() =>
+      this.positionDropdown(this.triggerEl, this.listboxEl)
+    );
+  }
+
+  /**
+   * Close the dropdown.
+   */
+  private closeDropdown(): void {
+    if (!this.open) return;
+
+    this.open = false;
+    this.activeIndex = -1;
+    this.triggerEl?.focus();
+  }
+
+  /**
+   * Find the index of the first enabled option.
+   */
+  private findFirstEnabledIndex(): number {
+    return this.options.findIndex((o) => !o.disabled);
+  }
+
+  /**
+   * Handle trigger click to toggle dropdown.
+   */
+  private handleTriggerClick(): void {
+    if (this.open) {
+      this.closeDropdown();
+    } else {
+      this.openDropdown();
+    }
+  }
+
+  /**
+   * Select an option by index.
+   */
+  private selectOption(index: number): void {
+    const option = this.options[index];
+    if (!option || option.disabled) return;
+
+    this.value = option.value;
+    this.internals?.setFormValue(this.value);
+    this.closeDropdown();
+
+    // Dispatch change event
+    this.dispatchEvent(
+      new CustomEvent('change', {
+        detail: { value: this.value },
+        bubbles: true,
+        composed: true,
+      })
+    );
+  }
+
+  /**
+   * Handle option click to select it.
+   */
+  private handleOptionClick(e: MouseEvent, index: number): void {
+    e.stopPropagation();
+    this.selectOption(index);
+  }
+
+  /**
+   * Get the display label for the currently selected value.
+   */
+  private getSelectedLabel(): string {
+    const selected = this.options.find((o) => o.value === this.value);
+    return selected?.label || selected?.value || '';
+  }
+
   override render() {
+    const selectedLabel = this.getSelectedLabel();
+    const listboxId = `${this.selectId}-listbox`;
+
     return html`
       <div
         class=${this.getTriggerClasses()}
         role="combobox"
-        aria-expanded="false"
+        aria-expanded=${this.open ? 'true' : 'false'}
         aria-haspopup="listbox"
+        aria-controls=${listboxId}
+        aria-activedescendant=${this.open && this.activeIndex >= 0
+          ? `${this.selectId}-option-${this.activeIndex}`
+          : ''}
         aria-disabled=${this.disabled ? 'true' : 'false'}
         tabindex=${this.disabled ? '-1' : '0'}
+        @click=${this.handleTriggerClick}
       >
-        <span class="placeholder">${this.placeholder}</span>
+        ${selectedLabel
+          ? html`<span class="selected-value">${selectedLabel}</span>`
+          : html`<span class="placeholder">${this.placeholder}</span>`}
         <svg
-          class="chevron"
+          class="chevron ${this.open ? 'chevron-open' : ''}"
           viewBox="0 0 16 16"
           fill="none"
           stroke="currentColor"
@@ -247,6 +496,50 @@ export class Select extends TailwindElement {
             stroke-linejoin="round"
           />
         </svg>
+      </div>
+
+      <div
+        id=${listboxId}
+        class="listbox"
+        role="listbox"
+        aria-labelledby=${this.selectId}
+        ?hidden=${!this.open}
+      >
+        ${this.options.map((option, index) => {
+          const isActive = index === this.activeIndex;
+          const isSelected = option.value === this.value;
+          const classes = ['option'];
+          if (isActive) classes.push('option-active');
+          if (isSelected) classes.push('option-selected');
+          if (option.disabled) classes.push('option-disabled');
+
+          return html`
+            <div
+              id="${this.selectId}-option-${index}"
+              role="option"
+              aria-selected=${isSelected ? 'true' : 'false'}
+              aria-disabled=${option.disabled ? 'true' : 'false'}
+              class=${classes.join(' ')}
+              @click=${(e: MouseEvent) => this.handleOptionClick(e, index)}
+            >
+              <svg
+                class="check-icon"
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  d="M3 8l4 4 6-7"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+              <span>${option.label || option.value}</span>
+            </div>
+          `;
+        })}
       </div>
     `;
   }
