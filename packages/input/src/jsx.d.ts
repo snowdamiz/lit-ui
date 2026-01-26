@@ -19,6 +19,7 @@ interface LuiInputAttributes {
   disabled?: boolean;
   readonly?: boolean;
   clearable?: boolean;
+  'show-count'?: boolean;
   minlength?: number;
   maxlength?: number;
   min?: number;

@@ -9,6 +9,10 @@ import type { Textarea, TextareaSize, TextareaResize } from './textarea.js';
 interface LuiTextareaAttributes {
   size?: TextareaSize;
   resize?: TextareaResize;
+  autoresize?: boolean;
+  'max-rows'?: number;
+  'max-height'?: string;
+  'show-count'?: boolean;
   name?: string;
   value?: string;
   placeholder?: string;

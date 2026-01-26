@@ -178,6 +178,14 @@ export class Input extends TailwindElement {
   clearable = false;
 
   /**
+   * Whether to show character count when maxlength is set.
+   * Displays "current/max" format (e.g., "45/200").
+   * @default false
+   */
+  @property({ type: Boolean, attribute: 'show-count' })
+  showCount = false;
+
+  /**
    * Whether the input has been touched (blur occurred).
    * Used for validation display timing.
    */
@@ -467,6 +475,22 @@ export class Input extends TailwindElement {
         height: 1.25em;
       }
 
+      /* Character counter */
+      .character-count {
+        font-size: 0.75rem;
+        color: var(--color-muted-foreground);
+        padding-right: var(--ui-input-padding-x-md);
+        white-space: nowrap;
+      }
+
+      .container-sm .character-count {
+        padding-right: var(--ui-input-padding-x-sm);
+      }
+
+      .container-lg .character-count {
+        padding-right: var(--ui-input-padding-x-lg);
+      }
+
       /* Visually hidden for screen reader only text */
       .visually-hidden {
         position: absolute;
@@ -649,6 +673,19 @@ export class Input extends TailwindElement {
   }
 
   /**
+   * Render the character counter if showCount and maxlength are set.
+   */
+  private renderCharacterCount() {
+    if (!this.showCount || !this.maxlength) return nothing;
+
+    return html`
+      <span class="character-count" part="counter">
+        ${this.value.length}/${this.maxlength}
+      </span>
+    `;
+  }
+
+  /**
    * Form lifecycle callback: reset the input to initial state.
    */
   formResetCallback(): void {
@@ -767,6 +804,7 @@ export class Input extends TailwindElement {
           />
           ${this.type === 'password' ? this.renderPasswordToggle() : nothing}
           ${this.clearable && this.value ? this.renderClearButton() : nothing}
+          ${this.renderCharacterCount()}
           <slot name="suffix" part="suffix" class="input-slot suffix-slot"></slot>
         </div>
 
