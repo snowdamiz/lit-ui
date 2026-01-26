@@ -13,7 +13,7 @@ export function DocsLayout() {
 
         <div className="pt-16 flex">
           {/* Desktop sidebar - hidden on mobile, fixed position */}
-          <aside className="hidden md:block fixed top-16 left-0 w-64 h-[calc(100vh-4rem)] overflow-y-auto border-r border-gray-200 bg-white/80 backdrop-blur-sm">
+          <aside className="hidden md:block fixed top-16 left-0 w-64 h-[calc(100vh-4rem)] overflow-y-auto border-r border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-gray-950/80 backdrop-blur-sm">
             <Sidebar />
           </aside>
 
