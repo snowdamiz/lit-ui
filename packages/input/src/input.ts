@@ -35,7 +35,8 @@ export type InputSize = 'sm' | 'md' | 'lg';
  * Supports form participation via ElementInternals for value submission.
  * Form participation is client-side only (guarded with isServer check).
  *
- * @slot - Default slot (not used, input has no slots)
+ * @slot prefix - Content displayed before the input text (e.g., currency symbol, icon)
+ * @slot suffix - Content displayed after the input text (e.g., unit label, icon)
  */
 export class Input extends TailwindElement {
   /**
@@ -206,17 +207,45 @@ export class Input extends TailwindElement {
         pointer-events: none;
       }
 
-      input {
-        width: 100%;
+      /* Input container - flex layout for prefix/suffix slots */
+      .input-container {
+        display: flex;
+        align-items: center;
         border-radius: var(--ui-input-radius);
         border-width: var(--ui-input-border-width);
         border-style: solid;
         border-color: var(--ui-input-border);
         background-color: var(--ui-input-bg);
-        color: var(--ui-input-text);
         transition:
           border-color var(--ui-input-transition),
           box-shadow var(--ui-input-transition);
+      }
+
+      .input-container:focus-within {
+        border-color: var(--ui-input-border-focus);
+      }
+
+      .input-container.container-error {
+        border-color: var(--ui-input-border-error);
+      }
+
+      .input-container.container-disabled {
+        background-color: var(--ui-input-bg-disabled);
+        border-color: var(--ui-input-border-disabled);
+        cursor: not-allowed;
+      }
+
+      .input-container.container-readonly {
+        background-color: var(--ui-input-bg-readonly, var(--color-muted));
+      }
+
+      /* Input element - remove border/bg when inside container */
+      input {
+        flex: 1;
+        min-width: 0;
+        border: none;
+        background: transparent;
+        color: var(--ui-input-text);
         outline: none;
       }
 
@@ -224,31 +253,18 @@ export class Input extends TailwindElement {
         color: var(--ui-input-placeholder);
       }
 
-      /* Focus state */
-      input:focus-visible {
-        border-color: var(--ui-input-border-focus);
-      }
-
       /* Disabled state */
       input:disabled {
-        background-color: var(--ui-input-bg-disabled);
         color: var(--ui-input-text-disabled);
-        border-color: var(--ui-input-border-disabled);
         cursor: not-allowed;
       }
 
       /* Readonly state */
       input:read-only:not(:disabled) {
-        background-color: var(--ui-input-bg-readonly, var(--color-muted));
         cursor: text;
       }
 
-      /* Error state */
-      input.input-error {
-        border-color: var(--ui-input-border-error);
-      }
-
-      /* Size variants */
+      /* Size variants for input */
       input.input-sm {
         padding: var(--ui-input-padding-y-sm) var(--ui-input-padding-x-sm);
         font-size: var(--ui-input-font-size-sm);
@@ -262,6 +278,37 @@ export class Input extends TailwindElement {
       input.input-lg {
         padding: var(--ui-input-padding-y-lg) var(--ui-input-padding-x-lg);
         font-size: var(--ui-input-font-size-lg);
+      }
+
+      /* Slot styling */
+      .input-slot {
+        display: flex;
+        align-items: center;
+      }
+
+      .prefix-slot {
+        padding-left: var(--ui-input-padding-x-md);
+      }
+
+      .suffix-slot {
+        padding-right: var(--ui-input-padding-x-md);
+      }
+
+      /* Size-specific slot padding */
+      .container-sm .prefix-slot {
+        padding-left: var(--ui-input-padding-x-sm);
+      }
+
+      .container-sm .suffix-slot {
+        padding-right: var(--ui-input-padding-x-sm);
+      }
+
+      .container-lg .prefix-slot {
+        padding-left: var(--ui-input-padding-x-lg);
+      }
+
+      .container-lg .suffix-slot {
+        padding-right: var(--ui-input-padding-x-lg);
       }
 
       /* Wrapper for label structure */
@@ -402,9 +449,22 @@ export class Input extends TailwindElement {
    * Get the CSS classes for the input element.
    */
   private getInputClasses(): string {
-    const classes = [`input-${this.size}`];
+    return `input-${this.size}`;
+  }
+
+  /**
+   * Get the CSS classes for the input container.
+   */
+  private getContainerClasses(): string {
+    const classes = [`container-${this.size}`];
     if (this.showError) {
-      classes.push('input-error');
+      classes.push('container-error');
+    }
+    if (this.disabled) {
+      classes.push('container-disabled');
+    }
+    if (this.readonly) {
+      classes.push('container-readonly');
     }
     return classes.join(' ');
   }
@@ -454,27 +514,34 @@ export class Input extends TailwindElement {
             `
           : nothing}
 
-        <input
-          id=${this.inputId}
-          part="input"
-          class=${this.getInputClasses()}
-          type=${this.type}
-          name=${this.name}
-          .value=${this.value}
-          placeholder=${this.placeholder || nothing}
-          ?required=${this.required}
-          ?disabled=${this.disabled}
-          ?readonly=${this.readonly}
-          minlength=${this.minlength ?? nothing}
-          maxlength=${this.maxlength ?? nothing}
-          min=${this.min ?? nothing}
-          max=${this.max ?? nothing}
-          pattern=${this.pattern || nothing}
-          aria-invalid=${this.showError ? 'true' : nothing}
-          aria-describedby=${this.getAriaDescribedBy()}
-          @input=${this.handleInput}
-          @blur=${this.handleBlur}
-        />
+        <div
+          class="input-container ${this.getContainerClasses()}"
+          part="container"
+        >
+          <slot name="prefix" part="prefix" class="input-slot prefix-slot"></slot>
+          <input
+            id=${this.inputId}
+            part="input"
+            class=${this.getInputClasses()}
+            type=${this.type}
+            name=${this.name}
+            .value=${this.value}
+            placeholder=${this.placeholder || nothing}
+            ?required=${this.required}
+            ?disabled=${this.disabled}
+            ?readonly=${this.readonly}
+            minlength=${this.minlength ?? nothing}
+            maxlength=${this.maxlength ?? nothing}
+            min=${this.min ?? nothing}
+            max=${this.max ?? nothing}
+            pattern=${this.pattern || nothing}
+            aria-invalid=${this.showError ? 'true' : nothing}
+            aria-describedby=${this.getAriaDescribedBy()}
+            @input=${this.handleInput}
+            @blur=${this.handleBlur}
+          />
+          <slot name="suffix" part="suffix" class="input-slot suffix-slot"></slot>
+        </div>
 
         ${this.showError && this.errorMessage
           ? html`
