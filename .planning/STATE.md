@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-26)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** v4.1 Select Component - Phase 32 Complete, Phase 33 next
+**Current focus:** v4.1 Select Component - Phase 33 in progress
 
 ## Current Position
 
-Phase: 32 - Core Single Select (COMPLETE)
-Plan: 04 of 4 complete
-Status: Phase complete
-Last activity: 2026-01-26 - Completed 32-04-PLAN.md (Final Verification)
+Phase: 33 - Select Enhancements
+Plan: 02 of 4 complete
+Status: In progress
+Last activity: 2026-01-26 - Completed 33-02-PLAN.md (Option Groups)
 
-Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 SHIPPED | v4.0 SHIPPED | v4.1 [####....] 4/7 phases
+Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 SHIPPED | v4.0 SHIPPED | v4.1 [#####...] 5/7 phases
 
 ## Performance Metrics
 
@@ -44,8 +44,8 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHI
 - Total execution time: 30 min
 
 **v4.1 Velocity (in progress):**
-- Plans completed: 6
-- Total execution time: 14 min
+- Plans completed: 8
+- Total execution time: 22 min
 
 ## Accumulated Context
 
@@ -68,6 +68,9 @@ v3.0, v3.1, v4.0 decisions validated and archived.
 | Type-ahead 500ms reset timeout | Matches native select behavior | 32-02 |
 | Validation on blur follows input pattern | Consistent UX across form components | 32-03 |
 | Error message from internals.validationMessage | Native integration for form participation | 32-03 |
+| Use slot + property fallback for options | Slot always rendered, property options only when slot empty | 33-02 |
+| Register lui-option as custom element | Required for slot-based usage with groups | 33-02 |
+| MutationObserver for group content | Detect dynamic option changes inside groups | 33-02 |
 
 ### Pending Todos
 
@@ -90,21 +93,22 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-01-26 23:15Z
-Stopped at: Completed 32-04-PLAN.md (Final Verification) - Phase 32 complete
+Last session: 2026-01-26 23:46Z
+Stopped at: Completed 33-02-PLAN.md (Option Groups)
 Resume file: None
 
 ## Next Steps
 
-Phase 33 (Select Enhancements) is next.
+Continue Phase 33 (Select Enhancements).
 
-**Phase 32 Summary:**
-- 4 plans completed
-- Complete single select component with full keyboard navigation, type-ahead, form participation, ARIA compliance
-- Human-verified all interactions working correctly
+**Phase 33 Progress:**
+- Plan 01: Research complete
+- Plan 02: Option Groups complete (lui-option-group with ARIA structure)
+- Plan 03: Clearable (next)
+- Plan 04: Custom Rendering (pending)
 
 **Remaining phases in v4.1:**
-- Phase 33: Select Enhancements (option groups, custom content, clearable)
+- Phase 33: Select Enhancements (2/4 plans complete)
 - Phase 34: Multi-Select
 - Phase 35: Combobox
 - Phase 36: Async Loading
