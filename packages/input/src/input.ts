@@ -428,6 +428,22 @@ export class Input extends TailwindElement {
   }
 
   /**
+   * Handle container click to focus input.
+   * Allows clicking on prefix/suffix areas to focus the input,
+   * while not interfering with interactive content (buttons, links).
+   */
+  private handleContainerClick(e: Event): void {
+    const target = e.target as HTMLElement;
+    // Focus if clicking container directly or slot area (not interactive content)
+    if (
+      target === e.currentTarget ||
+      (target.closest('slot') && !target.closest('button, a, input'))
+    ) {
+      this.inputEl?.focus();
+    }
+  }
+
+  /**
    * Form lifecycle callback: reset the input to initial state.
    */
   formResetCallback(): void {
@@ -517,6 +533,7 @@ export class Input extends TailwindElement {
         <div
           class="input-container ${this.getContainerClasses()}"
           part="container"
+          @click=${this.handleContainerClick}
         >
           <slot name="prefix" part="prefix" class="input-slot prefix-slot"></slot>
           <input
