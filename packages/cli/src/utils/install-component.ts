@@ -9,6 +9,8 @@ import { detectPackageManager, type PackageManager } from './detect-package-mana
 export const componentToPackage: Record<string, string> = {
   button: '@lit-ui/button',
   dialog: '@lit-ui/dialog',
+  input: '@lit-ui/input',
+  textarea: '@lit-ui/textarea',
 };
 
 /**
@@ -56,14 +58,6 @@ export async function installComponent(
     await execa(pm, args, { cwd, stdio: 'pipe' });
 
     consola.success(`Installed ${pc.cyan(packageName)}`);
-
-    // Print usage instructions
-    console.log('');
-    console.log(pc.dim('Import:'));
-    console.log(`  import '@lit-ui/${componentName}';`);
-    console.log('');
-    console.log(pc.dim('Usage:'));
-    console.log(`  <lui-${componentName}>...</lui-${componentName}>`);
 
     return true;
   } catch (error) {

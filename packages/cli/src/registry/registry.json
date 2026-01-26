@@ -27,6 +27,24 @@
       ],
       "dependencies": [],
       "registryDependencies": []
+    },
+    {
+      "name": "input",
+      "description": "Form input with validation, sizes, password toggle, and clearable",
+      "files": [
+        { "path": "components/input/input.ts", "type": "component" }
+      ],
+      "dependencies": [],
+      "registryDependencies": []
+    },
+    {
+      "name": "textarea",
+      "description": "Multi-line text input with auto-resize, validation, and character count",
+      "files": [
+        { "path": "components/textarea/textarea.ts", "type": "component" }
+      ],
+      "dependencies": [],
+      "registryDependencies": []
     }
   ]
 }
