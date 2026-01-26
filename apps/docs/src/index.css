@@ -134,6 +134,18 @@ body {
   transform: translateY(-2px);
 }
 
+.dark .card-elevated {
+  box-shadow:
+    0 1px 3px 0 oklch(0 0 0 / 0.2),
+    0 1px 2px -1px oklch(0 0 0 / 0.2);
+}
+
+.dark .card-elevated:hover {
+  box-shadow:
+    0 10px 15px -3px oklch(0 0 0 / 0.3),
+    0 4px 6px -4px oklch(0 0 0 / 0.3);
+}
+
 /* Button with subtle shadow */
 .btn-shadow {
   box-shadow:
@@ -190,10 +202,21 @@ body {
   background-clip: text;
 }
 
+.dark .text-gradient {
+  background: linear-gradient(135deg, oklch(0.95 0 0) 0%, oklch(0.65 0 0) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
 /* Divider with fade */
 .divider-fade {
   background: linear-gradient(to right, transparent, oklch(0.88 0 0), transparent);
   height: 1px;
+}
+
+.dark .divider-fade {
+  background: linear-gradient(to right, transparent, oklch(0.25 0 0), transparent);
 }
 
 /* Terminal glow effect */
