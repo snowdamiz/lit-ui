@@ -185,7 +185,13 @@ Plans:
 
 **Requirements:** SELECT-13, SELECT-14, SELECT-15, A11Y-05
 
-**Plans:** TBD
+**Plans:** 4 plans
+
+Plans:
+- [ ] 33-01-PLAN.md — Slot-based options with custom content
+- [ ] 33-02-PLAN.md — Option groups component
+- [ ] 33-03-PLAN.md — Clearable select
+- [ ] 33-04-PLAN.md — Final verification checkpoint
 
 **Success Criteria:**
 
