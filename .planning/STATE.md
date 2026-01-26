@@ -5,7 +5,7 @@
 See: .planning/PROJECT.md (updated 2026-01-26)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** v4.0 Form Inputs - Phase 30 Select Component
+**Current focus:** v4.0 Form Inputs - Phase 30 CLI and Documentation
 
 ## Current Position
 
@@ -14,7 +14,7 @@ Plan: 2/2 complete
 Status: Phase complete
 Last activity: 2026-01-26 - Completed 29-02-PLAN.md
 
-Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 SHIPPED | v4.0 [########..] 5/5
+Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 SHIPPED | v4.0 [########..] 4/5
 
 ## Performance Metrics
 
@@ -122,9 +122,9 @@ Roadmap complete with 5 phases (26-30), 33 requirements mapped.
 - Plan 02: Complete - Auto-resize and character count
 - Status: Complete (verified)
 
-**Phase 30: Select Component** - PENDING
-- Goal: Dropdown selection component with accessibility
-- Requirements: SELECT-01 through SELECT-10, INFRA-04
+**Phase 30: CLI and Documentation** - PENDING
+- Goal: Developers can install Input and Textarea via CLI and learn usage from docs
+- Requirements: INFRA-04, INFRA-05
 - Status: Not started
 
-**Next action:** Run `/gsd:research-phase 30` to begin Select Component phase
+**Next action:** Run `/gsd:discuss-phase 30` to gather context or `/gsd:plan-phase 30` to plan directly

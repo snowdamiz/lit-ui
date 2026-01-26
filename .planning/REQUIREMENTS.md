@@ -25,27 +25,27 @@ Requirements for Input and Textarea components. Form primitives with full valida
 - [x] **INPUT-14**: Search input has clear button when not empty
 - [x] **INPUT-15**: Input supports prefix slot (icon/text before input)
 - [x] **INPUT-16**: Input supports suffix slot (icon/text after input)
-- [ ] **INPUT-17**: Input supports optional character counter (current/max)
+- [x] **INPUT-17**: Input supports optional character counter (current/max)
 
 ### Textarea Component
 
-- [ ] **TEXTAREA-01**: Textarea renders multi-line text input
-- [ ] **TEXTAREA-02**: Textarea supports rows attribute for initial height
-- [ ] **TEXTAREA-03**: Textarea supports resize property (none, vertical, horizontal, both)
-- [ ] **TEXTAREA-04**: Textarea participates in native forms via ElementInternals
-- [ ] **TEXTAREA-05**: Textarea validates required fields
-- [ ] **TEXTAREA-06**: Textarea validates minlength/maxlength constraints
-- [ ] **TEXTAREA-07**: Textarea shows focus ring on keyboard focus
-- [ ] **TEXTAREA-08**: Textarea shows error visual state when invalid
-- [ ] **TEXTAREA-09**: Textarea supports placeholder text
-- [ ] **TEXTAREA-10**: Textarea auto-resizes to fit content (optional, via attribute)
-- [ ] **TEXTAREA-11**: Textarea supports optional character counter (current/max)
+- [x] **TEXTAREA-01**: Textarea renders multi-line text input
+- [x] **TEXTAREA-02**: Textarea supports rows attribute for initial height
+- [x] **TEXTAREA-03**: Textarea supports resize property (none, vertical, horizontal, both)
+- [x] **TEXTAREA-04**: Textarea participates in native forms via ElementInternals
+- [x] **TEXTAREA-05**: Textarea validates required fields
+- [x] **TEXTAREA-06**: Textarea validates minlength/maxlength constraints
+- [x] **TEXTAREA-07**: Textarea shows focus ring on keyboard focus
+- [x] **TEXTAREA-08**: Textarea shows error visual state when invalid
+- [x] **TEXTAREA-09**: Textarea supports placeholder text
+- [x] **TEXTAREA-10**: Textarea auto-resizes to fit content (optional, via attribute)
+- [x] **TEXTAREA-11**: Textarea supports optional character counter (current/max)
 
 ### Infrastructure
 
 - [x] **INFRA-01**: CSS tokens for input/textarea added to @lit-ui/core
 - [x] **INFRA-02**: @lit-ui/input package created with SSR support
-- [ ] **INFRA-03**: @lit-ui/textarea package created with SSR support
+- [x] **INFRA-03**: @lit-ui/textarea package created with SSR support
 - [ ] **INFRA-04**: CLI templates updated for input and textarea
 - [ ] **INFRA-05**: Docs pages created for Input and Textarea components
 
@@ -99,19 +99,19 @@ Deferred to later milestones.
 | INPUT-14 | Phase 28 | Complete |
 | INPUT-15 | Phase 28 | Complete |
 | INPUT-16 | Phase 28 | Complete |
-| INPUT-17 | Phase 29 | Pending |
-| TEXTAREA-01 | Phase 29 | Pending |
-| TEXTAREA-02 | Phase 29 | Pending |
-| TEXTAREA-03 | Phase 29 | Pending |
-| TEXTAREA-04 | Phase 29 | Pending |
-| TEXTAREA-05 | Phase 29 | Pending |
-| TEXTAREA-06 | Phase 29 | Pending |
-| TEXTAREA-07 | Phase 29 | Pending |
-| TEXTAREA-08 | Phase 29 | Pending |
-| TEXTAREA-09 | Phase 29 | Pending |
-| TEXTAREA-10 | Phase 29 | Pending |
-| TEXTAREA-11 | Phase 29 | Pending |
-| INFRA-03 | Phase 29 | Pending |
+| INPUT-17 | Phase 29 | Complete |
+| TEXTAREA-01 | Phase 29 | Complete |
+| TEXTAREA-02 | Phase 29 | Complete |
+| TEXTAREA-03 | Phase 29 | Complete |
+| TEXTAREA-04 | Phase 29 | Complete |
+| TEXTAREA-05 | Phase 29 | Complete |
+| TEXTAREA-06 | Phase 29 | Complete |
+| TEXTAREA-07 | Phase 29 | Complete |
+| TEXTAREA-08 | Phase 29 | Complete |
+| TEXTAREA-09 | Phase 29 | Complete |
+| TEXTAREA-10 | Phase 29 | Complete |
+| TEXTAREA-11 | Phase 29 | Complete |
+| INFRA-03 | Phase 29 | Complete |
 | INFRA-04 | Phase 30 | Pending |
 | INFRA-05 | Phase 30 | Pending |
 
@@ -122,4 +122,4 @@ Deferred to later milestones.
 
 ---
 *Requirements defined: 2026-01-26*
-*Last updated: 2026-01-26 after Phase 28 complete*
+*Last updated: 2026-01-26 after Phase 29 complete*

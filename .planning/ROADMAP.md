@@ -194,8 +194,8 @@ Plans:
 **Plans:** 2 plans
 
 Plans:
-- [ ] 29-01-PLAN.md — Package infrastructure + core textarea component
-- [ ] 29-02-PLAN.md — Auto-resize and character counter
+- [x] 29-01-PLAN.md — Package infrastructure + core textarea component
+- [x] 29-02-PLAN.md — Auto-resize and character counter
 
 **Success Criteria:**
 
@@ -264,9 +264,9 @@ Plans:
 | 26. CSS Tokens Foundation | v4.0 | 1/1 | Complete | 2026-01-26 |
 | 27. Core Input Component | v4.0 | 2/2 | Complete | 2026-01-26 |
 | 28. Input Differentiators | v4.0 | 2/2 | Complete | 2026-01-26 |
-| 29. Textarea Component | v4.0 | 0/? | Planned | - |
+| 29. Textarea Component | v4.0 | 2/2 | Complete | 2026-01-26 |
 | 30. CLI and Documentation | v4.0 | 0/? | Planned | - |
 
 ---
 *Roadmap created: 2026-01-24*
-*Last updated: 2026-01-26 (Phase 28 complete)*
+*Last updated: 2026-01-26 (Phase 29 complete)*
