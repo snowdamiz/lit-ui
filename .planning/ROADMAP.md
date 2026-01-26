@@ -162,10 +162,10 @@ Plans:
 **Plans:** 4 plans
 
 Plans:
-- [ ] 32-01-PLAN.md — Dropdown and options infrastructure
-- [ ] 32-02-PLAN.md — Keyboard navigation and type-ahead
-- [ ] 32-03-PLAN.md — Form participation and visual states
-- [ ] 32-04-PLAN.md — Final verification checkpoint
+- [x] 32-01-PLAN.md — Dropdown and options infrastructure
+- [x] 32-02-PLAN.md — Keyboard navigation and type-ahead
+- [x] 32-03-PLAN.md — Form participation and visual states
+- [x] 32-04-PLAN.md — Final verification checkpoint
 
 **Success Criteria:**
 
@@ -319,7 +319,7 @@ Plans:
 | 29. Textarea Component | v4.0 | 2/2 | Complete | 2026-01-26 |
 | 30. CLI and Documentation | v4.0 | 3/3 | Complete | 2026-01-26 |
 | 31. Select Infrastructure | v4.1 | 2/2 | Complete | 2026-01-26 |
-| 32. Core Single Select | v4.1 | 0/? | Not started | - |
+| 32. Core Single Select | v4.1 | 4/4 | Complete | 2026-01-26 |
 | 33. Select Enhancements | v4.1 | 0/? | Not started | - |
 | 34. Multi-Select | v4.1 | 0/? | Not started | - |
 | 35. Combobox | v4.1 | 0/? | Not started | - |
@@ -328,4 +328,4 @@ Plans:
 
 ---
 *Roadmap created: 2026-01-24*
-*Last updated: 2026-01-26 (Phase 31 complete)*
+*Last updated: 2026-01-26 (Phase 32 complete)*

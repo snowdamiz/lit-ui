@@ -9,18 +9,18 @@ Requirements for Select component with single-select, multi-select, combobox, an
 
 ### Single Select
 
-- [ ] **SELECT-01**: Select renders as dropdown trigger with current value display
-- [ ] **SELECT-02**: Select opens dropdown on click, Enter, Space, or ArrowDown
-- [ ] **SELECT-03**: Select supports arrow key navigation through options
-- [ ] **SELECT-04**: Select supports type-ahead search (focuses matching option)
-- [ ] **SELECT-05**: Select participates in native forms via ElementInternals
-- [ ] **SELECT-06**: Select validates required fields (shows error when empty on submit)
-- [ ] **SELECT-07**: Select supports disabled state (whole component)
-- [ ] **SELECT-08**: Option supports disabled state (individual options)
-- [ ] **SELECT-09**: Select shows placeholder text when no selection
-- [ ] **SELECT-10**: Select shows focus ring on keyboard focus
-- [ ] **SELECT-11**: Select shows error visual state when invalid
-- [ ] **SELECT-12**: Select supports size variants (sm, default, lg)
+- [x] **SELECT-01**: Select renders as dropdown trigger with current value display
+- [x] **SELECT-02**: Select opens dropdown on click, Enter, Space, or ArrowDown
+- [x] **SELECT-03**: Select supports arrow key navigation through options
+- [x] **SELECT-04**: Select supports type-ahead search (focuses matching option)
+- [x] **SELECT-05**: Select participates in native forms via ElementInternals
+- [x] **SELECT-06**: Select validates required fields (shows error when empty on submit)
+- [x] **SELECT-07**: Select supports disabled state (whole component)
+- [x] **SELECT-08**: Option supports disabled state (individual options)
+- [x] **SELECT-09**: Select shows placeholder text when no selection
+- [x] **SELECT-10**: Select shows focus ring on keyboard focus
+- [x] **SELECT-11**: Select shows error visual state when invalid
+- [x] **SELECT-12**: Select supports size variants (sm, default, lg)
 - [ ] **SELECT-13**: Select supports option groups with headers (lui-option-group)
 - [ ] **SELECT-14**: Option supports custom content via slots (icons, descriptions)
 - [ ] **SELECT-15**: Select supports clearable prop (X button to reset value)
@@ -64,10 +64,10 @@ Requirements for Select component with single-select, multi-select, combobox, an
 
 ### Accessibility
 
-- [ ] **A11Y-01**: Select uses ARIA 1.2 combobox pattern (input has role="combobox")
-- [ ] **A11Y-02**: Select uses aria-controls to reference listbox (not aria-owns)
-- [ ] **A11Y-03**: Select manages focus with aria-activedescendant
-- [ ] **A11Y-04**: Options have role="option" with aria-selected state
+- [x] **A11Y-01**: Select uses ARIA 1.2 combobox pattern (input has role="combobox")
+- [x] **A11Y-02**: Select uses aria-controls to reference listbox (not aria-owns)
+- [x] **A11Y-03**: Select manages focus with aria-activedescendant
+- [x] **A11Y-04**: Options have role="option" with aria-selected state
 - [ ] **A11Y-05**: Option groups use role="group" with aria-labelledby
 - [ ] **A11Y-06**: Keyboard navigation follows W3C APG combobox pattern
 
@@ -103,22 +103,22 @@ Deferred to later milestones.
 | INFRA-01 | Phase 31 | Complete |
 | INFRA-02 | Phase 31 | Complete |
 | INFRA-03 | Phase 31 | Complete |
-| SELECT-01 | Phase 32 | Pending |
-| SELECT-02 | Phase 32 | Pending |
-| SELECT-03 | Phase 32 | Pending |
-| SELECT-04 | Phase 32 | Pending |
-| SELECT-05 | Phase 32 | Pending |
-| SELECT-06 | Phase 32 | Pending |
-| SELECT-07 | Phase 32 | Pending |
-| SELECT-08 | Phase 32 | Pending |
-| SELECT-09 | Phase 32 | Pending |
-| SELECT-10 | Phase 32 | Pending |
-| SELECT-11 | Phase 32 | Pending |
-| SELECT-12 | Phase 32 | Pending |
-| A11Y-01 | Phase 32 | Pending |
-| A11Y-02 | Phase 32 | Pending |
-| A11Y-03 | Phase 32 | Pending |
-| A11Y-04 | Phase 32 | Pending |
+| SELECT-01 | Phase 32 | Complete |
+| SELECT-02 | Phase 32 | Complete |
+| SELECT-03 | Phase 32 | Complete |
+| SELECT-04 | Phase 32 | Complete |
+| SELECT-05 | Phase 32 | Complete |
+| SELECT-06 | Phase 32 | Complete |
+| SELECT-07 | Phase 32 | Complete |
+| SELECT-08 | Phase 32 | Complete |
+| SELECT-09 | Phase 32 | Complete |
+| SELECT-10 | Phase 32 | Complete |
+| SELECT-11 | Phase 32 | Complete |
+| SELECT-12 | Phase 32 | Complete |
+| A11Y-01 | Phase 32 | Complete |
+| A11Y-02 | Phase 32 | Complete |
+| A11Y-03 | Phase 32 | Complete |
+| A11Y-04 | Phase 32 | Complete |
 | SELECT-13 | Phase 33 | Pending |
 | SELECT-14 | Phase 33 | Pending |
 | SELECT-15 | Phase 33 | Pending |
@@ -154,4 +154,4 @@ Deferred to later milestones.
 
 ---
 *Requirements defined: 2026-01-26*
-*Last updated: 2026-01-26 (Phase 31 complete)*
+*Last updated: 2026-01-26 (Phase 32 complete)*
