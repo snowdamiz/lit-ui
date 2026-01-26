@@ -21,7 +21,7 @@
     }
   },
   "files": ["dist"],
-  "sideEffects": false,
+  "sideEffects": true,
   "scripts": {
     "dev": "vite build --watch",
     "build": "vite build"

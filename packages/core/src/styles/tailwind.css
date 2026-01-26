@@ -196,10 +196,35 @@
  * These are defined on :root so they cascade into Shadow DOM.
  * Users can override these globally or in scoped containers.
  *
+ * IMPORTANT: This :root block is extracted at runtime by TailwindElement
+ * and injected into document.adoptedStyleSheets. It must be self-contained
+ * with default values for all semantic tokens it uses.
+ *
  * Tier 1 Customization: Override these properties for value-based styling
  * (colors, spacing, sizing) without needing Tailwind classes.
  * ========================================================================== */
 :root {
+  /* -------------------------------------------------------------------------
+   * Semantic Color Tokens (Defaults)
+   * These provide fallback values for component tokens below.
+   * Apps can override these to customize the entire theme.
+   * ------------------------------------------------------------------------- */
+  --ui-color-primary: oklch(0.62 0.18 250); /* brand-500 */
+  --ui-color-primary-foreground: white;
+  --ui-color-secondary: oklch(0.967 0.003 264.542); /* gray-100 */
+  --ui-color-secondary-foreground: oklch(0.21 0.006 285.885); /* gray-900 */
+  --ui-color-destructive: oklch(0.637 0.237 25.331); /* red-500 */
+  --ui-color-destructive-foreground: white;
+  --ui-color-muted: oklch(0.967 0.003 264.542); /* gray-100 */
+  --ui-color-muted-foreground: oklch(0.551 0.027 264.364); /* gray-500 */
+  --ui-color-accent: oklch(0.967 0.003 264.542); /* gray-100 */
+  --ui-color-accent-foreground: oklch(0.21 0.006 285.885); /* gray-900 */
+  --ui-color-foreground: oklch(0.13 0.028 261.692); /* gray-950 */
+  --ui-color-border: oklch(0.928 0.006 264.531); /* gray-200 */
+  --ui-color-ring: oklch(0.70 0.15 250); /* brand-400 */
+  --ui-color-card: white;
+  --ui-color-card-foreground: oklch(0.13 0.028 261.692); /* gray-950 */
+
   /* -------------------------------------------------------------------------
    * Button Component
    * ------------------------------------------------------------------------- */
@@ -226,30 +251,30 @@
   --ui-button-padding-y-lg: 0.75rem;
   --ui-button-gap-lg: 0.625rem;
 
-  /* Variant Colors - Primary */
-  --ui-button-primary-bg: var(--color-primary);
-  --ui-button-primary-text: var(--color-primary-foreground);
+  /* Variant Colors - Primary (uses --color-* if defined, falls back to --ui-color-*) */
+  --ui-button-primary-bg: var(--color-primary, var(--ui-color-primary));
+  --ui-button-primary-text: var(--color-primary-foreground, var(--ui-color-primary-foreground));
   --ui-button-primary-hover-opacity: 0.9;
 
   /* Variant Colors - Secondary */
-  --ui-button-secondary-bg: var(--color-secondary);
-  --ui-button-secondary-text: var(--color-secondary-foreground);
-  --ui-button-secondary-hover-bg: var(--color-accent);
+  --ui-button-secondary-bg: var(--color-secondary, var(--ui-color-secondary));
+  --ui-button-secondary-text: var(--color-secondary-foreground, var(--ui-color-secondary-foreground));
+  --ui-button-secondary-hover-bg: var(--color-accent, var(--ui-color-accent));
 
   /* Variant Colors - Outline */
   --ui-button-outline-bg: transparent;
-  --ui-button-outline-text: var(--color-foreground);
-  --ui-button-outline-border: var(--color-border);
-  --ui-button-outline-hover-bg: var(--color-accent);
+  --ui-button-outline-text: var(--color-foreground, var(--ui-color-foreground));
+  --ui-button-outline-border: var(--color-border, var(--ui-color-border));
+  --ui-button-outline-hover-bg: var(--color-accent, var(--ui-color-accent));
 
   /* Variant Colors - Ghost */
   --ui-button-ghost-bg: transparent;
-  --ui-button-ghost-text: var(--color-foreground);
-  --ui-button-ghost-hover-bg: var(--color-accent);
+  --ui-button-ghost-text: var(--color-foreground, var(--ui-color-foreground));
+  --ui-button-ghost-hover-bg: var(--color-accent, var(--ui-color-accent));
 
   /* Variant Colors - Destructive */
-  --ui-button-destructive-bg: var(--color-destructive);
-  --ui-button-destructive-text: var(--color-destructive-foreground);
+  --ui-button-destructive-bg: var(--color-destructive, var(--ui-color-destructive));
+  --ui-button-destructive-text: var(--color-destructive-foreground, var(--ui-color-destructive-foreground));
   --ui-button-destructive-hover-opacity: 0.9;
 
   /* -------------------------------------------------------------------------
@@ -265,14 +290,14 @@
   --ui-dialog-max-width-lg: 32rem;
 
   /* Colors */
-  --ui-dialog-bg: var(--color-card);
-  --ui-dialog-text: var(--color-card-foreground);
+  --ui-dialog-bg: var(--color-card, var(--ui-color-card));
+  --ui-dialog-text: var(--color-card-foreground, var(--ui-color-card-foreground));
   --ui-dialog-backdrop: rgba(0, 0, 0, 0.5);
 
   /* Typography */
   --ui-dialog-title-size: 1.125rem;
   --ui-dialog-title-weight: 600;
-  --ui-dialog-body-color: var(--color-muted-foreground);
+  --ui-dialog-body-color: var(--color-muted-foreground, var(--ui-color-muted-foreground));
 
   /* Spacing */
   --ui-dialog-header-margin: 1rem;

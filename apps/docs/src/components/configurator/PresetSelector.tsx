@@ -24,57 +24,55 @@ export function PresetSelector() {
   };
 
   return (
-    <div className="space-y-3">
-      <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-        Presets
-      </label>
-      <div className="grid grid-cols-2 gap-2">
-        {presetThemes.map((preset) => (
+    <div className="grid grid-cols-2 gap-3">
+      {presetThemes.map((preset) => {
+        const isActive = activePreset?.id === preset.id;
+        return (
           <button
             key={preset.id}
             onClick={() => handleSelectPreset(preset)}
             className={`
-              p-3 rounded-lg border-2 text-left transition-all
+              group relative p-4 rounded-xl text-left transition-all border
               ${
-                activePreset?.id === preset.id
-                  ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
-                  : "border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600"
+                isActive
+                  ? "bg-gray-100 border-gray-300"
+                  : "bg-gray-50 hover:bg-gray-100 border-gray-200"
               }
             `}
           >
             {/* Color preview dots */}
-            <div className="flex gap-1 mb-2">
+            <div className="flex gap-1.5 mb-3">
               <div
-                className="w-4 h-4 rounded-full border border-gray-200 dark:border-gray-600"
+                className="w-5 h-5 rounded-full ring-1 ring-gray-300"
                 style={{
                   backgroundColor: oklchToHex(preset.config.colors.primary),
                 }}
                 title="Primary"
               />
               <div
-                className="w-4 h-4 rounded-full border border-gray-200 dark:border-gray-600"
+                className="w-5 h-5 rounded-full ring-1 ring-gray-300"
                 style={{
                   backgroundColor: oklchToHex(preset.config.colors.secondary),
                 }}
                 title="Secondary"
               />
               <div
-                className="w-4 h-4 rounded-full border border-gray-200 dark:border-gray-600"
+                className="w-5 h-5 rounded-full ring-1 ring-gray-300"
                 style={{
                   backgroundColor: oklchToHex(preset.config.colors.destructive),
                 }}
                 title="Destructive"
               />
             </div>
-            <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
+            <div className="text-sm font-semibold text-gray-900">
               {preset.name}
             </div>
-            <div className="text-xs text-gray-500 dark:text-gray-400">
+            <div className="text-xs text-gray-500">
               {preset.description}
             </div>
           </button>
-        ))}
-      </div>
+        );
+      })}
     </div>
   );
 }

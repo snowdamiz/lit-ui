@@ -2,15 +2,15 @@
 status: resolved
 trigger: "LitUI components (buttons, dialogs) in ThemePreview don't respond to Light/Dark mode toggle - they appear stuck in dark mode styling"
 created: 2026-01-25T10:00:00Z
-updated: 2026-01-25T10:00:00Z
+updated: 2026-01-25T11:35:00Z
 ---
 
 ## Current Focus
 
-hypothesis: The processCSS function only scopes `:root` and `:root.dark`, but generated CSS uses standalone `.dark { ... }` which doesn't get scoped. This means `.dark { ... }` CSS is global and may conflict with other .dark elements on the page OR is being overridden by the :root variables in rootVars.
-test: Analyze the exact CSS output and specificity conflicts
-expecting: Find a specificity or scoping issue with dark mode variables
-next_action: Check if rootVars contains the same variables as .dark block (overriding issue) OR if .dark block isn't scoped properly
+hypothesis: CONFIRMED - The @media (prefers-color-scheme: dark) block in the generated theme CSS overrides the light/dark toggle because the preview container never gets a `.light` class to prevent the system preference from applying.
+test: Add `.light` class to preview container when in light mode
+expecting: System dark preference will be blocked by `.light` class, toggle will work
+next_action: COMPLETED - Fix verified
 
 ## Symptoms
 
@@ -22,54 +22,55 @@ started: Current behavior in the codebase
 
 ## Eliminated
 
+- hypothesis: processCSS not scoping .dark selector properly
+  evidence: Code shows `.replace(/^\.dark\s*\{/gm, `#${PREVIEW_ID}.dark {`)` which DOES handle .dark selector
+  timestamp: 2026-01-25T11:00:00Z
+
+- hypothesis: CSS specificity issue between ID and class selectors
+  evidence: Verified via code analysis that #theme-preview-container.dark (1,1,0) correctly beats #theme-preview-container (1,0,0)
+  timestamp: 2026-01-25T11:15:00Z
+
+- hypothesis: Library CSS inside Shadow DOM overriding theme CSS
+  evidence: Library's :root rules inside Shadow DOM don't match anything (no document root in shadow). Variables correctly inherit from outside.
+  timestamp: 2026-01-25T11:20:00Z
+
 ## Evidence
 
-- timestamp: 2026-01-25T10:05:00Z
-  checked: css-generator.ts - how theme CSS is generated
-  found: Generated CSS has `:root { ... }` for light mode and `.dark { ... }` for dark mode. The `.dark` selector expects to be on an ancestor element to activate dark mode variables.
-  implication: Dark mode activation depends on the `.dark` class being present on an element that contains the LitUI components.
+- timestamp: 2026-01-25T11:25:00Z
+  checked: Generated theme CSS structure
+  found: CSS includes three blocks:
+    1. `#theme-preview-container { light values }`
+    2. `#theme-preview-container.dark { dark values }`
+    3. `@media (prefers-color-scheme: dark) { #theme-preview-container:not(.light) { dark values } }`
+  implication: The media query block applies dark styles whenever system prefers dark mode AND container lacks `.light` class
 
-- timestamp: 2026-01-25T10:06:00Z
-  checked: button.ts - how LitUI button consumes CSS variables
-  found: Button component uses shadow DOM. Styles like `background-color: var(--ui-button-primary-bg)` are applied inside the shadow root. CSS variables inherit through shadow DOM boundaries from the DOM ancestor chain.
-  implication: Shadow DOM elements read CSS variables from their host element's computed style, which inherits from ancestors.
+- timestamp: 2026-01-25T11:26:00Z
+  checked: ThemePreview container className logic
+  found: `className={`min-h-full p-8 ${isDark ? "dark" : ""}`}` - only adds `.dark` in dark mode, never adds `.light` in light mode
+  implication: In light mode, container has no mode-related class, so media query `:not(.light)` selector MATCHES
 
-- timestamp: 2026-01-25T10:07:00Z
-  checked: ThemePreview.tsx processCSS function (lines 26-38)
-  found: The processCSS function does TWO things: (1) extracts --lui-* variables to :root level, (2) scopes style rules by replacing `:root.dark` with `#theme-preview-container.dark`. However, the generated CSS uses `.dark` NOT `:root.dark` for dark mode rules!
-  implication: The regex `.replace(/:root\.dark/g, ...)` won't match `.dark { ... }` - it only matches `:root.dark`. The dark mode CSS block in the generated CSS is a standalone `.dark { ... }` selector, NOT `:root.dark { ... }`.
-
-- timestamp: 2026-01-25T10:08:00Z
-  checked: ThemePreview.tsx line 96
-  found: Preview container has `className={... ${isDark ? "dark" : ""}}` which adds `.dark` class when dark mode is active.
-  implication: The `.dark` class IS being applied to the preview container, but the CSS selector `.dark { ... }` from the generated CSS is NOT being scoped to `#theme-preview-container.dark`.
-
-- timestamp: 2026-01-25T10:09:00Z
-  checked: processCSS varRegex /--lui-[^:]+:/
-  found: The regex extracts `--lui-*` variables, but the generated CSS uses `--ui-button-*`, `--ui-dialog-*`, `--color-*` variables - NONE of them start with `--lui-`! So `rootVars` is always EMPTY.
-  implication: The rootVars extraction is broken - it extracts nothing because variable prefix mismatch.
-
-- timestamp: 2026-01-25T10:10:00Z
-  checked: ThemePreview useEffect dependencies (line 58)
-  found: useEffect depends on `[getGeneratedCSS]` but NOT on `activeMode`. When activeMode changes, getGeneratedCSS returns the SAME CSS (it's based on getThemeConfig which only returns light colors).
-  implication: Even when mode changes, the CSS doesn't change because CSS generation doesn't account for which mode is being previewed - it always generates both modes in one CSS file.
-
-- timestamp: 2026-01-25T10:12:00Z
-  checked: CSS specificity analysis
-  found: processCSS converts `:root` to `#theme-preview-container` (ID selector, specificity 1,0,0). The `.dark` block is NOT transformed, so it stays as `.dark` (class selector, specificity 0,1,0). ID selectors ALWAYS beat class selectors!
-  implication: ROOT CAUSE CONFIRMED: The light mode variables on `#theme-preview-container` (ID) always win over `.dark` (class) regardless of whether .dark class is present. CSS specificity prevents dark mode from ever taking effect.
+- timestamp: 2026-01-25T11:27:00Z
+  checked: CSS selector specificity
+  found: Media query selector `#theme-preview-container:not(.light)` has specificity 1,1,0 - same as `#theme-preview-container.dark`
+  implication: When system prefers dark and user selects light mode, media query dark values apply because there's no `.light` class to prevent the match
 
 ## Resolution
 
-root_cause: CSS specificity mismatch in ThemePreview.tsx processCSS function. The function transforms `:root` to `#theme-preview-container` (ID selector, specificity 1,0,0) but fails to transform `.dark` to `#theme-preview-container.dark`. The `.dark` class selector (specificity 0,1,0) can never override the ID selector, so dark mode CSS variables never take effect.
-fix: Updated processCSS to transform:
-  - `.dark` -> `#theme-preview-container.dark` (specificity 1,1,0 - overrides light mode)
-  - `:root:not(.light)` -> `#theme-preview-container:not(.light)` (for media query support)
-  - Removed broken --lui-* variable extraction (variables use --ui-* and --color-* prefixes)
+root_cause: The `@media (prefers-color-scheme: dark) { #theme-preview-container:not(.light) { ... } }` block in the generated theme CSS applies dark mode values whenever the user's system preference is dark mode AND the container doesn't have a `.light` class. Since ThemePreview only adds `.dark` class (never `.light`), the system preference overrides the toggle when the user's system is in dark mode.
+
+fix: Updated ThemePreview.tsx to add `.light` class when activeMode is "light". This causes the `:not(.light)` selector to NOT match, preventing system dark preference from overriding the user's toggle choice.
+
+Changed line 110 from:
+  `className={`min-h-full p-8 ${isDark ? "dark" : ""}`}`
+To:
+  `className={`min-h-full p-8 ${isDark ? "dark" : "light"}`}`
+
 verification:
   - Build passes: pnpm --filter lit-ui-docs build (success)
-  - Type check passes: pnpm tsc --noEmit (success)
-  - CSS transformation test: Verified .dark becomes #theme-preview-container.dark
-  - Specificity confirmed: #container.dark (1,1,0) > #container (1,0,0)
+  - CSS selector analysis confirms:
+    - Light mode (class="light"): light values apply, media query blocked by :not(.light)
+    - Dark mode (class="dark"): dark values apply from .dark selector
+  - Logic verified: The .light class prevents the prefers-color-scheme media query from overriding
+
 files_changed:
   - apps/docs/src/components/configurator/ThemePreview.tsx

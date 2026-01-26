@@ -2,14 +2,14 @@
 status: resolved
 trigger: "LitUI components on Button and Dialog pages in docs app have no styles, but work correctly on Theme Configurator page"
 created: 2026-01-25T12:00:00Z
-updated: 2026-01-25T12:20:00Z
+updated: 2026-01-25T15:05:00Z
 ---
 
 ## Current Focus
 
 hypothesis: CONFIRMED AND FIXED
-test: Build and verify
-expecting: Components render correctly with library default styles
+test: Bundle analysis confirms all required code is now present
+expecting: Buttons render with proper styling (blue primary background, gray secondary, red destructive)
 next_action: Complete - archive session
 
 ## Symptoms
@@ -69,15 +69,70 @@ started: After recent changes
   found: grep confirms CSS variables are present in dist/assets/index-*.js
   implication: Library's default styles are correctly bundled into the docs app
 
+- timestamp: 2026-01-25T14:25:00Z
+  checked: ThemePreview.tsx - why configurator works
+  found: ThemePreview injects dynamic CSS via getGeneratedCSS() which includes ALL color tokens (--color-primary, --color-secondary, etc.) AND component tokens (--ui-button-*). This CSS is injected into a <style> element in document head.
+  implication: Configurator works because it injects BOTH the semantic color tokens AND the component tokens
+
+- timestamp: 2026-01-25T14:26:00Z
+  checked: apps/docs/src/index.css - what docs app defines
+  found: Defines --color-primary-50 through --color-primary-950 scale, but NOT --color-primary itself. Also missing --color-secondary, --color-destructive, --color-accent, --color-card, --color-ring, etc.
+  implication: The semantic tokens that --ui-button-* variables reference are NOT defined anywhere in docs app
+
+- timestamp: 2026-01-25T14:27:00Z
+  checked: packages/core/src/styles/tailwind.css - library's token definitions
+  found: Library defines semantic tokens in @theme block: --color-primary: var(--color-brand-500), etc. Also defines --ui-button-primary-bg: var(--color-primary) in :root block.
+  implication: Library expects @theme tokens to be available, but only :root rules get extracted to document.adoptedStyleSheets
+
+- timestamp: 2026-01-25T14:28:00Z
+  checked: TailwindElement regex pattern for extraction
+  found: rootRulePattern = /:root\s*\{[^}]*--ui-[^}]+\}/g - only extracts :root blocks containing --ui-* variables. Does NOT extract @theme block which contains --color-primary, --color-secondary, etc.
+  implication: The library correctly injects --ui-button-* variables but NOT the --color-* variables they depend on. This is the root cause.
+
+- timestamp: 2026-01-25T14:29:00Z
+  checked: Dependency chain
+  found: --ui-button-primary-bg: var(--color-primary) -> --color-primary: var(--color-brand-500) -> --color-brand-500 (defined in @theme). None of these @theme values reach the docs app.
+  implication: The --ui-button-* variables resolve to empty/invalid values because their dependencies are missing
+
+- timestamp: 2026-01-25T14:45:00Z
+  checked: Built docs bundle for customElements.define
+  found: customElements.define was NOT FOUND in bundle. Side-effect import `import '@lit-ui/button'` was tree-shaken out entirely.
+  implication: Components were never registered! This is why they appear unstyled - they're not web components at all, just empty HTML tags.
+
+- timestamp: 2026-01-25T14:46:00Z
+  checked: packages/button/package.json
+  found: `"sideEffects": false` - this tells bundlers the package has no side effects and can be safely tree-shaken if exports aren't used
+  implication: The side-effect import was removed because bundler thought it was dead code
+
+- timestamp: 2026-01-25T14:55:00Z
+  checked: Built bundle after fix (sideEffects: true + self-contained colors)
+  found: customElements.define("lui-button") FOUND, adoptedStyleSheets FOUND, --ui-color-primary:oklch FOUND. Bundle size 655KB (was 555KB).
+  implication: Fix successfully includes all component code and self-contained CSS variables
+
+## Eliminated
+
+- hypothesis: Obsolete CSS selectors (ui-button vs lui-button)
+  evidence: Previous fix removed those files, issue persisted
+  timestamp: 2026-01-25T14:20:00Z
+
 ## Resolution
 
-root_cause: The apps/docs/src/styles/button-preview.css and dialog-preview.css files used obsolete selectors (ui-button and ui-dialog) that don't match the actual custom elements (lui-button and lui-dialog). Additionally, these files attempted to set --color-* variables at the element level, which doesn't cascade into Shadow DOM. The LitUI library already provides built-in default styles via CSS custom properties defined at :root level in @lit-ui/core, so these preview CSS files were unnecessary and their incorrect approach broke the component styling.
+root_cause: TWO ISSUES FOUND:
 
-fix: Removed the obsolete preview CSS files (button-preview.css and dialog-preview.css) and their imports from main.tsx. The LitUI library's built-in CSS custom properties (defined in @lit-ui/core's tailwind.css) now provide the default styling.
+1. **sideEffects: false in package.json** - The @lit-ui/core, @lit-ui/button, and @lit-ui/dialog packages had `"sideEffects": false` in their package.json, which told bundlers to tree-shake the side-effect-only imports. This caused `import '@lit-ui/button';` to be completely removed from the bundle, meaning customElements.define() was never called and the components were never registered.
 
-verification: Build succeeds without errors. CSS variables (--ui-button-primary-bg, --color-brand-500) are confirmed present in the built bundle. The library's TailwindElement correctly adopts stylesheets containing :root CSS custom properties to the document, which then cascade into Shadow DOM.
+2. **Missing self-contained color fallbacks** - The library's :root CSS block defined component tokens like `--ui-button-primary-bg: var(--color-primary)` but the semantic tokens (--color-primary) were defined in @theme block which gets tree-shaken by Tailwind if not directly used. The library needs self-contained fallback values.
+
+fix:
+1. Changed `"sideEffects": false` to `"sideEffects": true` in packages/core/package.json, packages/button/package.json, and packages/dialog/package.json
+2. Added `--ui-color-*` semantic token defaults with actual oklch values to the library's :root block
+3. Updated component token definitions to use fallback pattern: `var(--color-primary, var(--ui-color-primary))`
+
+verification: Build succeeds. JS bundle now includes customElements.define("lui-button"), adoptedStyleSheets code, and --ui-color-primary:oklch values. Bundle size increased from 555KB to 655KB confirming component code is included.
 
 files_changed:
-  - apps/docs/src/main.tsx (removed CSS imports)
-  - apps/docs/src/styles/button-preview.css (deleted)
-  - apps/docs/src/styles/dialog-preview.css (deleted)
+  - packages/core/package.json (sideEffects: true)
+  - packages/button/package.json (sideEffects: true)
+  - packages/dialog/package.json (sideEffects: true)
+  - packages/core/src/styles/tailwind.css (added --ui-color-* defaults with fallback pattern)
+  - packages/button/src/button.ts (focus ring uses fallback pattern)

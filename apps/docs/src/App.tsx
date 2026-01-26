@@ -13,9 +13,6 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Configurator has its own layout, not nested in DocsLayout */}
-        <Route path="configurator" element={<ConfiguratorPage />} />
-
         <Route element={<DocsLayout />}>
           {/* Index route - shows Getting Started */}
           <Route index element={<GettingStarted />} />
@@ -29,6 +26,9 @@ export default function App() {
           {/* Guides */}
           <Route path="guides/ssr" element={<SSRGuide />} />
           <Route path="guides/migration" element={<MigrationGuide />} />
+
+          {/* Tools */}
+          <Route path="configurator" element={<ConfiguratorPage />} />
 
           {/* Components */}
           <Route path="components/button" element={<ButtonPage />} />

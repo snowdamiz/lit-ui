@@ -107,7 +107,7 @@ export function ThemePreview() {
   return (
     <div
       id={PREVIEW_ID}
-      className={`min-h-full p-8 ${isDark ? "dark" : ""}`}
+      className={`min-h-full p-8 ${isDark ? "dark" : "light"}`}
       style={{ backgroundColor: colors.previewBg }}
     >
       <div className="max-w-2xl mx-auto space-y-8">
