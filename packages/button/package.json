@@ -1,6 +1,6 @@
 {
   "name": "@lit-ui/button",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Accessible button component built with Lit and Tailwind CSS",
   "author": "",
   "license": "MIT",
@@ -9,7 +9,13 @@
     "url": "git+https://github.com/user/lit-ui.git",
     "directory": "packages/button"
   },
-  "keywords": ["lit", "web-components", "ui", "tailwind", "ssr"],
+  "keywords": [
+    "lit",
+    "web-components",
+    "ui",
+    "tailwind",
+    "ssr"
+  ],
   "type": "module",
   "main": "dist/index.js",
   "module": "dist/index.js",
@@ -20,7 +26,9 @@
       "types": "./dist/index.d.ts"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "sideEffects": true,
   "scripts": {
     "dev": "vite build --watch",
@@ -28,7 +36,7 @@
   },
   "peerDependencies": {
     "lit": "^3.0.0",
-    "@lit-ui/core": "^0.0.1"
+    "@lit-ui/core": "^1.0.0"
   },
   "devDependencies": {
     "@lit-ui/core": "workspace:*",

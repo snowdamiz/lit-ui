@@ -1,6 +1,6 @@
-# @lit-ui/cli
+# @lit-ui/button
 
-## 0.1.0
+## 1.0.0
 
 ### Minor Changes
 
@@ -23,8 +23,7 @@
   - Add safelist.css for commonly used utility classes
   - Extend tailwind.css with additional theme-aware styles
 
-## 0.0.2
-
 ### Patch Changes
 
-- [`e84c038`](https://github.com/snowdamiz/lit-ui/commit/e84c0384b627df54b3de915bac77cce65e8fec24) Thanks [@snowdamiz](https://github.com/snowdamiz)! - Rename package from `lit-ui` to `@lit-ui/cli` for consistent scoping
+- Updated dependencies [[`c33e0ad`](https://github.com/snowdamiz/lit-ui/commit/c33e0adb8591c0d2db04fa7ecc178475d8e29ba8)]:
+  - @lit-ui/core@1.0.0
