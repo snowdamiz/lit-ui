@@ -59,8 +59,8 @@ Deferred to later milestones.
 **Coverage:**
 - v3.1 requirements: 8 total
 - Mapped to phases: 8
-- Unmapped: 0 ✓
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-01-25*
-*Last updated: 2026-01-25 after initial definition*
+*Last updated: 2026-01-25 after roadmap creation*

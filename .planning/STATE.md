@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-25)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** v3.1 Docs Dark Mode
+**Current focus:** v3.1 Docs Dark Mode - Phase 25
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: 25 - Docs Site Dark Mode
 Plan: —
-Status: Defining requirements
-Last activity: 2026-01-25 — Milestone v3.1 started
+Status: Roadmap complete, awaiting plan creation
+Last activity: 2026-01-25 — v3.1 roadmap created
 
-Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 [..........] 0/?
+Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 [..........] 0/1
 
 ## Performance Metrics
 
@@ -55,11 +55,20 @@ None.
 ## Session Continuity
 
 Last session: 2026-01-25
-Stopped at: v3.0 milestone complete
+Stopped at: v3.1 roadmap created
 Resume file: None
 
 ## Next Steps
 
 ### v3.1 Docs Dark Mode
 
-Defining requirements. Once complete, roadmap will be created.
+Phase 25 roadmap complete. Ready for plan creation.
+
+**Success criteria for Phase 25:**
+1. User sees a theme toggle button in the header on every docs page
+2. User can click toggle and entire docs site switches between light/dark immediately
+3. User closes browser, reopens docs site later, and sees their previously selected theme
+4. User with system dark mode preference visits docs for first time and sees dark theme
+5. User on configurator page can use either the header toggle or configurator's mode toggle to switch docs theme (both stay in sync)
+
+**Next action:** `/gsd:plan-phase 25`
