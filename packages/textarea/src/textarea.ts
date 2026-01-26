@@ -123,6 +123,28 @@ export class Textarea extends TailwindElement {
   resize: TextareaResize = 'vertical';
 
   /**
+   * Whether the textarea auto-resizes to fit content.
+   * When enabled, resize handle is hidden.
+   * @default false
+   */
+  @property({ type: Boolean })
+  autoresize = false;
+
+  /**
+   * Maximum number of rows when auto-resizing.
+   * Takes precedence after maxHeight.
+   */
+  @property({ type: Number, attribute: 'max-rows' })
+  maxRows?: number;
+
+  /**
+   * Maximum height when auto-resizing (CSS value like "200px" or "10rem").
+   * Takes precedence over maxRows if both are set.
+   */
+  @property({ type: String, attribute: 'max-height' })
+  maxHeight?: string;
+
+  /**
    * Minimum length for text validation.
    */
   @property({ type: Number })
@@ -175,6 +197,90 @@ export class Textarea extends TailwindElement {
     if (!isServer) {
       this.internals = this.attachInternals();
     }
+  }
+
+  /**
+   * Lifecycle callback when element is first rendered.
+   * Sets up initial auto-resize height.
+   */
+  protected firstUpdated(): void {
+    if (this.autoresize) {
+      this.adjustHeight();
+    }
+  }
+
+  /**
+   * Adjust textarea height to fit content.
+   * Only active when autoresize is enabled.
+   */
+  private adjustHeight(): void {
+    if (!this.autoresize || !this.textareaEl) return;
+
+    const textarea = this.textareaEl;
+    const minHeight = this.getMinHeight();
+
+    // Reset height to get accurate scrollHeight
+    textarea.style.height = 'auto';
+
+    // Calculate new height
+    let newHeight = textarea.scrollHeight;
+
+    // Apply max height constraint if set
+    const maxHeightPx = this.getMaxHeightPx();
+    if (maxHeightPx && newHeight > maxHeightPx) {
+      newHeight = maxHeightPx;
+      textarea.style.overflowY = 'auto';
+    } else {
+      textarea.style.overflowY = 'hidden';
+    }
+
+    // Never shrink below initial rows
+    if (newHeight < minHeight) {
+      newHeight = minHeight;
+    }
+
+    textarea.style.height = `${newHeight}px`;
+  }
+
+  /**
+   * Get minimum height based on rows attribute.
+   */
+  private getMinHeight(): number {
+    const computed = getComputedStyle(this.textareaEl);
+    const lineHeight = parseFloat(computed.lineHeight) || 20;
+    const paddingTop = parseFloat(computed.paddingTop) || 0;
+    const paddingBottom = parseFloat(computed.paddingBottom) || 0;
+    const borderTop = parseFloat(computed.borderTopWidth) || 0;
+    const borderBottom = parseFloat(computed.borderBottomWidth) || 0;
+    return (this.rows * lineHeight) + paddingTop + paddingBottom + borderTop + borderBottom;
+  }
+
+  /**
+   * Get max height in pixels from maxHeight or maxRows.
+   * maxHeight takes precedence if both are set.
+   */
+  private getMaxHeightPx(): number | null {
+    if (this.maxHeight) {
+      // Parse CSS value - create temp element for conversion
+      const temp = document.createElement('div');
+      temp.style.height = this.maxHeight;
+      temp.style.position = 'absolute';
+      temp.style.visibility = 'hidden';
+      document.body.appendChild(temp);
+      const height = temp.offsetHeight;
+      document.body.removeChild(temp);
+      return height > 0 ? height : null;
+    }
+    if (this.maxRows) {
+      const computed = getComputedStyle(this.textareaEl);
+      const lineHeight = parseFloat(computed.lineHeight) || 20;
+      const paddingTop = parseFloat(computed.paddingTop) || 0;
+      const paddingBottom = parseFloat(computed.paddingBottom) || 0;
+      const borderTop = parseFloat(computed.borderTopWidth) || 0;
+      const borderBottom = parseFloat(computed.borderBottomWidth) || 0;
+      return (this.maxRows * lineHeight) + paddingTop + paddingBottom + borderTop + borderBottom;
+    }
+    return null;
   }
 
   /**
@@ -266,6 +372,15 @@ export class Textarea extends TailwindElement {
 
       textarea.resize-both {
         resize: both;
+      }
+
+      /* Auto-resize mode - hide resize handle, smooth transition */
+      textarea.autoresize {
+        resize: none;
+        overflow-y: hidden;
+        transition: height 150ms ease-out,
+                    border-color var(--ui-input-transition),
+                    box-shadow var(--ui-input-transition);
       }
 
       /* Wrapper for label structure */
@@ -364,6 +479,11 @@ export class Textarea extends TailwindElement {
     this.value = textarea.value;
     this.updateFormValue();
 
+    // Auto-resize if enabled
+    if (this.autoresize) {
+      this.adjustHeight();
+    }
+
     // Re-validate if already touched (blur occurred)
     if (this.touched) {
       const isValid = this.validate();
@@ -389,6 +509,10 @@ export class Textarea extends TailwindElement {
     this.showError = false;
     this.internals?.setFormValue('');
     this.internals?.setValidity({});
+    if (this.autoresize) {
+      // Use requestAnimationFrame to ensure DOM updated
+      requestAnimationFrame(() => this.adjustHeight());
+    }
   }
 
   /**
@@ -402,10 +526,18 @@ export class Textarea extends TailwindElement {
    * Get the CSS classes for the textarea element.
    */
   private getTextareaClasses(): string {
-    const classes = [`textarea-${this.size}`, `resize-${this.resize}`];
+    const classes = [`textarea-${this.size}`];
+
+    if (this.autoresize) {
+      classes.push('autoresize');
+    } else {
+      classes.push(`resize-${this.resize}`);
+    }
+
     if (this.showError) {
       classes.push('textarea-error');
     }
+
     return classes.join(' ');
   }
 
