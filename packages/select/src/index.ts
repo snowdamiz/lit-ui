@@ -4,7 +4,7 @@ import { isServer } from 'lit';
 
 // Export component class and types
 export { Select } from './select.js';
-export type { SelectSize } from './select.js';
+export type { SelectSize, SelectOption } from './select.js';
 
 // Re-export TailwindElement and isServer for convenience
 export { TailwindElement, isServer } from '@lit-ui/core';
