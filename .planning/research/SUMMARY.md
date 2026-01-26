@@ -1,210 +1,312 @@
 # Project Research Summary
 
-**Project:** LitUI v4.0 Form Inputs
-**Domain:** Lit.js Web Components - Form Input Elements
+**Project:** LitUI v4.1 Select/Combobox Component
+**Domain:** Web Components - Accessible Select/Combobox with Lit.js
 **Researched:** 2026-01-26
 **Confidence:** HIGH
 
 ## Executive Summary
 
-Form input components for Lit.js web components are well-understood with clear implementation patterns. The existing LitUI architecture provides everything needed: TailwindElement base class, ElementInternals pattern (proven in Button), and SSR support. Input and Textarea components follow native HTML closely, delegating validation to internal native elements and syncing ValidityState to ElementInternals for form participation.
+The Select/Combobox component follows the LitUI pattern of leveraging native browser capabilities while providing modern styling and framework-agnostic web components. The recommended approach uses the **Popover API** for dropdown management combined with **CSS Anchor Positioning** for modern browsers, with **Floating UI** as a progressive enhancement fallback. This matches LitUI's existing Dialog pattern of using native browser features (native `<dialog>` element) while maintaining full control over styling.
 
-The recommended approach is to wrap native `<input>` and `<textarea>` elements inside Shadow DOM, forward all validation attributes, and use ElementInternals API for form value management and validation. This delivers zero-bundle-size validation using browser APIs, works across all frameworks, and requires no new dependencies beyond the existing stack. The key architectural insight is delegation: let native inputs handle constraint validation, then mirror their ValidityState to ElementInternals.
+The component requires **two new dependencies**: `@floating-ui/dom` (v1.7.4) for positioning fallback and `@tanstack/lit-virtual` (v3.13.19) for optional virtual scrolling with large datasets. Both are stable, production-ready libraries with excellent Lit integration patterns. The architecture uses three components: `lui-select` (state management), `lui-option` (individual items), and `lui-option-group` (grouping), with a slot-based API that mirrors native `<select>`/`<option>` for developer familiarity.
 
-Critical risks center on validation UX patterns (when to show errors), auto-resize complexity for Textarea, and ensuring SSR compatibility with attachInternals guards. These are all mitigated through established patterns already validated in Button component and documented in web component best practices.
+The **critical risk** is ARIA implementation. The W3C changed the combobox pattern significantly between ARIA 1.1 and 1.2, and many online tutorials use the outdated pattern. Following only the current [W3C APG Combobox Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/) and testing with real screen readers (NVDA, JAWS, VoiceOver) from Phase 1 will prevent broken accessibility. Additional mobile-specific concerns include iOS VoiceOver's limited `aria-activedescendant` support and iOS Safari double-UI issues with custom selects, both addressed by early mobile device testing and potential native fallback options.
 
 ## Key Findings
 
 ### Recommended Stack
 
-**No new dependencies required.** The existing stack provides complete coverage for form input components with built-in validation.
+Two new dependencies are required for features that should not be built from scratch. Both have excellent Lit-specific solutions with verified stable versions and minimal bundle impact (combined ~5KB gzipped).
 
 **Core technologies:**
-- **Lit ^3.3.2**: Web component framework — already in use, no changes needed
-- **TailwindElement (@lit-ui/core)**: Base class with SSR support — proven pattern from Button/Dialog
-- **ElementInternals (native)**: Form participation and validation — proven in Button, extends naturally to inputs
-- **Native Constraint Validation**: Built-in HTML5 validation APIs — zero bundle cost, framework-agnostic
-- **TypeScript ^5.9.3**: Type safety — existing tooling
-
-**Key validation pattern:**
-Wrap a native `<input>` or `<textarea>` in Shadow DOM. Forward validation attributes (required, minlength, pattern, etc.) to internal element. On value changes, sync internal element's `validity` property to ElementInternals via `setValidity()`. Pass internal element as anchor parameter for correct popup positioning.
+- **@floating-ui/dom (v1.7.4)**: Dropdown positioning with collision detection — framework-agnostic, explicit Shadow DOM support, tree-shakeable. Essential for reliable positioning across viewport edges, scrolling containers, and transformed ancestors. Fallback for browsers without CSS Anchor Positioning support (76% as of 2026-01).
+- **@tanstack/lit-virtual (v3.13.19)**: Virtual scrolling for large option lists — stable API (vs experimental @lit-labs/virtualizer), Reactive Controller pattern for natural Lit integration, headless design for full control. Optional feature for datasets >100 options.
+- **Native APIs**: IntersectionObserver (97% support) for infinite scroll, Popover API (90% support) for top-layer dropdown management, CSS Anchor Positioning (76% support, progressive enhancement).
 
 **Rejected alternatives:**
-- @open-wc/form-control: Stale (2+ years), adds abstraction without value
-- Schema validation libraries (Zod/Yup): Consumer responsibility, not component concern
-- Custom FormControlController: Over-engineering for 2 components; extract later if pattern reused across 3+ components
+- `@lit-labs/virtualizer`: Experimental status, breaking changes expected
+- Popper.js: Deprecated, replaced by Floating UI
+- Native `<select>` styling (appearance: base-select): Chrome 133+ only, insufficient browser support
+- Manual positioning: Too complex for edge cases Floating UI already handles
 
 ### Expected Features
 
+Research analyzed shadcn/ui, Radix UI, Headless UI, MUI, Chakra UI, and Ariakit. Clear consensus on table stakes and competitive differentiators emerged.
+
 **Must have (table stakes):**
-- Core input types: text, email, password, number, search
-- Form participation via ElementInternals (setFormValue, setValidity)
-- Native validation attributes: required, minlength, maxlength, pattern, min, max, step
-- Size variants (sm/md/lg) matching existing Button sizing
-- Visual states: default, focus, hover, disabled, readonly, error
-- Focus ring styling matching Button pattern
-- Dark mode support via existing `:host-context(.dark)` pattern
-- SSR compatibility with `isServer` guards
-- Label association via aria-labelledby
-- Value binding with input/change events
-- Textarea: multi-line input, rows control, resize property
+- Single-select with controlled/uncontrolled modes
+- Full keyboard navigation (arrows, Enter, Escape, Home/End, type-ahead)
+- Complete ARIA combobox implementation per W3C APG
+- Dropdown positioning with collision detection (flip when near edge)
+- Option disabled states and component disabled state
+- Form participation via ElementInternals (consistent with Input/Textarea)
+- Placeholder text, clearable selection
+- Size variants (sm/md/lg) matching existing components
+- Error state styling and required validation
+- SSR compatibility with isServer guards
 
 **Should have (competitive advantage):**
-- Password visibility toggle (eye icon, accessible)
-- Search clear button (X icon when value non-empty)
-- Prefix/suffix slots for icons/buttons
-- Character counter for maxlength fields
-- Inline validation timing (validate on blur, not every keystroke)
-- Auto-resize textarea (CSS field-sizing with bounds)
-- Custom validation messages (override browser defaults)
+- Multi-select with tag/chip display and removal (X button, backspace)
+- Combobox mode with text input filtering and custom filter functions
+- Highlight matched text in search results (differentiator vs competition)
+- Option groups with labels
+- Async options loading with loading/error states
+- Debounced search (150ms default)
+- Creatable options (add new values from input)
+- Optional virtual scrolling for 100+ options
 
-**Defer (v2+ or anti-features):**
-- Integrated label component (breaks composition; use separate Label or slot)
-- Automatic error message display (opinionated layout; emit events instead)
-- Input masking (complex edge cases; recommend external library)
-- Rich text/markdown in Textarea (different component entirely)
-- Date/time/color/range input types (need dedicated picker components)
-- Floating labels (accessibility concerns, animation complexity)
+**Defer (v2+ or explicit anti-features):**
+- Nested/tree select (complex, rare use case)
+- Drag-and-drop reordering (scope creep)
+- Rich HTML content in options (XSS risk, a11y issues)
+- Color/date picker integration (separate components)
+- Built-in data fetching (consumer responsibility)
+- Heavy animations (performance, motion sickness)
 
 ### Architecture Approach
 
-Input and Textarea integrate cleanly with existing LitUI patterns. Both extend TailwindElement, use ElementInternals for form association, and follow the SSR-safe pattern from Button. The validation strategy delegates to native elements: internal `<input>`/`<textarea>` handles constraint validation, component mirrors its ValidityState to ElementInternals.
+Three-component composition: `lui-select` (container, state, form), `lui-option` (items), `lui-option-group` (grouping). State ownership is centralized in `lui-select` with options as stateless presentational components. Selection state is derived from parent's value property, not stored in child components.
 
 **Major components:**
-1. **lui-input** (@lit-ui/input package) — Single-line text input supporting 5 types (text, email, password, number, search), sizes, validation, form participation
-2. **lui-textarea** (@lit-ui/textarea package) — Multi-line text input with optional auto-resize, same validation/form patterns as Input
-3. **CSS tokens addition** (@lit-ui/core) — `--ui-input-*` and `--ui-textarea-*` custom properties following existing theme system
+1. **lui-select** — State management (value, open, activeDescendant, searchQuery), keyboard navigation, ARIA combobox role, form participation via ElementInternals, dropdown positioning via Popover API + CSS Anchor/Floating UI fallback
+2. **lui-option** — Stateless display of label/value, selected state reflected from parent, disabled support, emits selection events that bubble to parent
+3. **lui-option-group** — Optional grouping with label header, can disable all children, uses slots for contained options
 
-**Data flow:**
-```
-User types → Internal <input> updates value → Component sets internals.setFormValue(value)
-→ Component syncs internals.setValidity(flags) from input.validity
-→ Parent form includes value in FormData
-→ Form validation includes component
-→ Component emits ui-input/ui-change events
-```
-
-**Component boundaries:**
-- Input/Textarea: Value management, validation sync, event emission
-- ElementInternals: Form value transmission, validity state, lifecycle callbacks
-- @lit-ui/core: Base class, Tailwind injection, theme tokens
-- Native browser: Constraint validation logic, error messages, popup positioning
+**Key patterns:**
+- **Slot-based API** over attribute-based for declarative HTML, SSR-friendliness, framework agnosticism, rich content support
+- **Popover API + CSS Anchor Positioning** for dropdown (native top-layer, built-in light dismiss, Esc handling), Floating UI fallback for older browsers
+- **aria-activedescendant** for focus management (DOM focus stays on combobox, not options) per W3C APG pattern
+- **Lit Task controller** for async loading state management (pending/complete/error states)
+- **ElementInternals** for form participation with FormData for multi-select (multiple values with same name)
 
 ### Critical Pitfalls
 
-1. **Tailwind CSS fails inside Shadow DOM** — Already solved in existing codebase via constructable stylesheets in TailwindElement. Input/Textarea inherit this solution automatically by extending TailwindElement. No action needed for this milestone.
+Top 5 pitfalls that cause major issues if not addressed early:
 
-2. **ElementInternals crashes in SSR** — Guard `attachInternals()` with `if (!isServer)` check. Pattern proven in Button component. Apply same pattern to Input/Textarea constructors and form lifecycle callbacks.
+1. **ARIA 1.1 vs 1.2 pattern confusion** — W3C changed combobox pattern significantly. Many tutorials use outdated ARIA 1.1 with `aria-owns` instead of `aria-controls`. Prevention: Follow ONLY current [W3C APG Combobox Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/), test with NVDA/JAWS/VoiceOver from Phase 1. Role="combobox" must be on input element, not wrapper.
 
-3. **Validation state out of sync** — Sync internal input's ValidityState to ElementInternals on every value change. Must copy all flags (valueMissing, typeMismatch, patternMismatch, tooShort, tooLong, rangeUnderflow, rangeOverflow, stepMismatch, badInput). Pass internal input as anchor parameter to position native validation popup correctly.
+2. **Click-outside detection fails in Shadow DOM** — Standard `event.target !== element` fails due to event retargeting. Dropdowns close when clicking inside or fail to close when clicking outside. Prevention: Use `event.composedPath().includes(this)` instead of checking `event.target`.
 
-4. **Form reset doesn't clear input** — Implement `formResetCallback()` lifecycle method to reset value to default. Also implement `formStateRestoreCallback()` for browser back/forward navigation autofill support.
+3. **Multi-select form submission loses values** — `setFormValue()` accepts FormData, but `Object.fromEntries()` loses all but last value. Server receives single value instead of array. Prevention: Use `formData.append(name, value)` for each selection, server uses `getAll()` not `get()`.
 
-5. **Auto-resize textarea performance** — CSS `field-sizing: content` is ideal but browser support incomplete (Chrome/Edge only as of 2026). Fallback: ResizeObserver pattern with debouncing, or accept manual resize. Recommend manual resize for MVP, add auto-resize as enhancement.
+4. **iOS VoiceOver ignores aria-activedescendant** — Mobile screen readers (iOS/Android) poorly support `aria-activedescendant`. Desktop works, mobile fails. Prevention: Test on real devices, consider native `<select>` fallback on mobile, ensure options are independently accessible.
+
+5. **Async search race conditions** — User types "abc" then "abcd". "abc" results return after "abcd", overwriting correct results. Prevention: Use AbortController to cancel previous requests, debounce 300-500ms, verify query still matches before updating options.
 
 ## Implications for Roadmap
 
-Based on research, suggested phase structure:
+Research reveals clear dependencies and natural groupings. Architecture research identified four phases; features research confirms complexity estimates; pitfalls research highlights critical testing requirements in Phase 1.
 
-### Phase 1: CSS Tokens Foundation
-**Rationale:** Input/Textarea styling depends on theme tokens. Must exist before component implementation begins.
-**Delivers:** `--ui-input-*` and `--ui-textarea-*` CSS custom properties in @lit-ui/core
-**Addresses:** Theme system consistency (feature requirement)
-**Avoids:** Hardcoded colors pitfall from PITFALLS.md
-**Complexity:** LOW — Copy existing Button token pattern
-**Research needed:** NO — well-established pattern
+### Phase 1: Single Select Foundation
+**Rationale:** Core functionality with highest complexity. ARIA implementation and keyboard navigation are foundational requirements that all other features depend on. 13 of 18 identified pitfalls occur in this phase, requiring extra attention to accessibility and mobile testing.
 
-### Phase 2: Core Input Component
-**Rationale:** Input is simpler than Textarea (no auto-resize complexity). Validates ElementInternals validation pattern before duplicating to Textarea.
-**Delivers:** `@lit-ui/input` package with text/email/password/number/search types, form participation, validation
-**Addresses:** Core input types (table stakes), form participation (table stakes), native validation (table stakes)
-**Avoids:** ElementInternals SSR crashes, validation sync issues
-**Complexity:** MEDIUM — New component but proven patterns
-**Research needed:** NO — Stack/architecture research complete, patterns documented
+**Delivers:** Production-ready single-select component with full keyboard navigation, ARIA compliance, form participation, positioning, and mobile support.
 
-### Phase 3: Core Textarea Component
-**Rationale:** Reuses Input validation patterns. Auto-resize deferred to later phase to avoid blocking MVP.
-**Delivers:** `@lit-ui/textarea` package with multi-line input, rows control, resize property, form participation, validation
-**Addresses:** Textarea (table stakes), form participation (table stakes)
-**Avoids:** Auto-resize performance pitfalls
-**Complexity:** MEDIUM — Similar to Input, skip auto-resize initially
-**Research needed:** NO — Same patterns as Input
+**Addresses (from FEATURES.md):**
+- Single-select controlled/uncontrolled modes
+- Full keyboard navigation (arrows, Enter, Escape, Home/End, type-ahead)
+- Complete ARIA combobox pattern per W3C APG
+- Dropdown positioning with collision detection
+- Placeholder, clearable, disabled states
+- Form participation via ElementInternals
+- Required validation
+- Size variants (sm/md/lg)
+- Error state styling
+- SSR compatibility
 
-### Phase 4: Enhanced Features (Optional)
-**Rationale:** Password toggle, search clear, prefix/suffix slots, character counter are differentiators but not blockers for release.
-**Delivers:** Password visibility toggle, search clear button, prefix/suffix slots, character counter
-**Addresses:** Competitive advantage features from FEATURES.md
-**Complexity:** MEDIUM — Accessibility considerations for interactive slots
-**Research needed:** YES — Pattern research for accessible icon buttons inside inputs
+**Avoids (from PITFALLS.md):**
+- Pitfall #1: ARIA 1.1 vs 1.2 confusion (use APG pattern, test early)
+- Pitfall #2: Shadow DOM click-outside (use composedPath)
+- Pitfall #4: Mobile aria-activedescendant (test real devices)
+- Pitfall #6: Missing keyboard nav (implement full APG spec)
+- Pitfall #8: CSS Anchor cross-tree (keep popup in same shadow tree)
+- Pitfall #12: iOS double UI (no hidden native select)
+- Pitfall #13: Sticky hover (use @media hover: hover)
+- Pitfall #17: Slotted options a11y (property-based API)
+- Pitfall #18: Wrong validity states (Select-specific validation)
 
-### Phase 5: Auto-Resize Textarea (Future)
-**Rationale:** Complex feature with browser inconsistencies. Defer until CSS field-sizing has better support or until user demand validates priority.
-**Delivers:** Auto-resize textarea with min/max row bounds
-**Addresses:** Differentiator feature
-**Avoids:** Performance pitfalls, browser compatibility issues
-**Complexity:** HIGH — Browser API differences, performance tuning
-**Research needed:** YES — Browser support validation, performance testing patterns
+**Stack dependencies:**
+- `@floating-ui/dom` for positioning fallback
+- Native Popover API + CSS Anchor Positioning (progressive enhancement)
+- ElementInternals (existing pattern from Input)
+
+### Phase 2: Multi-Select
+**Rationale:** Builds on Phase 1 foundation, adds array value handling and tag display. Natural progression after single-select is stable. Two specific pitfalls (FormData handling, state restoration) unique to multi-select.
+
+**Delivers:** Multiple selection with tag/chip display, removal interactions, overflow handling.
+
+**Addresses (from FEATURES.md):**
+- Multiple selection mode with array values
+- Tag/chip display of selected items
+- Tag removal (X button and backspace)
+- Optional max selection limit
+- Overflow collapse ("+N more")
+- Option groups with labels
+
+**Avoids (from PITFALLS.md):**
+- Pitfall #3: Multi-select FormData (use FormData.append for each value)
+- Pitfall #16: State restoration (handle FormData in formStateRestoreCallback)
+
+**Stack dependencies:**
+- Extends Phase 1 architecture
+- Tag/chip component (new UI element)
+
+### Phase 3: Combobox/Search
+**Rationale:** Text input filtering is independent feature that can be added after selection mechanics are proven. Builds on Phase 1's keyboard navigation for filtered results.
+
+**Delivers:** Type-to-filter functionality with customizable matching, empty states, and highlighted matches.
+
+**Addresses (from FEATURES.md):**
+- Text input for filtering options
+- Default case-insensitive matching
+- Custom filter function support
+- Empty state ("No results found")
+- Highlight matched text (differentiator)
+- `aria-autocomplete` support
+
+**Avoids (from PITFALLS.md):**
+- Pitfall #5: VoiceOver with filled input (live region fallback)
+
+**Stack dependencies:**
+- Extends Phase 1 architecture
+- Input element integration for search field
+
+### Phase 4: Async Loading
+**Rationale:** Most complex feature requiring Promise handling, loading states, debouncing, and race condition management. Should come after synchronous features are stable.
+
+**Delivers:** Async options loading, debounced search, loading/error states, optional creatable mode, optional virtual scrolling.
+
+**Addresses (from FEATURES.md):**
+- Async options loading with Promise support
+- Loading indicator
+- Error state display
+- Debounced search (150ms default)
+- Optional creatable mode (add new values)
+- Optional virtual scrolling for 100+ options
+
+**Avoids (from PITFALLS.md):**
+- Pitfall #10: Async race conditions (AbortController + debounce + query validation)
+- Pitfall #15: No loading state (immediate indicator + live region)
+- Pitfall #11: Virtualized list a11y (aria-setsize/posinset)
+
+**Stack dependencies:**
+- `@tanstack/lit-virtual` for virtual scrolling (optional)
+- Lit Task controller for async state management
+- IntersectionObserver for infinite scroll
 
 ### Phase Ordering Rationale
 
-- **Tokens first:** Prevents rework. Components can't be styled without tokens.
-- **Input before Textarea:** Validates ElementInternals validation pattern once, reuse in Textarea. Lower complexity (no auto-resize).
-- **Enhanced features after core:** Separates MVP from nice-to-haves. Core components ship faster.
-- **Auto-resize last:** High complexity, uncertain value. Let user feedback guide prioritization.
+- **Dependencies flow naturally:** Phase 2-4 all depend on Phase 1's foundation (ARIA, keyboard, positioning). Phase 3 and 4 are independent and could be reversed, but async is more complex and benefits from combobox input integration being proven first.
+- **Risk management:** Highest-risk items (ARIA, Shadow DOM, mobile) are in Phase 1 where they can be addressed before building on them. 13 of 18 pitfalls occur in Phase 1, requiring extra attention and testing.
+- **User value delivery:** Each phase delivers a complete, usable feature increment. Phase 1 alone provides a production-ready select component. Phases 2-4 are additive enhancements.
+- **Testing strategy:** Accessibility testing (screen readers, keyboard-only, mobile) must start in Phase 1 and continue through all phases. Virtual scrolling (Phase 4) adds new accessibility concerns (aria-setsize, posinset) that need verification.
 
 ### Research Flags
 
-**Phases needing deeper research during planning:**
-- **Phase 4 (Enhanced Features):** Accessible icon button patterns inside input slots need UX research
-- **Phase 5 (Auto-Resize):** Browser API compatibility research, performance profiling patterns
+**Phases with well-documented patterns (skip additional research):**
+- **Phase 1:** W3C APG provides complete specification for ARIA combobox pattern. Floating UI documentation is comprehensive. Existing LitUI patterns cover ElementInternals and SSR.
+- **Phase 2:** Multi-select is standard pattern with MDN documentation for FormData handling. Tag/chip UI is straightforward.
+- **Phase 3:** String filtering algorithms are well-understood. Input integration follows existing patterns.
 
-**Phases with standard patterns (skip research-phase):**
-- **Phase 1 (CSS Tokens):** Copy existing token pattern from Button/Dialog
-- **Phase 2 (Input):** Architecture research complete, implementation straightforward
-- **Phase 3 (Textarea):** Reuses Input patterns
+**Phases needing validation during implementation:**
+- **Phase 1 (Mobile):** Despite research, iOS-specific issues may surface requiring device testing. Consider `/gsd:research-phase` if iOS double-UI problem appears.
+- **Phase 4 (Virtual scrolling):** TanStack Virtual's Lit integration is documented but not widely adopted. May need `/gsd:research-phase` if integration issues arise.
 
 ## Confidence Assessment
 
 | Area | Confidence | Notes |
 |------|------------|-------|
-| Stack | HIGH | No new dependencies needed; all APIs are native or proven in codebase |
-| Features | HIGH | Comprehensive feature research across shadcn/ui, MUI, Chakra UI, Radix UI |
-| Architecture | HIGH | Existing TailwindElement and ElementInternals patterns apply directly |
-| Pitfalls | HIGH | All critical pitfalls already solved in existing codebase; Input/Textarea inherit solutions |
+| Stack | HIGH | Versions verified via npm registry, Floating UI and TanStack Virtual have stable APIs and active maintenance. Browser support data from CanIUse is authoritative. |
+| Features | HIGH | Analysis of 6 major UI libraries (shadcn, Radix, Headless UI, MUI, Chakra, Ariakit) shows strong consensus on table stakes and differentiators. W3C APG provides authoritative feature requirements. |
+| Architecture | HIGH | Based on existing LitUI patterns (Input, Dialog, Button), W3C APG specifications, and Lit official documentation. Component composition pattern is proven in multiple frameworks. |
+| Pitfalls | HIGH | All 18 pitfalls sourced from W3C specifications, MDN documentation, official Chrome/webkit blogs, and expert articles (Sarah Higley, etc.). Cross-referenced with real-world issues from GitHub discussions. |
 
 **Overall confidence:** HIGH
 
 ### Gaps to Address
 
-Minor gaps requiring attention during implementation:
+While research confidence is high, some areas need validation during implementation:
 
-- **Validation message customization:** Research complete on APIs (setCustomValidity), but localization patterns need consumer documentation. Not blocking implementation.
-- **Auto-resize performance:** Deferred to Phase 5. Gap remains on optimal implementation approach (CSS vs. JS), acceptable for MVP without this feature.
-- **Input type tel/url priority:** Research indicates text/email/password/number/search are P0. tel/url are P1. Defer P1 types if timeline pressure.
-
-No critical gaps blocking MVP development. All must-have features have clear implementation paths.
+- **iOS VoiceOver behavior with filled input** — Pitfall #5 has medium confidence. The workaround (live region fallback) needs testing with real devices to verify effectiveness. Consider user testing in Phase 1.
+- **CSS Anchor Positioning browser support evolution** — Currently 76% support. Monitor browser releases during implementation. Fallback to Floating UI is proven, but may want to increase threshold before relying on native positioning.
+- **Virtual scrolling accessibility** — TanStack Virtual's accessibility approach (aria-setsize/posinset) is theoretically correct but needs validation with actual screen readers. Plan extra testing time in Phase 4 if virtualization is implemented.
+- **Mobile native select fallback decision** — Research suggests considering native `<select>` on iOS/Android due to touch-optimized UI and better accessibility. This is a UX decision requiring stakeholder input in Phase 1. Could be implemented as `nativeMobile` prop for progressive enhancement.
+- **Popover API adoption** — Currently 90% support. Verify this meets LitUI's browser support policy. If supporting older browsers is critical, may need to rely more heavily on manual dropdown management (still using Floating UI).
 
 ## Sources
 
 ### Primary (HIGH confidence)
-- [MDN: ElementInternals.setValidity()](https://developer.mozilla.org/en-US/docs/Web/API/ElementInternals/setValidity) — Complete validation API reference
-- [MDN: Constraint Validation](https://developer.mozilla.org/en-US/docs/Web/HTML/Guides/Constraint_validation) — Native validation overview
-- [WebKit: ElementInternals and Form-Associated Custom Elements](https://webkit.org/blog/13711/elementinternals-and-form-associated-custom-elements/) — Safari implementation, baseline announcement
-- [shadcn/ui Input](https://ui.shadcn.com/docs/components/input) — Feature benchmarking
-- [shadcn/ui Textarea](https://ui.shadcn.com/docs/components/textarea) — Feature benchmarking
-- Existing codebase: `/packages/button/src/Button.ts` — Proven ElementInternals pattern
-- Existing codebase: `/packages/core/src/tailwind-element.ts` — Base class pattern
 
-### Secondary (MEDIUM confidence)
-- [Native Form Validation of Web Components (Danny Moerkerke)](https://www.dannymoerkerke.com/blog/native-form-validation-of-web-components/) — Implementation pattern reference
-- [Creating Custom Form Controls with ElementInternals (CSS-Tricks)](https://css-tricks.com/creating-custom-form-controls-with-elementinternals/) — Pattern examples
-- [MUI TextField](https://mui.com/material-ui/react-text-field/) — Feature comparison
-- [Chakra UI Input](https://chakra-ui.com/docs/components/input) — Feature comparison
-- [Form Validation UX (Smashing Magazine)](https://www.smashingmagazine.com/2022/09/inline-validation-web-forms-ux/) — Validation timing best practices
+**Official Standards:**
+- [W3C ARIA APG Combobox Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/) - ARIA structure, keyboard requirements
+- [W3C ARIA APG Listbox Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/listbox/) - Option navigation
+- [W3C ARIA APG Select-Only Combobox Example](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/examples/combobox-select-only/) - Implementation reference
+- [MDN ARIA combobox role](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/combobox_role) - Browser support
+- [MDN aria-activedescendant](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-activedescendant) - Focus management
+- [MDN ElementInternals.setFormValue()](https://developer.mozilla.org/en-US/docs/Web/API/ElementInternals/setFormValue) - Form API
+- [MDN Popover API](https://developer.mozilla.org/en-US/docs/Web/API/Popover_API) - Native popover
 
-### Tertiary (LOW confidence)
-- [OddBird: Anchor Positioning Updates](https://www.oddbird.net/2025/10/13/anchor-position-area-update/) — CSS anchor positioning for custom validation messages (future feature, browser support incomplete)
-- [Cleanest Trick for Autogrowing Textareas (CSS-Tricks)](https://css-tricks.com/the-cleanest-trick-for-autogrowing-textareas/) — Auto-resize patterns (Phase 5 research)
+**Browser Vendors:**
+- [Chrome Developers: Top Layer](https://developer.chrome.com/blog/what-is-the-top-layer) - Popover positioning
+- [Chrome Blog: Web UI 2025](https://developer.chrome.com/blog/new-in-web-ui-io-2025-recap) - CSS Anchor + Popover updates
+- [WebKit ElementInternals](https://webkit.org/blog/13711/elementinternals-and-form-associated-custom-elements/) - Safari implementation
+
+**Library Documentation:**
+- [Floating UI - Getting Started](https://floating-ui.com/docs/getting-started) - Positioning library
+- [Floating UI - Platform (Shadow DOM)](https://floating-ui.com/docs/platform) - Shadow DOM support
+- [TanStack Virtual](https://tanstack.com/virtual/latest) - Virtual scrolling
+- [Lit Task Controller](https://lit.dev/docs/data/task/) - Async data pattern
+- [Lit Reactive Controllers](https://lit.dev/docs/composition/controllers/) - Controller architecture
+
+**Browser Support:**
+- [CanIUse: CSS Anchor Positioning](https://caniuse.com/css-anchor-positioning) - 76.17%
+- [CanIUse: Popover API](https://caniuse.com/mdn-api_htmlelement_popover) - 89.66%
+
+### Secondary (MEDIUM-HIGH confidence)
+
+**Expert Articles:**
+- [Sarah Higley: aria-activedescendant is not focus](https://sarahmhigley.com/writing/activedescendant/) - Mobile a11y concerns
+- [OddBird: Anchor Positioning Updates](https://www.oddbird.net/2025/10/13/anchor-position-area-update/) - CSS Anchor evolution
+- [HTMHell: Top Layer Troubles](https://www.htmhell.dev/adventcalendar/2025/1/) - Popover + Dialog interactions
+- [Hidde de Vries: Positioning Anchored Popovers](https://hidde.blog/positioning-anchored-popovers/) - CSS Anchor patterns
+- [Frontend Masters: Popover API Guide](https://frontendmasters.com/blog/menus-toasts-and-more/) - Modern popover patterns
+- [Shadow DOM Events](https://javascript.info/shadow-dom-events) - Event retargeting
+- [Lamplightdev: Click Outside Web Component](https://lamplightdev.com/blog/2021/04/10/how-to-detect-clicks-outside-of-a-web-component/) - composedPath pattern
+- [Zell Liew: Element Focus vs aria-activedescendant](https://zellwk.com/blog/element-focus-vs-aria-activedescendant/) - VoiceOver bug
+- [CSS-Tricks: Custom Form Controls with ElementInternals](https://css-tricks.com/creating-custom-form-controls-with-elementinternals/) - Form integration
+
+**UI Library Documentation:**
+- [shadcn/ui Select](https://ui.shadcn.com/docs/components/select) - React implementation
+- [shadcn/ui Combobox](https://ui.shadcn.com/docs/components/combobox) - Search patterns
+- [Radix UI Select Primitive](https://www.radix-ui.com/primitives/docs/components/select) - Accessibility approach
+- [Headless UI Listbox](https://headlessui.com/react/listbox) - Keyboard navigation
+- [Headless UI Combobox](https://headlessui.com/react/combobox) - Filtering patterns
+- [MUI Autocomplete](https://mui.com/material-ui/react-autocomplete/) - Feature completeness
+- [Ariakit Select](https://ariakit.org/components/select) - ARIA implementation
+- [Ariakit Combobox](https://ariakit.org/reference/combobox) - Component composition
+
+**UX Research:**
+- [Baymard: Drop-Down Usability](https://baymard.com/blog/drop-down-usability) - Pre-selection pitfalls
+- [Nielsen Norman Group: Dropdown Guidelines](https://www.nngroup.com/articles/drop-down-menus/) - Interaction patterns
+- [24 Accessibility: Select Testing Research](https://www.24a11y.com/2019/select-your-poison-part-2/) - Screen reader testing
+- [Orange A11y: Listbox Keyboard Navigation](https://a11y-guidelines.orange.com/en/articles/listbox-and-keyboard-navigation/) - Keyboard patterns
+
+### Tertiary (MEDIUM confidence - community issues, requires validation)
+
+**Community Discussions:**
+- [Shoelace Multi-select FormData Discussion #1799](https://github.com/shoelace-style/shoelace/discussions/1799) - FormData patterns
+- [react-select iOS Issue #904](https://github.com/JedWatson/react-select/issues/904) - Mobile double UI
+- [Fluent UI Mobile Combobox #15779](https://github.com/microsoft/fluentui/issues/15779) - Opening behavior
+- [shadcn/ui Discussion #1391](https://github.com/shadcn-ui/ui/issues/1391) - Loading states
+- [Headless UI Combobox Async Discussion #2788](https://github.com/tailwindlabs/headlessui/discussions/2788) - Async patterns
+- [Radix UI Combobox Issue #1342](https://github.com/radix-ui/primitives/issues/1342) - Feature request
+- [W3C Web Components CG 2023](https://w3c.github.io/webcomponents-cg/2023.html) - Cross-root ARIA
+
+**Performance/Virtual Scrolling:**
+- [Cory Rylan: High Performance Tables with Lit and Virtual Scrolling](https://coryrylan.com/blog/high-performance-html-tables-with-lit-and-virtual-scrolling) - TanStack integration
+- [Syncfusion Blazor ComboBox Virtualization](https://blazor.syncfusion.com/documentation/combobox/virtualization) - Patterns
+- [Telerik Blazor ComboBox Virtualization](https://www.telerik.com/blazor-ui/documentation/components/combobox/virtualization) - Performance
 
 ---
 *Research completed: 2026-01-26*
