@@ -4,24 +4,20 @@
 
 A framework-agnostic component library built on Lit.js, following ShadCN's philosophy of beautiful defaults and CLI-driven installation. Components work natively in React, Vue, Svelte, or plain HTML because they're standard web components underneath.
 
-Now with **dual distribution**: copy-source ownership via CLI or traditional npm packages with SSR support.
+Now with **dual distribution** (copy-source or npm), **SSR support** via Declarative Shadow DOM, and **build-time theme customization** via visual configurator.
 
 ## Core Value
 
 Developers can use polished, accessible UI components in any framework without lock-in — one component library that works everywhere.
 
-## Current Milestone: v3.0 Theme Customization
+## Current State (v3.0)
 
-**Goal:** Give users build-time control over component appearance through a visual configurator that generates customized CLI commands with baked-in themes.
-
-**Target features:**
-- Visual theme configurator on docs site with live preview
-- OKLCH color customization with auto-calculated shade scales
-- Light/dark mode simultaneous editing
-- CLI `--theme` parameter accepting encoded configuration
-- Theme generates Tailwind CSS layer (integrates with user's Tailwind config)
-- Preset themes (default, dark, blue, green)
-- Shareable theme URLs
+- ~10,900 lines TypeScript across packages and apps
+- Tech stack: Lit.js 3, Tailwind CSS v4, Vite, TypeScript, pnpm workspaces, colorjs.io
+- 5 publishable packages: @lit-ui/core, @lit-ui/button, @lit-ui/dialog, @lit-ui/ssr, lit-ui (CLI)
+- Framework examples: Next.js App Router, Astro, Express/Node.js
+- Distribution: copy-source (CLI) or npm packages with SSR support
+- Theme customization: Visual configurator + CLI `--theme` parameter
 
 ## Requirements
 
@@ -44,18 +40,19 @@ Developers can use polished, accessible UI components in any framework without l
 - ✓ NPM installation guide in docs — v2.0
 - ✓ SSR setup guide with hydration instructions — v2.0
 - ✓ Migration guide (copy-source to npm) — v2.0
+- ✓ Visual theme configurator page on docs site with live preview — v3.0
+- ✓ OKLCH color customization with auto-calculated shade scales — v3.0
+- ✓ Light/dark mode simultaneous editing — v3.0
+- ✓ Border radius customization — v3.0
+- ✓ CLI `--theme` parameter with encoded config — v3.0
+- ✓ Tailwind CSS layer generation from theme config — v3.0
+- ✓ Preset themes (default, ocean, forest, sunset) — v3.0
+- ✓ Shareable theme URLs — v3.0
+- ✓ Generated npx command display in configurator — v3.0
 
 ### Active
 
-- [ ] Visual theme configurator page on docs site with live preview
-- [ ] OKLCH color customization with auto-calculated shade scales
-- [ ] Light/dark mode simultaneous editing
-- [ ] Border radius customization
-- [ ] CLI `--theme` parameter with encoded config
-- [ ] Tailwind CSS layer generation from theme config
-- [ ] Preset themes (default, dark, blue, green)
-- [ ] Shareable theme URLs
-- [ ] Generated npx command display in configurator
+(None — next milestone requirements to be defined)
 
 ### Deferred (v3.1+)
 
@@ -78,19 +75,11 @@ Developers can use polished, accessible UI components in any framework without l
 - Built-in state management — conflicts with host framework's state management
 - CJS output — modern bundlers handle ESM; CJS adds complexity
 - Server-side theme config storage — keep it simple with URL-encoded params
-- Runtime theme switching — this milestone is build-time customization
-- Per-component different themes — all components share one theme in v3.0
+- Runtime theme switching — build-time customization is simpler and SSR-compatible
+- Per-component different themes — all components share one theme
 - Component source modification — theme via Tailwind/CSS, not hardcoded values
 
 ## Context
-
-**Current state (v2.0):**
-- ~8,100 lines TypeScript across packages and apps
-- Tech stack: Lit.js 3, Tailwind CSS v4, Vite, TypeScript, pnpm workspaces
-- 5 publishable packages: @lit-ui/core, @lit-ui/button, @lit-ui/dialog, @lit-ui/ssr, lit-ui (CLI)
-- Framework examples: Next.js App Router, Astro, Express/Node.js
-- Distribution: copy-source (CLI) or npm packages with SSR support
-- Verified SSR with Declarative Shadow DOM
 
 **Technical patterns established:**
 - TailwindElement base class with dual-mode styling (inline CSS for SSR, constructable stylesheets for client)
@@ -98,19 +87,14 @@ Developers can use polished, accessible UI components in any framework without l
 - @lit-labs/ssr with hydration import order pattern
 - pnpm workspaces with lockstep versioning via changesets
 - Peer dependencies for Lit and @lit-ui/core
-
-**v3.0 context:**
-- Current components use CSS custom properties for some theming
-- Tailwind v4 uses CSS-based configuration (@theme directive)
-- CLI already handles copy-source and npm modes
-- Docs site exists with component pages
-- Theme approach: visual configurator → encoded URL → CLI `--theme` → Tailwind CSS layer
-- colorjs.io for OKLCH color manipulation, lz-string for URL encoding
+- OKLCH color space with colorjs.io for perceptual uniformity
+- Browser/Node isomorphic base64url encoding for theme sharing
+- Direct component variable injection (--ui-button-*, --ui-dialog-*) for Shadow DOM theming
 
 **Known limitations:**
 - No auto-update for installed components
 - Docs site phases 9-12 incomplete (Framework, Theming, Accessibility, Polish)
-- Current theming is limited to what CSS custom properties expose
+- 30 CLI tests need update for CSS variable naming change (tech debt from v3.0)
 
 ## Constraints
 
@@ -139,15 +123,18 @@ Developers can use polished, accessible UI components in any framework without l
 | Components register on both server/client | @lit-labs/ssr provides customElements shim | ✓ Good — SSR renders correctly |
 | Lit as peer dependency | Avoid version conflicts, reduce bundle size | ✓ Good — single Lit instance |
 | Copy-source as default CLI mode | Backward compatibility | ✓ Good — existing users unaffected |
-| Build-time theming over runtime | Simpler, no JS overhead, works with SSR | — Pending |
-| URL-encoded token config | No server needed, shareable commands | — Pending |
-| Tailwind CSS layer for themes | Integrates with user's existing Tailwind setup | — Pending |
-| OKLCH color space | Perceptual uniformity for calculated shades | — Pending |
+| Build-time theming over runtime | Simpler, no JS overhead, works with SSR | ✓ Good — no runtime cost, SSR-compatible |
+| URL-encoded token config | No server needed, shareable commands | ✓ Good — stateless, portable |
+| Tailwind CSS layer for themes | Integrates with user's existing Tailwind setup | ✓ Good — no config conflicts |
+| OKLCH color space | Perceptual uniformity for calculated shades | ✓ Good — mathematically correct shade scales |
+| Direct --ui-* component variables | Shadow DOM can't inherit through @theme | ✓ Good — reliable Shadow DOM theming |
+| Browser-compatible base64url | Node Buffer not available in browsers | ✓ Good — works everywhere |
 
 ## Shipped Milestones
 
 - **v1.0 MVP** (2026-01-24): Button, Dialog, CLI with copy-source distribution
 - **v2.0 NPM + SSR** (2026-01-25): NPM packages, SSR support, dual distribution
+- **v3.0 Theme Customization** (2026-01-25): Visual configurator, OKLCH themes, preset themes, shareable URLs
 
 ---
-*Last updated: 2026-01-25 after v3.0 roadmap created*
+*Last updated: 2026-01-25 after v3.0 milestone complete*

@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-25)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** v3.0 Theme Customization - Phase 24 next
+**Current focus:** Planning next milestone
 
 ## Current Position
 
-Phase: 24 of 24 (Presets and Enhanced Features)
-Plan: 3 of 3 in current phase
-Status: Phase complete
-Last activity: 2026-01-25 — Completed 24-03-PLAN.md
+Phase: 24 of 24 (last completed)
+Plan: Complete
+Status: Milestone v3.0 shipped
+Last activity: 2026-01-25 — v3.0 Theme Customization complete
 
-Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 [##########] 4/4 phases COMPLETE
+Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHIPPED
 
 ## Performance Metrics
 
@@ -40,88 +40,7 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 [##
 ### Decisions
 
 Key decisions are logged in PROJECT.md Key Decisions table.
-
-**v3.0 decisions (validated):**
-- Build-time theming over runtime — simpler, SSR-compatible
-- URL-encoded token config — no server storage needed
-- Theme generates into Tailwind CSS layer (not separate tokens file)
-- OKLCH color space for perceptual uniformity
-- lz-string compression for URL encoding
-- Components already use CSS custom properties (no component changes needed)
-
-**21-01 decisions:**
-- Version literal 1 for future schema migrations
-- OKLCH regex validates format, not value ranges (colorjs.io handles)
-- Neutral gray palette uses chroma ~0.02-0.03
-
-**21-02 decisions:**
-- Lightness scale 50-950 follows Tailwind convention (0.97 to 0.20)
-- Chroma modulation via scale factors prevents oversaturation
-- NaN hue handling defaults to 0 for achromatic colors
-- Dark mode uses 0.9x chroma reduction
-
-**21-03 decisions:**
-- Explicit base64url format validation before decode (regex check)
-- 4-stage validation: format -> decode -> JSON -> schema
-- Descriptive error messages for each failure mode
-
-**21-04 decisions:**
-- --lui-* prefix for CSS custom properties
-- Both .dark class AND @media prefers-color-scheme for dark mode
-- :root:not(.light) selector for opt-out capability
-
-**21-05 decisions:**
-- Public API exports only high-level functions, not internal utilities
-- Module-level JSDoc with complete usage examples
-- Integration tests simulate actual CLI workflow
-
-**22-01 decisions:**
-- Check 10 CSS file locations covering Next.js, Vite, and common structures
-- Verify Tailwind content before accepting CSS file as entry
-- Calculate relative paths from CSS file to theme file for portability
-- Insert imports after @charset/@import but before content
-- TTY awareness: prompt in interactive, skip in CI/scripts
-
-**22-04 decisions:**
-- Test fixtures use unique directory name to avoid conflicts
-- Tests cover both Next.js and Vite CSS entry patterns
-- Complete workflow tests simulate actual CLI usage
-
-**23-01 decisions:**
-- Implement deriveDarkMode/deriveLightMode locally (matches CLI algorithm, not exported)
-- Add @lit-ui/cli/theme export to enable docs app imports
-- Use colorjs.io for browser-side color conversion (consistency with CLI)
-
-**23-02 decisions:**
-- Hex input uses controlled state with validation on blur (allow typing incomplete values)
-- TailwindSwatches includes all 22 Tailwind palettes (242 total swatches)
-- ModeToggle controls editing mode, independent of page theme display
-
-**23-03 decisions:**
-- CSS injection to document head instead of scoped container (Shadow DOM compatibility)
-- Configurator route outside DocsLayout (has own full-screen layout)
-- Tailwind swatches apply to last-selected color picker via state tracking
-
-**23-04 decisions:**
-- Browser-compatible base64url encoding using btoa/atob fallback
-- Direct component variable injection (--ui-button-*, --ui-dialog-*) for proper Shadow DOM cascade
-
-**24-01 decisions:**
-- 4 preset themes: default, ocean, forest, sunset
-- loadThemeConfig clears all overrides for fresh start
-- Dark colors re-derived from light on preset load
-
-**24-02 decisions:**
-- 2-column grid for PresetSelector matching RadiusSelector pattern
-- Color preview dots show primary/secondary/destructive colors
-- ShareButton uses ?theme= URL param with 2-second feedback
-- ShadeScaleDisplay shows 11 steps (50-950) with step labels
-
-**24-03 decisions:**
-- URL loading happens once on mount (useRef guard prevents re-runs)
-- Invalid theme URLs fail gracefully with console.warn and default theme
-- ShareButton positioned in header for prominence
-- ShadeScaleDisplay shows primary color scale below picker
+v3.0 decisions validated and archived.
 
 ### Pending Todos
 
@@ -129,17 +48,22 @@ None.
 
 ### Blockers/Concerns
 
-None currently.
+**Tech debt from v3.0:**
+- 30 CLI tests need update for CSS variable naming change (--lui-* → --ui-*)
+- Tracked in v3.0-MILESTONE-AUDIT.md (archived)
 
 ## Session Continuity
 
-Last session: 2026-01-25T23:45:00Z
-Stopped at: Completed 24-03-PLAN.md (Integration)
+Last session: 2026-01-25
+Stopped at: v3.0 milestone complete
 Resume file: None
 
 ## Next Steps
 
-### Milestone v3.0 READY FOR COMPLETION
+### Ready for Next Milestone
 
-Phase 24 complete (all 3 plans executed).
-Ready to complete v3.0 Theme Customization milestone with `/gsd:complete-milestone`
+v3.0 complete. Options:
+1. Complete v1.1 Documentation Site (phases 9-12)
+2. Start v3.1 enhanced theme features
+
+Run `/gsd:new-milestone` to start next milestone.

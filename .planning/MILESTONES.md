@@ -1,5 +1,35 @@
 # Project Milestones: LitUI
 
+## v3.0 Theme Customization (Shipped: 2026-01-25)
+
+**Delivered:** Visual theme configurator on docs site with OKLCH color customization, preset themes, shareable URLs, and CLI integration that generates Tailwind-compatible CSS for build-time theming.
+
+**Phases completed:** 21-24 (16 plans total)
+
+**Key accomplishments:**
+
+- OKLCH theme system with Zod schema validation and 11-step shade scale generation (50-950)
+- CLI theme integration: `lit-ui init --theme` and `lit-ui theme` commands with CSS file generation
+- Visual configurator at /configurator with live preview, color pickers, and real-time component rendering
+- Browser/Node isomorphic base64url encoding with Shadow DOM-compatible CSS variables (--ui-button-*, --ui-dialog-*)
+- Preset themes (default, ocean, forest, sunset) with one-click application
+- Shareable theme URLs via ?theme= parameter and CLI command generation
+
+**Stats:**
+
+- 86 files created/modified
+- 2,788 lines of TypeScript (theme-specific code)
+- 4 phases, 16 plans
+- Same day milestone (2026-01-25)
+
+**Git range:** `docs(21)` → `docs(24)`
+
+**Tech debt tracked:** 30 tests need update for CSS variable naming change (--lui-* → --ui-*)
+
+**What's next:** Complete v1.1 Documentation Site (phases 9-12)
+
+---
+
 ## v2.0 NPM + SSR (Shipped: 2026-01-25)
 
 **Delivered:** NPM package distribution (@lit-ui/core, @lit-ui/button, @lit-ui/dialog, @lit-ui/ssr) with SSR compatibility via Declarative Shadow DOM, giving developers the choice between copy-source ownership and traditional npm install.
