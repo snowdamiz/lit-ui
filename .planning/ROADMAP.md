@@ -189,7 +189,13 @@ Plans:
 
 **Dependencies:** Phase 26 (CSS tokens), Phase 27 patterns (validation, form participation)
 
-**Requirements:** TEXTAREA-01, TEXTAREA-02, TEXTAREA-03, TEXTAREA-04, TEXTAREA-05, TEXTAREA-06, TEXTAREA-07, TEXTAREA-08, TEXTAREA-09, TEXTAREA-10, TEXTAREA-11, INFRA-03
+**Requirements:** TEXTAREA-01, TEXTAREA-02, TEXTAREA-03, TEXTAREA-04, TEXTAREA-05, TEXTAREA-06, TEXTAREA-07, TEXTAREA-08, TEXTAREA-09, TEXTAREA-10, TEXTAREA-11, INFRA-03, INPUT-17
+
+**Plans:** 2 plans
+
+Plans:
+- [ ] 29-01-PLAN.md — Package infrastructure + core textarea component
+- [ ] 29-02-PLAN.md — Auto-resize and character counter
 
 **Success Criteria:**
 
