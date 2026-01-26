@@ -16,6 +16,40 @@ import "@lit-ui/dialog";
 // pages/components/ButtonPage.tsx and DialogPage.tsx
 
 const STYLE_ID = "configurator-preview-theme";
+const PREVIEW_ID = "theme-preview-container";
+
+/**
+ * Scope CSS selectors to the preview container.
+ *
+ * The generated theme CSS uses:
+ * - `:root { ... }` for light mode variables
+ * - `.dark { ... }` for dark mode variables (standalone class selector)
+ * - `@media (prefers-color-scheme: dark) { :root:not(.light) { ... } }` for system preference
+ *
+ * We transform these to be scoped to the preview container:
+ * - `:root` -> `#theme-preview-container`
+ * - `.dark` -> `#theme-preview-container.dark`
+ *
+ * This ensures proper CSS specificity (ID+class beats ID alone) so dark mode
+ * variables correctly override light mode variables when .dark class is present.
+ */
+function processCSS(css: string): { scopedCSS: string; rootVars: string } {
+  // Scope the CSS to the preview container
+  const scopedCSS = css
+    // Handle :root.dark (if any)
+    .replace(/:root\.dark/g, `#${PREVIEW_ID}.dark`)
+    // Handle :root:not(.light) in media queries
+    .replace(/:root:not\(\.light\)/g, `#${PREVIEW_ID}:not(.light)`)
+    // Handle standalone .dark selector (must come before :root replacement)
+    // Match .dark at start of line or after whitespace/newline, followed by space and {
+    .replace(/^\.dark\s*\{/gm, `#${PREVIEW_ID}.dark {`)
+    // Handle :root selector
+    .replace(/:root\s*\{/g, `#${PREVIEW_ID} {`);
+
+  // No need to extract variables to :root since we're scoping everything
+  // to the preview container and CSS variables inherit through shadow DOM
+  return { scopedCSS, rootVars: '' };
+}
 
 export function ThemePreview() {
   const { getGeneratedCSS, activeMode } = useConfigurator();
@@ -23,6 +57,7 @@ export function ThemePreview() {
   const dialogRef = useRef<HTMLElement>(null);
 
   // Inject theme CSS into document head
+  // CSS variables are kept at :root for dialogs, style rules are scoped to preview
   useEffect(() => {
     let styleEl = document.getElementById(STYLE_ID) as HTMLStyleElement | null;
 
@@ -32,7 +67,8 @@ export function ThemePreview() {
       document.head.appendChild(styleEl);
     }
 
-    styleEl.textContent = getGeneratedCSS();
+    const { scopedCSS, rootVars } = processCSS(getGeneratedCSS());
+    styleEl.textContent = rootVars + '\n' + scopedCSS;
   }, [getGeneratedCSS]);
 
   // Cleanup style element on unmount
@@ -55,29 +91,47 @@ export function ThemePreview() {
     }
   }, []);
 
+  const isDark = activeMode === "dark";
+
+  // Colors based on mode for preview container styling
+  const colors = {
+    sectionBg: isDark ? "#1f2937" : "#ffffff",
+    sectionBorder: isDark ? "#374151" : "#e5e7eb",
+    labelText: isDark ? "#9ca3af" : "#6b7280",
+    bodyText: isDark ? "#d1d5db" : "#4b5563",
+    previewBg: isDark ? "#0a0a0a" : "#fafafa",
+    badgeBg: isDark ? "#374151" : "#e5e7eb",
+    badgeText: isDark ? "#d1d5db" : "#4b5563",
+  };
+
   return (
     <div
-      className={`min-h-full p-8 ${activeMode === "dark" ? "dark" : ""}`}
-      style={{
-        backgroundColor: activeMode === "dark" ? "var(--lui-background)" : "var(--lui-background)",
-      }}
+      id={PREVIEW_ID}
+      className={`min-h-full p-8 ${isDark ? "dark" : ""}`}
+      style={{ backgroundColor: colors.previewBg }}
     >
       <div className="max-w-2xl mx-auto space-y-8">
         {/* Section: Buttons */}
         <section>
-          <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">
+          <h3
+            className="text-sm font-semibold uppercase tracking-wider mb-4"
+            style={{ color: colors.labelText }}
+          >
             Buttons
           </h3>
           <div
             className="p-6 rounded-lg border"
             style={{
-              backgroundColor: activeMode === "dark" ? "#1f2937" : "#ffffff",
-              borderColor: activeMode === "dark" ? "#374151" : "#e5e7eb",
+              backgroundColor: colors.sectionBg,
+              borderColor: colors.sectionBorder,
             }}
           >
             {/* Primary row */}
             <div className="mb-4">
-              <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">
+              <p
+                className="text-xs font-medium mb-2"
+                style={{ color: colors.labelText }}
+              >
                 Primary
               </p>
               <div className="flex flex-wrap gap-2">
@@ -95,7 +149,10 @@ export function ThemePreview() {
 
             {/* Secondary row */}
             <div className="mb-4">
-              <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">
+              <p
+                className="text-xs font-medium mb-2"
+                style={{ color: colors.labelText }}
+              >
                 Secondary
               </p>
               <div className="flex flex-wrap gap-2">
@@ -113,7 +170,10 @@ export function ThemePreview() {
 
             {/* Destructive row */}
             <div className="mb-4">
-              <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">
+              <p
+                className="text-xs font-medium mb-2"
+                style={{ color: colors.labelText }}
+              >
                 Destructive
               </p>
               <div className="flex flex-wrap gap-2">
@@ -131,7 +191,10 @@ export function ThemePreview() {
 
             {/* Outline & Ghost row */}
             <div>
-              <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">
+              <p
+                className="text-xs font-medium mb-2"
+                style={{ color: colors.labelText }}
+              >
                 Outline & Ghost
               </p>
               <div className="flex flex-wrap gap-2">
@@ -144,14 +207,17 @@ export function ThemePreview() {
 
         {/* Section: Dialog */}
         <section>
-          <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">
+          <h3
+            className="text-sm font-semibold uppercase tracking-wider mb-4"
+            style={{ color: colors.labelText }}
+          >
             Dialog
           </h3>
           <div
             className="p-6 rounded-lg border"
             style={{
-              backgroundColor: activeMode === "dark" ? "#1f2937" : "#ffffff",
-              borderColor: activeMode === "dark" ? "#374151" : "#e5e7eb",
+              backgroundColor: colors.sectionBg,
+              borderColor: colors.sectionBorder,
             }}
           >
             <lui-button variant="primary" onClick={() => setDialogOpen(true)}>
@@ -164,11 +230,7 @@ export function ThemePreview() {
               show-close-button
             >
               <span slot="title">Theme Preview</span>
-              <p
-                style={{
-                  color: activeMode === "dark" ? "#d1d5db" : "#4b5563",
-                }}
-              >
+              <p style={{ color: colors.bodyText }}>
                 This dialog demonstrates your custom theme colors. The background,
                 text, and button colors all reflect your current configuration.
               </p>
@@ -189,11 +251,11 @@ export function ThemePreview() {
           <span
             className="text-xs font-medium px-3 py-1 rounded-full"
             style={{
-              backgroundColor: activeMode === "dark" ? "#374151" : "#e5e7eb",
-              color: activeMode === "dark" ? "#d1d5db" : "#4b5563",
+              backgroundColor: colors.badgeBg,
+              color: colors.badgeText,
             }}
           >
-            {activeMode === "dark" ? "Dark Mode Preview" : "Light Mode Preview"}
+            {isDark ? "Dark Mode Preview" : "Light Mode Preview"}
           </span>
         </div>
       </div>
