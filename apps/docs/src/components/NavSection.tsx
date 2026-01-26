@@ -53,6 +53,18 @@ function MigrationIcon() {
   )
 }
 
+function StylingIcon() {
+  return (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 3h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7m0-18H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h7m0-18v18" />
+      <path d="M7 8h2" />
+      <path d="M7 12h2" />
+      <path d="M15 8h2" />
+      <path d="M15 12h2" />
+    </svg>
+  )
+}
+
 function PaletteIcon() {
   return (
     <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -79,6 +91,7 @@ function DownloadIcon() {
 const iconMap: Record<string, () => JSX.Element> = {
   'Getting Started': BookIcon,
   'Installation': DownloadIcon,
+  'Styling': StylingIcon,
   'Button': ButtonIcon,
   'Dialog': DialogIcon,
   'SSR Setup': ServerIcon,
