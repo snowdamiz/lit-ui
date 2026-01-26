@@ -81,6 +81,83 @@ export const tokens = {
     40: 'var(--z-40)',
     50: 'var(--z-50)',
   },
+  input: {
+    // Layout
+    radius: 'var(--ui-input-radius)',
+    borderWidth: 'var(--ui-input-border-width)',
+    transition: 'var(--ui-input-transition)',
+
+    // Typography
+    fontSizeSm: 'var(--ui-input-font-size-sm)',
+    fontSizeMd: 'var(--ui-input-font-size-md)',
+    fontSizeLg: 'var(--ui-input-font-size-lg)',
+
+    // Spacing
+    paddingXSm: 'var(--ui-input-padding-x-sm)',
+    paddingYSm: 'var(--ui-input-padding-y-sm)',
+    paddingXMd: 'var(--ui-input-padding-x-md)',
+    paddingYMd: 'var(--ui-input-padding-y-md)',
+    paddingXLg: 'var(--ui-input-padding-x-lg)',
+    paddingYLg: 'var(--ui-input-padding-y-lg)',
+
+    // Default state
+    bg: 'var(--ui-input-bg)',
+    text: 'var(--ui-input-text)',
+    border: 'var(--ui-input-border)',
+    placeholder: 'var(--ui-input-placeholder)',
+
+    // Focus state
+    borderFocus: 'var(--ui-input-border-focus)',
+    ring: 'var(--ui-input-ring)',
+
+    // Error state
+    borderError: 'var(--ui-input-border-error)',
+    textError: 'var(--ui-input-text-error)',
+
+    // Disabled state
+    bgDisabled: 'var(--ui-input-bg-disabled)',
+    textDisabled: 'var(--ui-input-text-disabled)',
+    borderDisabled: 'var(--ui-input-border-disabled)',
+  },
+  textarea: {
+    // Layout
+    radius: 'var(--ui-textarea-radius)',
+    borderWidth: 'var(--ui-textarea-border-width)',
+    minHeight: 'var(--ui-textarea-min-height)',
+    transition: 'var(--ui-textarea-transition)',
+
+    // Typography
+    fontSizeSm: 'var(--ui-textarea-font-size-sm)',
+    fontSizeMd: 'var(--ui-textarea-font-size-md)',
+    fontSizeLg: 'var(--ui-textarea-font-size-lg)',
+
+    // Spacing
+    paddingXSm: 'var(--ui-textarea-padding-x-sm)',
+    paddingYSm: 'var(--ui-textarea-padding-y-sm)',
+    paddingXMd: 'var(--ui-textarea-padding-x-md)',
+    paddingYMd: 'var(--ui-textarea-padding-y-md)',
+    paddingXLg: 'var(--ui-textarea-padding-x-lg)',
+    paddingYLg: 'var(--ui-textarea-padding-y-lg)',
+
+    // Default state
+    bg: 'var(--ui-textarea-bg)',
+    text: 'var(--ui-textarea-text)',
+    border: 'var(--ui-textarea-border)',
+    placeholder: 'var(--ui-textarea-placeholder)',
+
+    // Focus state
+    borderFocus: 'var(--ui-textarea-border-focus)',
+    ring: 'var(--ui-textarea-ring)',
+
+    // Error state
+    borderError: 'var(--ui-textarea-border-error)',
+    textError: 'var(--ui-textarea-text-error)',
+
+    // Disabled state
+    bgDisabled: 'var(--ui-textarea-bg-disabled)',
+    textDisabled: 'var(--ui-textarea-text-disabled)',
+    borderDisabled: 'var(--ui-textarea-border-disabled)',
+  },
 } as const;
 
 // Type helpers for token paths
@@ -90,3 +167,5 @@ export type RadiusToken = keyof typeof tokens.radius;
 export type ShadowToken = keyof typeof tokens.shadow;
 export type FontFamilyToken = keyof typeof tokens.fontFamily;
 export type ZIndexToken = keyof typeof tokens.zIndex;
+export type InputToken = keyof typeof tokens.input;
+export type TextareaToken = keyof typeof tokens.textarea;
