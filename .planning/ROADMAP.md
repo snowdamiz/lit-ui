@@ -147,8 +147,8 @@ Plans:
 **Plans:** 2 plans
 
 Plans:
-- [ ] 27-01-PLAN.md — Package infrastructure + component shell with types, sizes, form association
-- [ ] 27-02-PLAN.md — Visual states, validation, label/helper/error display
+- [x] 27-01-PLAN.md — Package infrastructure + component shell with types, sizes, form association
+- [x] 27-02-PLAN.md — Visual states, validation, label/helper/error display
 
 **Success Criteria:**
 
@@ -251,11 +251,11 @@ Plans:
 | 24. Presets and Enhanced Features | v3.0 | 3/3 | Complete | 2026-01-25 |
 | 25. Docs Site Dark Mode | v3.1 | 5/5 | Complete | 2026-01-25 |
 | 26. CSS Tokens Foundation | v4.0 | 1/1 | Complete | 2026-01-26 |
-| 27. Core Input Component | v4.0 | 0/2 | Planned | - |
+| 27. Core Input Component | v4.0 | 2/2 | Complete | 2026-01-26 |
 | 28. Input Differentiators | v4.0 | 0/? | Planned | - |
 | 29. Textarea Component | v4.0 | 0/? | Planned | - |
 | 30. CLI and Documentation | v4.0 | 0/? | Planned | - |
 
 ---
 *Roadmap created: 2026-01-24*
-*Last updated: 2026-01-26 (Phase 27 planned with 2 plans)*
+*Last updated: 2026-01-26 (Phase 27 complete)*

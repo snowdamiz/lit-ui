@@ -9,18 +9,18 @@ Requirements for Input and Textarea components. Form primitives with full valida
 
 ### Input Component
 
-- [ ] **INPUT-01**: Input renders text, email, password, number, and search types
-- [ ] **INPUT-02**: Input supports size variants (sm, default, lg)
-- [ ] **INPUT-03**: Input supports disabled and readonly states
-- [ ] **INPUT-04**: Input participates in native forms via ElementInternals
-- [ ] **INPUT-05**: Input validates required fields (shows error when empty on submit)
-- [ ] **INPUT-06**: Input validates minlength/maxlength constraints
-- [ ] **INPUT-07**: Input validates pattern attribute (regex)
-- [ ] **INPUT-08**: Input validates email format for type="email"
-- [ ] **INPUT-09**: Input validates min/max for type="number"
-- [ ] **INPUT-10**: Input shows focus ring on keyboard focus
-- [ ] **INPUT-11**: Input shows error visual state when invalid
-- [ ] **INPUT-12**: Input supports placeholder text
+- [x] **INPUT-01**: Input renders text, email, password, number, and search types
+- [x] **INPUT-02**: Input supports size variants (sm, default, lg)
+- [x] **INPUT-03**: Input supports disabled and readonly states
+- [x] **INPUT-04**: Input participates in native forms via ElementInternals
+- [x] **INPUT-05**: Input validates required fields (shows error when empty on submit)
+- [x] **INPUT-06**: Input validates minlength/maxlength constraints
+- [x] **INPUT-07**: Input validates pattern attribute (regex)
+- [x] **INPUT-08**: Input validates email format for type="email"
+- [x] **INPUT-09**: Input validates min/max for type="number"
+- [x] **INPUT-10**: Input shows focus ring on keyboard focus
+- [x] **INPUT-11**: Input shows error visual state when invalid
+- [x] **INPUT-12**: Input supports placeholder text
 - [ ] **INPUT-13**: Password input has visibility toggle button
 - [ ] **INPUT-14**: Search input has clear button when not empty
 - [ ] **INPUT-15**: Input supports prefix slot (icon/text before input)
@@ -44,7 +44,7 @@ Requirements for Input and Textarea components. Form primitives with full valida
 ### Infrastructure
 
 - [x] **INFRA-01**: CSS tokens for input/textarea added to @lit-ui/core
-- [ ] **INFRA-02**: @lit-ui/input package created with SSR support
+- [x] **INFRA-02**: @lit-ui/input package created with SSR support
 - [ ] **INFRA-03**: @lit-ui/textarea package created with SSR support
 - [ ] **INFRA-04**: CLI templates updated for input and textarea
 - [ ] **INFRA-05**: Docs pages created for Input and Textarea components
@@ -82,19 +82,19 @@ Deferred to later milestones.
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | INFRA-01 | Phase 26 | Complete |
-| INPUT-01 | Phase 27 | Pending |
-| INPUT-02 | Phase 27 | Pending |
-| INPUT-03 | Phase 27 | Pending |
-| INPUT-04 | Phase 27 | Pending |
-| INPUT-05 | Phase 27 | Pending |
-| INPUT-06 | Phase 27 | Pending |
-| INPUT-07 | Phase 27 | Pending |
-| INPUT-08 | Phase 27 | Pending |
-| INPUT-09 | Phase 27 | Pending |
-| INPUT-10 | Phase 27 | Pending |
-| INPUT-11 | Phase 27 | Pending |
-| INPUT-12 | Phase 27 | Pending |
-| INFRA-02 | Phase 27 | Pending |
+| INPUT-01 | Phase 27 | Complete |
+| INPUT-02 | Phase 27 | Complete |
+| INPUT-03 | Phase 27 | Complete |
+| INPUT-04 | Phase 27 | Complete |
+| INPUT-05 | Phase 27 | Complete |
+| INPUT-06 | Phase 27 | Complete |
+| INPUT-07 | Phase 27 | Complete |
+| INPUT-08 | Phase 27 | Complete |
+| INPUT-09 | Phase 27 | Complete |
+| INPUT-10 | Phase 27 | Complete |
+| INPUT-11 | Phase 27 | Complete |
+| INPUT-12 | Phase 27 | Complete |
+| INFRA-02 | Phase 27 | Complete |
 | INPUT-13 | Phase 28 | Pending |
 | INPUT-14 | Phase 28 | Pending |
 | INPUT-15 | Phase 28 | Pending |
@@ -122,4 +122,4 @@ Deferred to later milestones.
 
 ---
 *Requirements defined: 2026-01-26*
-*Last updated: 2026-01-26 after roadmap creation*
+*Last updated: 2026-01-26 after Phase 27 complete*
