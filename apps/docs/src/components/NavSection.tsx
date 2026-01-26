@@ -89,7 +89,7 @@ const iconMap: Record<string, () => JSX.Element> = {
 export function NavSection({ title, items }: NavSectionProps) {
   return (
     <div>
-      <h3 className="px-3 mb-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+      <h3 className="px-3 mb-2 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
         {title}
       </h3>
       <ul className="space-y-0.5">
@@ -102,15 +102,15 @@ export function NavSection({ title, items }: NavSectionProps) {
                 className={({ isActive }) =>
                   `group flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all duration-150 ${
                     isActive
-                      ? 'bg-gray-100 text-gray-900 font-medium'
-                      : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                      ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-medium'
+                      : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100'
                   }`
                 }
               >
                 {({ isActive }) => (
                   <>
                     {IconComponent && (
-                      <span className={`flex-shrink-0 ${isActive ? 'text-gray-500' : 'text-gray-400 group-hover:text-gray-500'}`}>
+                      <span className={`flex-shrink-0 ${isActive ? 'text-gray-500 dark:text-gray-400' : 'text-gray-400 dark:text-gray-500 group-hover:text-gray-500 dark:group-hover:text-gray-400'}`}>
                         <IconComponent />
                       </span>
                     )}
