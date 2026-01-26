@@ -64,6 +64,8 @@ v3.0, v3.1, v4.0 decisions validated and archived.
 | Skeleton component validates infrastructure | Verify tokens and build before full implementation | 31-02 |
 | Options via property, not slots | Simpler implementation for Phase 32; slot-based extensible later | 32-01 |
 | Option component created but not registered | Future slot-based usage potential | 32-01 |
+| ARIA live region + aria-activedescendant | VoiceOver on iOS has limited aria-activedescendant support | 32-02 |
+| Type-ahead 500ms reset timeout | Matches native select behavior | 32-02 |
 | Validation on blur follows input pattern | Consistent UX across form components | 32-03 |
 | Error message from internals.validationMessage | Native integration for form participation | 32-03 |
 
@@ -81,7 +83,7 @@ None.
 - ARIA 1.2 combobox pattern (not 1.1) - use aria-controls, not aria-owns [APPLIED in 32-01]
 - Shadow DOM click-outside requires event.composedPath() [APPLIED in 32-01]
 - Multi-select FormData uses formData.append() for each value
-- iOS VoiceOver has limited aria-activedescendant support - test on real devices
+- iOS VoiceOver has limited aria-activedescendant support [MITIGATED in 32-02 with ARIA live region]
 - Async search needs AbortController to prevent race conditions
 
 ## Session Continuity
