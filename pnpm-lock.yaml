@@ -35,6 +35,9 @@ importers:
       '@lit-ui/input':
         specifier: workspace:*
         version: link:../../packages/input
+      '@lit-ui/select':
+        specifier: workspace:*
+        version: link:../../packages/select
       '@lit-ui/textarea':
         specifier: workspace:*
         version: link:../../packages/textarea

@@ -9,6 +9,7 @@
 import '@lit-ui/button';
 import '@lit-ui/input';
 import '@lit-ui/textarea';
+import '@lit-ui/select';
 
 // TypeScript JSX declaration for lui-button and lui-input
 declare global {
@@ -67,6 +68,34 @@ declare global {
           minlength?: number;
           maxlength?: number;
           'show-count'?: boolean;
+        },
+        HTMLElement
+      >;
+      'lui-select': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement> & {
+          size?: 'sm' | 'md' | 'lg';
+          name?: string;
+          value?: string;
+          placeholder?: string;
+          label?: string;
+          options?: Array<{ value: string; label: string; disabled?: boolean }>;
+          required?: boolean;
+          disabled?: boolean;
+          clearable?: boolean;
+        },
+        HTMLElement
+      >;
+      'lui-option': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement> & {
+          value?: string;
+          label?: string;
+          disabled?: boolean;
+        },
+        HTMLElement
+      >;
+      'lui-option-group': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement> & {
+          label?: string;
         },
         HTMLElement
       >;

@@ -11,6 +11,7 @@ import { ButtonPage } from './pages/components/ButtonPage'
 import { DialogPage } from './pages/components/DialogPage'
 import { InputPage } from './pages/components/InputPage'
 import { TextareaPage } from './pages/components/TextareaPage'
+import { SelectPage } from './pages/components/SelectPage'
 import { ConfiguratorPage } from './pages/configurator/ConfiguratorPage'
 
 export default function App() {
@@ -41,6 +42,7 @@ export default function App() {
             <Route path="components/dialog" element={<DialogPage />} />
             <Route path="components/input" element={<InputPage />} />
             <Route path="components/textarea" element={<TextareaPage />} />
+            <Route path="components/select" element={<SelectPage />} />
 
             {/* Catch-all for undefined routes */}
             <Route path="*" element={<Placeholder />} />
