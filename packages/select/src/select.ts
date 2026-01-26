@@ -876,6 +876,14 @@ export class Select extends TailwindElement {
           this.openDropdown();
           this.focusLastEnabledOption();
           break;
+        case 'Delete':
+        case 'Backspace':
+          // Clear selection via keyboard if clearable is enabled
+          if (this.clearable && this.value) {
+            e.preventDefault();
+            this.handleClear(e);
+          }
+          break;
         default:
           // Printable character - type-ahead
           if (this.isPrintableCharacter(key)) {
