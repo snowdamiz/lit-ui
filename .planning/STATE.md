@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 ## Current Position
 
 Phase: 31 - Select Infrastructure
-Plan: Pending (needs planning)
-Status: Roadmap created, awaiting plan creation
-Last activity: 2026-01-26 — v4.1 roadmap created
+Plan: 01 of 2 complete
+Status: In progress
+Last activity: 2026-01-26 - Completed 31-01-PLAN.md (Select Design Tokens)
 
-Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 SHIPPED | v4.0 SHIPPED | v4.1 [#.......] 0/7 phases
+Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 SHIPPED | v4.0 SHIPPED | v4.1 [#.......] 1/14 plans
 
 ## Performance Metrics
 
@@ -43,12 +43,23 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHI
 - Plans completed: 11
 - Total execution time: 30 min
 
+**v4.1 Velocity (in progress):**
+- Plans completed: 1
+- Total execution time: 3 min
+
 ## Accumulated Context
 
 ### Decisions
 
 Key decisions are logged in PROJECT.md Key Decisions table.
 v3.0, v3.1, v4.0 decisions validated and archived.
+
+**v4.1 Decisions:**
+| Decision | Rationale | Phase |
+|----------|-----------|-------|
+| Follow input/textarea token pattern | Consistency across form components | 31-01 |
+| Include dropdown-specific tokens | Floating dropdown needs shadow, z-index, max-height | 31-01 |
+| Include option-specific tokens | Listbox items need hover, active, check styling | 31-01 |
 
 ### Pending Todos
 
@@ -70,22 +81,18 @@ None.
 ## Session Continuity
 
 Last session: 2026-01-26
-Stopped at: v4.1 roadmap created
+Stopped at: Completed 31-01-PLAN.md
 Resume file: None
 
 ## Next Steps
 
-Phase 31: Select Infrastructure is pending.
+Phase 31: Select Infrastructure in progress.
 
-**Requirements for Phase 31:**
-- INFRA-01: CSS tokens for select added to @lit-ui/core (--ui-select-*)
-- INFRA-02: @lit-ui/select package created with SSR support
-- INFRA-03: @floating-ui/dom added as dependency for positioning
+**Completed:**
+- INFRA-01: CSS tokens for select added to @lit-ui/core (--ui-select-*) - 31-01
 
-**Success criteria:**
-1. Developer can use `--ui-select-*` CSS variables to style select borders, backgrounds, dropdown, and options
-2. @lit-ui/select package exists with proper peer dependencies and SSR compatibility
-3. Floating UI is integrated and positioning dropdown relative to trigger works with collision detection
-4. Package builds successfully and exports are available for consumption
+**Remaining:**
+- INFRA-02: @lit-ui/select package created with SSR support - 31-02
+- INFRA-03: @floating-ui/dom added as dependency for positioning - 31-02
 
-**Next action:** Run `/gsd:plan-phase 31` to create implementation plans
+**Next action:** Execute 31-02-PLAN.md (Package scaffolding)
