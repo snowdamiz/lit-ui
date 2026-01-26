@@ -8,6 +8,7 @@
 - **v3.0 Theme Customization** — Phases 21-24 (shipped 2026-01-25) → [archive](milestones/v3.0-ROADMAP.md)
 - **v3.1 Docs Dark Mode** — Phase 25 (shipped 2026-01-25)
 - **v4.0 Form Inputs** — Phases 26-30 (shipped 2026-01-26)
+- **v4.1 Select Component** — Phases 31-37 (current)
 
 ## Phases
 
@@ -112,122 +113,155 @@ Full details: [milestones/v3.0-ROADMAP.md](milestones/v3.0-ROADMAP.md)
 
 ---
 
-## v4.0 Form Inputs
+<details>
+<summary>v4.0 Form Inputs (Phases 26-30) — SHIPPED 2026-01-26</summary>
 
-### Phase 26: CSS Tokens Foundation
+- [x] Phase 26: CSS Tokens Foundation (1/1 plans) — completed 2026-01-26
+- [x] Phase 27: Core Input Component (2/2 plans) — completed 2026-01-26
+- [x] Phase 28: Input Differentiators (2/2 plans) — completed 2026-01-26
+- [x] Phase 29: Textarea Component (2/2 plans) — completed 2026-01-26
+- [x] Phase 30: CLI and Documentation (3/3 plans) — completed 2026-01-26
 
-**Goal:** Input and Textarea styling tokens exist in the theme system for consistent visual design
-
-**Dependencies:** None (builds on existing theme system from v3.0)
-
-**Requirements:** INFRA-01
-
-**Plans:** 1 plan
-
-Plans:
-- [x] 26-01-PLAN.md — Add CSS tokens and TypeScript exports for Input/Textarea
-
-**Success Criteria:**
-
-1. Developer can use `--ui-input-*` CSS variables to style input borders, backgrounds, and text
-2. Developer can use `--ui-textarea-*` CSS variables to style textarea elements
-3. Theme tokens integrate with existing theme system and respond to light/dark mode
-4. Visual configurator (future) can customize input/textarea colors
+</details>
 
 ---
 
-### Phase 27: Core Input Component
+## v4.1 Select Component
 
-**Goal:** Developers can add a fully functional text input to any form with native validation and form participation
+### Phase 31: Select Infrastructure
 
-**Dependencies:** Phase 26 (CSS tokens must exist)
+**Goal:** Foundational CSS tokens, package structure, and positioning library are ready for Select component development
 
-**Requirements:** INPUT-01, INPUT-02, INPUT-03, INPUT-04, INPUT-05, INPUT-06, INPUT-07, INPUT-08, INPUT-09, INPUT-10, INPUT-11, INPUT-12, INFRA-02
+**Dependencies:** None (builds on existing theme system from v3.0, patterns from v4.0)
 
-**Plans:** 2 plans
+**Requirements:** INFRA-01, INFRA-02, INFRA-03
 
-Plans:
-- [x] 27-01-PLAN.md — Package infrastructure + component shell with types, sizes, form association
-- [x] 27-02-PLAN.md — Visual states, validation, label/helper/error display
+**Plans:** TBD
 
 **Success Criteria:**
 
-1. User can type into input fields of all supported types (text, email, password, number, search) and see appropriate browser behaviors (email keyboard on mobile, number steppers, etc.)
-2. User submits form with empty required input and sees browser validation error preventing submission
-3. User fills invalid input (wrong email format, too short text, pattern mismatch) and sees visual error state with validation message
-4. Developer wraps lui-input in native form, submits form, and receives input value in FormData
-5. User navigates to input via Tab key and sees focus ring indicating keyboard focus
+1. Developer can use `--ui-select-*` CSS variables to style select borders, backgrounds, dropdown, and options
+2. @lit-ui/select package exists with proper peer dependencies and SSR compatibility
+3. Floating UI is integrated and positioning dropdown relative to trigger works with collision detection
+4. Package builds successfully and exports are available for consumption
 
 ---
 
-### Phase 28: Input Differentiators
+### Phase 32: Core Single Select
 
-**Goal:** Input component has enhanced UX features that distinguish it from native inputs
+**Goal:** Users can select a single value from a dropdown with full keyboard navigation, ARIA compliance, and form participation
 
-**Dependencies:** Phase 27 (core input must exist)
+**Dependencies:** Phase 31 (CSS tokens and package must exist)
 
-**Requirements:** INPUT-13, INPUT-14, INPUT-15, INPUT-16
+**Requirements:** SELECT-01, SELECT-02, SELECT-03, SELECT-04, SELECT-05, SELECT-06, SELECT-07, SELECT-08, SELECT-09, SELECT-10, SELECT-11, SELECT-12, A11Y-01, A11Y-02, A11Y-03, A11Y-04
 
-**Plans:** 2 plans
-
-Plans:
-- [x] 28-01-PLAN.md — Container restructure with prefix/suffix slots
-- [x] 28-02-PLAN.md — Password toggle and clear button
+**Plans:** TBD
 
 **Success Criteria:**
 
-1. User can toggle password visibility using an eye icon button inside the password input
-2. User typing in clearable input sees a clear button that empties the field when clicked
-3. Developer can add prefix content (icon, currency symbol) that appears before the input text
-4. Developer can add suffix content (icon, unit label) that appears after the input text
+1. User clicks select trigger and dropdown opens with options; user clicks option and selection is displayed in trigger
+2. User navigates options with arrow keys, selects with Enter, and closes with Escape without using mouse
+3. User types characters and focus moves to first option starting with those characters (type-ahead)
+4. Developer wraps lui-select in native form, submits form, and receives selected value in FormData
+5. Screen reader user hears current selection, available options count, and navigation instructions via ARIA
 
 ---
 
-### Phase 29: Textarea Component
+### Phase 33: Select Enhancements
 
-**Goal:** Developers can add a multi-line text input with the same form participation and validation as the Input component
+**Goal:** Select component supports advanced organization and customization features beyond basic single-select
 
-**Dependencies:** Phase 26 (CSS tokens), Phase 27 patterns (validation, form participation)
+**Dependencies:** Phase 32 (core single select must work)
 
-**Requirements:** TEXTAREA-01, TEXTAREA-02, TEXTAREA-03, TEXTAREA-04, TEXTAREA-05, TEXTAREA-06, TEXTAREA-07, TEXTAREA-08, TEXTAREA-09, TEXTAREA-10, TEXTAREA-11, INFRA-03, INPUT-17
+**Requirements:** SELECT-13, SELECT-14, SELECT-15, A11Y-05
 
-**Plans:** 2 plans
-
-Plans:
-- [x] 29-01-PLAN.md — Package infrastructure + core textarea component
-- [x] 29-02-PLAN.md — Auto-resize and character counter
+**Plans:** TBD
 
 **Success Criteria:**
 
-1. User can type multiple lines of text and see content wrap naturally within the textarea
-2. Developer can control initial textarea height via rows attribute and resize behavior via resize property
-3. User submits form with empty required textarea and sees browser validation error preventing submission
-4. Developer enables auto-resize and textarea grows taller as user types more content
-5. User with maxlength textarea sees character count updating as they type
+1. Developer groups options under labeled headers (lui-option-group) and users see visual grouping with accessible labels
+2. Developer adds icons or descriptions inside options via slots and content renders correctly
+3. User with clearable select clicks X button and selection resets to empty/placeholder state
+4. Screen reader user navigating option groups hears group labels announced correctly
 
 ---
 
-### Phase 30: CLI and Documentation
+### Phase 34: Multi-Select
 
-**Goal:** Developers can install Input and Textarea via CLI and learn usage from docs
+**Goal:** Users can select multiple values displayed as removable tags with proper form submission
 
-**Dependencies:** Phase 27 (Input package), Phase 29 (Textarea package)
+**Dependencies:** Phase 32 (single select foundation required)
 
-**Requirements:** INFRA-04, INFRA-05
+**Requirements:** MULTI-01, MULTI-02, MULTI-03, MULTI-04, MULTI-05, MULTI-06, MULTI-07
 
-**Plans:** 3 plans
-
-Plans:
-- [x] 30-01-PLAN.md — CLI templates, registry, npm mapping, and categorized list
-- [x] 30-02-PLAN.md — Input documentation page with examples and API reference
-- [x] 30-03-PLAN.md — Textarea documentation page with examples and auto-resize demo
+**Plans:** TBD
 
 **Success Criteria:**
 
-1. Developer runs `npx lit-ui add input` and input component is installed in their project
-2. Developer runs `npx lit-ui add textarea` and textarea component is installed in their project
-3. Developer visits docs Input page and sees usage examples, props table, and validation patterns
-4. Developer visits docs Textarea page and sees usage examples, props table, and auto-resize demo
+1. User clicks multiple options and each selection appears as a tag/chip in the trigger area
+2. User clicks X on a tag and that selection is removed without affecting other selections
+3. Developer submits form with multi-select and server receives array of values via FormData.getAll()
+4. User with many selections sees overflow display ("+N more") instead of squished tags
+5. User clicks "select all" action and all options become selected; clicks again to deselect all
+
+---
+
+### Phase 35: Combobox
+
+**Goal:** Users can type to filter options with highlighted matches and optional ability to create new options
+
+**Dependencies:** Phase 32 (single select foundation), benefits from Phase 34 patterns
+
+**Requirements:** COMBO-01, COMBO-02, COMBO-03, COMBO-04, COMBO-05, COMBO-06, A11Y-06
+
+**Plans:** TBD
+
+**Success Criteria:**
+
+1. User types in combobox input and options filter to show only matching items in real-time
+2. User sees matching text highlighted within option labels (e.g., typed "app" highlights "app" in "Apple")
+3. User types query with no matches and sees empty state message ("No options found")
+4. Developer enables creatable mode and user can add new option when no match exists
+5. Keyboard navigation in filtered list follows W3C APG combobox pattern (arrows move through filtered options)
+
+---
+
+### Phase 36: Async Loading
+
+**Goal:** Select supports loading options from async sources with proper loading states, error handling, and performance optimization
+
+**Dependencies:** Phase 32 (core select), Phase 35 (combobox for async search)
+
+**Requirements:** ASYNC-01, ASYNC-02, ASYNC-03, ASYNC-04, ASYNC-05, ASYNC-06, INFRA-04
+
+**Plans:** TBD
+
+**Success Criteria:**
+
+1. Developer provides Promise for options prop and select shows loading spinner until resolved
+2. User sees error state with retry button when async options fail to load; clicking retry re-fetches
+3. User types in async combobox and API is called after debounce period; results replace options
+4. User scrolls to bottom of long option list and next page of options loads automatically (infinite scroll)
+5. Developer with 1000+ options enables virtual scrolling and dropdown remains performant (60fps scroll)
+
+---
+
+### Phase 37: CLI and Documentation
+
+**Goal:** Developers can install Select via CLI and learn all features from comprehensive documentation
+
+**Dependencies:** Phase 32-36 (Select component features complete)
+
+**Requirements:** INFRA-05, INFRA-06
+
+**Plans:** TBD
+
+**Success Criteria:**
+
+1. Developer runs `npx lit-ui add select` and select component is installed in their project
+2. Developer visits docs Select page and sees basic usage, all props, events, and slots documented
+3. Developer finds working examples for single-select, multi-select, combobox, and async loading
+4. Developer understands keyboard navigation and ARIA implementation from accessibility section
 
 ---
 
@@ -239,7 +273,8 @@ Plans:
 - v2.0: Phases 13-20 (complete)
 - v3.0: Phases 21-24 (complete)
 - v3.1: Phase 25 (complete)
-- v4.0: Phases 26-30 (26->27->28->29->30)
+- v4.0: Phases 26-30 (complete)
+- v4.1: Phases 31-37 (31->32->33->34->35->36->37)
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
@@ -273,7 +308,14 @@ Plans:
 | 28. Input Differentiators | v4.0 | 2/2 | Complete | 2026-01-26 |
 | 29. Textarea Component | v4.0 | 2/2 | Complete | 2026-01-26 |
 | 30. CLI and Documentation | v4.0 | 3/3 | Complete | 2026-01-26 |
+| 31. Select Infrastructure | v4.1 | 0/? | Pending | - |
+| 32. Core Single Select | v4.1 | 0/? | Not started | - |
+| 33. Select Enhancements | v4.1 | 0/? | Not started | - |
+| 34. Multi-Select | v4.1 | 0/? | Not started | - |
+| 35. Combobox | v4.1 | 0/? | Not started | - |
+| 36. Async Loading | v4.1 | 0/? | Not started | - |
+| 37. CLI and Documentation | v4.1 | 0/? | Not started | - |
 
 ---
 *Roadmap created: 2026-01-24*
-*Last updated: 2026-01-26 (v4.0 complete)*
+*Last updated: 2026-01-26 (v4.1 roadmap added)*

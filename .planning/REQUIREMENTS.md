@@ -141,17 +141,17 @@ Deferred to later milestones.
 | ASYNC-02 | Phase 36 | Pending |
 | ASYNC-03 | Phase 36 | Pending |
 | ASYNC-04 | Phase 36 | Pending |
-| INFRA-04 | Phase 36 | Pending |
 | ASYNC-05 | Phase 36 | Pending |
 | ASYNC-06 | Phase 36 | Pending |
+| INFRA-04 | Phase 36 | Pending |
 | INFRA-05 | Phase 37 | Pending |
 | INFRA-06 | Phase 37 | Pending |
 
 **Coverage:**
-- v4.1 requirements: 45 total
-- Mapped to phases: 45
+- v4.1 requirements: 46 total
+- Mapped to phases: 46
 - Unmapped: 0
 
 ---
 *Requirements defined: 2026-01-26*
-*Last updated: 2026-01-26 after initial definition*
+*Last updated: 2026-01-26 after roadmap creation*

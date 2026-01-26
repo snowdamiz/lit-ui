@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-26)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** v4.1 Select Component - defining requirements
+**Current focus:** v4.1 Select Component - Phase 31 (Select Infrastructure)
 
 ## Current Position
 
-Phase: Not started (defining requirements)
-Plan: —
-Status: Defining requirements
-Last activity: 2026-01-26 — Milestone v4.1 started
+Phase: 31 - Select Infrastructure
+Plan: Pending (needs planning)
+Status: Roadmap created, awaiting plan creation
+Last activity: 2026-01-26 — v4.1 roadmap created
 
-Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 SHIPPED | v4.0 SHIPPED
+Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 SHIPPED | v4.0 SHIPPED | v4.1 [#.......] 0/7 phases
 
 ## Performance Metrics
 
@@ -60,23 +60,32 @@ None.
 - 30 CLI tests need update for CSS variable naming change (--lui-* → --ui-*)
 - Tracked in v3.0-MILESTONE-AUDIT.md (archived)
 
+**Research findings to apply:**
+- ARIA 1.2 combobox pattern (not 1.1) - use aria-controls, not aria-owns
+- Shadow DOM click-outside requires event.composedPath()
+- Multi-select FormData uses formData.append() for each value
+- iOS VoiceOver has limited aria-activedescendant support - test on real devices
+- Async search needs AbortController to prevent race conditions
+
 ## Session Continuity
 
 Last session: 2026-01-26
-Stopped at: Started v4.1 milestone
+Stopped at: v4.1 roadmap created
 Resume file: None
 
 ## Next Steps
 
-Defining requirements for v4.1 Select Component.
+Phase 31: Select Infrastructure is pending.
 
-Target features:
-- Single-select dropdown (native `<select>` replacement)
-- Multi-select with tag display for selected items
-- Combobox with search/filter functionality
-- Async option loading with loading states and infinite scroll
-- Full keyboard navigation (arrow keys, type-ahead, Escape)
-- Form participation via ElementInternals
-- Visual states matching Input/Textarea patterns
+**Requirements for Phase 31:**
+- INFRA-01: CSS tokens for select added to @lit-ui/core (--ui-select-*)
+- INFRA-02: @lit-ui/select package created with SSR support
+- INFRA-03: @floating-ui/dom added as dependency for positioning
 
-**Next action:** Complete requirements definition, then research or roadmap creation
+**Success criteria:**
+1. Developer can use `--ui-select-*` CSS variables to style select borders, backgrounds, dropdown, and options
+2. @lit-ui/select package exists with proper peer dependencies and SSR compatibility
+3. Floating UI is integrated and positioning dropdown relative to trigger works with collision detection
+4. Package builds successfully and exports are available for consumption
+
+**Next action:** Run `/gsd:plan-phase 31` to create implementation plans
