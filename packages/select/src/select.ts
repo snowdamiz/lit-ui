@@ -33,7 +33,7 @@ import { property, state, query } from 'lit/decorators.js';
 import { TailwindElement, tailwindBaseStyles } from '@lit-ui/core';
 // Import Floating UI for dropdown positioning
 import { computePosition, flip, shift, offset, size } from '@floating-ui/dom';
-import type { Option } from './option.js';
+import { Option } from './option.js';
 
 /**
  * Select size types for padding and font sizing
@@ -315,7 +315,7 @@ export class Select extends TailwindElement {
   };
 
   /**
-   * Sync selected/active states to slotted option elements.
+   * Sync selected state to slotted option elements.
    */
   private syncSlottedOptionStates(): void {
     for (const opt of this.slottedOptions) {
@@ -324,26 +324,41 @@ export class Select extends TailwindElement {
   }
 
   /**
-   * Get the effective options list.
-   * Slotted options take precedence over the options property.
-   * Returns array of objects with value, label, disabled.
+   * Update active visual state on slotted options.
    */
-  private get effectiveOptions(): SelectOption[] {
-    if (this.slottedOptions.length > 0) {
-      return this.slottedOptions.map((opt) => ({
-        value: opt.value,
-        label: opt.label || opt.textContent?.trim() || opt.value,
-        disabled: opt.disabled,
-      }));
-    }
-    return this.options;
+  private syncSlottedActiveState(): void {
+    this.slottedOptions.forEach((opt, idx) => {
+      if (idx === this.activeIndex) {
+        opt.setAttribute('data-active', 'true');
+      } else {
+        opt.removeAttribute('data-active');
+      }
+    });
   }
 
   /**
-   * Check if using slotted content (groups/options) vs property-based options.
+   * Get the effective options list.
+   * Options property takes precedence over slotted options (backwards compatible).
+   * Returns array of objects with value, label, disabled.
    */
-  private get hasSlottedContent(): boolean {
-    return this.slottedOptions.length > 0;
+  private get effectiveOptions(): SelectOption[] {
+    // Options property takes precedence (backwards compatible)
+    if (this.options.length > 0) {
+      return this.options;
+    }
+    // Otherwise use slotted options
+    return this.slottedOptions.map((opt) => ({
+      value: opt.value,
+      label: opt.getLabel(),
+      disabled: opt.disabled,
+    }));
+  }
+
+  /**
+   * Check if using slotted mode (no options property, has slotted children).
+   */
+  private get isSlottedMode(): boolean {
+    return this.options.length === 0 && this.slottedOptions.length > 0;
   }
 
   override connectedCallback(): void {
@@ -534,6 +549,11 @@ export class Select extends TailwindElement {
         color: var(--ui-select-option-check);
       }
 
+      /* Slotted option active state */
+      ::slotted([data-active='true']) {
+        background-color: var(--ui-select-option-bg-active);
+      }
+
       /* Select wrapper for label structure */
       .select-wrapper {
         display: flex;
@@ -659,9 +679,13 @@ export class Select extends TailwindElement {
     this.requestUpdate();
 
     // Position after render
-    this.updateComplete.then(() =>
-      this.positionDropdown(this.triggerEl, this.listboxEl)
-    );
+    this.updateComplete.then(() => {
+      this.positionDropdown(this.triggerEl, this.listboxEl);
+      // Sync active state for slotted options
+      if (this.isSlottedMode) {
+        this.syncSlottedActiveState();
+      }
+    });
   }
 
   /**
@@ -672,6 +696,12 @@ export class Select extends TailwindElement {
 
     this.open = false;
     this.activeIndex = -1;
+
+    // Clear active state on slotted options
+    if (this.isSlottedMode) {
+      this.slottedOptions.forEach((opt) => opt.removeAttribute('data-active'));
+    }
+
     this.triggerEl?.focus();
   }
 
@@ -918,13 +948,22 @@ export class Select extends TailwindElement {
    */
   private setActiveIndex(index: number): void {
     this.activeIndex = index;
-    // Scroll into view
-    this.updateComplete.then(() => {
-      const optionEl = this.shadowRoot?.getElementById(
-        `${this.selectId}-option-${index}`
-      );
-      optionEl?.scrollIntoView({ block: 'nearest' });
-    });
+
+    // Sync active state for slotted options
+    if (this.isSlottedMode) {
+      this.syncSlottedActiveState();
+      // Scroll slotted option into view
+      const opt = this.slottedOptions[index];
+      opt?.scrollIntoView({ block: 'nearest' });
+    } else {
+      // Scroll property-based option into view
+      this.updateComplete.then(() => {
+        const optionEl = this.shadowRoot?.getElementById(
+          `${this.selectId}-option-${index}`
+        );
+        optionEl?.scrollIntoView({ block: 'nearest' });
+      });
+    }
   }
 
   /**
@@ -1061,7 +1100,9 @@ export class Select extends TailwindElement {
           aria-haspopup="listbox"
           aria-controls=${listboxId}
           aria-activedescendant=${this.open && this.activeIndex >= 0
-            ? `${this.selectId}-option-${this.activeIndex}`
+            ? this.isSlottedMode
+              ? this.slottedOptions[this.activeIndex]?.getId() || ''
+              : `${this.selectId}-option-${this.activeIndex}`
             : ''}
           aria-disabled=${this.disabled ? 'true' : 'false'}
           aria-invalid=${this.showError ? 'true' : nothing}
@@ -1097,14 +1138,11 @@ export class Select extends TailwindElement {
           aria-labelledby=${this.selectId}
           ?hidden=${!this.open}
         >
-          <!-- Slot for lui-option and lui-option-group children -->
-          <slot @slotchange=${this.handleSlotChange}></slot>
-          <!-- Render property-based options only when no slotted content -->
-          ${!this.hasSlottedContent
+          ${this.options.length > 0
             ? this.options.map((option, index) =>
                 this.renderOption(option, index)
               )
-            : nothing}
+            : html`<slot @slotchange=${this.handleSlotChange}></slot>`}
         </div>
 
         ${this.showError && this.errorMessage
