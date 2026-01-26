@@ -909,81 +909,75 @@ export class Select extends TailwindElement {
     const listboxId = `${this.selectId}-listbox`;
 
     return html`
-      <div
-        class=${this.getTriggerClasses()}
-        role="combobox"
-        aria-expanded=${this.open ? 'true' : 'false'}
-        aria-haspopup="listbox"
-        aria-controls=${listboxId}
-        aria-activedescendant=${this.open && this.activeIndex >= 0
-          ? `${this.selectId}-option-${this.activeIndex}`
-          : ''}
-        aria-disabled=${this.disabled ? 'true' : 'false'}
-        tabindex=${this.disabled ? '-1' : '0'}
-        @click=${this.handleTriggerClick}
-        @keydown=${this.handleKeydown}
-      >
-        ${selectedLabel
-          ? html`<span class="selected-value">${selectedLabel}</span>`
-          : html`<span class="placeholder">${this.placeholder}</span>`}
-        <svg
-          class="chevron ${this.open ? 'chevron-open' : ''}"
-          viewBox="0 0 16 16"
-          fill="none"
-          stroke="currentColor"
-          aria-hidden="true"
+      <div class="select-wrapper">
+        ${this.label
+          ? html`
+              <label for=${this.selectId} class="select-label label-${this.size}">
+                ${this.label}
+                ${this.required
+                  ? html`<span class="required-indicator">*</span>`
+                  : nothing}
+              </label>
+            `
+          : nothing}
+
+        <div
+          id=${this.selectId}
+          class=${this.getTriggerClasses()}
+          role="combobox"
+          aria-expanded=${this.open ? 'true' : 'false'}
+          aria-haspopup="listbox"
+          aria-controls=${listboxId}
+          aria-activedescendant=${this.open && this.activeIndex >= 0
+            ? `${this.selectId}-option-${this.activeIndex}`
+            : ''}
+          aria-disabled=${this.disabled ? 'true' : 'false'}
+          aria-invalid=${this.showError ? 'true' : nothing}
+          tabindex=${this.disabled ? '-1' : '0'}
+          @click=${this.handleTriggerClick}
+          @keydown=${this.handleKeydown}
+          @blur=${this.handleBlur}
         >
-          <path
-            d="M4 6l4 4 4-4"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          />
-        </svg>
+          ${selectedLabel
+            ? html`<span class="selected-value">${selectedLabel}</span>`
+            : html`<span class="placeholder">${this.placeholder}</span>`}
+          <svg
+            class="chevron ${this.open ? 'chevron-open' : ''}"
+            viewBox="0 0 16 16"
+            fill="none"
+            stroke="currentColor"
+            aria-hidden="true"
+          >
+            <path
+              d="M4 6l4 4 4-4"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </div>
+
+        <!-- Dropdown listbox -->
+        <div
+          id=${listboxId}
+          class="listbox"
+          role="listbox"
+          aria-labelledby=${this.selectId}
+          ?hidden=${!this.open}
+        >
+          ${this.options.map((option, index) => this.renderOption(option, index))}
+        </div>
+
+        ${this.showError && this.errorMessage
+          ? html`<span class="error-text" role="alert">${this.errorMessage}</span>`
+          : nothing}
       </div>
 
-      <div
-        id=${listboxId}
-        class="listbox"
-        role="listbox"
-        aria-labelledby=${this.selectId}
-        ?hidden=${!this.open}
-      >
-        ${this.options.map((option, index) => {
-          const isActive = index === this.activeIndex;
-          const isSelected = option.value === this.value;
-          const classes = ['option'];
-          if (isActive) classes.push('option-active');
-          if (isSelected) classes.push('option-selected');
-          if (option.disabled) classes.push('option-disabled');
-
-          return html`
-            <div
-              id="${this.selectId}-option-${index}"
-              role="option"
-              aria-selected=${isSelected ? 'true' : 'false'}
-              aria-disabled=${option.disabled ? 'true' : 'false'}
-              class=${classes.join(' ')}
-              @click=${(e: MouseEvent) => this.handleOptionClick(e, index)}
-            >
-              <svg
-                class="check-icon"
-                viewBox="0 0 16 16"
-                fill="none"
-                stroke="currentColor"
-                aria-hidden="true"
-              >
-                <path
-                  d="M3 8l4 4 6-7"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-              </svg>
-              <span>${option.label || option.value}</span>
-            </div>
-          `;
-        })}
+      <!-- ARIA live region -->
+      <div role="status" aria-live="polite" aria-atomic="true" class="visually-hidden">
+        ${this.open && this.activeIndex >= 0
+          ? `${this.getActiveOptionLabel()}, ${this.activeIndex + 1} of ${this.getEnabledOptionsCount()}`
+          : ''}
       </div>
     `;
   }
