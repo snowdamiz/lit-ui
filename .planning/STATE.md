@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 ## Current Position
 
 Phase: 32 - Core Single Select
-Plan: 01 of 4 complete
+Plan: 03 of 4 complete
 Status: In progress
-Last activity: 2026-01-26 - Completed 32-01-PLAN.md (Dropdown Infrastructure)
+Last activity: 2026-01-26 - Completed 32-03-PLAN.md (Form Participation)
 
-Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 SHIPPED | v4.0 SHIPPED | v4.1 [##......] 2/7 phases
+Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 SHIPPED | v4.0 SHIPPED | v4.1 [###.....] 3/7 phases
 
 ## Performance Metrics
 
@@ -44,8 +44,8 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHI
 - Total execution time: 30 min
 
 **v4.1 Velocity (in progress):**
-- Plans completed: 3
-- Total execution time: 9 min
+- Plans completed: 5
+- Total execution time: 12 min
 
 ## Accumulated Context
 
@@ -64,6 +64,8 @@ v3.0, v3.1, v4.0 decisions validated and archived.
 | Skeleton component validates infrastructure | Verify tokens and build before full implementation | 31-02 |
 | Options via property, not slots | Simpler implementation for Phase 32; slot-based extensible later | 32-01 |
 | Option component created but not registered | Future slot-based usage potential | 32-01 |
+| Validation on blur follows input pattern | Consistent UX across form components | 32-03 |
+| Error message from internals.validationMessage | Native integration for form participation | 32-03 |
 
 ### Pending Todos
 
@@ -84,22 +86,20 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-01-26 22:57Z
-Stopped at: Completed 32-01-PLAN.md (Dropdown Infrastructure)
+Last session: 2026-01-26 23:05Z
+Stopped at: Completed 32-03-PLAN.md (Form Participation)
 Resume file: None
 
 ## Next Steps
 
-Phase 32 Plan 02: Keyboard Navigation is next.
+Phase 32 Plan 04: Type-ahead Search is next.
 
 **Remaining plans in Phase 32:**
-- 32-02: Keyboard navigation (arrow keys, Enter, Escape)
-- 32-03: Form participation
 - 32-04: Type-ahead search
 
 **Success criteria progress:**
 1. [DONE] User clicks select trigger and dropdown opens with options; user clicks option and selection is displayed in trigger
-2. [NEXT] User navigates options with arrow keys, selects with Enter, and closes with Escape without using mouse
-3. User types characters and focus moves to first option starting with those characters (type-ahead)
-4. Developer wraps lui-select in native form, submits form, and receives selected value in FormData
-5. Screen reader user hears current selection, available options count, and navigation instructions via ARIA
+2. [DONE] User navigates options with arrow keys, selects with Enter, and closes with Escape without using mouse
+3. [NEXT] User types characters and focus moves to first option starting with those characters (type-ahead)
+4. [DONE] Developer wraps lui-select in native form, submits form, and receives selected value in FormData
+5. [DONE] Screen reader user hears current selection, available options count, and navigation instructions via ARIA
