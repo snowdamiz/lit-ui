@@ -115,6 +115,13 @@ export class Select extends TailwindElement {
   required = false;
 
   /**
+   * Whether to show a clear button when a value is selected.
+   * @default false
+   */
+  @property({ type: Boolean })
+  clearable = false;
+
+  /**
    * Label text displayed above the select.
    * @default ''
    */
@@ -196,6 +203,15 @@ export class Select extends TailwindElement {
    */
   private mutationObserver: MutationObserver | null = null;
 
+  /**
+   * X-circle icon SVG for clear button.
+   */
+  private xCircleIcon = html`
+    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/>
+    <line x1="15" y1="9" x2="9" y2="15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    <line x1="9" y1="9" x2="15" y2="15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  `;
+
   constructor() {
     super();
     // Only attach internals on client (not during SSR)
@@ -257,6 +273,72 @@ export class Select extends TailwindElement {
     this.touched = true;
     const isValid = this.validate();
     this.showError = !isValid;
+  }
+
+  /**
+   * Handle clear button click - reset value without opening dropdown.
+   */
+  private handleClear(e: Event): void {
+    e.stopPropagation(); // Don't open dropdown
+    e.preventDefault();
+
+    this.value = '';
+
+    // Reset selected state on slotted options
+    if (this.slottedOptions.length > 0) {
+      this.slottedOptions.forEach((opt) => {
+        opt.selected = false;
+      });
+    }
+
+    // Update form value
+    this.internals?.setFormValue('');
+
+    // Validate after clearing
+    if (this.touched) {
+      const isValid = this.validate();
+      this.showError = !isValid;
+    }
+
+    // Dispatch change and clear events
+    this.dispatchEvent(
+      new CustomEvent('clear', {
+        bubbles: true,
+        composed: true,
+      })
+    );
+    this.dispatchEvent(
+      new CustomEvent('change', {
+        detail: { value: '' },
+        bubbles: true,
+        composed: true,
+      })
+    );
+
+    // Focus trigger after clearing
+    this.triggerEl?.focus();
+  }
+
+  /**
+   * Render the clear button if clearable and value is set.
+   */
+  private renderClearButton() {
+    if (!this.clearable || !this.value || this.disabled) return nothing;
+
+    return html`
+      <button
+        type="button"
+        class="clear-button"
+        aria-label="Clear selection"
+        tabindex="-1"
+        @click=${this.handleClear}
+        @mousedown=${(e: MouseEvent) => e.preventDefault()}
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true" class="clear-icon">
+          ${this.xCircleIcon}
+        </svg>
+      </button>
+    `;
   }
 
   /**
@@ -611,6 +693,46 @@ export class Select extends TailwindElement {
         clip: rect(0, 0, 0, 0);
         white-space: nowrap;
         border: 0;
+      }
+
+      /* Clear button styling */
+      .clear-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.125rem;
+        border: none;
+        background: transparent;
+        color: var(--ui-select-placeholder);
+        cursor: pointer;
+        border-radius: var(--radius-sm, 0.25rem);
+        transition:
+          color 150ms,
+          background-color 150ms;
+        flex-shrink: 0;
+      }
+
+      .clear-button:hover {
+        color: var(--ui-select-text);
+        background-color: var(--color-muted, rgba(0, 0, 0, 0.05));
+      }
+
+      .clear-button:focus-visible {
+        outline: 2px solid var(--ui-select-ring);
+        outline-offset: 1px;
+      }
+
+      .clear-icon {
+        width: 1em;
+        height: 1em;
+      }
+
+      /* Trigger actions container */
+      .trigger-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        flex-shrink: 0;
       }
     `,
   ];
@@ -1114,20 +1236,23 @@ export class Select extends TailwindElement {
           ${selectedLabel
             ? html`<span class="selected-value">${selectedLabel}</span>`
             : html`<span class="placeholder">${this.placeholder}</span>`}
-          <svg
-            class="chevron ${this.open ? 'chevron-open' : ''}"
-            viewBox="0 0 16 16"
-            fill="none"
-            stroke="currentColor"
-            aria-hidden="true"
-          >
-            <path
-              d="M4 6l4 4 4-4"
-              stroke-width="2"
-              stroke-linecap="round"
+          <div class="trigger-actions">
+            ${this.renderClearButton()}
+            <svg
+              class="chevron ${this.open ? 'chevron-open' : ''}"
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                d="M4 6l4 4 4-4"
+                stroke-width="2"
+                stroke-linecap="round"
               stroke-linejoin="round"
             />
-          </svg>
+            </svg>
+          </div>
         </div>
 
         <!-- Dropdown listbox -->
