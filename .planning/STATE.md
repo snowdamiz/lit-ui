@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-26)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** v4.1 Select Component - Phase 31 Complete, Ready for Phase 32
+**Current focus:** v4.1 Select Component - Phase 32 (Core Single Select)
 
 ## Current Position
 
-Phase: 31 - Select Infrastructure (COMPLETE)
-Plan: 02 of 2 complete
-Status: Phase complete
-Last activity: 2026-01-26 - Completed 31-02-PLAN.md (Package Scaffolding)
+Phase: 32 - Core Single Select
+Plan: Pending (needs planning)
+Status: Ready to plan
+Last activity: 2026-01-26 - Phase 31 complete (verified)
 
-Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 SHIPPED | v4.0 SHIPPED | v4.1 [##......] 2/14 plans
+Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 SHIPPED | v4.0 SHIPPED | v4.1 [#.......] 1/7 phases
 
 ## Performance Metrics
 
@@ -83,22 +83,22 @@ None.
 ## Session Continuity
 
 Last session: 2026-01-26
-Stopped at: Completed 31-02-PLAN.md (Phase 31 complete)
+Stopped at: Phase 31 complete and verified
 Resume file: None
 
 ## Next Steps
 
-Phase 31: Select Infrastructure COMPLETE.
+Phase 32: Core Single Select is pending.
 
-**Completed:**
-- INFRA-01: CSS tokens for select added to @lit-ui/core (--ui-select-*) - 31-01
-- INFRA-02: @lit-ui/select package created with SSR support - 31-02
-- INFRA-03: @floating-ui/dom added as dependency for positioning - 31-02
+**Requirements for Phase 32:**
+- SELECT-01 through SELECT-12: Core select functionality
+- A11Y-01 through A11Y-04: Accessibility requirements
 
-**Next phase:** Phase 32 - Select Core
-- CORE-01: Option component for individual options
-- CORE-02: Dropdown rendering with Floating UI
-- CORE-03: Keyboard navigation (Arrow, Enter, Escape)
-- CORE-04: Form participation via ElementInternals
+**Success criteria (from ROADMAP.md):**
+1. User clicks select trigger and dropdown opens with options; user clicks option and selection is displayed in trigger
+2. User navigates options with arrow keys, selects with Enter, and closes with Escape without using mouse
+3. User types characters and focus moves to first option starting with those characters (type-ahead)
+4. Developer wraps lui-select in native form, submits form, and receives selected value in FormData
+5. Screen reader user hears current selection, available options count, and navigation instructions via ARIA
 
-**Next action:** Create 32-PLAN.md or execute first plan of Phase 32
+**Next action:** Run `/gsd:plan-phase 32` to create implementation plans

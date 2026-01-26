@@ -139,8 +139,8 @@ Full details: [milestones/v3.0-ROADMAP.md](milestones/v3.0-ROADMAP.md)
 **Plans:** 2 plans
 
 Plans:
-- [ ] 31-01-PLAN.md — Add CSS tokens for select to @lit-ui/core
-- [ ] 31-02-PLAN.md — Create @lit-ui/select package with Floating UI
+- [x] 31-01-PLAN.md — Add CSS tokens for select to @lit-ui/core
+- [x] 31-02-PLAN.md — Create @lit-ui/select package with Floating UI
 
 **Success Criteria:**
 
@@ -312,7 +312,7 @@ Plans:
 | 28. Input Differentiators | v4.0 | 2/2 | Complete | 2026-01-26 |
 | 29. Textarea Component | v4.0 | 2/2 | Complete | 2026-01-26 |
 | 30. CLI and Documentation | v4.0 | 3/3 | Complete | 2026-01-26 |
-| 31. Select Infrastructure | v4.1 | 0/2 | Planned | - |
+| 31. Select Infrastructure | v4.1 | 2/2 | Complete | 2026-01-26 |
 | 32. Core Single Select | v4.1 | 0/? | Not started | - |
 | 33. Select Enhancements | v4.1 | 0/? | Not started | - |
 | 34. Multi-Select | v4.1 | 0/? | Not started | - |
@@ -322,4 +322,4 @@ Plans:
 
 ---
 *Roadmap created: 2026-01-24*
-*Last updated: 2026-01-26 (Phase 31 planned)*
+*Last updated: 2026-01-26 (Phase 31 complete)*

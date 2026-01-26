@@ -55,9 +55,9 @@ Requirements for Select component with single-select, multi-select, combobox, an
 
 ### Infrastructure
 
-- [ ] **INFRA-01**: CSS tokens for select added to @lit-ui/core (--ui-select-*)
-- [ ] **INFRA-02**: @lit-ui/select package created with SSR support
-- [ ] **INFRA-03**: @floating-ui/dom added as dependency for positioning
+- [x] **INFRA-01**: CSS tokens for select added to @lit-ui/core (--ui-select-*)
+- [x] **INFRA-02**: @lit-ui/select package created with SSR support
+- [x] **INFRA-03**: @floating-ui/dom added as dependency for positioning
 - [ ] **INFRA-04**: @tanstack/lit-virtual added as dependency for virtual scrolling
 - [ ] **INFRA-05**: CLI templates updated for select component
 - [ ] **INFRA-06**: Docs page created for Select component
@@ -100,9 +100,9 @@ Deferred to later milestones.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| INFRA-01 | Phase 31 | Pending |
-| INFRA-02 | Phase 31 | Pending |
-| INFRA-03 | Phase 31 | Pending |
+| INFRA-01 | Phase 31 | Complete |
+| INFRA-02 | Phase 31 | Complete |
+| INFRA-03 | Phase 31 | Complete |
 | SELECT-01 | Phase 32 | Pending |
 | SELECT-02 | Phase 32 | Pending |
 | SELECT-03 | Phase 32 | Pending |
@@ -154,4 +154,4 @@ Deferred to later milestones.
 
 ---
 *Requirements defined: 2026-01-26*
-*Last updated: 2026-01-26 after roadmap creation*
+*Last updated: 2026-01-26 (Phase 31 complete)*
