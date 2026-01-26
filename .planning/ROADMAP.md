@@ -159,7 +159,13 @@ Plans:
 
 **Requirements:** SELECT-01, SELECT-02, SELECT-03, SELECT-04, SELECT-05, SELECT-06, SELECT-07, SELECT-08, SELECT-09, SELECT-10, SELECT-11, SELECT-12, A11Y-01, A11Y-02, A11Y-03, A11Y-04
 
-**Plans:** TBD
+**Plans:** 4 plans
+
+Plans:
+- [ ] 32-01-PLAN.md — Dropdown and options infrastructure
+- [ ] 32-02-PLAN.md — Keyboard navigation and type-ahead
+- [ ] 32-03-PLAN.md — Form participation and visual states
+- [ ] 32-04-PLAN.md — Final verification checkpoint
 
 **Success Criteria:**
 
