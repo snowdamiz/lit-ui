@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-26)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** v4.1 Select Component - Phase 32 (Core Single Select)
+**Current focus:** v4.1 Select Component - Phase 32 Complete, Phase 33 next
 
 ## Current Position
 
-Phase: 32 - Core Single Select
-Plan: 03 of 4 complete
-Status: In progress
-Last activity: 2026-01-26 - Completed 32-03-PLAN.md (Form Participation)
+Phase: 32 - Core Single Select (COMPLETE)
+Plan: 04 of 4 complete
+Status: Phase complete
+Last activity: 2026-01-26 - Completed 32-04-PLAN.md (Final Verification)
 
-Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 SHIPPED | v4.0 SHIPPED | v4.1 [###.....] 3/7 phases
+Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 SHIPPED | v4.0 SHIPPED | v4.1 [####....] 4/7 phases
 
 ## Performance Metrics
 
@@ -44,8 +44,8 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHI
 - Total execution time: 30 min
 
 **v4.1 Velocity (in progress):**
-- Plans completed: 5
-- Total execution time: 12 min
+- Plans completed: 6
+- Total execution time: 14 min
 
 ## Accumulated Context
 
@@ -76,32 +76,36 @@ None.
 ### Blockers/Concerns
 
 **Tech debt from v3.0:**
-- 30 CLI tests need update for CSS variable naming change (--lui-* → --ui-*)
+- 30 CLI tests need update for CSS variable naming change (--lui-* -> --ui-*)
 - Tracked in v3.0-MILESTONE-AUDIT.md (archived)
 
 **Research findings to apply:**
+- Multi-select FormData uses formData.append() for each value
+- Async search needs AbortController to prevent race conditions
+
+**Applied from research:**
 - ARIA 1.2 combobox pattern (not 1.1) - use aria-controls, not aria-owns [APPLIED in 32-01]
 - Shadow DOM click-outside requires event.composedPath() [APPLIED in 32-01]
-- Multi-select FormData uses formData.append() for each value
 - iOS VoiceOver has limited aria-activedescendant support [MITIGATED in 32-02 with ARIA live region]
-- Async search needs AbortController to prevent race conditions
 
 ## Session Continuity
 
-Last session: 2026-01-26 23:05Z
-Stopped at: Completed 32-03-PLAN.md (Form Participation)
+Last session: 2026-01-26 23:15Z
+Stopped at: Completed 32-04-PLAN.md (Final Verification) - Phase 32 complete
 Resume file: None
 
 ## Next Steps
 
-Phase 32 Plan 04: Type-ahead Search is next.
+Phase 33 (Select Enhancements) is next.
 
-**Remaining plans in Phase 32:**
-- 32-04: Type-ahead search
+**Phase 32 Summary:**
+- 4 plans completed
+- Complete single select component with full keyboard navigation, type-ahead, form participation, ARIA compliance
+- Human-verified all interactions working correctly
 
-**Success criteria progress:**
-1. [DONE] User clicks select trigger and dropdown opens with options; user clicks option and selection is displayed in trigger
-2. [DONE] User navigates options with arrow keys, selects with Enter, and closes with Escape without using mouse
-3. [NEXT] User types characters and focus moves to first option starting with those characters (type-ahead)
-4. [DONE] Developer wraps lui-select in native form, submits form, and receives selected value in FormData
-5. [DONE] Screen reader user hears current selection, available options count, and navigation instructions via ARIA
+**Remaining phases in v4.1:**
+- Phase 33: Select Enhancements (option groups, custom content, clearable)
+- Phase 34: Multi-Select
+- Phase 35: Combobox
+- Phase 36: Async Loading
+- Phase 37: CLI and Documentation
