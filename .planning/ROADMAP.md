@@ -112,6 +112,15 @@ Full details: [milestones/v3.0-ROADMAP.md](milestones/v3.0-ROADMAP.md)
 
 **Requirements:** DARK-01, DARK-02, DARK-03, DARK-04, DARK-05, DARK-06, DARK-07, DARK-08
 
+**Plans:** 5 plans
+
+Plans:
+- [ ] 25-01-PLAN.md — Theme infrastructure (ThemeContext, FOUC prevention, Tailwind dark mode)
+- [ ] 25-02-PLAN.md — Theme toggle component and header integration
+- [ ] 25-03-PLAN.md — Dark mode styling for navigation components
+- [ ] 25-04-PLAN.md — Dark mode styling for content components
+- [ ] 25-05-PLAN.md — Configurator toggle sync and component styling
+
 **Success Criteria:**
 
 1. User sees a theme toggle button in the header on every docs page
@@ -157,8 +166,8 @@ Full details: [milestones/v3.0-ROADMAP.md](milestones/v3.0-ROADMAP.md)
 | 22. CLI Theme Integration | v3.0 | 4/4 | Complete | 2026-01-25 |
 | 23. Visual Configurator Core | v3.0 | 4/4 | Complete | 2026-01-25 |
 | 24. Presets and Enhanced Features | v3.0 | 3/3 | Complete | 2026-01-25 |
-| 25. Docs Site Dark Mode | v3.1 | 0/? | Not started | - |
+| 25. Docs Site Dark Mode | v3.1 | 0/5 | Planned | - |
 
 ---
 *Roadmap created: 2026-01-24*
-*Last updated: 2026-01-25 (v3.1 milestone roadmap added)*
+*Last updated: 2026-01-25 (Phase 25 plans created)*
