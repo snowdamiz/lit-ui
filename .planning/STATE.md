@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-26)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** v4.0 Form Inputs - Phase 28 Input Differentiators
+**Current focus:** v4.0 Form Inputs - Phase 29 Textarea Component
 
 ## Current Position
 
-Phase: 28 - Input Differentiators (IN PROGRESS)
-Plan: 2/? complete
-Status: In progress
-Last activity: 2026-01-26 — Completed 28-02-PLAN.md (Password Toggle, Clear Button)
+Phase: 28 - Input Differentiators (COMPLETE)
+Plan: 2/2 complete
+Status: Complete
+Last activity: 2026-01-26 — Phase 28 complete
 
-Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 SHIPPED | v4.0 [#####.....] 3/5
+Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 SHIPPED | v4.0 [######....] 3/5
 
 ## Performance Metrics
 
@@ -80,8 +80,8 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-01-26T11:05:51Z
-Stopped at: Completed 28-02-PLAN.md
+Last session: 2026-01-26T11:10:00Z
+Stopped at: Completed Phase 28
 Resume file: None
 
 ## Next Steps
@@ -98,15 +98,18 @@ Roadmap complete with 5 phases (26-30), 33 requirements mapped.
 **Phase 27: Core Input Component** - COMPLETE
 - Goal: Developers can add a fully functional text input to any form
 - Requirements: INPUT-01 through INPUT-12, INFRA-02
-- Plan 01: Complete - Core package structure and Input component
-- Plan 02: Complete - Visual states, validation, label, helper text
 - Status: Complete (verified)
 
-**Phase 28: Input Differentiators** - IN PROGRESS
-- Goal: Input component has enhanced UX features (password toggle, clear, prefix/suffix, char count)
-- Requirements: INPUT-13 through INPUT-17
+**Phase 28: Input Differentiators** - COMPLETE
+- Goal: Input component has enhanced UX features (password toggle, clear, prefix/suffix)
+- Requirements: INPUT-13 through INPUT-16
 - Plan 01: Complete - Prefix/Suffix slots with flex container
 - Plan 02: Complete - Password toggle, Clear button
-- Status: In progress
+- Status: Complete (verified)
 
-**Next action:** Run `/gsd:execute-phase 28` to continue with Plan 03 (Character count)
+**Phase 29: Textarea Component**
+- Goal: Multi-line text input with form participation and auto-resize
+- Requirements: TEXTAREA-01 through TEXTAREA-11, INFRA-03, INPUT-17
+- Status: Ready to plan
+
+**Next action:** Run `/gsd:discuss-phase 29` to gather context or `/gsd:plan-phase 29` to plan directly

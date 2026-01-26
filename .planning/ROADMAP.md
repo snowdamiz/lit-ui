@@ -166,21 +166,20 @@ Plans:
 
 **Dependencies:** Phase 27 (core input must exist)
 
-**Requirements:** INPUT-13, INPUT-14, INPUT-15, INPUT-16, INPUT-17
+**Requirements:** INPUT-13, INPUT-14, INPUT-15, INPUT-16
 
 **Plans:** 2 plans
 
 Plans:
-- [ ] 28-01-PLAN.md — Container restructure with prefix/suffix slots
-- [ ] 28-02-PLAN.md — Password toggle and clear button
+- [x] 28-01-PLAN.md — Container restructure with prefix/suffix slots
+- [x] 28-02-PLAN.md — Password toggle and clear button
 
 **Success Criteria:**
 
 1. User can toggle password visibility using an eye icon button inside the password input
-2. User typing in search input sees a clear button that empties the field when clicked
+2. User typing in clearable input sees a clear button that empties the field when clicked
 3. Developer can add prefix content (icon, currency symbol) that appears before the input text
 4. Developer can add suffix content (icon, unit label) that appears after the input text
-5. User with maxlength input sees character count (e.g., "42/100") updating as they type
 
 ---
 
@@ -258,10 +257,10 @@ Plans:
 | 25. Docs Site Dark Mode | v3.1 | 5/5 | Complete | 2026-01-25 |
 | 26. CSS Tokens Foundation | v4.0 | 1/1 | Complete | 2026-01-26 |
 | 27. Core Input Component | v4.0 | 2/2 | Complete | 2026-01-26 |
-| 28. Input Differentiators | v4.0 | 0/2 | Planned | - |
+| 28. Input Differentiators | v4.0 | 2/2 | Complete | 2026-01-26 |
 | 29. Textarea Component | v4.0 | 0/? | Planned | - |
 | 30. CLI and Documentation | v4.0 | 0/? | Planned | - |
 
 ---
 *Roadmap created: 2026-01-24*
-*Last updated: 2026-01-26 (Phase 28 planned)*
+*Last updated: 2026-01-26 (Phase 28 complete)*

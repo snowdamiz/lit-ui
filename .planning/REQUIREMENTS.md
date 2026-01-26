@@ -21,10 +21,10 @@ Requirements for Input and Textarea components. Form primitives with full valida
 - [x] **INPUT-10**: Input shows focus ring on keyboard focus
 - [x] **INPUT-11**: Input shows error visual state when invalid
 - [x] **INPUT-12**: Input supports placeholder text
-- [ ] **INPUT-13**: Password input has visibility toggle button
-- [ ] **INPUT-14**: Search input has clear button when not empty
-- [ ] **INPUT-15**: Input supports prefix slot (icon/text before input)
-- [ ] **INPUT-16**: Input supports suffix slot (icon/text after input)
+- [x] **INPUT-13**: Password input has visibility toggle button
+- [x] **INPUT-14**: Search input has clear button when not empty
+- [x] **INPUT-15**: Input supports prefix slot (icon/text before input)
+- [x] **INPUT-16**: Input supports suffix slot (icon/text after input)
 - [ ] **INPUT-17**: Input supports optional character counter (current/max)
 
 ### Textarea Component
@@ -95,11 +95,11 @@ Deferred to later milestones.
 | INPUT-11 | Phase 27 | Complete |
 | INPUT-12 | Phase 27 | Complete |
 | INFRA-02 | Phase 27 | Complete |
-| INPUT-13 | Phase 28 | Pending |
-| INPUT-14 | Phase 28 | Pending |
-| INPUT-15 | Phase 28 | Pending |
-| INPUT-16 | Phase 28 | Pending |
-| INPUT-17 | Phase 28 | Pending |
+| INPUT-13 | Phase 28 | Complete |
+| INPUT-14 | Phase 28 | Complete |
+| INPUT-15 | Phase 28 | Complete |
+| INPUT-16 | Phase 28 | Complete |
+| INPUT-17 | Phase 29 | Pending |
 | TEXTAREA-01 | Phase 29 | Pending |
 | TEXTAREA-02 | Phase 29 | Pending |
 | TEXTAREA-03 | Phase 29 | Pending |
@@ -122,4 +122,4 @@ Deferred to later milestones.
 
 ---
 *Requirements defined: 2026-01-26*
-*Last updated: 2026-01-26 after Phase 27 complete*
+*Last updated: 2026-01-26 after Phase 28 complete*
