@@ -32,6 +32,8 @@ export const navigation: NavSection[] = [
     items: [
       { title: "Button", href: "/components/button" },
       { title: "Dialog", href: "/components/dialog" },
+      { title: "Input", href: "/components/input" },
+      { title: "Textarea", href: "/components/textarea" },
     ],
   },
   {

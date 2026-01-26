@@ -33,6 +33,26 @@ function DialogIcon() {
   )
 }
 
+function InputIcon() {
+  return (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="6" width="18" height="12" rx="2" />
+      <path d="M7 12h1" />
+    </svg>
+  )
+}
+
+function TextareaIcon() {
+  return (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="3" width="18" height="18" rx="2" />
+      <path d="M7 8h10" />
+      <path d="M7 12h10" />
+      <path d="M7 16h6" />
+    </svg>
+  )
+}
+
 function ServerIcon() {
   return (
     <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -94,6 +114,8 @@ const iconMap: Record<string, () => JSX.Element> = {
   'Styling': StylingIcon,
   'Button': ButtonIcon,
   'Dialog': DialogIcon,
+  'Input': InputIcon,
+  'Textarea': TextareaIcon,
   'SSR Setup': ServerIcon,
   'Migration': MigrationIcon,
   'Theme Configurator': PaletteIcon,
