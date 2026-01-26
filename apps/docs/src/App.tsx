@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router'
+import { ThemeProvider } from './contexts/ThemeContext'
 import { DocsLayout } from './layouts/DocsLayout'
 import { GettingStarted } from './pages/GettingStarted'
 import { Installation } from './pages/Installation'
@@ -11,33 +12,35 @@ import { ConfiguratorPage } from './pages/configurator/ConfiguratorPage'
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route element={<DocsLayout />}>
-          {/* Index route - shows Getting Started */}
-          <Route index element={<GettingStarted />} />
+    <ThemeProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route element={<DocsLayout />}>
+            {/* Index route - shows Getting Started */}
+            <Route index element={<GettingStarted />} />
 
-          {/* Getting Started */}
-          <Route path="getting-started" element={<GettingStarted />} />
+            {/* Getting Started */}
+            <Route path="getting-started" element={<GettingStarted />} />
 
-          {/* Installation */}
-          <Route path="installation" element={<Installation />} />
+            {/* Installation */}
+            <Route path="installation" element={<Installation />} />
 
-          {/* Guides */}
-          <Route path="guides/ssr" element={<SSRGuide />} />
-          <Route path="guides/migration" element={<MigrationGuide />} />
+            {/* Guides */}
+            <Route path="guides/ssr" element={<SSRGuide />} />
+            <Route path="guides/migration" element={<MigrationGuide />} />
 
-          {/* Tools */}
-          <Route path="configurator" element={<ConfiguratorPage />} />
+            {/* Tools */}
+            <Route path="configurator" element={<ConfiguratorPage />} />
 
-          {/* Components */}
-          <Route path="components/button" element={<ButtonPage />} />
-          <Route path="components/dialog" element={<DialogPage />} />
+            {/* Components */}
+            <Route path="components/button" element={<ButtonPage />} />
+            <Route path="components/dialog" element={<DialogPage />} />
 
-          {/* Catch-all for undefined routes */}
-          <Route path="*" element={<Placeholder />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
+            {/* Catch-all for undefined routes */}
+            <Route path="*" element={<Placeholder />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </ThemeProvider>
   )
 }
