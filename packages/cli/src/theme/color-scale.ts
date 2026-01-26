@@ -136,8 +136,9 @@ export function deriveForeground(backgroundColor: string): string {
   const color = new Color(backgroundColor);
   const bgLightness = color.oklch.l;
 
-  // Use lightness threshold of 0.5 to determine contrast direction
-  const LIGHTNESS_THRESHOLD = 0.5;
+  // Use lightness threshold of 0.7 to determine contrast direction
+  // Higher threshold ensures colored buttons (L ~0.5-0.65) get white text for better visibility
+  const LIGHTNESS_THRESHOLD = 0.7;
 
   // Low chroma for foreground (near neutral for readability)
   const FOREGROUND_CHROMA = 0.02;

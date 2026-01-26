@@ -220,19 +220,20 @@ describe('deriveForeground', () => {
     }
   });
 
-  it('uses lightness threshold around 0.5', () => {
-    // Just below threshold
-    const belowThreshold = deriveForeground('oklch(0.45 0.1 250)');
-    const aboveThreshold = deriveForeground('oklch(0.55 0.1 250)');
+  it('uses lightness threshold around 0.7', () => {
+    // Just below threshold (should get light foreground)
+    const belowThreshold = deriveForeground('oklch(0.65 0.1 250)');
+    // Above threshold (should get dark foreground)
+    const aboveThreshold = deriveForeground('oklch(0.75 0.1 250)');
 
     const getLightness = (oklchStr: string): number => {
       const match = oklchStr.match(/oklch\(([\d.]+)/);
       return match ? parseFloat(match[1]) : 0;
     };
 
-    // Below 0.5 lightness -> light foreground
+    // Below 0.7 lightness -> light foreground (white text)
     expect(getLightness(belowThreshold)).toBeGreaterThan(0.8);
-    // Above 0.5 lightness -> dark foreground
+    // Above 0.7 lightness -> dark foreground (black text)
     expect(getLightness(aboveThreshold)).toBeLessThan(0.2);
   });
 

@@ -162,9 +162,16 @@ export class Button extends TailwindElement {
      * Consumers can override --ui-button-{variant}-* properties
      * ------------------------------------------------------------------------- */
 
+    /* Contrast threshold for auto-contrast calculation (0.6 = 60% lightness) */
+    :host {
+      --_contrast-threshold: var(--ui-contrast-threshold, 0.7);
+    }
+
     /* Primary variant */
     button.btn-primary {
-      background-color: var(--ui-button-primary-bg);
+      --_bg: var(--ui-button-primary-bg);
+      background-color: var(--_bg);
+      /* Fallback for browsers without relative color syntax */
       color: var(--ui-button-primary-text);
     }
     button.btn-primary:hover:not([aria-disabled='true']) {
@@ -173,14 +180,16 @@ export class Button extends TailwindElement {
 
     /* Secondary variant */
     button.btn-secondary {
-      background-color: var(--ui-button-secondary-bg);
+      --_bg: var(--ui-button-secondary-bg);
+      background-color: var(--_bg);
+      /* Fallback for browsers without relative color syntax */
       color: var(--ui-button-secondary-text);
     }
     button.btn-secondary:hover:not([aria-disabled='true']) {
       background-color: var(--ui-button-secondary-hover-bg);
     }
 
-    /* Outline variant */
+    /* Outline variant - uses foreground color (no auto-contrast needed) */
     button.btn-outline {
       background-color: var(--ui-button-outline-bg);
       color: var(--ui-button-outline-text);
@@ -190,7 +199,7 @@ export class Button extends TailwindElement {
       background-color: var(--ui-button-outline-hover-bg);
     }
 
-    /* Ghost variant */
+    /* Ghost variant - uses foreground color (no auto-contrast needed) */
     button.btn-ghost {
       background-color: var(--ui-button-ghost-bg);
       color: var(--ui-button-ghost-text);
@@ -201,11 +210,36 @@ export class Button extends TailwindElement {
 
     /* Destructive variant */
     button.btn-destructive {
-      background-color: var(--ui-button-destructive-bg);
+      --_bg: var(--ui-button-destructive-bg);
+      background-color: var(--_bg);
+      /* Fallback for browsers without relative color syntax */
       color: var(--ui-button-destructive-text);
     }
     button.btn-destructive:hover:not([aria-disabled='true']) {
       opacity: var(--ui-button-destructive-hover-opacity);
+    }
+
+    /* -------------------------------------------------------------------------
+     * Auto-contrast: Automatically calculate text color from background
+     * Uses CSS relative color syntax to extract lightness and compute contrast
+     * Formula: if lightness < threshold → white text, else → black text
+     * ------------------------------------------------------------------------- */
+    @supports (color: oklch(from oklch(0.5 0.1 250) l c h)) {
+      /* Primary auto-contrast */
+      button.btn-primary {
+        /* Auto-calculate contrasting text color based on background lightness */
+        color: oklch(from var(--_bg) clamp(0, (l / var(--_contrast-threshold) - 1) * -infinity, 1) 0.02 h);
+      }
+
+      /* Secondary auto-contrast */
+      button.btn-secondary {
+        color: oklch(from var(--_bg) clamp(0, (l / var(--_contrast-threshold) - 1) * -infinity, 1) 0.02 h);
+      }
+
+      /* Destructive auto-contrast */
+      button.btn-destructive {
+        color: oklch(from var(--_bg) clamp(0, (l / var(--_contrast-threshold) - 1) * -infinity, 1) 0.02 h);
+      }
     }
 
     /* -------------------------------------------------------------------------

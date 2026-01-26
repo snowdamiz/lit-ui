@@ -157,17 +157,17 @@
  * User controls by adding/removing .dark class on html/body.
  * ========================================================================== */
 .dark {
-  /* Primary */
-  --color-primary: var(--color-brand-400);
-  --color-primary-foreground: var(--color-gray-950);
+  /* Primary - use brand-600 (L=0.54) for auto-contrast white text (L < 0.6 threshold) */
+  --color-primary: var(--color-brand-600);
+  --color-primary-foreground: white;
 
   /* Secondary */
   --color-secondary: var(--color-gray-800);
   --color-secondary-foreground: var(--color-gray-100);
 
-  /* Destructive */
-  --color-destructive: var(--color-red-400);
-  --color-destructive-foreground: var(--color-gray-950);
+  /* Destructive - use oklch with L=0.55 for auto-contrast white text */
+  --color-destructive: oklch(0.55 0.22 25);
+  --color-destructive-foreground: white;
 
   /* Muted */
   --color-muted: var(--color-gray-800);
@@ -209,6 +209,12 @@
    * These provide fallback values for component tokens below.
    * Apps can override these to customize the entire theme.
    * ------------------------------------------------------------------------- */
+
+  /* Auto-contrast threshold for text color calculation (0.6 = 60% lightness)
+   * Colors with lightness below this threshold get white text
+   * Colors with lightness at or above this threshold get black text */
+  --ui-contrast-threshold: 0.7;
+
   --ui-color-primary: oklch(0.62 0.18 250); /* brand-500 */
   --ui-color-primary-foreground: white;
   --ui-color-secondary: oklch(0.967 0.003 264.542); /* gray-100 */

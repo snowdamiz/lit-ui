@@ -82,6 +82,14 @@ const propertyRules = tailwindStyles.match(propertyRulePattern) || [];
 const rootRulePattern = /:root\s*\{[^}]*--ui-[^}]+\}/g;
 const rootRules = tailwindStyles.match(rootRulePattern) || [];
 
+/**
+ * Extract .dark rules containing color overrides for dark mode.
+ * These must be applied at the document level so they cascade into Shadow DOM
+ * when the .dark class is present on an ancestor element.
+ */
+const darkRulePattern = /\.dark\s*\{[^}]+\}/g;
+const darkRules = tailwindStyles.match(darkRulePattern) || [];
+
 // Only apply document-level rules on client
 if (typeof document !== 'undefined') {
   const documentRules: string[] = [];
@@ -92,6 +100,10 @@ if (typeof document !== 'undefined') {
 
   if (rootRules.length > 0) {
     documentRules.push(...rootRules);
+  }
+
+  if (darkRules.length > 0) {
+    documentRules.push(...darkRules);
   }
 
   if (documentRules.length > 0) {

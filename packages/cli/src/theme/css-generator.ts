@@ -81,6 +81,9 @@ export function generateThemeCSS(config: ThemeConfig): string {
  * Light Mode (Default)
  * ========================================================================== */
 :root {
+  /* Auto-contrast threshold for button text color calculation */
+  --ui-contrast-threshold: 0.7;
+
   /* Semantic Colors */
   --color-primary: ${colors.primary};
   --color-primary-foreground: ${primaryForeground};
