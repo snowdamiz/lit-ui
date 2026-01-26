@@ -1,9 +1,10 @@
 import { Link } from 'react-router'
 import { MobileNav } from './MobileNav'
+import { ThemeToggle } from './ThemeToggle'
 
 export function Header() {
   return (
-    <header className="fixed top-0 left-0 right-0 h-16 z-50 bg-white border-b border-gray-200">
+    <header className="fixed top-0 left-0 right-0 h-16 z-50 bg-white dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800">
       <div className="h-full px-4 md:px-6 flex items-center justify-between">
         <Link
           to="/"
@@ -14,15 +15,15 @@ export function Header() {
             alt="lit-ui logo"
             className="h-8 w-8 rounded-lg shadow-sm transition-transform group-hover:scale-105"
           />
-          <span className="text-xl font-bold text-gray-900">lit</span>
-          <span className="text-sm font-medium text-gray-400 tracking-wide">/ DOCS</span>
+          <span className="text-xl font-bold text-gray-900 dark:text-gray-100">lit</span>
+          <span className="text-sm font-medium text-gray-400 dark:text-gray-500 tracking-wide">/ DOCS</span>
         </Link>
         <div className="flex items-center gap-2">
           <a
             href="https://github.com/snowdamiz/lit-ui"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900"
+            className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-gray-500 dark:text-gray-400 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100"
           >
             <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
               <path
@@ -33,6 +34,7 @@ export function Header() {
             </svg>
             <span className="hidden sm:inline">GitHub</span>
           </a>
+          <ThemeToggle />
           <MobileNav />
         </div>
       </div>
