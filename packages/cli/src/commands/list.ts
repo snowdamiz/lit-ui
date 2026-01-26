@@ -27,19 +27,30 @@ export const list = defineCommand({
     console.log(pc.dim(`Mode: ${mode}`));
     console.log('');
 
-    if (mode === 'npm') {
-      for (const component of components) {
-        const packageName = componentToPackage[component.name] ?? `@lit-ui/${component.name}`;
-        console.log(`  ${pc.cyan(component.name)} - ${packageName}`);
+    // Define component categories
+    const categories: Record<string, string[]> = {
+      'Form': ['input', 'textarea'],
+      'Feedback': ['dialog'],
+      'Actions': ['button'],
+    };
+
+    // Group output by category
+    for (const [category, componentNames] of Object.entries(categories)) {
+      console.log(pc.bold(pc.cyan(category)));
+
+      for (const name of componentNames) {
+        const component = components.find(c => c.name === name);
+        if (!component) continue;
+
+        if (mode === 'npm') {
+          const packageName = componentToPackage[component.name] ?? `@lit-ui/${component.name}`;
+          console.log(`  ${pc.white(component.name)} - ${pc.dim(packageName)}`);
+        } else {
+          console.log(`  ${pc.white(component.name)}`);
+        }
         console.log(`    ${pc.dim(component.description)}`);
-        console.log('');
       }
-    } else {
-      for (const component of components) {
-        console.log(`  ${pc.cyan(component.name)}`);
-        console.log(`    ${pc.dim(component.description)}`);
-        console.log('');
-      }
+      console.log(''); // Empty line between categories
     }
 
     console.log(pc.dim(`Run ${pc.reset('lit-ui add <component>')} to install a component.`));
