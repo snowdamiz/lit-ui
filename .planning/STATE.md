@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-25)
 ## Current Position
 
 Phase: 25 - Docs Site Dark Mode
-Plan: 01 of 4
+Plan: 03 of 4
 Status: In progress
-Last activity: 2026-01-25 - Completed 25-01-PLAN.md
+Last activity: 2026-01-26 - Completed 25-03-PLAN.md
 
-Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 [##........] 1/4
+Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 [######....] 3/4
 
 ## Performance Metrics
 
@@ -36,8 +36,8 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHI
 - Total execution time: 39 min
 
 **v3.1 Velocity (partial):**
-- Plans completed: 1
-- Total execution time: 3 min
+- Plans completed: 3
+- Total execution time: 5 min
 
 ## Accumulated Context
 
@@ -50,6 +50,8 @@ v3.0 decisions validated and archived.
 - Theme state initialized from DOM class (set by FOUC script), not localStorage
 - Dark palette: shadcn-inspired neutral OKLCH values
 - Utility class dark overrides in CSS, not Tailwind dark: prefix
+- Dark backgrounds use gray-950 with 80%/95% opacity for backdrop-blur effect
+- Dark text hierarchy: gray-100 primary, gray-400 secondary, gray-500 muted
 
 ### Pending Todos
 
@@ -63,22 +65,22 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-01-25
-Stopped at: Completed 25-01-PLAN.md
+Last session: 2026-01-26
+Stopped at: Completed 25-03-PLAN.md
 Resume file: None
 
 ## Next Steps
 
 ### v3.1 Docs Dark Mode
 
-Phase 25 Plan 01 complete. Ready for Plan 02.
+Phase 25 Plan 03 complete. Ready for Plan 04.
 
 **Completed:**
 - [x] Plan 01: Theme infrastructure (ThemeContext, FOUC script, CSS variables)
+- [x] Plan 02: Header toggle (ThemeToggle component, Header dark mode styling)
+- [x] Plan 03: Navigation dark mode (sidebar, nav links, mobile nav)
 
 **Remaining:**
-- [ ] Plan 02: Header toggle
-- [ ] Plan 03: ThemeProvider integration
 - [ ] Plan 04: Configurator sync
 
-**Next action:** Execute 25-02-PLAN.md
+**Next action:** Execute 25-04-PLAN.md
