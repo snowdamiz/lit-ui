@@ -16,7 +16,7 @@
  * ```
  */
 
-import { html, css, isServer } from 'lit';
+import { html, css, isServer, nothing } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
 import { TailwindElement, tailwindBaseStyles } from '@lit-ui/core';
 
@@ -109,6 +109,44 @@ export class Input extends TailwindElement {
    */
   @property({ type: Boolean, reflect: true })
   readonly = false;
+
+  /**
+   * Whether the input is required for form submission.
+   * @default false
+   */
+  @property({ type: Boolean, reflect: true })
+  required = false;
+
+  /**
+   * Minimum length for text input validation.
+   */
+  @property({ type: Number })
+  minlength?: number;
+
+  /**
+   * Maximum length for text input validation.
+   */
+  @property({ type: Number })
+  maxlength?: number;
+
+  /**
+   * Regular expression pattern for validation.
+   * @default ''
+   */
+  @property({ type: String })
+  pattern = '';
+
+  /**
+   * Minimum value for number input validation.
+   */
+  @property({ type: Number })
+  min?: number;
+
+  /**
+   * Maximum value for number input validation.
+   */
+  @property({ type: Number })
+  max?: number;
 
   /**
    * Whether the input has been touched (blur occurred).
@@ -215,12 +253,59 @@ export class Input extends TailwindElement {
   }
 
   /**
+   * Validate the input and sync validity state to ElementInternals.
+   * Mirrors native input validity to the custom element for form participation.
+   * @returns true if valid, false if invalid
+   */
+  private validate(): boolean {
+    const input = this.inputEl;
+    if (!input || !this.internals) return true;
+
+    const validity = input.validity;
+
+    if (!validity.valid) {
+      // Map native validity to ElementInternals
+      this.internals.setValidity(
+        {
+          valueMissing: validity.valueMissing,
+          typeMismatch: validity.typeMismatch,
+          patternMismatch: validity.patternMismatch,
+          tooShort: validity.tooShort,
+          tooLong: validity.tooLong,
+          rangeUnderflow: validity.rangeUnderflow,
+          rangeOverflow: validity.rangeOverflow,
+        },
+        input.validationMessage,
+        input // anchor for popup positioning
+      );
+      return false;
+    }
+
+    // Clear validity when valid
+    this.internals.setValidity({});
+    return true;
+  }
+
+  /**
+   * Get the current validation error message.
+   */
+  private get errorMessage(): string {
+    return this.internals?.validationMessage || '';
+  }
+
+  /**
    * Handle input events from the native input.
    */
   private handleInput(e: Event): void {
     const input = e.target as HTMLInputElement;
     this.value = input.value;
     this.updateFormValue();
+
+    // Re-validate if already touched (blur occurred)
+    if (this.touched) {
+      const isValid = this.validate();
+      this.showError = !isValid;
+    }
   }
 
   /**
@@ -228,7 +313,26 @@ export class Input extends TailwindElement {
    */
   private handleBlur(): void {
     this.touched = true;
-    // Validation will be added in Task 2
+    const isValid = this.validate();
+    this.showError = !isValid;
+  }
+
+  /**
+   * Form lifecycle callback: reset the input to initial state.
+   */
+  formResetCallback(): void {
+    this.value = '';
+    this.touched = false;
+    this.showError = false;
+    this.internals?.setFormValue('');
+    this.internals?.setValidity({});
+  }
+
+  /**
+   * Form lifecycle callback: handle disabled state from form.
+   */
+  formDisabledCallback(disabled: boolean): void {
+    this.disabled = disabled;
   }
 
   /**
@@ -251,9 +355,16 @@ export class Input extends TailwindElement {
         type=${this.type}
         name=${this.name}
         .value=${this.value}
-        placeholder=${this.placeholder}
+        placeholder=${this.placeholder || nothing}
+        ?required=${this.required}
         ?disabled=${this.disabled}
         ?readonly=${this.readonly}
+        minlength=${this.minlength ?? nothing}
+        maxlength=${this.maxlength ?? nothing}
+        min=${this.min ?? nothing}
+        max=${this.max ?? nothing}
+        pattern=${this.pattern || nothing}
+        aria-invalid=${this.showError ? 'true' : nothing}
         @input=${this.handleInput}
         @blur=${this.handleBlur}
       />
