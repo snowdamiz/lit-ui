@@ -17,7 +17,7 @@
  */
 
 import { html, css, isServer } from 'lit';
-import { property, query } from 'lit/decorators.js';
+import { property, query, state } from 'lit/decorators.js';
 import { TailwindElement, tailwindBaseStyles } from '@lit-ui/core';
 
 /**
@@ -110,6 +110,20 @@ export class Input extends TailwindElement {
   @property({ type: Boolean, reflect: true })
   readonly = false;
 
+  /**
+   * Whether the input has been touched (blur occurred).
+   * Used for validation display timing.
+   */
+  @state()
+  private touched = false;
+
+  /**
+   * Whether to show error state.
+   * True when input is invalid and has been touched.
+   */
+  @state()
+  private showError = false;
+
   constructor() {
     super();
     // Only attach internals on client (not during SSR)
@@ -170,6 +184,11 @@ export class Input extends TailwindElement {
         cursor: text;
       }
 
+      /* Error state */
+      input.input-error {
+        border-color: var(--ui-input-border-error);
+      }
+
       /* Size variants */
       input.input-sm {
         padding: var(--ui-input-padding-y-sm) var(--ui-input-padding-x-sm);
@@ -205,15 +224,22 @@ export class Input extends TailwindElement {
   }
 
   /**
-   * Get the CSS class for the current size.
+   * Handle blur events for validation display timing.
+   */
+  private handleBlur(): void {
+    this.touched = true;
+    // Validation will be added in Task 2
+  }
+
+  /**
+   * Get the CSS classes for the input element.
    */
   private getInputClasses(): string {
-    const sizes: Record<InputSize, string> = {
-      sm: 'input-sm',
-      md: 'input-md',
-      lg: 'input-lg',
-    };
-    return sizes[this.size];
+    const classes = [`input-${this.size}`];
+    if (this.showError) {
+      classes.push('input-error');
+    }
+    return classes.join(' ');
   }
 
   override render() {
@@ -229,6 +255,7 @@ export class Input extends TailwindElement {
         ?disabled=${this.disabled}
         ?readonly=${this.readonly}
         @input=${this.handleInput}
+        @blur=${this.handleBlur}
       />
     `;
   }
