@@ -171,6 +171,13 @@ export class Input extends TailwindElement {
   requiredIndicator: 'asterisk' | 'text' = 'asterisk';
 
   /**
+   * Whether to show a clear button when the input has a value.
+   * @default false
+   */
+  @property({ type: Boolean })
+  clearable = false;
+
+  /**
    * Whether the input has been touched (blur occurred).
    * Used for validation display timing.
    */
@@ -209,6 +216,20 @@ export class Input extends TailwindElement {
           stroke="currentColor" stroke-width="2" fill="none"
           stroke-linecap="round" stroke-linejoin="round"/>
     <line x1="1" y1="1" x2="23" y2="23"
+          stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round"/>
+  `;
+
+  /**
+   * X-circle icon SVG for clear button.
+   */
+  private xCircleIcon = svg`
+    <circle cx="12" cy="12" r="10"
+            stroke="currentColor" stroke-width="2" fill="none"/>
+    <line x1="15" y1="9" x2="9" y2="15"
+          stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="9" y1="9" x2="15" y2="15"
           stroke="currentColor" stroke-width="2"
           stroke-linecap="round" stroke-linejoin="round"/>
   `;
@@ -414,6 +435,38 @@ export class Input extends TailwindElement {
         height: 1.25em;
       }
 
+      /* Clear button */
+      .clear-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.25rem;
+        margin-right: 0.25rem;
+        border: none;
+        background: transparent;
+        color: var(--color-muted-foreground);
+        cursor: pointer;
+        border-radius: var(--radius-sm, 0.25rem);
+        transition:
+          color 150ms,
+          background-color 150ms;
+      }
+
+      .clear-button:hover {
+        color: var(--ui-input-text);
+        background-color: var(--color-muted);
+      }
+
+      .clear-button:focus-visible {
+        outline: 2px solid var(--color-ring);
+        outline-offset: 1px;
+      }
+
+      .clear-icon {
+        width: 1.25em;
+        height: 1.25em;
+      }
+
       /* Visually hidden for screen reader only text */
       .visually-hidden {
         position: absolute;
@@ -563,6 +616,39 @@ export class Input extends TailwindElement {
   }
 
   /**
+   * Handle clear button click - empties value and returns focus to input.
+   */
+  private handleClear(): void {
+    this.value = '';
+    this.updateFormValue();
+    this.inputEl?.focus();
+
+    // Re-validate if already touched
+    if (this.touched) {
+      const isValid = this.validate();
+      this.showError = !isValid;
+    }
+  }
+
+  /**
+   * Render the clear button for clearable inputs with value.
+   */
+  private renderClearButton() {
+    return html`
+      <button
+        type="button"
+        class="clear-button"
+        aria-label="Clear input"
+        @click=${this.handleClear}
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true" class="clear-icon">
+          ${this.xCircleIcon}
+        </svg>
+      </button>
+    `;
+  }
+
+  /**
    * Form lifecycle callback: reset the input to initial state.
    */
   formResetCallback(): void {
@@ -680,6 +766,7 @@ export class Input extends TailwindElement {
             @blur=${this.handleBlur}
           />
           ${this.type === 'password' ? this.renderPasswordToggle() : nothing}
+          ${this.clearable && this.value ? this.renderClearButton() : nothing}
           <slot name="suffix" part="suffix" class="input-slot suffix-slot"></slot>
         </div>
 
