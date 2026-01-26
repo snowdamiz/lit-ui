@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-26)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** v4.1 Select Component - Phase 31 (Select Infrastructure)
+**Current focus:** v4.1 Select Component - Phase 31 Complete, Ready for Phase 32
 
 ## Current Position
 
-Phase: 31 - Select Infrastructure
-Plan: 01 of 2 complete
-Status: In progress
-Last activity: 2026-01-26 - Completed 31-01-PLAN.md (Select Design Tokens)
+Phase: 31 - Select Infrastructure (COMPLETE)
+Plan: 02 of 2 complete
+Status: Phase complete
+Last activity: 2026-01-26 - Completed 31-02-PLAN.md (Package Scaffolding)
 
-Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 SHIPPED | v4.0 SHIPPED | v4.1 [#.......] 1/14 plans
+Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 SHIPPED | v4.0 SHIPPED | v4.1 [##......] 2/14 plans
 
 ## Performance Metrics
 
@@ -44,8 +44,8 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHI
 - Total execution time: 30 min
 
 **v4.1 Velocity (in progress):**
-- Plans completed: 1
-- Total execution time: 3 min
+- Plans completed: 2
+- Total execution time: 7 min
 
 ## Accumulated Context
 
@@ -60,6 +60,8 @@ v3.0, v3.1, v4.0 decisions validated and archived.
 | Follow input/textarea token pattern | Consistency across form components | 31-01 |
 | Include dropdown-specific tokens | Floating dropdown needs shadow, z-index, max-height | 31-01 |
 | Include option-specific tokens | Listbox items need hover, active, check styling | 31-01 |
+| Floating UI in dependencies (bundled) | Zero-config consumer experience | 31-02 |
+| Skeleton component validates infrastructure | Verify tokens and build before full implementation | 31-02 |
 
 ### Pending Todos
 
@@ -81,18 +83,22 @@ None.
 ## Session Continuity
 
 Last session: 2026-01-26
-Stopped at: Completed 31-01-PLAN.md
+Stopped at: Completed 31-02-PLAN.md (Phase 31 complete)
 Resume file: None
 
 ## Next Steps
 
-Phase 31: Select Infrastructure in progress.
+Phase 31: Select Infrastructure COMPLETE.
 
 **Completed:**
 - INFRA-01: CSS tokens for select added to @lit-ui/core (--ui-select-*) - 31-01
-
-**Remaining:**
 - INFRA-02: @lit-ui/select package created with SSR support - 31-02
 - INFRA-03: @floating-ui/dom added as dependency for positioning - 31-02
 
-**Next action:** Execute 31-02-PLAN.md (Package scaffolding)
+**Next phase:** Phase 32 - Select Core
+- CORE-01: Option component for individual options
+- CORE-02: Dropdown rendering with Floating UI
+- CORE-03: Keyboard navigation (Arrow, Enter, Escape)
+- CORE-04: Form participation via ElementInternals
+
+**Next action:** Create 32-PLAN.md or execute first plan of Phase 32
