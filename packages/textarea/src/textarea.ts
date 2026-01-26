@@ -157,6 +157,14 @@ export class Textarea extends TailwindElement {
   maxlength?: number;
 
   /**
+   * Whether to show character count when maxlength is set.
+   * Displays "current/max" format (e.g., "45/200").
+   * @default false
+   */
+  @property({ type: Boolean, attribute: 'show-count' })
+  showCount = false;
+
+  /**
    * Whether the textarea is required for form submission.
    * @default false
    */
@@ -424,6 +432,30 @@ export class Textarea extends TailwindElement {
         font-size: 0.875em;
         color: var(--ui-input-text-error);
       }
+
+      /* Character counter container */
+      .textarea-container {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+      }
+
+      /* Character counter - positioned inside textarea bottom-right */
+      .character-count {
+        position: absolute;
+        bottom: 0.5rem;
+        right: 0.75rem;
+        font-size: 0.75rem;
+        color: var(--color-muted-foreground);
+        pointer-events: none;
+        background: var(--ui-input-bg);
+        padding: 0 0.25rem;
+      }
+
+      /* Extra bottom padding when counter is shown to avoid text overlap */
+      textarea.has-counter {
+        padding-bottom: 1.75rem;
+      }
     `,
   ];
 
@@ -523,6 +555,19 @@ export class Textarea extends TailwindElement {
   }
 
   /**
+   * Render the character counter if showCount and maxlength are set.
+   */
+  private renderCharacterCount() {
+    if (!this.showCount || !this.maxlength) return nothing;
+
+    return html`
+      <span class="character-count" part="counter">
+        ${this.value.length}/${this.maxlength}
+      </span>
+    `;
+  }
+
+  /**
    * Get the CSS classes for the textarea element.
    */
   private getTextareaClasses(): string {
@@ -532,6 +577,10 @@ export class Textarea extends TailwindElement {
       classes.push('autoresize');
     } else {
       classes.push(`resize-${this.resize}`);
+    }
+
+    if (this.showCount && this.maxlength) {
+      classes.push('has-counter');
     }
 
     if (this.showError) {
@@ -586,24 +635,27 @@ export class Textarea extends TailwindElement {
             `
           : nothing}
 
-        <textarea
-          id=${this.textareaId}
-          part="textarea"
-          class=${this.getTextareaClasses()}
-          name=${this.name}
-          .value=${this.value}
-          placeholder=${this.placeholder || nothing}
-          rows=${this.rows}
-          ?required=${this.required}
-          ?disabled=${this.disabled}
-          ?readonly=${this.readonly}
-          minlength=${this.minlength ?? nothing}
-          maxlength=${this.maxlength ?? nothing}
-          aria-invalid=${this.showError ? 'true' : nothing}
-          aria-describedby=${this.getAriaDescribedBy()}
-          @input=${this.handleInput}
-          @blur=${this.handleBlur}
-        ></textarea>
+        <div class="textarea-container">
+          <textarea
+            id=${this.textareaId}
+            part="textarea"
+            class=${this.getTextareaClasses()}
+            name=${this.name}
+            .value=${this.value}
+            placeholder=${this.placeholder || nothing}
+            rows=${this.rows}
+            ?required=${this.required}
+            ?disabled=${this.disabled}
+            ?readonly=${this.readonly}
+            minlength=${this.minlength ?? nothing}
+            maxlength=${this.maxlength ?? nothing}
+            aria-invalid=${this.showError ? 'true' : nothing}
+            aria-describedby=${this.getAriaDescribedBy()}
+            @input=${this.handleInput}
+            @blur=${this.handleBlur}
+          ></textarea>
+          ${this.renderCharacterCount()}
+        </div>
 
         ${this.showError && this.errorMessage
           ? html`
