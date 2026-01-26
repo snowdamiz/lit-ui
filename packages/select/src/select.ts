@@ -15,7 +15,7 @@
  * ```
  */
 
-import { html, css, isServer } from 'lit';
+import { html, css, isServer, nothing } from 'lit';
 import { property, state, query } from 'lit/decorators.js';
 import { TailwindElement, tailwindBaseStyles } from '@lit-ui/core';
 // Import Floating UI for dropdown positioning
@@ -101,6 +101,13 @@ export class Select extends TailwindElement {
   required = false;
 
   /**
+   * Label text displayed above the select.
+   * @default ''
+   */
+  @property({ type: String })
+  label = '';
+
+  /**
    * Array of options to display in the dropdown.
    * @default []
    */
@@ -157,6 +164,61 @@ export class Select extends TailwindElement {
   }
 
   /**
+   * Validate the select and sync validity state to ElementInternals.
+   * @returns true if valid, false if invalid
+   */
+  private validate(): boolean {
+    if (!this.internals) return true;
+
+    if (this.required && !this.value) {
+      this.internals.setValidity(
+        { valueMissing: true },
+        'Please select an option',
+        this.triggerEl
+      );
+      return false;
+    }
+
+    // Clear validity when valid
+    this.internals.setValidity({});
+    return true;
+  }
+
+  /**
+   * Get the current validation error message.
+   */
+  private get errorMessage(): string {
+    return this.internals?.validationMessage || '';
+  }
+
+  /**
+   * Form lifecycle callback: reset the select to initial state.
+   */
+  formResetCallback(): void {
+    this.value = '';
+    this.touched = false;
+    this.showError = false;
+    this.internals?.setFormValue('');
+    this.internals?.setValidity({});
+  }
+
+  /**
+   * Form lifecycle callback: handle disabled state from form.
+   */
+  formDisabledCallback(disabled: boolean): void {
+    this.disabled = disabled;
+  }
+
+  /**
+   * Handle blur events for validation display timing.
+   */
+  private handleBlur(): void {
+    this.touched = true;
+    const isValid = this.validate();
+    this.showError = !isValid;
+  }
+
+  /**
    * Handle document clicks for closing dropdown when clicking outside.
    * Uses composedPath() to work correctly with Shadow DOM.
    */
@@ -170,6 +232,10 @@ export class Select extends TailwindElement {
     super.connectedCallback();
     if (!isServer) {
       document.addEventListener('click', this.handleDocumentClick);
+      // Sync initial value to form
+      if (this.value) {
+        this.internals?.setFormValue(this.value);
+      }
     }
   }
 
@@ -432,7 +498,16 @@ export class Select extends TailwindElement {
     if (!option || option.disabled) return;
 
     this.value = option.value;
+
+    // Update form value
     this.internals?.setFormValue(this.value);
+
+    // Validate after selection
+    if (this.touched) {
+      const isValid = this.validate();
+      this.showError = !isValid;
+    }
+
     this.closeDropdown();
 
     // Dispatch change event
