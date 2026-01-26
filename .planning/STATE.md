@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 
 ## Current Position
 
-Phase: 29 - Textarea Component (COMPLETE)
-Plan: 2/2 complete
-Status: Phase complete
-Last activity: 2026-01-26 - Completed 29-02-PLAN.md
+Phase: 30 - CLI and Documentation (IN PROGRESS)
+Plan: 1/1 complete
+Status: In progress
+Last activity: 2026-01-26 - Completed 30-01-PLAN.md
 
-Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 SHIPPED | v4.0 [########..] 4/5
+Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 SHIPPED | v4.0 [#########.] 5/5
 
 ## Performance Metrics
 
@@ -40,8 +40,8 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHI
 - Total execution time: 11 min
 
 **v4.0 Velocity (in progress):**
-- Plans completed: 8
-- Total execution time: 16 min
+- Plans completed: 9
+- Total execution time: 18 min
 
 ## Accumulated Context
 
@@ -76,6 +76,11 @@ v3.0, v3.1 decisions validated and archived.
 - Character counter: absolute positioned for Textarea, inline flex for Input
 - maxHeight CSS value takes precedence over maxRows when both set
 
+**v4.0 Phase 30 decisions:**
+- Silent install success: no usage hints printed after npm install
+- Component categories: Form (input, textarea), Feedback (dialog), Actions (button)
+- Template import transformation: @lit-ui/core to ../../lib/lit-ui/tailwind-element
+
 ### Pending Todos
 
 None.
@@ -88,8 +93,8 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-01-26T11:45:41Z
-Stopped at: Completed 29-02-PLAN.md
+Last session: 2026-01-26T12:02:00Z
+Stopped at: Completed 30-01-PLAN.md
 Resume file: None
 
 ## Next Steps
@@ -122,9 +127,10 @@ Roadmap complete with 5 phases (26-30), 33 requirements mapped.
 - Plan 02: Complete - Auto-resize and character count
 - Status: Complete (verified)
 
-**Phase 30: CLI and Documentation** - PENDING
+**Phase 30: CLI and Documentation** - IN PROGRESS
 - Goal: Developers can install Input and Textarea via CLI and learn usage from docs
 - Requirements: INFRA-04, INFRA-05
-- Status: Not started
+- Plan 01: Complete - CLI templates, registry, categorized list
+- Status: In progress (documentation remaining)
 
-**Next action:** Run `/gsd:discuss-phase 30` to gather context or `/gsd:plan-phase 30` to plan directly
+**Next action:** Continue with documentation plan if exists, or complete phase
