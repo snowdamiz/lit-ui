@@ -155,6 +155,21 @@ export class Select extends TailwindElement {
    */
   private selectId = `lui-select-${Math.random().toString(36).substr(2, 9)}`;
 
+  /**
+   * Type-ahead search string accumulator.
+   */
+  private typeaheadString = '';
+
+  /**
+   * Timeout handle for resetting type-ahead string.
+   */
+  private typeaheadTimeout: ReturnType<typeof setTimeout> | null = null;
+
+  /**
+   * Time in milliseconds before type-ahead string resets.
+   */
+  private static readonly TYPEAHEAD_RESET_MS = 500;
+
   constructor() {
     super();
     // Only attach internals on client (not during SSR)
@@ -243,6 +258,11 @@ export class Select extends TailwindElement {
     super.disconnectedCallback();
     if (!isServer) {
       document.removeEventListener('click', this.handleDocumentClick);
+      // Clear typeahead timeout
+      if (this.typeaheadTimeout !== null) {
+        clearTimeout(this.typeaheadTimeout);
+        this.typeaheadTimeout = null;
+      }
     }
   }
 
@@ -463,6 +483,9 @@ export class Select extends TailwindElement {
     if (this.disabled) {
       classes.push('trigger-disabled');
     }
+    if (this.showError) {
+      classes.push('trigger-error');
+    }
     return classes.join(' ');
   }
 
@@ -645,10 +668,73 @@ export class Select extends TailwindElement {
   }
 
   /**
-   * Placeholder for type-ahead handling (implemented in Task 2).
+   * Handle type-ahead character input.
+   * Accumulates characters for 500ms then resets.
+   * Repeated same character cycles through matches.
    */
-  private handleTypeahead(_char: string): void {
-    // Implemented in Task 2
+  private handleTypeahead(char: string): void {
+    // Clear previous timeout
+    if (this.typeaheadTimeout !== null) {
+      clearTimeout(this.typeaheadTimeout);
+    }
+
+    // Append character to search string
+    this.typeaheadString += char.toLowerCase();
+
+    // Find matching option
+    const matchIndex = this.findTypeaheadMatch(this.typeaheadString);
+    if (matchIndex >= 0) {
+      this.setActiveIndex(matchIndex);
+    }
+
+    // Set timeout to reset string after 500ms
+    this.typeaheadTimeout = setTimeout(() => {
+      this.typeaheadString = '';
+      this.typeaheadTimeout = null;
+    }, Select.TYPEAHEAD_RESET_MS);
+  }
+
+  /**
+   * Find an option matching the type-ahead search string.
+   * If repeating the same character (e.g., "aaa"), cycles through matches.
+   */
+  private findTypeaheadMatch(searchString: string): number {
+    // Get enabled options with their original indices
+    const enabledOptions = this.options
+      .map((opt, idx) => ({ opt, idx }))
+      .filter(({ opt }) => !opt.disabled);
+
+    if (enabledOptions.length === 0) return -1;
+
+    // If repeating same character (e.g., "aaa"), cycle through matches
+    const isRepeatedChar =
+      searchString.length > 1 &&
+      searchString.split('').every((c) => c === searchString[0]);
+
+    if (isRepeatedChar) {
+      const char = searchString[0];
+      const matches = enabledOptions.filter(({ opt }) =>
+        (opt.label || opt.value).toLowerCase().startsWith(char)
+      );
+
+      if (matches.length > 0) {
+        // Find current position in matches
+        const currentMatchIdx = matches.findIndex(
+          ({ idx }) => idx === this.activeIndex
+        );
+        // Move to next match (wrap around)
+        const nextMatchIdx = (currentMatchIdx + 1) % matches.length;
+        return matches[nextMatchIdx].idx;
+      }
+      return -1;
+    }
+
+    // Otherwise find first match for full string
+    const match = enabledOptions.find(({ opt }) =>
+      (opt.label || opt.value).toLowerCase().startsWith(searchString)
+    );
+
+    return match?.idx ?? -1;
   }
 
   /**
@@ -759,6 +845,63 @@ export class Select extends TailwindElement {
   private getSelectedLabel(): string {
     const selected = this.options.find((o) => o.value === this.value);
     return selected?.label || selected?.value || '';
+  }
+
+  /**
+   * Get the label of the currently active option for ARIA live region.
+   */
+  private getActiveOptionLabel(): string {
+    if (this.activeIndex < 0 || this.activeIndex >= this.options.length) {
+      return '';
+    }
+    const option = this.options[this.activeIndex];
+    return option.label || option.value;
+  }
+
+  /**
+   * Get the count of enabled options.
+   */
+  private getEnabledOptionsCount(): number {
+    return this.options.filter((o) => !o.disabled).length;
+  }
+
+  /**
+   * Render an individual option.
+   */
+  private renderOption(option: SelectOption, index: number) {
+    const isActive = index === this.activeIndex;
+    const isSelected = option.value === this.value;
+    const classes = ['option'];
+    if (isActive) classes.push('option-active');
+    if (isSelected) classes.push('option-selected');
+    if (option.disabled) classes.push('option-disabled');
+
+    return html`
+      <div
+        id="${this.selectId}-option-${index}"
+        role="option"
+        aria-selected=${isSelected ? 'true' : 'false'}
+        aria-disabled=${option.disabled ? 'true' : 'false'}
+        class=${classes.join(' ')}
+        @click=${(e: MouseEvent) => this.handleOptionClick(e, index)}
+      >
+        <svg
+          class="check-icon"
+          viewBox="0 0 16 16"
+          fill="none"
+          stroke="currentColor"
+          aria-hidden="true"
+        >
+          <path
+            d="M3 8l4 4 6-7"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+        <span>${option.label || option.value}</span>
+      </div>
+    `;
   }
 
   override render() {
