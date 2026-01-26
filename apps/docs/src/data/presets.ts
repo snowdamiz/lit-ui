@@ -35,7 +35,7 @@ export const presetThemes: PresetTheme[] = [
       colors: {
         primary: "oklch(0.45 0.03 250)",
         secondary: "oklch(0.92 0.02 250)",
-        destructive: "oklch(0.55 0.22 25)",
+        destructive: "oklch(0.48 0.22 25)",
         background: "oklch(0.98 0.01 250)",
         foreground: "oklch(0.15 0.02 250)",
         muted: "oklch(0.92 0.02 250)",
@@ -50,9 +50,9 @@ export const presetThemes: PresetTheme[] = [
     config: {
       version: 1,
       colors: {
-        primary: "oklch(0.55 0.22 250)",
+        primary: "oklch(0.48 0.22 250)",
         secondary: "oklch(0.92 0.05 250)",
-        destructive: "oklch(0.55 0.22 25)",
+        destructive: "oklch(0.48 0.22 25)",
         background: "oklch(0.98 0.01 250)",
         foreground: "oklch(0.15 0.02 250)",
         muted: "oklch(0.92 0.02 250)",
@@ -67,9 +67,9 @@ export const presetThemes: PresetTheme[] = [
     config: {
       version: 1,
       colors: {
-        primary: "oklch(0.55 0.18 145)",
+        primary: "oklch(0.48 0.18 145)",
         secondary: "oklch(0.92 0.05 145)",
-        destructive: "oklch(0.55 0.22 25)",
+        destructive: "oklch(0.48 0.22 25)",
         background: "oklch(0.98 0.01 145)",
         foreground: "oklch(0.15 0.02 145)",
         muted: "oklch(0.92 0.02 145)",
@@ -84,9 +84,9 @@ export const presetThemes: PresetTheme[] = [
     config: {
       version: 1,
       colors: {
-        primary: "oklch(0.65 0.2 50)",
+        primary: "oklch(0.48 0.2 50)",
         secondary: "oklch(0.92 0.05 50)",
-        destructive: "oklch(0.55 0.22 25)",
+        destructive: "oklch(0.48 0.22 25)",
         background: "oklch(0.98 0.02 50)",
         foreground: "oklch(0.2 0.02 50)",
         muted: "oklch(0.92 0.03 50)",
