@@ -122,6 +122,11 @@ Full details: [milestones/v3.0-ROADMAP.md](milestones/v3.0-ROADMAP.md)
 
 **Requirements:** INFRA-01
 
+**Plans:** 1 plan
+
+Plans:
+- [ ] 26-01-PLAN.md — Add CSS tokens and TypeScript exports for Input/Textarea
+
 **Success Criteria:**
 
 1. Developer can use `--ui-input-*` CSS variables to style input borders, backgrounds, and text
@@ -239,7 +244,7 @@ Full details: [milestones/v3.0-ROADMAP.md](milestones/v3.0-ROADMAP.md)
 | 23. Visual Configurator Core | v3.0 | 4/4 | Complete | 2026-01-25 |
 | 24. Presets and Enhanced Features | v3.0 | 3/3 | Complete | 2026-01-25 |
 | 25. Docs Site Dark Mode | v3.1 | 5/5 | Complete | 2026-01-25 |
-| 26. CSS Tokens Foundation | v4.0 | 0/? | Planned | - |
+| 26. CSS Tokens Foundation | v4.0 | 0/1 | Planned | - |
 | 27. Core Input Component | v4.0 | 0/? | Planned | - |
 | 28. Input Differentiators | v4.0 | 0/? | Planned | - |
 | 29. Textarea Component | v4.0 | 0/? | Planned | - |
