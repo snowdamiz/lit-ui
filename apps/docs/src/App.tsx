@@ -3,6 +3,7 @@ import { ThemeProvider } from './contexts/ThemeContext'
 import { DocsLayout } from './layouts/DocsLayout'
 import { GettingStarted } from './pages/GettingStarted'
 import { Installation } from './pages/Installation'
+import { StylingPage } from './pages/StylingPage'
 import { SSRGuide } from './pages/SSRGuide'
 import { MigrationGuide } from './pages/MigrationGuide'
 import { Placeholder } from './pages/Placeholder'
@@ -26,6 +27,7 @@ export default function App() {
             <Route path="installation" element={<Installation />} />
 
             {/* Guides */}
+            <Route path="guides/styling" element={<StylingPage />} />
             <Route path="guides/ssr" element={<SSRGuide />} />
             <Route path="guides/migration" element={<MigrationGuide />} />
 

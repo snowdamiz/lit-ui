@@ -22,6 +22,7 @@ export const navigation: NavSection[] = [
   {
     title: "Guides",
     items: [
+      { title: "Styling", href: "/guides/styling" },
       { title: "SSR Setup", href: "/guides/ssr" },
       { title: "Migration", href: "/guides/migration" },
     ],
