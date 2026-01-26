@@ -357,14 +357,14 @@ function ClassPassthroughDemo() {
 
       <lui-dialog ref={wideDialogRef} {...(wideOpen ? { open: true } : {})} dialog-class="max-w-2xl" show-close-button>
         <span slot="title">Wide Dialog</span>
-        <p>This dialog uses <code className="px-1.5 py-0.5 bg-gray-100 rounded text-xs font-mono">dialog-class="max-w-2xl"</code> for a wider max-width than the default.</p>
-        <p className="mt-2 text-gray-500 text-sm">The extra width is useful for content that needs more horizontal space, like tables or forms with side-by-side fields.</p>
+        <p>This dialog uses <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">dialog-class="max-w-2xl"</code> for a wider max-width than the default.</p>
+        <p className="mt-2 text-gray-500 dark:text-gray-400 text-sm">The extra width is useful for content that needs more horizontal space, like tables or forms with side-by-side fields.</p>
       </lui-dialog>
 
       <lui-dialog ref={styledDialogRef} {...(styledOpen ? { open: true } : {})} dialog-class="bg-gradient-to-br from-gray-50 to-gray-100" show-close-button>
         <span slot="title">Styled Dialog</span>
         <p>This dialog has a gradient background applied via Tailwind classes.</p>
-        <p className="mt-2 text-gray-500 text-sm">Use <code className="px-1.5 py-0.5 bg-white rounded text-xs font-mono">dialog-class</code> to add any Tailwind utilities for per-instance customization.</p>
+        <p className="mt-2 text-gray-500 dark:text-gray-400 text-sm">Use <code className="px-1.5 py-0.5 bg-white dark:bg-gray-900 rounded text-xs font-mono">dialog-class</code> to add any Tailwind utilities for per-instance customization.</p>
       </lui-dialog>
     </div>
   );
@@ -377,13 +377,13 @@ export function DialogPage() {
         {/* Header */}
         <header className="relative mb-16 animate-fade-in-up opacity-0 stagger-1">
           {/* Subtle background decoration */}
-          <div className="pointer-events-none absolute -left-20 -top-10 h-40 w-40 rounded-full bg-gray-100 opacity-50 blur-3xl" />
+          <div className="pointer-events-none absolute -left-20 -top-10 h-40 w-40 rounded-full bg-gray-100 dark:bg-gray-800 opacity-50 blur-3xl" />
 
           <div className="relative">
-            <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 mb-4 md:text-5xl">
+            <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 dark:text-gray-100 mb-4 md:text-5xl">
               Dialog
             </h1>
-            <p className="text-lg text-gray-500 leading-relaxed max-w-2xl">
+            <p className="text-lg text-gray-500 dark:text-gray-400 leading-relaxed max-w-2xl">
               An accessible modal dialog component built on the native HTML dialog element.
               Provides automatic focus trapping, keyboard handling, and backdrop with smooth
               enter/exit animations.
@@ -394,21 +394,21 @@ export function DialogPage() {
         {/* Examples Section */}
         <div className="space-y-12 animate-fade-in-up opacity-0 stagger-2">
           <div className="flex items-center gap-4 mb-8">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gray-100 text-gray-600">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
               <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
               </svg>
             </div>
             <div>
-              <h2 className="text-xl font-bold text-gray-900">Examples</h2>
-              <p className="text-sm text-gray-500">Interactive demonstrations of common use cases</p>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Examples</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Interactive demonstrations of common use cases</p>
             </div>
-            <div className="flex-1 h-px bg-gradient-to-r from-gray-200 to-transparent" />
+            <div className="flex-1 h-px bg-gradient-to-r from-gray-200 dark:from-gray-700 to-transparent" />
           </div>
 
           <section>
-            <h3 className="text-base font-semibold text-gray-900 mb-2">Basic Dialog</h3>
-            <p className="text-gray-500 mb-4 text-sm">
+            <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-2">Basic Dialog</h3>
+            <p className="text-gray-500 dark:text-gray-400 mb-4 text-sm">
               A simple dialog with a title, content, and close button. Click the backdrop or press Escape to dismiss.
             </p>
             <ExampleBlock
@@ -421,8 +421,8 @@ export function DialogPage() {
           </section>
 
           <section>
-            <h3 className="text-base font-semibold text-gray-900 mb-2">Confirmation Dialog</h3>
-            <p className="text-gray-500 mb-4 text-sm">
+            <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-2">Confirmation Dialog</h3>
+            <p className="text-gray-500 dark:text-gray-400 mb-4 text-sm">
               A dialog with action buttons in the footer for confirming or canceling an action.
             </p>
             <ExampleBlock
@@ -436,19 +436,19 @@ export function DialogPage() {
 
           {/* Custom Styling */}
           <section>
-            <h3 className="text-base font-semibold text-gray-900 mb-2">Custom Styling</h3>
-            <p className="text-gray-500 mb-4 text-sm">
+            <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-2">Custom Styling</h3>
+            <p className="text-gray-500 dark:text-gray-400 mb-4 text-sm">
               The Dialog component supports three tiers of customization, from simple to advanced.
             </p>
           </section>
 
           {/* Tier 1: CSS Custom Properties */}
           <section>
-            <h3 className="text-base font-semibold text-gray-900 mb-2">
+            <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-2">
               CSS Custom Properties
-              <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-green-100 text-green-700 rounded">Recommended</span>
+              <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded">Recommended</span>
             </h3>
-            <p className="text-gray-500 mb-4 text-sm">
+            <p className="text-gray-500 dark:text-gray-400 mb-4 text-sm">
               Override CSS custom properties to change dialog appearance globally or within a scoped container.
               This is the simplest approach for common customizations like padding and border radius.
             </p>
@@ -457,9 +457,9 @@ export function DialogPage() {
 
           {/* Tier 2: Class Passthrough */}
           <section>
-            <h3 className="text-base font-semibold text-gray-900 mb-2">Class Passthrough</h3>
-            <p className="text-gray-500 mb-4 text-sm">
-              Use the <code className="px-1.5 py-0.5 bg-gray-100 rounded text-xs font-mono">dialog-class</code> attribute to add Tailwind utility classes for per-instance customization.
+            <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-2">Class Passthrough</h3>
+            <p className="text-gray-500 dark:text-gray-400 mb-4 text-sm">
+              Use the <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">dialog-class</code> attribute to add Tailwind utility classes for per-instance customization.
             </p>
             <ExampleBlock
               preview={<ClassPassthroughDemo />}
@@ -472,12 +472,12 @@ export function DialogPage() {
 
           {/* Tier 3: CSS Parts */}
           <section>
-            <h3 className="text-base font-semibold text-gray-900 mb-2">
+            <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-2">
               CSS Parts
-              <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-amber-100 text-amber-700 rounded">Advanced</span>
+              <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded">Advanced</span>
             </h3>
-            <p className="text-gray-500 mb-4 text-sm">
-              Use the <code className="px-1.5 py-0.5 bg-gray-100 rounded text-xs font-mono">::part()</code> pseudo-element for complete styling control over internal elements.
+            <p className="text-gray-500 dark:text-gray-400 mb-4 text-sm">
+              Use the <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">::part()</code> pseudo-element for complete styling control over internal elements.
               This is useful for complex customizations like gradient backgrounds or custom borders.
             </p>
             <CodeBlock code={cssPartsCode} language="css" />
@@ -487,23 +487,23 @@ export function DialogPage() {
         {/* API Reference */}
         <section className="mt-20 mb-14 animate-fade-in-up opacity-0 stagger-3">
           <div className="flex items-center gap-4 mb-10">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gray-100 text-gray-600">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
               <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
               </svg>
             </div>
             <div>
-              <h2 className="text-xl font-bold text-gray-900">API Reference</h2>
-              <p className="text-sm text-gray-500">Complete documentation of props, slots, and events</p>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">API Reference</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Complete documentation of props, slots, and events</p>
             </div>
-            <div className="flex-1 h-px bg-gradient-to-r from-gray-200 to-transparent" />
+            <div className="flex-1 h-px bg-gradient-to-r from-gray-200 dark:from-gray-700 to-transparent" />
           </div>
 
           {/* Props */}
           <div className="mb-12">
             <div className="flex items-center gap-3 mb-5">
-              <h3 className="text-lg font-semibold text-gray-900">Props</h3>
-              <span className="px-2.5 py-1 rounded-full bg-gray-900 text-xs font-bold text-white">{dialogProps.length}</span>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Props</h3>
+              <span className="px-2.5 py-1 rounded-full bg-gray-900 dark:bg-gray-100 text-xs font-bold text-white dark:text-gray-900">{dialogProps.length}</span>
             </div>
             <PropsTable props={dialogProps} />
           </div>
@@ -511,8 +511,8 @@ export function DialogPage() {
           {/* Slots */}
           <div className="mb-12">
             <div className="flex items-center gap-3 mb-5">
-              <h3 className="text-lg font-semibold text-gray-900">Slots</h3>
-              <span className="px-2.5 py-1 rounded-full bg-gray-900 text-xs font-bold text-white">{dialogSlots.length}</span>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Slots</h3>
+              <span className="px-2.5 py-1 rounded-full bg-gray-900 dark:bg-gray-100 text-xs font-bold text-white dark:text-gray-900">{dialogSlots.length}</span>
             </div>
             <SlotsTable slots={dialogSlots} />
           </div>
@@ -520,28 +520,28 @@ export function DialogPage() {
           {/* CSS Custom Properties */}
           <div className="mb-12">
             <div className="flex items-center gap-3 mb-5">
-              <h3 className="text-lg font-semibold text-gray-900">CSS Custom Properties</h3>
-              <span className="px-2.5 py-1 rounded-full bg-gray-900 text-xs font-bold text-white">{dialogCSSVars.length}</span>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">CSS Custom Properties</h3>
+              <span className="px-2.5 py-1 rounded-full bg-gray-900 dark:bg-gray-100 text-xs font-bold text-white dark:text-gray-900">{dialogCSSVars.length}</span>
             </div>
-            <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
+            <div className="overflow-hidden rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="bg-gray-50 border-b border-gray-200">
-                    <th className="px-4 py-3 text-left font-semibold text-gray-900">Property</th>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-900">Default</th>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-900">Description</th>
+                  <tr className="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
+                    <th className="px-4 py-3 text-left font-semibold text-gray-900 dark:text-gray-100">Property</th>
+                    <th className="px-4 py-3 text-left font-semibold text-gray-900 dark:text-gray-100">Default</th>
+                    <th className="px-4 py-3 text-left font-semibold text-gray-900 dark:text-gray-100">Description</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100">
+                <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
                   {dialogCSSVars.map((cssVar) => (
-                    <tr key={cssVar.name} className="hover:bg-gray-50/50 transition-colors">
+                    <tr key={cssVar.name} className="hover:bg-gray-50/50 dark:hover:bg-gray-800/50 transition-colors">
                       <td className="px-4 py-3">
-                        <code className="px-2 py-1 bg-gray-100 rounded text-xs font-mono text-gray-800">{cssVar.name}</code>
+                        <code className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-xs font-mono text-gray-800 dark:text-gray-200">{cssVar.name}</code>
                       </td>
                       <td className="px-4 py-3">
-                        <code className="text-xs font-mono text-gray-600">{cssVar.default}</code>
+                        <code className="text-xs font-mono text-gray-600 dark:text-gray-400">{cssVar.default}</code>
                       </td>
-                      <td className="px-4 py-3 text-gray-600">{cssVar.description}</td>
+                      <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{cssVar.description}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -552,24 +552,24 @@ export function DialogPage() {
           {/* CSS Parts */}
           <div className="mb-12">
             <div className="flex items-center gap-3 mb-5">
-              <h3 className="text-lg font-semibold text-gray-900">CSS Parts</h3>
-              <span className="px-2.5 py-1 rounded-full bg-gray-900 text-xs font-bold text-white">{dialogParts.length}</span>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">CSS Parts</h3>
+              <span className="px-2.5 py-1 rounded-full bg-gray-900 dark:bg-gray-100 text-xs font-bold text-white dark:text-gray-900">{dialogParts.length}</span>
             </div>
-            <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
+            <div className="overflow-hidden rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="bg-gray-50 border-b border-gray-200">
-                    <th className="px-4 py-3 text-left font-semibold text-gray-900">Part</th>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-900">Description</th>
+                  <tr className="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
+                    <th className="px-4 py-3 text-left font-semibold text-gray-900 dark:text-gray-100">Part</th>
+                    <th className="px-4 py-3 text-left font-semibold text-gray-900 dark:text-gray-100">Description</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100">
+                <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
                   {dialogParts.map((part) => (
-                    <tr key={part.name} className="hover:bg-gray-50/50 transition-colors">
+                    <tr key={part.name} className="hover:bg-gray-50/50 dark:hover:bg-gray-800/50 transition-colors">
                       <td className="px-4 py-3">
-                        <code className="px-2 py-1 bg-gray-100 rounded text-xs font-mono text-gray-800">::part({part.name})</code>
+                        <code className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-xs font-mono text-gray-800 dark:text-gray-200">::part({part.name})</code>
                       </td>
-                      <td className="px-4 py-3 text-gray-600">{part.description}</td>
+                      <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{part.description}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -580,8 +580,8 @@ export function DialogPage() {
           {/* Events */}
           <div>
             <div className="flex items-center gap-3 mb-5">
-              <h3 className="text-lg font-semibold text-gray-900">Events</h3>
-              <span className="px-2.5 py-1 rounded-full bg-gray-900 text-xs font-bold text-white">{dialogEvents.length}</span>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Events</h3>
+              <span className="px-2.5 py-1 rounded-full bg-gray-900 dark:bg-gray-100 text-xs font-bold text-white dark:text-gray-900">{dialogEvents.length}</span>
             </div>
             <EventsTable events={dialogEvents} />
           </div>

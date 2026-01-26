@@ -122,13 +122,13 @@ export function GettingStarted() {
     <div className="max-w-4xl">
       {/* Header */}
       <header className="relative mb-16 animate-fade-in-up opacity-0 stagger-1">
-        <div className="pointer-events-none absolute -left-20 -top-10 h-40 w-40 rounded-full bg-gray-100 opacity-50 blur-3xl" />
+        <div className="pointer-events-none absolute -left-20 -top-10 h-40 w-40 rounded-full bg-gray-100 dark:bg-gray-800 opacity-50 blur-3xl" />
 
         <div className="relative">
-          <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 mb-4 md:text-5xl">
+          <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 dark:text-gray-100 mb-4 md:text-5xl">
             Getting Started
           </h1>
-          <p className="text-lg text-gray-500 leading-relaxed max-w-2xl">
+          <p className="text-lg text-gray-500 dark:text-gray-400 leading-relaxed max-w-2xl">
             Get up and running with LitUI in just a few steps. Works with React, Vue, Svelte, or any framework.
           </p>
         </div>
@@ -137,46 +137,46 @@ export function GettingStarted() {
       {/* Section 1: Installation */}
       <section id="installation" className="scroll-mt-20 mb-16 animate-fade-in-up opacity-0 stagger-2">
         <div className="flex items-center gap-4 mb-6">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gray-100 text-gray-600">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
             </svg>
           </div>
           <div>
-            <h2 className="text-xl font-bold text-gray-900">Installation</h2>
-            <p className="text-sm text-gray-500">Initialize LitUI in your existing project</p>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Installation</h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Initialize LitUI in your existing project</p>
           </div>
-          <div className="flex-1 h-px bg-gradient-to-r from-gray-200 to-transparent" />
+          <div className="flex-1 h-px bg-gradient-to-r from-gray-200 dark:from-gray-700 to-transparent" />
         </div>
 
-        <p className="text-gray-600 mb-4">
+        <p className="text-gray-600 dark:text-gray-400 mb-4">
           Run this command to set up LitUI in your project:
         </p>
         <CodeBlock code={installCommand} language="bash" />
 
         <div className="mt-6 space-y-3">
-          <p className="text-sm font-medium text-gray-700">This command sets up everything you need:</p>
+          <p className="text-sm font-medium text-gray-700 dark:text-gray-300">This command sets up everything you need:</p>
           <div className="space-y-2">
             {[
               { code: 'lit-ui.json', text: 'config file' },
               { code: 'src/lib/lit-ui/', text: 'with base files (TailwindElement, theme config)' },
               { code: 'src/components/ui/', text: 'directory for your components' },
             ].map((item) => (
-              <div key={item.code} className="flex items-center gap-2 text-sm text-gray-600">
+              <div key={item.code} className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                 <svg className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                 </svg>
-                <span>Creates <code className="px-1.5 py-0.5 bg-gray-100 rounded text-xs font-mono">{item.code}</code> {item.text}</span>
+                <span>Creates <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">{item.code}</code> {item.text}</span>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="mt-6 p-4 rounded-xl bg-gray-50 border border-gray-100">
-          <p className="text-sm text-gray-600">
-            <span className="font-medium text-gray-700">Prefer npm packages?</span>{' '}
+        <div className="mt-6 p-4 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700">
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            <span className="font-medium text-gray-700 dark:text-gray-300">Prefer npm packages?</span>{' '}
             See the{' '}
-            <Link to="/installation" className="text-gray-900 font-medium underline decoration-gray-300 underline-offset-2 hover:decoration-gray-900 transition-colors">
+            <Link to="/installation" className="text-gray-900 dark:text-gray-100 font-medium underline decoration-gray-300 dark:decoration-gray-600 underline-offset-2 hover:decoration-gray-900 dark:hover:decoration-gray-400 transition-colors">
               Installation guide
             </Link>{' '}
             for npm installation and other options.
@@ -187,27 +187,27 @@ export function GettingStarted() {
       {/* Section 2: Quick Start */}
       <section id="quick-start" className="scroll-mt-20 mb-16 animate-fade-in-up opacity-0 stagger-3">
         <div className="flex items-center gap-4 mb-6">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gray-100 text-gray-600">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
           </div>
           <div>
-            <h2 className="text-xl font-bold text-gray-900">Add Your First Component</h2>
-            <p className="text-sm text-gray-500">Start with the Button component</p>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Add Your First Component</h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Start with the Button component</p>
           </div>
-          <div className="flex-1 h-px bg-gradient-to-r from-gray-200 to-transparent" />
+          <div className="flex-1 h-px bg-gradient-to-r from-gray-200 dark:from-gray-700 to-transparent" />
         </div>
 
-        <p className="text-gray-600 mb-4">
+        <p className="text-gray-600 dark:text-gray-400 mb-4">
           Add the Button component to your project:
         </p>
         <CodeBlock code={addButtonCommand} language="bash" />
 
-        <p className="text-gray-600 mt-6 mb-4">
+        <p className="text-gray-600 dark:text-gray-400 mt-6 mb-4">
           Now use it in your app:
         </p>
-        <div className="rounded-2xl overflow-hidden border border-gray-200 bg-white card-elevated">
+        <div className="rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 card-elevated">
           <FrameworkTabs
             react={reactExample}
             vue={vueExample}
@@ -219,9 +219,9 @@ export function GettingStarted() {
           <LivePreview />
         </div>
 
-        <div className="mt-6 p-4 rounded-xl bg-gray-50 border border-gray-100">
-          <p className="text-sm text-gray-600">
-            <span className="font-medium text-gray-700">That's it!</span>{' '}
+        <div className="mt-6 p-4 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700">
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            <span className="font-medium text-gray-700 dark:text-gray-300">That's it!</span>{' '}
             The button is a native web component, so it works in any framework without wrappers.
           </p>
         </div>
@@ -230,19 +230,19 @@ export function GettingStarted() {
       {/* Section 3: Project Structure */}
       <section id="project-structure" className="scroll-mt-20 mb-16 animate-fade-in-up opacity-0 stagger-4">
         <div className="flex items-center gap-4 mb-6">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gray-100 text-gray-600">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
             </svg>
           </div>
           <div>
-            <h2 className="text-xl font-bold text-gray-900">Project Structure</h2>
-            <p className="text-sm text-gray-500">Understanding the generated files</p>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Project Structure</h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Understanding the generated files</p>
           </div>
-          <div className="flex-1 h-px bg-gradient-to-r from-gray-200 to-transparent" />
+          <div className="flex-1 h-px bg-gradient-to-r from-gray-200 dark:from-gray-700 to-transparent" />
         </div>
 
-        <p className="text-gray-600 mb-4">
+        <p className="text-gray-600 dark:text-gray-400 mb-4">
           After running init and adding a component, your project will have:
         </p>
         <CodeBlock code={projectStructure} language="plaintext" />
@@ -251,19 +251,19 @@ export function GettingStarted() {
           {fileDescriptions.map((file, index) => (
             <div
               key={file.name}
-              className="group relative rounded-xl border border-gray-200 bg-white p-4 card-elevated"
+              className="group relative rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4 card-elevated"
               style={{ animationDelay: `${index * 0.05}s` }}
             >
-              <div className="pointer-events-none absolute inset-0 rounded-xl bg-gradient-to-br from-gray-50 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+              <div className="pointer-events-none absolute inset-0 rounded-xl bg-gradient-to-br from-gray-50 dark:from-gray-800 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
               <div className="relative flex items-start gap-4">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-gray-600 transition-all group-hover:bg-gray-900 group-hover:text-white">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 transition-all group-hover:bg-gray-900 dark:group-hover:bg-gray-100 group-hover:text-white dark:group-hover:text-gray-900">
                   {file.icon}
                 </div>
                 <div>
                   <code className="px-2 py-1 bg-gray-900 text-white rounded-lg text-sm font-mono font-medium">
                     {file.name}
                   </code>
-                  <p className="mt-2 text-sm text-gray-600 leading-relaxed">{file.description}</p>
+                  <p className="mt-2 text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{file.description}</p>
                 </div>
               </div>
             </div>
@@ -274,16 +274,16 @@ export function GettingStarted() {
       {/* Section 4: What's Next */}
       <section id="whats-next" className="scroll-mt-20 mb-14 animate-fade-in-up opacity-0 stagger-5">
         <div className="flex items-center gap-4 mb-6">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gray-100 text-gray-600">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
             </svg>
           </div>
           <div>
-            <h2 className="text-xl font-bold text-gray-900">What's Next?</h2>
-            <p className="text-sm text-gray-500">Continue learning with these resources</p>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">What's Next?</h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Continue learning with these resources</p>
           </div>
-          <div className="flex-1 h-px bg-gradient-to-r from-gray-200 to-transparent" />
+          <div className="flex-1 h-px bg-gradient-to-r from-gray-200 dark:from-gray-700 to-transparent" />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -291,16 +291,16 @@ export function GettingStarted() {
             <a
               key={step.title}
               href={step.href}
-              className="group relative rounded-xl border border-gray-200 bg-white p-5 card-elevated"
+              className="group relative rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-5 card-elevated"
               style={{ animationDelay: `${index * 0.05}s` }}
             >
-              <div className="pointer-events-none absolute inset-0 rounded-xl bg-gradient-to-br from-gray-50 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+              <div className="pointer-events-none absolute inset-0 rounded-xl bg-gradient-to-br from-gray-50 dark:from-gray-800 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
               <div className="relative">
                 <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100 text-gray-600 transition-all group-hover:bg-gray-900 group-hover:text-white">
                   {step.icon}
                 </div>
-                <h3 className="font-semibold text-gray-900 mb-1">{step.title}</h3>
-                <p className="text-sm text-gray-500 leading-relaxed">{step.description}</p>
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">{step.title}</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{step.description}</p>
               </div>
             </a>
           ))}

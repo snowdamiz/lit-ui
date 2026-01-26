@@ -28,8 +28,8 @@ declare global {
 
 export function LivePreview() {
   return (
-    <div className="p-6 bg-gray-50 rounded-lg mt-4">
-      <p className="text-sm text-gray-600 mb-4">Result:</p>
+    <div className="p-6 bg-gray-50 dark:bg-gray-800 rounded-lg mt-4">
+      <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">Result:</p>
       <lui-button variant="primary">Click me</lui-button>
     </div>
   );
