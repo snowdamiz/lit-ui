@@ -5,6 +5,7 @@ import { isServer } from 'lit';
 // Export component classes and types
 export { Select } from './select.js';
 export type { SelectSize, SelectOption } from './select.js';
+export { Option } from './option.js';
 export { OptionGroup } from './option-group.js';
 
 // Re-export TailwindElement and isServer for convenience
@@ -13,6 +14,7 @@ export { TailwindElement, isServer } from '@lit-ui/core';
 // Safe custom element registration with collision detection
 // Register on both server (via @lit-labs/ssr-dom-shim) and client
 import { Select } from './select.js';
+import { Option } from './option.js';
 import { OptionGroup } from './option-group.js';
 
 if (typeof customElements !== 'undefined') {
@@ -21,6 +23,15 @@ if (typeof customElements !== 'undefined') {
   } else if (!isServer && import.meta.env?.DEV) {
     console.warn(
       '[lui-select] Custom element already registered. ' +
+        'This may indicate duplicate imports or version conflicts.'
+    );
+  }
+
+  if (!customElements.get('lui-option')) {
+    customElements.define('lui-option', Option);
+  } else if (!isServer && import.meta.env?.DEV) {
+    console.warn(
+      '[lui-option] Custom element already registered. ' +
         'This may indicate duplicate imports or version conflicts.'
     );
   }
@@ -39,6 +50,7 @@ if (typeof customElements !== 'undefined') {
 declare global {
   interface HTMLElementTagNameMap {
     'lui-select': Select;
+    'lui-option': Option;
     'lui-option-group': OptionGroup;
   }
 }

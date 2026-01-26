@@ -6,11 +6,24 @@
  * - Keyboard navigation
  * - Form participation via ElementInternals
  * - SSR compatible
+ * - Slotted lui-option and lui-option-group support (Phase 33)
  *
  * @example
  * ```html
  * <lui-select placeholder="Select an option">
  *   <lui-option value="1">Option 1</lui-option>
+ * </lui-select>
+ * ```
+ *
+ * @example
+ * ```html
+ * <lui-select placeholder="Select a food">
+ *   <lui-option-group label="Fruits">
+ *     <lui-option value="apple">Apple</lui-option>
+ *   </lui-option-group>
+ *   <lui-option-group label="Vegetables">
+ *     <lui-option value="carrot">Carrot</lui-option>
+ *   </lui-option-group>
  * </lui-select>
  * ```
  */
@@ -20,6 +33,7 @@ import { property, state, query } from 'lit/decorators.js';
 import { TailwindElement, tailwindBaseStyles } from '@lit-ui/core';
 // Import Floating UI for dropdown positioning
 import { computePosition, flip, shift, offset, size } from '@floating-ui/dom';
+import type { Option } from './option.js';
 
 /**
  * Select size types for padding and font sizing
@@ -127,6 +141,13 @@ export class Select extends TailwindElement {
   private activeIndex = -1;
 
   /**
+   * Slotted lui-option elements (from direct children or inside groups).
+   * These take precedence over the options property if present.
+   */
+  @state()
+  private slottedOptions: Option[] = [];
+
+  /**
    * Whether the user has interacted with the select.
    */
   @state()
@@ -169,6 +190,11 @@ export class Select extends TailwindElement {
    * Time in milliseconds before type-ahead string resets.
    */
   private static readonly TYPEAHEAD_RESET_MS = 500;
+
+  /**
+   * Mutation observer for detecting dynamically added options inside groups.
+   */
+  private mutationObserver: MutationObserver | null = null;
 
   constructor() {
     super();
@@ -243,6 +269,83 @@ export class Select extends TailwindElement {
     }
   };
 
+  /**
+   * Handle slot change events to collect slotted options.
+   * Detects lui-option children and options inside lui-option-group elements.
+   */
+  private handleSlotChange(e: Event): void {
+    const slot = e.target as HTMLSlotElement;
+    const assigned = slot.assignedElements({ flatten: true });
+
+    // Collect options - both direct children and inside groups
+    const options: Option[] = [];
+
+    for (const el of assigned) {
+      if (el.tagName === 'LUI-OPTION') {
+        options.push(el as Option);
+      } else if (el.tagName === 'LUI-OPTION-GROUP') {
+        // Find options inside the group
+        const groupOptions = el.querySelectorAll('lui-option');
+        groupOptions.forEach((opt) => options.push(opt as Option));
+      }
+    }
+
+    this.slottedOptions = options;
+
+    // Attach click handlers to slotted options
+    this.slottedOptions.forEach((opt, index) => {
+      opt.removeEventListener('click', this.handleSlottedOptionClick);
+      opt.addEventListener('click', this.handleSlottedOptionClick);
+      // Store index as data attribute for click handling
+      opt.dataset.optionIndex = String(index);
+    });
+
+    this.syncSlottedOptionStates();
+    this.requestUpdate();
+  }
+
+  /**
+   * Handle click on a slotted option element.
+   */
+  private handleSlottedOptionClick = (e: Event): void => {
+    const target = e.currentTarget as Option;
+    const index = parseInt(target.dataset.optionIndex || '0', 10);
+    e.stopPropagation();
+    this.selectOption(index);
+  };
+
+  /**
+   * Sync selected/active states to slotted option elements.
+   */
+  private syncSlottedOptionStates(): void {
+    for (const opt of this.slottedOptions) {
+      opt.selected = opt.value === this.value;
+    }
+  }
+
+  /**
+   * Get the effective options list.
+   * Slotted options take precedence over the options property.
+   * Returns array of objects with value, label, disabled.
+   */
+  private get effectiveOptions(): SelectOption[] {
+    if (this.slottedOptions.length > 0) {
+      return this.slottedOptions.map((opt) => ({
+        value: opt.value,
+        label: opt.label || opt.textContent?.trim() || opt.value,
+        disabled: opt.disabled,
+      }));
+    }
+    return this.options;
+  }
+
+  /**
+   * Check if using slotted content (groups/options) vs property-based options.
+   */
+  private get hasSlottedContent(): boolean {
+    return this.slottedOptions.length > 0;
+  }
+
   override connectedCallback(): void {
     super.connectedCallback();
     if (!isServer) {
@@ -251,6 +354,20 @@ export class Select extends TailwindElement {
       if (this.value) {
         this.internals?.setFormValue(this.value);
       }
+
+      // Observe for dynamic option changes inside groups
+      this.mutationObserver = new MutationObserver(() => {
+        this.updateComplete.then(() => {
+          // Re-query slotted options when children change
+          const slot = this.shadowRoot?.querySelector(
+            'slot:not([name])'
+          ) as HTMLSlotElement;
+          if (slot) {
+            this.handleSlotChange({ target: slot } as unknown as Event);
+          }
+        });
+      });
+      this.mutationObserver.observe(this, { childList: true, subtree: true });
     }
   }
 
@@ -263,6 +380,9 @@ export class Select extends TailwindElement {
         clearTimeout(this.typeaheadTimeout);
         this.typeaheadTimeout = null;
       }
+      // Disconnect mutation observer
+      this.mutationObserver?.disconnect();
+      this.mutationObserver = null;
     }
   }
 
@@ -531,7 +651,8 @@ export class Select extends TailwindElement {
     this.open = true;
 
     // Set active to selected option or first enabled
-    const selectedIdx = this.options.findIndex((o) => o.value === this.value);
+    const opts = this.effectiveOptions;
+    const selectedIdx = opts.findIndex((o) => o.value === this.value);
     this.activeIndex =
       selectedIdx >= 0 ? selectedIdx : this.findFirstEnabledIndex();
 
@@ -558,7 +679,7 @@ export class Select extends TailwindElement {
    * Find the index of the first enabled option.
    */
   private findFirstEnabledIndex(): number {
-    return this.options.findIndex((o) => !o.disabled);
+    return this.effectiveOptions.findIndex((o) => !o.disabled);
   }
 
   /**
@@ -700,7 +821,8 @@ export class Select extends TailwindElement {
    */
   private findTypeaheadMatch(searchString: string): number {
     // Get enabled options with their original indices
-    const enabledOptions = this.options
+    const opts = this.effectiveOptions;
+    const enabledOptions = opts
       .map((opt, idx) => ({ opt, idx }))
       .filter(({ opt }) => !opt.disabled);
 
@@ -741,7 +863,8 @@ export class Select extends TailwindElement {
    * Focus the first enabled option.
    */
   private focusFirstEnabledOption(): void {
-    const index = this.options.findIndex((o) => !o.disabled);
+    const opts = this.effectiveOptions;
+    const index = opts.findIndex((o) => !o.disabled);
     if (index >= 0) {
       this.setActiveIndex(index);
     }
@@ -751,8 +874,9 @@ export class Select extends TailwindElement {
    * Focus the last enabled option.
    */
   private focusLastEnabledOption(): void {
-    for (let i = this.options.length - 1; i >= 0; i--) {
-      if (!this.options[i].disabled) {
+    const opts = this.effectiveOptions;
+    for (let i = opts.length - 1; i >= 0; i--) {
+      if (!opts[i].disabled) {
         this.setActiveIndex(i);
         return;
       }
@@ -763,8 +887,9 @@ export class Select extends TailwindElement {
    * Focus the next enabled option (wraps to first).
    */
   private focusNextEnabledOption(): void {
-    for (let i = this.activeIndex + 1; i < this.options.length; i++) {
-      if (!this.options[i].disabled) {
+    const opts = this.effectiveOptions;
+    for (let i = this.activeIndex + 1; i < opts.length; i++) {
+      if (!opts[i].disabled) {
         this.setActiveIndex(i);
         return;
       }
@@ -777,8 +902,9 @@ export class Select extends TailwindElement {
    * Focus the previous enabled option (wraps to last).
    */
   private focusPreviousEnabledOption(): void {
+    const opts = this.effectiveOptions;
     for (let i = this.activeIndex - 1; i >= 0; i--) {
-      if (!this.options[i].disabled) {
+      if (!opts[i].disabled) {
         this.setActiveIndex(i);
         return;
       }
@@ -805,13 +931,17 @@ export class Select extends TailwindElement {
    * Select an option by index.
    */
   private selectOption(index: number): void {
-    const option = this.options[index];
+    const opts = this.effectiveOptions;
+    const option = opts[index];
     if (!option || option.disabled) return;
 
     this.value = option.value;
 
     // Update form value
     this.internals?.setFormValue(this.value);
+
+    // Sync slotted option states
+    this.syncSlottedOptionStates();
 
     // Validate after selection
     if (this.touched) {
@@ -843,7 +973,8 @@ export class Select extends TailwindElement {
    * Get the display label for the currently selected value.
    */
   private getSelectedLabel(): string {
-    const selected = this.options.find((o) => o.value === this.value);
+    const opts = this.effectiveOptions;
+    const selected = opts.find((o) => o.value === this.value);
     return selected?.label || selected?.value || '';
   }
 
@@ -851,10 +982,11 @@ export class Select extends TailwindElement {
    * Get the label of the currently active option for ARIA live region.
    */
   private getActiveOptionLabel(): string {
-    if (this.activeIndex < 0 || this.activeIndex >= this.options.length) {
+    const opts = this.effectiveOptions;
+    if (this.activeIndex < 0 || this.activeIndex >= opts.length) {
       return '';
     }
-    const option = this.options[this.activeIndex];
+    const option = opts[this.activeIndex];
     return option.label || option.value;
   }
 
@@ -862,7 +994,7 @@ export class Select extends TailwindElement {
    * Get the count of enabled options.
    */
   private getEnabledOptionsCount(): number {
-    return this.options.filter((o) => !o.disabled).length;
+    return this.effectiveOptions.filter((o) => !o.disabled).length;
   }
 
   /**
@@ -965,7 +1097,14 @@ export class Select extends TailwindElement {
           aria-labelledby=${this.selectId}
           ?hidden=${!this.open}
         >
-          ${this.options.map((option, index) => this.renderOption(option, index))}
+          <!-- Slot for lui-option and lui-option-group children -->
+          <slot @slotchange=${this.handleSlotChange}></slot>
+          <!-- Render property-based options only when no slotted content -->
+          ${!this.hasSlottedContent
+            ? this.options.map((option, index) =>
+                this.renderOption(option, index)
+              )
+            : nothing}
         </div>
 
         ${this.showError && this.errorMessage

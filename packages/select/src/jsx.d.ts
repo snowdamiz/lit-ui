@@ -4,6 +4,7 @@
  */
 
 import type { Select, SelectSize } from './select.js';
+import type { Option } from './option.js';
 import type { OptionGroup } from './option-group.js';
 
 // Common attributes for lui-select
@@ -14,6 +15,15 @@ interface LuiSelectAttributes {
   placeholder?: string;
   required?: boolean;
   disabled?: boolean;
+}
+
+// Common attributes for lui-option
+interface LuiOptionAttributes {
+  value?: string;
+  label?: string;
+  disabled?: boolean;
+  selected?: boolean;
+  children?: any;
 }
 
 // Common attributes for lui-option-group
@@ -30,6 +40,10 @@ declare global {
         React.HTMLAttributes<Select> & LuiSelectAttributes,
         Select
       >;
+      'lui-option': React.DetailedHTMLProps<
+        React.HTMLAttributes<Option> & LuiOptionAttributes,
+        Option
+      >;
       'lui-option-group': React.DetailedHTMLProps<
         React.HTMLAttributes<OptionGroup> & LuiOptionGroupAttributes,
         OptionGroup
@@ -42,6 +56,7 @@ declare global {
 declare module 'vue' {
   export interface GlobalComponents {
     'lui-select': import('vue').DefineComponent<LuiSelectAttributes>;
+    'lui-option': import('vue').DefineComponent<LuiOptionAttributes>;
     'lui-option-group': import('vue').DefineComponent<LuiOptionGroupAttributes>;
   }
 }
@@ -53,6 +68,7 @@ declare namespace svelteHTML {
       onchange?: (e: Event) => void;
       'on:change'?: (e: CustomEvent) => void;
     };
+    'lui-option': LuiOptionAttributes;
     'lui-option-group': LuiOptionGroupAttributes;
   }
 }
