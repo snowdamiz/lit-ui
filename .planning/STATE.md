@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-25)
 ## Current Position
 
 Phase: 25 - Docs Site Dark Mode
-Plan: —
-Status: Roadmap complete, awaiting plan creation
-Last activity: 2026-01-25 — v3.1 roadmap created
+Plan: 01 of 4
+Status: In progress
+Last activity: 2026-01-25 - Completed 25-01-PLAN.md
 
-Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 [..........] 0/1
+Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 [##........] 1/4
 
 ## Performance Metrics
 
@@ -35,12 +35,21 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHI
 - Plans completed: 16
 - Total execution time: 39 min
 
+**v3.1 Velocity (partial):**
+- Plans completed: 1
+- Total execution time: 3 min
+
 ## Accumulated Context
 
 ### Decisions
 
 Key decisions are logged in PROJECT.md Key Decisions table.
 v3.0 decisions validated and archived.
+
+**Phase 25 decisions:**
+- Theme state initialized from DOM class (set by FOUC script), not localStorage
+- Dark palette: shadcn-inspired neutral OKLCH values
+- Utility class dark overrides in CSS, not Tailwind dark: prefix
 
 ### Pending Todos
 
@@ -55,20 +64,21 @@ None.
 ## Session Continuity
 
 Last session: 2026-01-25
-Stopped at: v3.1 roadmap created
+Stopped at: Completed 25-01-PLAN.md
 Resume file: None
 
 ## Next Steps
 
 ### v3.1 Docs Dark Mode
 
-Phase 25 roadmap complete. Ready for plan creation.
+Phase 25 Plan 01 complete. Ready for Plan 02.
 
-**Success criteria for Phase 25:**
-1. User sees a theme toggle button in the header on every docs page
-2. User can click toggle and entire docs site switches between light/dark immediately
-3. User closes browser, reopens docs site later, and sees their previously selected theme
-4. User with system dark mode preference visits docs for first time and sees dark theme
-5. User on configurator page can use either the header toggle or configurator's mode toggle to switch docs theme (both stay in sync)
+**Completed:**
+- [x] Plan 01: Theme infrastructure (ThemeContext, FOUC script, CSS variables)
 
-**Next action:** `/gsd:plan-phase 25`
+**Remaining:**
+- [ ] Plan 02: Header toggle
+- [ ] Plan 03: ThemeProvider integration
+- [ ] Plan 04: Configurator sync
+
+**Next action:** Execute 25-02-PLAN.md
