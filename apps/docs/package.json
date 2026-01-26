@@ -13,6 +13,7 @@
     "@lit-ui/cli": "workspace:^",
     "@lit-ui/core": "workspace:*",
     "@lit-ui/dialog": "workspace:*",
+    "@lit-ui/input": "workspace:*",
     "@radix-ui/react-collapsible": "^1.1.12",
     "@radix-ui/react-dialog": "^1.1.15",
     "@uiw/react-color-editable-input": "^2.9.2",

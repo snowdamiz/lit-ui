@@ -7,8 +7,9 @@
 
 // Side-effect import to register the custom elements from built library
 import '@lit-ui/button';
+import '@lit-ui/input';
 
-// TypeScript JSX declaration for lui-button
+// TypeScript JSX declaration for lui-button and lui-input
 declare global {
   namespace JSX {
     interface IntrinsicElements {
@@ -19,6 +20,29 @@ declare global {
           loading?: boolean;
           disabled?: boolean;
           'btn-class'?: string;
+        },
+        HTMLElement
+      >;
+      'lui-input': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement> & {
+          type?: 'text' | 'email' | 'password' | 'number' | 'search';
+          size?: 'sm' | 'md' | 'lg';
+          name?: string;
+          value?: string;
+          placeholder?: string;
+          label?: string;
+          'helper-text'?: string;
+          required?: boolean;
+          'required-indicator'?: 'asterisk' | 'text';
+          disabled?: boolean;
+          readonly?: boolean;
+          minlength?: number;
+          maxlength?: number;
+          pattern?: string;
+          min?: number;
+          max?: number;
+          clearable?: boolean;
+          'show-count'?: boolean;
         },
         HTMLElement
       >;
