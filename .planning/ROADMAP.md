@@ -7,7 +7,7 @@
 - **v2.0 NPM + SSR** — Phases 13-20 (shipped 2026-01-25) → [archive](milestones/v2.0-ROADMAP.md)
 - **v3.0 Theme Customization** — Phases 21-24 (shipped 2026-01-25) → [archive](milestones/v3.0-ROADMAP.md)
 - **v3.1 Docs Dark Mode** — Phase 25 (shipped 2026-01-25)
-- **v4.0 Form Inputs** — Phases 26-30 (in progress)
+- **v4.0 Form Inputs** — Phases 26-30 (shipped 2026-01-26)
 
 ## Phases
 
@@ -218,9 +218,9 @@ Plans:
 **Plans:** 3 plans
 
 Plans:
-- [ ] 30-01-PLAN.md — CLI templates, registry, npm mapping, and categorized list
-- [ ] 30-02-PLAN.md — Input documentation page with examples and API reference
-- [ ] 30-03-PLAN.md — Textarea documentation page with examples and auto-resize demo
+- [x] 30-01-PLAN.md — CLI templates, registry, npm mapping, and categorized list
+- [x] 30-02-PLAN.md — Input documentation page with examples and API reference
+- [x] 30-03-PLAN.md — Textarea documentation page with examples and auto-resize demo
 
 **Success Criteria:**
 
@@ -272,8 +272,8 @@ Plans:
 | 27. Core Input Component | v4.0 | 2/2 | Complete | 2026-01-26 |
 | 28. Input Differentiators | v4.0 | 2/2 | Complete | 2026-01-26 |
 | 29. Textarea Component | v4.0 | 2/2 | Complete | 2026-01-26 |
-| 30. CLI and Documentation | v4.0 | 0/3 | Planned | - |
+| 30. CLI and Documentation | v4.0 | 3/3 | Complete | 2026-01-26 |
 
 ---
 *Roadmap created: 2026-01-24*
-*Last updated: 2026-01-26 (Phase 30 planned)*
+*Last updated: 2026-01-26 (v4.0 complete)*

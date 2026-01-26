@@ -46,8 +46,8 @@ Requirements for Input and Textarea components. Form primitives with full valida
 - [x] **INFRA-01**: CSS tokens for input/textarea added to @lit-ui/core
 - [x] **INFRA-02**: @lit-ui/input package created with SSR support
 - [x] **INFRA-03**: @lit-ui/textarea package created with SSR support
-- [ ] **INFRA-04**: CLI templates updated for input and textarea
-- [ ] **INFRA-05**: Docs pages created for Input and Textarea components
+- [x] **INFRA-04**: CLI templates updated for input and textarea
+- [x] **INFRA-05**: Docs pages created for Input and Textarea components
 
 ## Future Requirements
 
@@ -112,8 +112,8 @@ Deferred to later milestones.
 | TEXTAREA-10 | Phase 29 | Complete |
 | TEXTAREA-11 | Phase 29 | Complete |
 | INFRA-03 | Phase 29 | Complete |
-| INFRA-04 | Phase 30 | Pending |
-| INFRA-05 | Phase 30 | Pending |
+| INFRA-04 | Phase 30 | Complete |
+| INFRA-05 | Phase 30 | Complete |
 
 **Coverage:**
 - v4.0 requirements: 33 total
@@ -122,4 +122,4 @@ Deferred to later milestones.
 
 ---
 *Requirements defined: 2026-01-26*
-*Last updated: 2026-01-26 after Phase 29 complete*
+*Last updated: 2026-01-26 after Phase 30 complete*
