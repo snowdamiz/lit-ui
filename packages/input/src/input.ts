@@ -149,6 +149,27 @@ export class Input extends TailwindElement {
   max?: number;
 
   /**
+   * Label text displayed above the input.
+   * @default ''
+   */
+  @property({ type: String })
+  label = '';
+
+  /**
+   * Helper text displayed between label and input.
+   * @default ''
+   */
+  @property({ type: String, attribute: 'helper-text' })
+  helperText = '';
+
+  /**
+   * Required indicator style: 'asterisk' shows *, 'text' shows "(required)".
+   * @default 'asterisk'
+   */
+  @property({ type: String, attribute: 'required-indicator' })
+  requiredIndicator: 'asterisk' | 'text' = 'asterisk';
+
+  /**
    * Whether the input has been touched (blur occurred).
    * Used for validation display timing.
    */
@@ -241,6 +262,48 @@ export class Input extends TailwindElement {
       input.input-lg {
         padding: var(--ui-input-padding-y-lg) var(--ui-input-padding-x-lg);
         font-size: var(--ui-input-font-size-lg);
+      }
+
+      /* Wrapper for label structure */
+      .input-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+      }
+
+      /* Label styling - scales with size */
+      .input-label {
+        font-weight: 500;
+        color: var(--ui-input-text);
+      }
+
+      .input-label.label-sm {
+        font-size: var(--ui-input-font-size-sm);
+      }
+
+      .input-label.label-md {
+        font-size: var(--ui-input-font-size-md);
+      }
+
+      .input-label.label-lg {
+        font-size: var(--ui-input-font-size-lg);
+      }
+
+      .required-indicator {
+        color: var(--ui-input-text-error);
+        margin-left: 0.125rem;
+      }
+
+      /* Helper text - below label, above input */
+      .helper-text {
+        font-size: 0.875em;
+        color: var(--color-muted-foreground);
+      }
+
+      /* Error text - below input */
+      .error-text {
+        font-size: 0.875em;
+        color: var(--ui-input-text-error);
       }
     `,
   ];
@@ -346,28 +409,85 @@ export class Input extends TailwindElement {
     return classes.join(' ');
   }
 
+  /**
+   * Compute aria-describedby value based on error or helper state.
+   */
+  private getAriaDescribedBy(): string | typeof nothing {
+    if (this.showError) {
+      return `${this.inputId}-error`;
+    }
+    if (this.helperText) {
+      return `${this.inputId}-helper`;
+    }
+    return nothing;
+  }
+
   override render() {
     return html`
-      <input
-        id=${this.inputId}
-        part="input"
-        class=${this.getInputClasses()}
-        type=${this.type}
-        name=${this.name}
-        .value=${this.value}
-        placeholder=${this.placeholder || nothing}
-        ?required=${this.required}
-        ?disabled=${this.disabled}
-        ?readonly=${this.readonly}
-        minlength=${this.minlength ?? nothing}
-        maxlength=${this.maxlength ?? nothing}
-        min=${this.min ?? nothing}
-        max=${this.max ?? nothing}
-        pattern=${this.pattern || nothing}
-        aria-invalid=${this.showError ? 'true' : nothing}
-        @input=${this.handleInput}
-        @blur=${this.handleBlur}
-      />
+      <div class="input-wrapper" part="wrapper">
+        ${this.label
+          ? html`
+              <label
+                for=${this.inputId}
+                part="label"
+                class="input-label label-${this.size}"
+              >
+                ${this.label}
+                ${this.required
+                  ? html`<span class="required-indicator"
+                      >${this.requiredIndicator === 'text'
+                        ? ' (required)'
+                        : '*'}</span
+                    >`
+                  : nothing}
+              </label>
+            `
+          : nothing}
+        ${this.helperText
+          ? html`
+              <span
+                id="${this.inputId}-helper"
+                part="helper"
+                class="helper-text"
+                >${this.helperText}</span
+              >
+            `
+          : nothing}
+
+        <input
+          id=${this.inputId}
+          part="input"
+          class=${this.getInputClasses()}
+          type=${this.type}
+          name=${this.name}
+          .value=${this.value}
+          placeholder=${this.placeholder || nothing}
+          ?required=${this.required}
+          ?disabled=${this.disabled}
+          ?readonly=${this.readonly}
+          minlength=${this.minlength ?? nothing}
+          maxlength=${this.maxlength ?? nothing}
+          min=${this.min ?? nothing}
+          max=${this.max ?? nothing}
+          pattern=${this.pattern || nothing}
+          aria-invalid=${this.showError ? 'true' : nothing}
+          aria-describedby=${this.getAriaDescribedBy()}
+          @input=${this.handleInput}
+          @blur=${this.handleBlur}
+        />
+
+        ${this.showError && this.errorMessage
+          ? html`
+              <span
+                id="${this.inputId}-error"
+                part="error"
+                class="error-text"
+                role="alert"
+                >${this.errorMessage}</span
+              >
+            `
+          : nothing}
+      </div>
     `;
   }
 }

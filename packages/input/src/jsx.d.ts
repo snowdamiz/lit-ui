@@ -5,15 +5,24 @@
 
 import type { Input, InputType, InputSize } from './input.js';
 
-// Common attributes for lui-input (Plan 01 props only)
+// Common attributes for lui-input
 interface LuiInputAttributes {
   type?: InputType;
   size?: InputSize;
   name?: string;
   value?: string;
   placeholder?: string;
+  label?: string;
+  'helper-text'?: string;
+  'required-indicator'?: 'asterisk' | 'text';
+  required?: boolean;
   disabled?: boolean;
   readonly?: boolean;
+  minlength?: number;
+  maxlength?: number;
+  min?: number;
+  max?: number;
+  pattern?: string;
 }
 
 // React JSX support
