@@ -8,6 +8,7 @@
 // Side-effect import to register the custom elements from built library
 import '@lit-ui/button';
 import '@lit-ui/input';
+import '@lit-ui/textarea';
 
 // TypeScript JSX declaration for lui-button and lui-input
 declare global {
@@ -42,6 +43,29 @@ declare global {
           min?: number;
           max?: number;
           clearable?: boolean;
+          'show-count'?: boolean;
+        },
+        HTMLElement
+      >;
+      'lui-textarea': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement> & {
+          size?: 'sm' | 'md' | 'lg';
+          name?: string;
+          value?: string;
+          placeholder?: string;
+          label?: string;
+          'helper-text'?: string;
+          rows?: number;
+          resize?: 'none' | 'vertical' | 'horizontal' | 'both';
+          autoresize?: boolean;
+          'max-rows'?: number;
+          'max-height'?: string;
+          required?: boolean;
+          'required-indicator'?: 'asterisk' | 'text';
+          disabled?: boolean;
+          readonly?: boolean;
+          minlength?: number;
+          maxlength?: number;
           'show-count'?: boolean;
         },
         HTMLElement
