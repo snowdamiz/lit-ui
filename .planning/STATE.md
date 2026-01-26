@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-01-26)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** v4.0 Form Inputs - Phase 26 CSS Tokens Foundation
+**Current focus:** v4.0 Form Inputs - Phase 27 Core Input Component
 
 ## Current Position
 
-Phase: 26 - CSS Tokens Foundation
-Plan: 01 of 01 complete
-Status: Phase complete
-Last activity: 2026-01-26 — Completed 26-01-PLAN.md
+Phase: 27 - Core Input Component
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-01-26 — Phase 26 complete
 
 Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 SHIPPED | v4.0 [##........] 1/5
 
@@ -83,9 +83,9 @@ Roadmap complete with 5 phases (26-30), 33 requirements mapped.
 - Requirements: INFRA-01
 - Status: Complete
 
-**Phase 27: Input Component**
-- Goal: Input component with validation, masking, and variants
-- Requirements: FE-01 through FE-09
+**Phase 27: Core Input Component**
+- Goal: Developers can add a fully functional text input to any form
+- Requirements: INPUT-01 through INPUT-12, INFRA-02
 - Status: Ready to plan
 
-**Next action:** Run `/gsd:plan-phase 27` to create Input component plan
+**Next action:** Run `/gsd:discuss-phase 27` to gather context or `/gsd:plan-phase 27` to plan directly
