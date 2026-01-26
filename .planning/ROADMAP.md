@@ -215,6 +215,13 @@ Plans:
 
 **Requirements:** INFRA-04, INFRA-05
 
+**Plans:** 3 plans
+
+Plans:
+- [ ] 30-01-PLAN.md — CLI templates, registry, npm mapping, and categorized list
+- [ ] 30-02-PLAN.md — Input documentation page with examples and API reference
+- [ ] 30-03-PLAN.md — Textarea documentation page with examples and auto-resize demo
+
 **Success Criteria:**
 
 1. Developer runs `npx lit-ui add input` and input component is installed in their project
@@ -265,8 +272,8 @@ Plans:
 | 27. Core Input Component | v4.0 | 2/2 | Complete | 2026-01-26 |
 | 28. Input Differentiators | v4.0 | 2/2 | Complete | 2026-01-26 |
 | 29. Textarea Component | v4.0 | 2/2 | Complete | 2026-01-26 |
-| 30. CLI and Documentation | v4.0 | 0/? | Planned | - |
+| 30. CLI and Documentation | v4.0 | 0/3 | Planned | - |
 
 ---
 *Roadmap created: 2026-01-24*
-*Last updated: 2026-01-26 (Phase 29 complete)*
+*Last updated: 2026-01-26 (Phase 30 planned)*
