@@ -52,15 +52,16 @@ Developers can use polished, accessible UI components in any framework without l
 
 ### Active
 
-- [ ] Input component with text, email, password, number, search types
-- [ ] Textarea component for multiline text input
-- [ ] Built-in validation (required, min/max, pattern, email format)
-- [ ] Standalone and native form participation (ElementInternals)
-- [ ] Visual states (error, success, disabled) with error messages
+- [ ] Select component with single-select dropdown
+- [ ] Multi-select with tag display for selected items
+- [ ] Combobox with search/filter functionality
+- [ ] Async option loading with loading states
+- [ ] Keyboard navigation (arrow keys, type-ahead, Escape to close)
+- [ ] Form participation via ElementInternals
+- [ ] Visual states matching Input/Textarea patterns
 
-### Deferred (v4.1+)
+### Deferred (v4.2+)
 
-- Select/Dropdown component
 - Checkbox, Radio, Switch toggle controls
 - Framework integration guides (React, Vue, Svelte) — from v1.1
 - Accessibility documentation — from v1.1
@@ -142,17 +143,20 @@ Developers can use polished, accessible UI components in any framework without l
 - **v2.0 NPM + SSR** (2026-01-25): NPM packages, SSR support, dual distribution
 - **v3.0 Theme Customization** (2026-01-25): Visual configurator, OKLCH themes, preset themes, shareable URLs
 - **v3.1 Docs Dark Mode** (2026-01-25): Global theme toggle, localStorage persistence, full dark mode styling
+- **v4.0 Form Inputs** (2026-01-26): Input and Textarea components with validation, form participation
 
-## Current Milestone: v4.0 Form Inputs
+## Current Milestone: v4.1 Select Component
 
-**Goal:** Add Input and Textarea components with full form participation, built-in validation, and visual states — extending the component library with essential form primitives.
+**Goal:** Add a full-featured Select component with single-select, multi-select, combobox/autocomplete, and async data loading — completing the form toolkit with the most complex form primitive.
 
 **Target features:**
-- Input component (text, email, password, number, search types)
-- Textarea component for multiline text input
-- Built-in validation (required, min/max, pattern, email format)
-- Standalone and native form participation via ElementInternals
-- Visual states (error, success, disabled) with error message display
+- Single-select dropdown (native `<select>` replacement)
+- Multi-select with tag display for selected items
+- Combobox with search/filter functionality
+- Async option loading with loading states and infinite scroll
+- Full keyboard navigation (arrow keys, type-ahead, Escape)
+- Form participation via ElementInternals
+- Visual states matching Input/Textarea patterns
 
 ---
-*Last updated: 2026-01-26 after v4.0 milestone started*
+*Last updated: 2026-01-26 after v4.1 milestone started*
