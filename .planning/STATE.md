@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-25)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** Planning next milestone
+**Current focus:** v3.1 Docs Dark Mode
 
 ## Current Position
 
-Phase: 24 of 24 (last completed)
-Plan: Complete
-Status: Milestone v3.0 shipped
-Last activity: 2026-01-25 — v3.0 Theme Customization complete
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-01-25 — Milestone v3.1 started
 
-Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHIPPED
+Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 [..........] 0/?
 
 ## Performance Metrics
 
@@ -60,10 +60,6 @@ Resume file: None
 
 ## Next Steps
 
-### Ready for Next Milestone
+### v3.1 Docs Dark Mode
 
-v3.0 complete. Options:
-1. Complete v1.1 Documentation Site (phases 9-12)
-2. Start v3.1 enhanced theme features
-
-Run `/gsd:new-milestone` to start next milestone.
+Defining requirements. Once complete, roadmap will be created.

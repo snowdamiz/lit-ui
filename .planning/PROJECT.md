@@ -52,7 +52,10 @@ Developers can use polished, accessible UI components in any framework without l
 
 ### Active
 
-(None — next milestone requirements to be defined)
+- [ ] Docs site dark mode with global header toggle
+- [ ] Theme toggle on configurator page controls entire docs site
+- [ ] User theme preference persists in localStorage
+- [ ] Dark mode styling for all docs pages (navigation, content, code blocks)
 
 ### Deferred (v3.1+)
 
@@ -136,5 +139,15 @@ Developers can use polished, accessible UI components in any framework without l
 - **v2.0 NPM + SSR** (2026-01-25): NPM packages, SSR support, dual distribution
 - **v3.0 Theme Customization** (2026-01-25): Visual configurator, OKLCH themes, preset themes, shareable URLs
 
+## Current Milestone: v3.1 Docs Dark Mode
+
+**Goal:** Docs site supports dark mode with global toggle and localStorage persistence, matching the polished experience of shadcn's documentation.
+
+**Target features:**
+- Global header theme toggle (available on every page)
+- Configurator page toggle controls entire docs site (not just component previews)
+- localStorage persistence for user preference
+- Full dark mode styling for all docs pages
+
 ---
-*Last updated: 2026-01-25 after v3.0 milestone complete*
+*Last updated: 2026-01-25 after v3.1 milestone started*
