@@ -1,6 +1,6 @@
 {
   "name": "@lit-ui/core",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "SSR-aware base component and utilities for Lit web components with Tailwind styling",
   "author": "",
   "license": "MIT",
@@ -9,7 +9,13 @@
     "url": "git+https://github.com/user/lit-ui.git",
     "directory": "packages/core"
   },
-  "keywords": ["lit", "web-components", "ui", "tailwind", "ssr"],
+  "keywords": [
+    "lit",
+    "web-components",
+    "ui",
+    "tailwind",
+    "ssr"
+  ],
   "type": "module",
   "main": "dist/index.js",
   "module": "dist/index.js",
@@ -29,7 +35,10 @@
     },
     "./fouc.css": "./src/fouc.css"
   },
-  "files": ["dist", "src/fouc.css"],
+  "files": [
+    "dist",
+    "src/fouc.css"
+  ],
   "sideEffects": true,
   "scripts": {
     "dev": "vite build --watch",

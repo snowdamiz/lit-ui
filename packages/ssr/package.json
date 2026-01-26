@@ -1,6 +1,6 @@
 {
   "name": "@lit-ui/ssr",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Server-side rendering utilities for @lit-ui components",
   "author": "",
   "license": "MIT",
@@ -9,7 +9,13 @@
     "url": "git+https://github.com/user/lit-ui.git",
     "directory": "packages/ssr"
   },
-  "keywords": ["lit", "web-components", "ui", "tailwind", "ssr"],
+  "keywords": [
+    "lit",
+    "web-components",
+    "ui",
+    "tailwind",
+    "ssr"
+  ],
   "type": "module",
   "main": "dist/index.js",
   "module": "dist/index.js",
@@ -24,7 +30,9 @@
       "import": "./dist/hydration.js"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "sideEffects": false,
   "scripts": {
     "dev": "vite build --watch",

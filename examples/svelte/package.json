@@ -9,10 +9,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@lit-ui/ssr": "^0.0.1",
-    "@lit-ui/button": "^0.0.1",
-    "@lit-ui/dialog": "^0.0.1",
-    "@lit-ui/core": "^0.0.1"
+    "@lit-ui/ssr": "^1.0.0",
+    "@lit-ui/button": "^1.0.0",
+    "@lit-ui/dialog": "^1.0.0",
+    "@lit-ui/core": "^1.0.0"
   },
   "devDependencies": {
     "@sveltejs/adapter-auto": "^4.0.0",
