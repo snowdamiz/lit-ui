@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 ## Current Position
 
 Phase: 30 - CLI and Documentation (IN PROGRESS)
-Plan: 2/4 complete
+Plan: 3/4 complete
 Status: In progress
-Last activity: 2026-01-26 - Completed 30-02-PLAN.md
+Last activity: 2026-01-26 - Completed 30-03-PLAN.md
 
 Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 SHIPPED | v4.0 [#########.] 5/5
 
@@ -40,8 +40,8 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHI
 - Total execution time: 11 min
 
 **v4.0 Velocity (in progress):**
-- Plans completed: 10
-- Total execution time: 22 min
+- Plans completed: 11
+- Total execution time: 26 min
 
 ## Accumulated Context
 
@@ -80,6 +80,8 @@ v3.0, v3.1 decisions validated and archived.
 - Silent install success: no usage hints printed after npm install
 - Component categories: Form (input, textarea), Feedback (dialog), Actions (button)
 - Template import transformation: @lit-ui/core to ../../lib/lit-ui/tailwind-element
+- Auto-resize demo starts empty for interactive experience
+- Omit SlotsTable when component has no slots
 
 ### Pending Todos
 
@@ -93,8 +95,8 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-01-26T12:10:00Z
-Stopped at: Completed 30-02-PLAN.md
+Last session: 2026-01-26T12:19:00Z
+Stopped at: Completed 30-03-PLAN.md
 Resume file: None
 
 ## Next Steps
@@ -132,6 +134,7 @@ Roadmap complete with 5 phases (26-30), 33 requirements mapped.
 - Requirements: INFRA-04, INFRA-05
 - Plan 01: Complete - CLI templates, registry, categorized list
 - Plan 02: Complete - Input documentation page (10 examples, 18 props)
-- Status: In progress (Textarea docs remaining)
+- Plan 03: Complete - Textarea documentation page (10 examples, 17 props)
+- Status: In progress (1 plan remaining)
 
-**Next action:** Execute 30-03-PLAN.md for Textarea documentation
+**Next action:** Execute 30-04-PLAN.md (if exists) or complete phase
