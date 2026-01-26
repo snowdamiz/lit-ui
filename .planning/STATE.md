@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 ## Current Position
 
 Phase: 27 - Core Input Component
-Plan: 01 of 3 complete
+Plan: 02 of 3 complete
 Status: In progress
-Last activity: 2026-01-26 - Completed 27-01-PLAN.md
+Last activity: 2026-01-26 - Completed 27-02-PLAN.md
 
 Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 SHIPPED | v4.0 [###.......] 2/5
 
@@ -40,8 +40,8 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHI
 - Total execution time: 11 min
 
 **v4.0 Velocity (in progress):**
-- Plans completed: 2
-- Total execution time: 3 min
+- Plans completed: 3
+- Total execution time: 7 min
 
 ## Accumulated Context
 
@@ -57,7 +57,10 @@ v3.0, v3.1 decisions validated and archived.
 - No `-default` suffix for base state tokens
 
 **v4.0 Phase 27 decisions:**
-- None (no architectural decisions required)
+- Validate on blur, re-validate on input after touched
+- Error message uses native validationMessage from input element
+- Helper text appears between label and input
+- Required indicator supports 'asterisk' (*) or 'text' ((required)) modes
 
 ### Pending Todos
 
@@ -71,8 +74,8 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-01-26T10:18:28Z
-Stopped at: Completed 27-01-PLAN.md
+Last session: 2026-01-26T10:34:00Z
+Stopped at: Completed 27-02-PLAN.md
 Resume file: None
 
 ## Next Steps
@@ -90,7 +93,7 @@ Roadmap complete with 5 phases (26-30), 33 requirements mapped.
 - Goal: Developers can add a fully functional text input to any form
 - Requirements: INPUT-01 through INPUT-12, INFRA-02
 - Plan 01: Complete - Core package structure and Input component
-- Plan 02: Pending - Label, helper text, validation
-- Plan 03: Pending - States, accessibility, docs
+- Plan 02: Complete - Visual states, validation, label, helper text
+- Plan 03: Pending - Accessibility enhancements and documentation
 
-**Next action:** Run `/gsd:execute-plan 02` to continue Phase 27
+**Next action:** Run `/gsd:execute-plan 03` to complete Phase 27
