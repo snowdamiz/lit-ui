@@ -1,7 +1,7 @@
 # Feature Research
 
 **Domain:** Framework-agnostic component library (Lit.js web components)
-**Researched:** 2026-01-23 (v1.0), 2026-01-24 (v2.0 NPM + SSR)
+**Researched:** 2026-01-23 (v1.0), 2026-01-24 (v2.0 NPM + SSR), 2026-01-26 (v4.0 Form Inputs)
 **Confidence:** HIGH (verified across multiple authoritative sources)
 
 ## Feature Landscape
@@ -198,598 +198,270 @@ Features to deliberately avoid - common mistakes or over-engineering.
 | **Private/proprietary registry** | Reduces adoption | Public NPM registry |
 | **Webpack-specific optimizations** | Bundler lock-in | Use standard ESM, let bundlers optimize |
 | **Heavy polyfill bundling** | Most modern browsers don't need it | Document polyfill for users who need it |
-| **Auto-update mechanism in package** | Security risk, complexity | Document update process clearly |
-
-#### SSR-Specific Anti-Features
-
-| Anti-Feature | Why to Avoid | What to Do Instead |
-|--------------|--------------|-------------------|
-| **DOM manipulation in constructors** | Breaks SSR - no DOM available server-side | Use `connectedCallback()` or `firstUpdated()` |
-| **`window`/`document` direct access** | Undefined in Node.js SSR environment | Guard with `typeof window !== 'undefined'` |
-| **Synchronous async data fetching** | SSR cannot wait for async operations | Accept data as properties from parent |
-| **Custom SSR implementation** | Reinventing the wheel, maintenance burden | Use `@lit-labs/ssr` ecosystem |
-| **Forced hydration** | Some pages don't need interactivity | Support static-only rendering option |
 
 ---
 
-## v3.0 Theme Customization Feature Research
+## v4.0 Form Inputs Feature Research
 
-**Researched:** 2026-01-25
-**Focus:** Visual theme configurator and design token system for build-time customization
-**Confidence:** HIGH (verified against shadcn, Radix, Tailwind v4 official docs)
+**Researched:** 2026-01-26
+**Focus:** Input and Textarea components for form inputs
+**Confidence:** HIGH (verified across shadcn/ui, Radix UI, MUI, Chakra UI, Headless UI documentation)
 
-### Context
+### Input Component Features
 
-LitUI v3.0 adds:
-- Visual theme configurator page on docs site with live preview
-- Full design token customization (colors, sizing, shadows, animations, typography)
-- CLI accepts encoded token config via command parameters
-- Generated `lit-ui-tokens.css` file with user's design token values
-- Components consume shared tokens file for consistent theming
+#### Table Stakes (Must Have)
 
-Existing token system in `packages/core/src/styles/tailwind.css` already defines:
-- Primitive tokens (color scales, spacing, shadows, radii)
-- Semantic tokens (primary, secondary, destructive, muted, accent, etc.)
-- Component tokens (--ui-button-*, --ui-dialog-*)
-- Dark mode overrides via `.dark` class
-
----
-
-### Table Stakes for Theme Configurator
-
-Features users expect from a visual theme configurator. Missing = product feels incomplete.
+Features users expect from any modern Input component. Missing these makes the component feel incomplete.
 
 | Feature | Why Expected | Complexity | Dependencies | Notes |
 |---------|--------------|------------|--------------|-------|
-| **Live preview of changes** | Every comparable tool (shadcn themes, tweakcn, Radix themes) shows instant updates. Users expect to see changes before committing. | Medium | Docs site, component rendering | Must update preview without page reload. CSS variables enable this naturally by updating `:root` styles. |
-| **Color customization (primary, secondary, destructive)** | Core of any theming system. shadcn defines ~15 semantic color tokens. Radix provides accent/gray selection. | Low | Existing token system in `tailwind.css` | Already have token structure. Need UI to modify values. |
-| **Light/dark mode support** | Industry standard. shadcn, Radix, MUI all provide dual-mode themes. Users expect both modes configured together. | Low | Existing `.dark` CSS block | Already implemented. Configurator needs to edit both modes simultaneously. |
-| **Copy-paste CSS output** | shadcn pattern: user copies CSS and pastes into project. Zero friction adoption. | Low | None | Output format: CSS custom properties block for `:root` and `.dark`. |
-| **Border radius control** | Universal customization point. shadcn, Radix both expose radius. Small change = large visual impact. | Low | `--ui-*-radius` tokens | Single value that cascades to all components. |
-| **Preset themes** | shadcn offers blue, green, orange, red, rose, violet, yellow. Users want quick starting points. | Low | Color palettes | 4-6 curated presets reduce decision fatigue. |
-| **CLI accepts configuration** | User shouldn't re-copy CSS each time. CLI should accept theme config to generate tokens file. | Medium | CLI (`lit-ui` package) | Encode config in URL-safe format or accept config file path. |
-| **Generated tokens file** | Output: `lit-ui-tokens.css` that user imports. Components reference these tokens. | Low | None | File generation is straightforward string templating. |
+| **Core input types** | Basic form functionality | LOW | None | text, email, password, number, search - the five most common types |
+| **Placeholder text** | Standard HTML attribute, universally expected | LOW | None | Must persist label separately (placeholder-as-label is an anti-pattern) |
+| **Disabled state** | Form elements need disable capability | LOW | Existing pattern | Visual indication + `aria-disabled`, match Button's existing pattern |
+| **Size variants (sm/md/lg)** | Consistent with existing Button sizing | LOW | Existing pattern | T-shirt sizes matching `--ui-input-padding-{size}` tokens |
+| **Focus ring styling** | Visual feedback for keyboard navigation | LOW | Core styles | Inner glow pattern matching Button's `box-shadow: inset 0 0 0 2px` |
+| **Error state visual** | Invalid input needs clear feedback | LOW | None | Red border, shake animation optional, `aria-invalid="true"` |
+| **Form participation** | Native form submission via ElementInternals | MEDIUM | @lit-ui/core | `formAssociated = true`, `setValidity()`, `setFormValue()` |
+| **Native validation attributes** | HTML5 validation: required, minlength, maxlength, pattern | MEDIUM | None | Expose via properties, sync to internal `<input>` element |
+| **Label association** | Accessibility requirement | LOW | None | Via `aria-labelledby` or internal `<label>` with `for` attribute |
+| **Value binding** | Two-way data flow | LOW | None | `value` property, `input` and `change` events |
+| **Autocomplete support** | Browser autofill integration | LOW | None | Pass through `autocomplete` attribute to internal input |
+| **Read-only state** | Distinct from disabled (still focusable) | LOW | None | `readonly` attribute, different visual treatment |
+| **Dark mode support** | Expected in 2026 | LOW | Existing system | `:host-context(.dark)` pattern from Button/Dialog |
+| **SSR compatibility** | Works with Next.js, Astro | MEDIUM | @lit-ui/ssr | `isServer` guards for `attachInternals()`, Declarative Shadow DOM |
 
----
+#### Differentiators (Competitive Advantage)
 
-### Differentiators for Theme Configurator
-
-Features that set LitUI apart. Not expected, but valued.
+Features that set LitUI Input apart from alternatives.
 
 | Feature | Value Proposition | Complexity | Dependencies | Notes |
 |---------|-------------------|------------|--------------|-------|
-| **WCAG contrast validation** | Real-time accessibility feedback. Shows if color combinations meet AA/AAA standards. Competitors rarely include this. | Medium | Color math library (oklch contrast calculation) | oklch makes perceptual contrast easier to calculate. Show pass/fail badges next to color pairs. |
-| **Component-specific token preview** | Show how token changes affect each component (Button, Dialog) separately. Beyond just "see a demo page." | Medium | Component registry, isolated previews | Existing docs site has component pages. Leverage that structure. |
-| **Shareable theme URL** | Encode entire theme in URL. User can share link, recipient sees exact theme. Like codepen but for themes. | Medium | URL encoding/decoding, state hydration | Base64 + compression for compact URLs. Enables collaboration and showcasing. |
-| **Animation/transition customization** | Control transition duration, easing. Most configurators ignore animation tokens. | Low | Add `--ui-*-transition-*` tokens | Small addition, meaningful personalization. |
-| **Shadow depth customization** | Control shadow intensity/spread. Visual depth is often overlooked in configurators. | Low | `--shadow-*` tokens already exist | Expose existing tokens in UI. |
-| **Typography scale preview** | Show how font size/weight changes affect hierarchy. Visualize heading vs body relationships. | Medium | Font loading, scale preview | Google Fonts integration for custom font preview. |
-| **Export to multiple formats** | CSS variables (default), JSON tokens, Tailwind v4 @theme block. Different teams have different needs. | Low | Template generation | JSON export enables design tool integration. |
-| **Undo/redo history** | Let users experiment freely. Reduces anxiety about "breaking" the theme. | Medium | State history stack | React/Lit state management pattern. 10-20 step history sufficient. |
+| **Password visibility toggle** | Built-in eye icon without extra component | MEDIUM | None | Accessible button with `aria-pressed`, `aria-controls` |
+| **Search clear button** | "X" icon to clear search input | LOW | None | Appears when value is non-empty, keyboard accessible |
+| **Prefix/suffix slots** | Icons, text, or buttons alongside input | MEDIUM | None | Named slots: `prefix`, `suffix` - similar to shadcn's InputGroup |
+| **Character counter** | Visual count for maxlength fields | LOW | None | `${current}/${max}` display, `aria-describedby` for screen readers |
+| **Inline validation timing** | Validate on blur, not on every keystroke | LOW | None | Follows UX best practice: validate after field completion |
+| **Custom validation messages** | Override default browser messages | LOW | None | `validationMessage` property, localization-friendly |
+| **OKLCH-based theming** | Consistent with existing theme system | LOW | Existing system | `--ui-input-*` CSS custom properties |
+| **Auto-contrast text** | Text color adjusts based on background | LOW | Existing pattern | Copy Button's `oklch(from var(--_bg) ...)` technique |
+| **Loading state** | Spinner during async validation | MEDIUM | None | `loading` property, pulsing dots matching Button |
+
+#### Input Types to Support
+
+Based on shadcn, MUI, and Chakra UI patterns:
+
+| Type | Built-in Validation | Mobile Keyboard | Special Features | Priority |
+|------|---------------------|-----------------|------------------|----------|
+| **text** | None | Standard | Default type | P0 |
+| **email** | Format validation | Email keyboard (@, .com) | `multiple` attribute support | P0 |
+| **password** | None | Standard (hidden) | Visibility toggle slot | P0 |
+| **number** | min/max/step | Numeric keypad | Spinner controls optional | P0 |
+| **search** | None | Search keyboard | Clear button, rounded style option | P0 |
+| **tel** | None (varies by country) | Phone keypad | Pattern attribute for format | P1 |
+| **url** | Format validation | URL keyboard | Protocol prefix hint | P1 |
+
+**Note:** MUI recommends against `type="number"` due to UX issues (allows e, +, -, .). Consider a separate NumberInput component later for robust number handling.
 
 ---
 
-### Anti-Features for Theme Configurator
+### Textarea Component Features
 
-Features to explicitly NOT build. Common mistakes in this domain.
+#### Table Stakes (Must Have)
 
-| Anti-Feature | Why Avoid | What to Do Instead |
-|--------------|-----------|-------------------|
-| **Runtime theme switching** | v3.0 is explicitly build-time customization. Runtime adds JS overhead, SSR complexity, and conflicts with Tailwind's build-time approach. | Generate static CSS file. Runtime switching is v3.1+ if ever. Project explicitly deferred this. |
-| **Hundreds of individual component tokens** | Creates overwhelming UI. IBM Carbon's approach (hundreds of variables) makes theming "tedious" and "encyclopedic." Users don't want to configure 50 button properties individually. | Use semantic layering: primitives -> semantic -> component. Expose semantic layer (10-20 tokens), components inherit automatically. |
-| **Color picker for every shade** | Generating full 11-step color palettes manually is error-prone. Users pick wrong shades, break consistency. | Accept 1-2 reference colors, auto-generate palette algorithmically. Like Radix's custom color tool. |
-| **Server-side theme storage** | Project constraint explicitly rules this out. Adds backend complexity, auth requirements, storage costs. | URL-encoded params for sharing. LocalStorage for persistence. CLI parameter for installation. |
-| **CSS-in-JS output** | Project constraint: conflicts with Tailwind approach. Runtime overhead, SSR complications. | CSS custom properties only. Works everywhere, zero runtime. |
-| **Real-time font loading from arbitrary URLs** | Security risk (XSS via font injection), performance unpredictability, licensing issues. | Curated Google Fonts list. Validate font names server-side. |
-| **Design token file format (W3C DTCG)** | Adds complexity for interoperability that most users won't need. Over-engineering for current scope. | Simple CSS output. JSON as secondary export. DTCG format can be added later if demand exists. |
-| **Full Figma/design tool sync** | Massive scope creep. Requires Figma plugin development, token sync infrastructure. | One-way export (configurator -> CSS/JSON). Users can manually import into Figma if needed. |
-| **AI-generated themes** | Trendy but unreliable. AI themes often lack coherence, accessibility issues. Adds API dependency. | Curated presets by humans. User customization with guardrails (contrast warnings). |
+Features users expect from any modern Textarea component.
 
----
+| Feature | Why Expected | Complexity | Dependencies | Notes |
+|---------|--------------|------------|--------------|-------|
+| **Multi-line text input** | Core purpose of textarea | LOW | None | Native `<textarea>` internally |
+| **Rows/cols control** | Standard HTML attributes | LOW | None | `rows` property with sensible default (3-4) |
+| **Resize control** | Users expect to resize | LOW | None | `resize` property: 'none', 'vertical', 'horizontal', 'both' |
+| **Placeholder text** | Standard expectation | LOW | None | Same handling as Input |
+| **Disabled state** | Form elements need disable capability | LOW | Existing pattern | Match Input's disabled styling |
+| **Size variants** | Consistent sizing system | LOW | Existing pattern | sm/md/lg matching Input |
+| **Focus ring styling** | Visual feedback | LOW | Core styles | Match Input's focus ring |
+| **Error state visual** | Invalid input feedback | LOW | None | Match Input's error styling |
+| **Form participation** | Native form submission | MEDIUM | @lit-ui/core | `setFormValue()` with textarea value |
+| **Native validation** | required, minlength, maxlength | MEDIUM | None | Standard HTML5 validation |
+| **Label association** | Accessibility | LOW | None | Same pattern as Input |
+| **Value binding** | Two-way data flow | LOW | None | `value` property, events |
+| **Dark mode support** | Expected in 2026 | LOW | Existing system | `:host-context(.dark)` |
+| **SSR compatibility** | Framework support | MEDIUM | @lit-ui/ssr | Same pattern as Input |
 
-### Theme Configurator Feature Dependencies
+#### Differentiators (Competitive Advantage)
 
-```
-Existing Features (v1-v2)
-    |
-    v
-Token System (tailwind.css)  <--- Components already consume these
-    |
-    +---> Visual Configurator Page (new)
-    |         |
-    |         +---> Live Preview (requires component rendering)
-    |         |
-    |         +---> Export UI (generates CSS/JSON)
-    |         |
-    |         +---> Shareable URL (encodes config)
-    |
-    +---> CLI Token Parameter (new)
-              |
-              +---> Token CSS Generation (string templating)
-              |
-              +---> lit-ui-tokens.css output
-
-Dependencies Flow:
-1. Token system exists (done)
-2. Configurator UI built on docs site
-3. CLI extended to accept token config
-4. Components already work (no changes needed if tokens structured correctly)
-```
+| Feature | Value Proposition | Complexity | Dependencies | Notes |
+|---------|-------------------|------------|--------------|-------|
+| **Auto-resize** | Textarea grows with content | MEDIUM | None | CSS `field-sizing: content` with fallback for Safari/Firefox |
+| **Character counter** | Visual count with limit | LOW | None | `${current}/${max}` display, `aria-describedby` |
+| **Min/max rows** | Auto-resize with bounds | MEDIUM | None | `minRows`, `maxRows` properties for controlled growth |
+| **Submission on Enter** | Optional behavior for chat-like UIs | LOW | None | `submitOnEnter` property, Shift+Enter for newline |
 
 ---
 
-### v3.0 MVP Recommendation
+### Validation System Features
 
-For MVP (v3.0), prioritize:
+#### Table Stakes (Must Have)
 
-#### Must Ship
-1. **Live preview** - Non-negotiable for a visual configurator
-2. **Color customization** (primary, secondary, destructive, background, foreground) - Core use case
-3. **Light/dark mode editing** - Expected behavior
-4. **Border radius control** - High visual impact, low effort
-5. **Copy-paste CSS output** - Zero-friction adoption
-6. **3-4 preset themes** - Quick starting points
-7. **CLI `--tokens` parameter** - Accepts encoded config string
-8. **`lit-ui-tokens.css` generation** - The deliverable
+Features for the validation system shared by Input and Textarea.
 
-#### Should Ship (if time permits)
-1. **Shareable theme URL** - Competitive advantage
-2. **WCAG contrast indicators** - Accessibility credibility
-3. **JSON export** - Enables design tool workflows
+| Feature | Description | Complexity | Notes |
+|---------|-------------|------------|-------|
+| **Required validation** | Field must have value | LOW | `valueMissing` validity state |
+| **Pattern validation** | Regex pattern matching | LOW | `patternMismatch` validity state |
+| **Length validation** | min/max character limits | LOW | `tooShort`, `tooLong` validity states |
+| **Email format validation** | Built-in for email type | LOW | `typeMismatch` validity state |
+| **ValidityState exposure** | Access to validation state | LOW | `validity` property returning ValidityState |
+| **Validation message** | Accessible error text | LOW | `validationMessage` property |
+| **checkValidity()** | Programmatic validation check | LOW | Returns boolean, doesn't show UI |
+| **reportValidity()** | Show validation UI | LOW | Returns boolean, shows browser UI |
+| **setCustomValidity()** | Custom error messages | LOW | Allows localization, custom rules |
+| **Form-level validation** | Works with form's `novalidate` | LOW | Respects form's validation settings |
 
-#### Defer to v3.1+
-- Typography customization (font family, scale)
-- Animation tokens
-- Shadow customization
-- Undo/redo history
-- Component-specific previews
+#### Differentiators
 
----
-
-### Theme Configurator Complexity Notes
-
-#### Low Complexity (1-2 days each)
-- **Preset themes**: Curated CSS blocks, button to apply
-- **Border radius slider**: Single value, immediate preview
-- **Copy button**: Clipboard API, straightforward
-- **CSS output generation**: String template with current values
-- **JSON export**: Object serialization
-
-#### Medium Complexity (3-5 days each)
-- **Live preview system**: React/Lit state management, CSS variable updates on root
-- **Color picker with oklch**: Requires oklch <-> hex conversion, color space math
-- **CLI token parameter**: URL encoding/decoding, parameter parsing, file generation
-- **WCAG contrast validation**: Color contrast ratio calculation, AA/AAA thresholds
-- **Shareable URL**: Compression, encoding, URL length limits, hydration on load
-
-#### High Complexity (1+ week)
-- **Full typography preview with custom fonts**: Google Fonts API integration, font loading states, fallback handling
-- **Undo/redo system**: State history management, serialization of theme states
+| Feature | Value Proposition | Complexity | Notes |
+|---------|-------------------|------------|-------|
+| **Async validation** | Server-side validation support | MEDIUM | Return Promise from custom validator |
+| **Validation timing control** | Choose when to validate | LOW | `validateOn`: 'blur', 'input', 'submit' |
+| **Custom validators** | User-defined validation functions | MEDIUM | `validator` property accepting function |
 
 ---
 
-### Competitive Analysis: Theme Configurators
+### Visual States Feature Matrix
 
-| Tool | Strengths | Weaknesses | LitUI Opportunity |
-|------|-----------|------------|-------------------|
-| **shadcn/ui Themes** | Clean UI, preset themes, copy-paste | Limited customization (presets only), no live editing | Full live configurator with same simplicity |
-| **tweakcn** | Live editing, Tailwind v4 support, real-time code | Third-party (not official), complex UI | First-party experience, CLI integration |
-| **Radix Themes** | Theme component props, token access | React-only, not visual configurator | Framework-agnostic, visual approach |
-| **Designsystemet** | CLI token generation, comprehensive | Complex setup, Norwegian-focused | Simpler CLI, broader audience |
-| **Material Theme Builder** | Figma integration, comprehensive tokens | Google ecosystem lock-in, complexity | Lightweight, framework-agnostic |
+Comprehensive visual states for Input and Textarea:
 
----
-
-### Token Structure Recommendation
-
-The existing token structure in `tailwind.css` follows best practices. Validate and maintain:
-
-```css
-/* Primitives - raw values (don't expose in configurator) */
---color-brand-500: oklch(0.62 0.18 250);
-
-/* Semantic - meaningful names (EXPOSE in configurator) */
---color-primary: var(--color-brand-500);
---color-primary-foreground: white;
-
-/* Component - specific usage (auto-derived, don't expose) */
---ui-button-primary-bg: var(--color-primary);
-```
-
-#### Tokens to Expose in Configurator
-- `--color-primary` / `--color-primary-foreground`
-- `--color-secondary` / `--color-secondary-foreground`
-- `--color-destructive` / `--color-destructive-foreground`
-- `--color-background` / `--color-foreground`
-- `--color-muted` / `--color-muted-foreground`
-- `--color-accent` / `--color-accent-foreground`
-- `--color-border` / `--color-input` / `--color-ring`
-- `--radius-*` (single control, applies to all)
-
-#### URL Encoding Strategy
-```
-Base config object:
-{
-  primary: "oklch(0.62 0.18 250)",
-  primaryFg: "white",
-  ...
-}
-
-Encode: JSON.stringify -> gzip -> base64url
-Result: ?theme=H4sIAAAAA...
-
-CLI accepts: npx lit-ui add button --tokens=H4sIAAAAA...
-```
+| State | Border | Background | Text | Icon | Notes |
+|-------|--------|------------|------|------|-------|
+| **Default** | `--ui-input-border` | `--ui-input-bg` | `--ui-input-text` | None | Resting state |
+| **Focus** | Ring inset | Same | Same | None | Inner glow matching Button |
+| **Hover** | Slightly darker | Same | Same | None | Subtle feedback |
+| **Disabled** | Muted | Muted | Muted | None | `opacity: 0.5`, `cursor: not-allowed` |
+| **Read-only** | Same | Slightly muted | Same | None | Focusable but not editable |
+| **Error** | `--ui-color-destructive` | Same | Same | Error icon optional | `aria-invalid="true"` |
+| **Success** | `--ui-color-success` | Same | Same | Check icon optional | Post-validation success |
+| **Loading** | Same | Same | Same | Spinner | During async validation |
 
 ---
 
-## Feature Dependencies
+### Form Inputs Anti-Features (Do NOT Build)
 
-```
-[Accessibility]
-    |-- requires --> [Keyboard Navigation]
-    |-- requires --> [Focus Management]
-    |-- requires --> [ARIA Attributes]
+Features to deliberately avoid for Input and Textarea.
 
-[Dialog Component]
-    |-- requires --> [Focus Management] (focus trap)
-    |-- requires --> [Portal/Overlay System]
-    |-- requires --> [Keyboard Navigation] (Escape to close)
-
-[Button Component]
-    |-- requires --> [Variant System]
-    |-- requires --> [Size System]
-    |-- requires --> [Loading State]
-    |-- requires --> [Disabled State]
-
-[Tailwind Integration]
-    |-- requires --> [CSS Custom Properties API]
-    |-- conflicts --> [Deep Shadow DOM] (style isolation breaks Tailwind)
-
-[Copy-Source CLI]
-    |-- requires --> [Flat File Structure]
-    |-- requires --> [Minimal Dependencies]
-    |-- enhances --> [AI-Friendly Code]
-
-[NPM Package Mode]
-    |-- parallel to --> [Copy-Source CLI] (both can coexist)
-
-[Dark/Light Theme]
-    |-- requires --> [CSS Custom Properties API]
-    |-- requires --> [prefers-color-scheme Support]
-
-[SSR Compatibility]
-    |-- requires --> [Declarative Shadow DOM]
-    |-- requires --> [Hydration Strategy]
-```
-
-### v2.0 NPM + SSR Dependencies on v1.0
-
-How v2.0 features relate to existing v1.0 implementation:
-
-```
-Existing v1.0 features:
-  [TailwindElement base class]
-  [Button component]
-  [Dialog component]
-  [CLI tool]
-
-NPM features build on:
-  TailwindElement  -->  @lit-ui/core package
-  Button           -->  @lit-ui/button package (depends on core)
-  Dialog           -->  @lit-ui/dialog package (depends on core)
-  CLI              -->  Enhanced to support npm install mode
-
-SSR features require:
-  Components       -->  Review for SSR compatibility (no DOM in constructors)
-  TailwindElement  -->  Ensure constructable stylesheets work in SSR
-  Button           -->  Should work (no DOM manipulation)
-  Dialog           -->  May need review (uses native <dialog>, showModal())
-```
-
-### Package Dependency Flow
-
-```
-@lit-ui/core (TailwindElement, design tokens, types)
-    ^
-    |
-    +-- @lit-ui/button (Button component)
-    |
-    +-- @lit-ui/dialog (Dialog component)
-    |
-    +-- @lit-ui/react (React wrappers - optional)
-```
+| Anti-Feature | Why Requested | Why Problematic | What to Do Instead |
+|--------------|---------------|-----------------|-------------------|
+| **Integrated label component** | "Convenience" | Breaks composition, forces specific layout | Use separate Label component or slot, let users compose |
+| **Built-in form library integration** | "Works with React Hook Form / Formik" | Framework-specific, maintenance burden | Expose standard events and validity API; works with any library |
+| **Automatic error message display** | "Show errors automatically" | Opinionated about placement, styling | Emit validation events; let users place error messages |
+| **Input masking built-in** | "Format phone numbers, dates" | Complex, many edge cases, better as separate utility | Recommend use-mask-input or similar; keep component simple |
+| **Debounced validation** | "Don't validate on every keystroke" | Over-engineering; blur validation is simpler | Validate on blur by default; users can debounce in their handlers |
+| **Rich text / markdown support** | "Textarea should support formatting" | Completely different component; massive scope creep | Build separate RichTextEditor component if needed |
+| **File input styling** | "Style file inputs consistently" | File inputs are notoriously hard to style consistently | Keep `type="file"` as-is or build separate FileUpload component |
+| **Date/time input types** | "Support date, time, datetime-local" | Browser support varies wildly; better as DatePicker component | Defer to dedicated DatePicker component with consistent UX |
+| **Color input type** | "Support color picker" | Very different UX; better as ColorPicker component | Defer to dedicated ColorPicker component |
+| **Range input type** | "Support sliders" | Different component entirely | Build separate Slider component |
+| **Floating labels** | "Material Design style" | Animation complexity, accessibility concerns, placeholder disappears | Use fixed labels above input; clearer for users |
+| **Input icons library** | "Built-in icons" | Bundle size, icon preference varies | Users provide icons via slots; document common patterns |
 
 ---
 
-## MVP Definition
+### Feature Dependencies on Existing Code
 
-### Launch With (v1) - SHIPPED
-
-Minimum viable product to validate the concept.
-
-- [x] **Button Component** - most basic UI primitive; validates the architecture
-  - Variants: primary, secondary, outline, ghost, destructive
-  - Sizes: sm, md, lg
-  - States: default, hover, focus, active, disabled, loading
-  - Accessibility: keyboard activation, focus ring, aria-disabled support
-
-- [x] **Dialog Component** - validates complex patterns (portals, focus trap, a11y)
-  - Open/close control (controlled component)
-  - Focus trap implementation
-  - Escape to close
-  - Click-outside to close (optional)
-  - Title + description with aria-labelledby/describedby
-  - Animations (enter/exit with reduced-motion support)
-
-- [x] **CLI Tool** - validates distribution model
-  - `npx lit-ui init` - setup project config
-  - `npx lit-ui add button` - copy source mode
-  - Config file for paths, styling preferences
-
-- [x] **Documentation Site** - validates that people can use it
-  - Installation guide (all frameworks)
-  - Component API reference
-  - Live examples
-  - Accessibility notes
-
-- [x] **Tailwind Integration** - validates styling approach
-  - Working solution for Shadow DOM + Tailwind
-  - CSS custom properties for theming
-  - Example with Tailwind v4
-
-### v2.0 MVP: NPM + SSR - SHIPPED
-
-Features to add for v2.0 milestone.
-
-#### Phase 1: NPM Packages (Priority: HIGH)
-
-Must-have features:
-1. Monorepo setup with workspace packages
-2. `@lit-ui/core` with TailwindElement and types
-3. `@lit-ui/button` and `@lit-ui/dialog` packages
-4. Proper `exports`, `types`, `sideEffects` in package.json
-5. TypeScript declarations generated
-6. Custom Elements Manifest (`custom-elements.json`)
-
-#### Phase 2: SSR Support (Priority: HIGH)
-
-Must-have features:
-1. Verify components work in Node.js (no DOM in constructors)
-2. Add `@lit-labs/ssr` as optional peer dependency
-3. Document hydration setup requirements
-4. Provide example integrations (Next.js, basic Node)
-
-#### Phase 3: Enhanced DX (Priority: MEDIUM)
-
-Nice-to-have features:
-1. `@lit-ui/react` wrappers package
-2. Bundle size CI checks
-3. Framework-specific SSR integration packages
-
-### v3.0 MVP: Theme Customization - ACTIVE
-
-Features to add for v3.0 milestone.
-
-#### Phase 1: Visual Configurator (Priority: HIGH)
-
-Must-have features:
-1. Configurator page on docs site
-2. Live preview of token changes
-3. Color pickers for semantic tokens (primary, secondary, destructive)
-4. Light/dark mode simultaneous editing
-5. Border radius control
-6. Copy-paste CSS output
-7. 3-4 preset themes
-
-#### Phase 2: CLI Integration (Priority: HIGH)
-
-Must-have features:
-1. `--tokens` parameter accepting encoded config
-2. Token decoding and validation
-3. `lit-ui-tokens.css` file generation
-4. Integration with both `init` and `add` commands
-
-#### Phase 3: Enhanced Features (Priority: MEDIUM)
-
-Nice-to-have features:
-1. Shareable theme URL
-2. WCAG contrast validation
-3. JSON export format
-
-### Add After Validation (v1.x / v2.x)
-
-Features to add once core is working.
-
-- [ ] **Input Component** - trigger: feedback that forms are common use case
-- [ ] **Select/Dropdown** - trigger: composite keyboard navigation validated in Dialog
-- [ ] **Tooltip** - trigger: low complexity, high demand
-- [ ] **Checkbox/Radio** - trigger: form use cases validated
-- [ ] **Card Component** - trigger: layout primitive requests
-- [ ] **More Themes** - trigger: customization requests beyond light/dark
-
-### Future Consideration (v3+)
-
-Features to defer until product-market fit is established.
-
-- [ ] **Data Table** - defer: complex, specialized libraries do it better
-- [ ] **Date Picker** - defer: calendar logic is complex; use temporal libraries
-- [ ] **File Upload** - defer: highly app-specific
-- [ ] **Rich Text Editor** - defer: massive complexity
-- [ ] **Charts** - defer: Chart.js, D3 exist
-- [ ] **Figma Plugin** - defer: requires design tooling expertise
-- [ ] **Headless Mode** - defer: doubles maintenance burden
-- [ ] **Animation Library** - defer: CSS transitions sufficient for v1
+| New Feature | Depends On | Already Exists? | Notes |
+|-------------|------------|-----------------|-------|
+| ElementInternals pattern | Button implementation | YES | Copy `attachInternals()` pattern with `isServer` guard |
+| Size variants (sm/md/lg) | Core design tokens | YES | Use existing `--ui-*-padding-*` pattern |
+| Focus ring styling | Button focus style | YES | Copy `box-shadow: inset 0 0 0 2px` pattern |
+| Dark mode | `:host-context(.dark)` pattern | YES | Copy from Button/Dialog |
+| Error state colors | Theme system | YES | Use existing `--ui-color-destructive` |
+| Loading spinner | Button spinner | YES | Copy `.spinner` CSS from Button |
+| Tailwind integration | TailwindElement base class | YES | Extend `TailwindElement` from @lit-ui/core |
+| SSR support | `isServer` guard pattern | YES | Same pattern as Button's `attachInternals()` |
+| CSS custom properties | Theme system | YES | Follow `--ui-input-*` naming convention |
 
 ---
 
-## v2.0 Complexity Summary
+### MVP Feature Scope for v4.0
 
-| Category | Low Complexity | Medium Complexity | High Complexity |
-|----------|----------------|-------------------|-----------------|
-| NPM | ESM exports, types, sideEffects, peer deps | Subpath exports, CEM, monorepo | - |
-| SSR | Hydration docs, polyfill guidance | DSD output, component review | Framework integrations |
+Based on research, prioritized features for v4.0 MVP:
 
-**Overall Assessment:** NPM packaging is largely straightforward with established patterns. SSR support has clear Lit ecosystem tools but requires careful component review and documentation.
+#### Phase 1: Core Input
 
----
+| Feature | Complexity | Status |
+|---------|------------|--------|
+| Input component with text, email, password, number, search types | MEDIUM | To build |
+| Size variants (sm/md/lg) | LOW | To build |
+| Disabled, read-only states | LOW | To build |
+| Focus ring, error state visuals | LOW | To build |
+| Form participation (ElementInternals) | MEDIUM | To build |
+| Native validation (required, minlength, maxlength, pattern) | MEDIUM | To build |
+| Value binding, events | LOW | To build |
+| Dark mode, SSR support | LOW | To build |
 
-## Feature Prioritization Matrix
+#### Phase 2: Core Textarea
 
-| Feature | User Value | Implementation Cost | Priority |
-|---------|------------|---------------------|----------|
-| Button Component | HIGH | LOW | P1 - DONE |
-| Dialog Component | HIGH | MEDIUM | P1 - DONE |
-| Accessibility (WCAG 2.1 AA) | HIGH | HIGH | P1 - DONE |
-| CLI Copy-Source Mode | HIGH | MEDIUM | P1 - DONE |
-| Tailwind Integration | HIGH | HIGH | P1 - DONE |
-| TypeScript Support | HIGH | LOW | P1 - DONE |
-| Dark/Light Theme | MEDIUM | LOW | P1 - DONE |
-| Documentation | HIGH | MEDIUM | P1 - DONE |
-| Framework Agnostic Verification | HIGH | MEDIUM | P1 - DONE |
-| NPM Package Distribution | HIGH | MEDIUM | P1 - v2.0 DONE |
-| SSR Compatibility | HIGH | MEDIUM | P1 - v2.0 DONE |
-| Custom Elements Manifest | MEDIUM | LOW | P1 - v2.0 |
-| **Visual Theme Configurator** | HIGH | MEDIUM | **P1 - v3.0** |
-| **CLI Token Parameter** | HIGH | MEDIUM | **P1 - v3.0** |
-| **Token CSS Generation** | HIGH | LOW | **P1 - v3.0** |
-| **Preset Themes** | MEDIUM | LOW | **P1 - v3.0** |
-| **Shareable Theme URL** | MEDIUM | MEDIUM | **P2 - v3.0** |
-| **WCAG Contrast Validation** | MEDIUM | MEDIUM | **P2 - v3.0** |
-| Input Component | HIGH | LOW | P2 |
-| Select/Dropdown | HIGH | HIGH | P2 |
-| Loading States | MEDIUM | LOW | P2 |
-| Animation System | MEDIUM | MEDIUM | P2 |
-| React Wrappers Package | MEDIUM | MEDIUM | P2 |
-| Figma Kit | LOW | HIGH | P3 |
-| Headless Mode | MEDIUM | HIGH | P3 |
+| Feature | Complexity | Status |
+|---------|------------|--------|
+| Textarea component | MEDIUM | To build |
+| Rows control, resize property | LOW | To build |
+| Same states as Input | LOW | To build |
+| Form participation | MEDIUM | To build |
+| Native validation | MEDIUM | To build |
 
-**Priority key:**
-- P1: Must have for launch / current milestone
-- P2: Should have, add when possible
-- P3: Nice to have, future consideration
+#### Phase 3: Differentiators (Optional for MVP)
+
+| Feature | Complexity | Status |
+|---------|------------|--------|
+| Password visibility toggle | MEDIUM | Optional |
+| Search clear button | LOW | Optional |
+| Prefix/suffix slots | MEDIUM | Optional |
+| Character counter | LOW | Optional |
+| Auto-resize textarea | MEDIUM | Optional |
 
 ---
 
-## Competitor Feature Analysis
+### Sources
 
-| Feature | ShadCN/UI | Shoelace/Web Awesome | Radix UI | Our Approach (lit-ui) |
-|---------|-----------|----------------------|----------|----------------------|
-| **Framework Support** | React only | Framework agnostic (Web Components) | React only | Framework agnostic (Web Components + Lit) |
-| **Distribution** | Copy-paste + CLI | NPM package | NPM package | Copy-paste CLI + NPM (both) |
-| **Styling** | Tailwind + CSS vars | CSS vars + ::part() | Unstyled (headless) | Tailwind-compatible + CSS vars |
-| **Accessibility** | Radix primitives (excellent) | Built-in (good) | Excellent (core focus) | Built-in WCAG 2.1 AA |
-| **Component Count** | 50+ | 60+ | 30+ primitives | Start with 2, grow based on demand |
-| **Customization** | Full source ownership | CSS custom properties | Full control (unstyled) | Source ownership OR CSS vars |
-| **TypeScript** | Full support | Full support | Full support | Full support |
-| **SSR** | Next.js focused | Requires setup | React-focused | Declarative Shadow DOM (v2.0) |
-| **Dark Mode** | Built-in | Built-in | User handles | Built-in with prefers-color-scheme |
-| **Bundle Size** | Zero runtime (copy-paste) | ~60KB for all | Small per-component | Minimal (Lit ~5KB + component) |
-| **NPM Packages** | Single package (copy-paste focus) | Monorepo scoped packages | Single package | Monorepo scoped packages (v2.0) |
-| **Theme Configurator** | Preset picker, copy CSS | None | Theme component props | Visual configurator + CLI integration (v3.0) |
+**shadcn/ui Documentation:**
+- [Input Component](https://ui.shadcn.com/docs/components/input)
+- [Textarea Component](https://ui.shadcn.com/docs/components/textarea)
+- [Form Integration](https://ui.shadcn.com/docs/components/form)
 
-### Competitive Positioning
+**Radix UI Primitives:**
+- [Form Component](https://www.radix-ui.com/primitives/docs/components/form)
 
-**vs. ShadCN:** We offer framework agnosticism. ShadCN is excellent but React-only. Teams using Vue, Svelte, or multiple frameworks need our solution.
+**MUI (Material UI):**
+- [TextField Component](https://mui.com/material-ui/react-text-field/)
+- [TextField API](https://mui.com/material-ui/api/text-field/)
 
-**vs. Shoelace/Web Awesome:** We offer the copy-source model. Shoelace is NPM-only; users can't easily customize. We offer both modes.
+**Chakra UI:**
+- [Input Component](https://chakra-ui.com/docs/components/input)
 
-**vs. Radix:** We offer styled defaults. Radix is headless-only; great for design teams but requires significant styling work. We provide styled components with customization escape hatches.
+**Headless UI:**
+- [Input Component](https://headlessui.com/react/input)
 
-**v3.0 Theme Configurator Positioning:** We offer a first-party visual configurator with CLI integration. shadcn has only preset themes (no live editing). Third-party tools like tweakcn exist but aren't integrated with the CLI. Our approach combines visual configuration with seamless CLI workflow.
+**MDN Web Docs:**
+- [ElementInternals](https://developer.mozilla.org/en-US/docs/Web/API/ElementInternals)
+- [ElementInternals.setValidity()](https://developer.mozilla.org/en-US/docs/Web/API/ElementInternals/setValidity)
+- [ValidityState](https://developer.mozilla.org/en-US/docs/Web/API/ValidityState)
+- [HTML Input Types](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input)
 
-**Unique Value Proposition:** Framework-agnostic components with ShadCN-style copy-source distribution, Tailwind compatibility, AND NPM package mode with SSR support, AND integrated theme configurator with CLI.
+**Web Component Form Participation:**
+- [Custom Forms with Web Components and ElementInternals (DEV)](https://dev.to/stuffbreaker/custom-forms-with-web-components-and-elementinternals-4jaj)
+- [ElementInternals and Form-Associated Custom Elements (WebKit)](https://webkit.org/blog/13711/elementinternals-and-form-associated-custom-elements/)
+- [Creating Custom Form Controls with ElementInternals (CSS-Tricks)](https://css-tricks.com/creating-custom-form-controls-with-elementinternals/)
+- [More Capable Form Controls (web.dev)](https://web.dev/articles/more-capable-form-controls)
 
----
+**UX Best Practices:**
+- [Form Validation UX (Smashing Magazine)](https://www.smashingmagazine.com/2022/09/inline-validation-web-forms-ux/)
+- [Inline Form Validation (Baymard Institute)](https://baymard.com/blog/inline-form-validation)
+- [Sign-in Form Best Practices (web.dev)](https://web.dev/articles/sign-in-form-best-practices)
+- [12 Form UI/UX Design Best Practices 2026](https://www.designstudiouiux.com/blog/form-ux-design-best-practices/)
 
-## Sources
+**Accessibility:**
+- [Accessible Password Reveal Input (Make Things Accessible)](https://www.makethingsaccessible.com/guides/make-an-accessible-password-reveal-input/)
+- [Password Forms Accessibility (Medium)](https://medium.com/kiipco/password-creation-3-ways-to-make-it-accessible-bc8f2b53b7ee)
 
-### v1.0 Component Library Research
-- [ShadCN/UI Official Documentation](https://ui.shadcn.com/docs) - Copy-paste model, CLI architecture
-- [Radix UI Primitives](https://www.radix-ui.com/primitives) - Accessibility patterns, headless approach
-- [Shoelace/Web Awesome](https://shoelace.style/) - Web Components with Lit, framework agnosticism
-- [Builder.io: React UI Libraries 2026](https://www.builder.io/blog/react-component-libraries-2026) - Industry expectations
-
-### Accessibility Research
-- [W3C ARIA APG: Modal Dialog Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/examples/dialog/) - Dialog accessibility requirements
-- [MDN: ARIA Dialog Role](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Roles/dialog_role) - ARIA implementation
-- [A11Y Collective: Modal Accessibility](https://www.a11y-collective.com/blog/modal-accessibility/) - Focus trap requirements
-- [MDN: aria-disabled](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Attributes/aria-disabled) - Disabled state patterns
-
-### Framework Agnostic Research
-- [AgnosticUI](https://www.agnosticui.com/) - Multi-framework component approach
-- [Zag.js](https://zagjs.com/) - Framework-agnostic state machines for UI
-- [Web Awesome Blog](https://blog.openreplay.com/framework-agnostic-ui-web-awesome/) - Web Components for framework agnosticism
-
-### Tailwind + Web Components
-- [Tailwind + Shadow DOM Discussion](https://github.com/tailwindlabs/tailwindcss/discussions/1935) - Integration challenges
-- [Web Components Tailwind Starter Kit](https://github.com/butopen/web-components-tailwind-starter-kit) - Lit + Tailwind approach
-- [DEV: Using Tailwind at runtime with web components](https://dev.to/43081j/using-tailwind-at-run-time-with-web-components-47c) - Twind approach
-
-### Design Tokens & Theming
-- [Tailwind CSS Best Practices 2025-2026](https://www.frontendtools.tech/blog/tailwind-css-best-practices-design-system-patterns) - Token organization
-- [USWDS Design Tokens](https://designsystem.digital.gov/design-tokens/) - Government standard approach
-- [The Design System Guide](https://thedesignsystem.guide/design-tokens) - Token naming conventions
-
-### v2.0 NPM Packaging
-- [Guide to package.json exports](https://hirok.io/posts/package-json-exports)
-- [Node.js Packages Documentation](https://nodejs.org/api/packages.html)
-- [Tree Shaking Guide - Webpack](https://webpack.js.org/guides/tree-shaking/)
-- [Complete Monorepo Guide 2025](https://jsdev.space/complete-monorepo-guide/)
-- [Building npm library with Web Components](https://bjerkek.medium.com/building-a-npm-library-with-web-components-using-lerna-rollup-and-jest-9f76f59348ba)
-- [How to Make Tree Shakeable Libraries](https://blog.theodo.com/2021/04/library-tree-shaking/)
-- [Creating tree-shakable library with tsup](https://dorshinar.me/posts/treeshaking-with-tsup)
-
-### v2.0 SSR and Declarative Shadow DOM
-- [Lit SSR Overview](https://lit.dev/docs/ssr/overview/)
-- [Lit SSR Client Usage](https://lit.dev/docs/ssr/client-usage/)
-- [@lit-labs/ssr NPM](https://www.npmjs.com/package/@lit-labs/ssr)
-- [@lit-labs/ssr-client NPM](https://www.npmjs.com/package/@lit-labs/ssr-client)
-- [@lit-labs/ssr-react NPM](https://www.npmjs.com/package/@lit-labs/ssr-react)
-- [Declarative Shadow DOM - web.dev](https://web.dev/articles/declarative-shadow-dom)
-- [Declarative Shadow DOM - Can I Use](https://caniuse.com/declarative-shadow-dom)
-
-### Custom Elements Manifest
-- [Custom Elements Manifest GitHub](https://github.com/webcomponents/custom-elements-manifest)
-- [Custom Elements Manifest - Open WC](https://custom-elements-manifest.open-wc.org/)
-- [The killer feature of Web Components](https://daverupert.com/2025/10/custom-elements-manifest-killer-feature/)
-
-### React Integration
-- [Lit React Documentation](https://lit.dev/docs/frameworks/react/)
-- [@lit/react NPM](https://www.npmjs.com/package/@lit/react)
-
-### TypeScript
-- [TypeScript Type Declarations](https://www.typescriptlang.org/docs/handbook/2/type-declarations.html)
-- [Building a TypeScript Library in 2025](https://dev.to/arshadyaseen/building-a-typescript-library-in-2025-2h0i)
-
-### Bundle Optimization
-- [How to Reduce JavaScript Bundle Size in 2025](https://dev.to/frontendtoolstech/how-to-reduce-javascript-bundle-size-in-2025-2n77)
-- [8 Ways to Optimize JavaScript Bundle Size](https://about.codecov.io/blog/8-ways-to-optimize-your-javascript-bundle-size/)
-
-### v3.0 Theme Configurator Research
-
-#### Official Documentation
-- [shadcn/ui Theming](https://ui.shadcn.com/docs/theming) - CSS variable structure, oklch color format
-- [shadcn/ui Themes Page](https://ui.shadcn.com/themes) - Preset themes, copy-paste pattern
-- [Radix Themes Overview](https://www.radix-ui.com/themes/docs/theme/overview) - Theme component props, token access
-- [Tailwind CSS v4 Theme Variables](https://tailwindcss.com/docs/theme) - @theme directive, CSS-first configuration
-
-#### Third-Party Tools (Competitive Reference)
-- [tweakcn](https://tweakcn.com/) - Live theme editor for shadcn/ui
-- [Shadcn Studio](https://shadcnstudio.com/theme-generator) - Advanced theme editor
-- [DesignRift](https://designrift.vercel.app/) - Radix Colors theme builder
-
-#### Design Token Best Practices
-- [The Problem with Design Tokens](https://andretorgal.com/posts/2025-01/the-problem-with-design-tokens) - Anti-patterns, complexity issues
-- [Design Tokens & Theming Scalable UI 2025](https://materialui.co/blog/design-tokens-and-theming-scalable-ui-2025) - Layering approach
-- [W3C Design Tokens Specification](https://www.w3.org/community/design-tokens/2025/10/28/design-tokens-specification-reaches-first-stable-version/) - Stable spec reference
-
-#### Accessibility
-- [WCAG Color Contrast Accessibility Guide 2025](https://www.allaccessible.org/blog/color-contrast-accessibility-wcag-guide-2025) - Contrast ratios, validation
-- [Design.dev Contrast Checker](https://design.dev/tools/color-contrast-checker/) - WCAG 2.2 and APCA support
-
----
-*Feature research for: lit-ui framework-agnostic component library*
-*v1.0 researched: 2026-01-23*
-*v2.0 NPM + SSR researched: 2026-01-24*
-*v3.0 Theme Customization researched: 2026-01-25*
+**Auto-resize Textarea:**
+- [Cleanest Trick for Autogrowing Textareas (CSS-Tricks)](https://css-tricks.com/the-cleanest-trick-for-autogrowing-textareas/)
+- [Auto-Growing Inputs and Textareas (CSS-Tricks)](https://css-tricks.com/auto-growing-inputs-textareas/)

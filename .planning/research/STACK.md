@@ -1,278 +1,355 @@
-# Stack Research
+# Technology Stack: Input & Textarea Components
 
-**Domain:** Framework-agnostic Web Component Library (Lit + Tailwind + CLI Distribution)
-**Researched:** 2026-01-23
-**Confidence:** HIGH
+**Project:** LitUI Form Inputs
+**Researched:** 2026-01-26
+**Focus:** Stack additions for Input/Textarea with built-in validation
 
-## Recommended Stack
+---
 
-### Core Technologies
+## Executive Summary
 
-| Technology | Version | Purpose | Why Recommended | Confidence |
-|------------|---------|---------|-----------------|------------|
-| Lit | ^3.3.x | Web component framework | Industry standard for web components. 5KB minified, 17% faster initial load than alternatives, supports standard decorators. Used by Adobe Photoshop web, Microsoft Store. Framework-agnostic by design. | HIGH |
-| TypeScript | ^5.7.x | Type safety and decorators | Lit 3 supports standard decorators (TC39). Better IDE support, self-documenting APIs. Required for proper Custom Elements Manifest generation. | HIGH |
-| Vite | ^6.x | Dev server and build tool | Official Lit template support. Fast HMR, native ESM. Vite 6 uses Rolldown for 70% faster builds. Library mode for npm packaging. | HIGH |
-| Tailwind CSS | ^4.1.x | Utility-first styling | No tailwind.config.js needed in v4. Native Vite plugin (@tailwindcss/vite). 5x faster builds, 100x faster incremental. Shadow DOM requires custom injection pattern. | HIGH |
+**No new dependencies required.** The existing stack provides everything needed for form-participating Input and Textarea components with built-in validation. ElementInternals (proven in Button) combined with native HTML constraint validation delivers a complete, standards-based solution.
 
-### CLI Distribution
+---
 
-| Technology | Version | Purpose | Why Recommended | Confidence |
-|------------|---------|---------|-----------------|------------|
-| Commander.js | ^14.x | CLI argument parsing | Industry standard, battle-tested. Automatic help generation. Used by shadcn CLI. | HIGH |
-| Inquirer.js | ^12.x | Interactive prompts | ESM-native (v9+). Rich prompt types: input, confirm, list, checkbox. Pairs with Commander for CLI UX. | HIGH |
-| Chalk | ^5.x | Terminal styling | ESM-native. Colored output for better CLI DX. Lightweight, no dependencies. | HIGH |
-| ora | ^8.x | Loading spinners | Visual feedback during file operations. Clean, minimal API. | MEDIUM |
-| fs-extra | ^11.x | File operations | Convenient file copy/move. ensureDir, copy, outputFile for component installation. | HIGH |
+## Existing Stack (Already Validated - DO NOT CHANGE)
 
-### Build and Bundling
+| Technology | Version | Purpose | Status |
+|------------|---------|---------|--------|
+| Lit | ^3.3.2 | Web component framework | In use |
+| Tailwind CSS | ^4.1.18 | Styling with constructable stylesheets | In use |
+| TailwindElement | @lit-ui/core | Base class with SSR support | In use |
+| ElementInternals | Native | Form participation | Proven in Button |
+| TypeScript | ^5.9.3 | Type safety | In use |
+| Vite | ^7.3.1 | Build tooling | In use |
 
-| Technology | Version | Purpose | Why Recommended | Confidence |
-|------------|---------|---------|-----------------|------------|
-| Vite Library Mode | (via Vite) | Component bundling | Rollup-based output. ESM + UMD formats. Proper externalization of dependencies. | HIGH |
-| tsup | ^8.x | CLI bundling | Zero-config TypeScript bundling. ESM + CJS dual output. esbuild under the hood for speed. Perfect for CLI tool. | HIGH |
+---
 
-### Testing
+## Stack Additions for Form Inputs
 
-| Technology | Version | Purpose | Why Recommended | Confidence |
-|------------|---------|---------|-----------------|------------|
-| @web/test-runner | ^0.19.x | Component testing | Lit's official recommendation. Real browser testing (not JSDOM). Shadow DOM and custom elements work correctly. | HIGH |
-| @web/test-runner-playwright | ^0.11.x | Browser automation | Run tests in Chromium, Firefox, WebKit. Real rendering, real clicks. | HIGH |
-| @open-wc/testing | ^4.x | Testing helpers | `fixture()` for rendering. `waitUntil()` for async. Works with any test runner. | HIGH |
-| @esm-bundle/chai | ^4.x | Assertions | ESM-native Chai. Works with Web Test Runner. | MEDIUM |
+### Required: NONE
 
-### Documentation and DX
+The native browser APIs provide everything needed:
 
-| Technology | Version | Purpose | Why Recommended | Confidence |
-|------------|---------|---------|-----------------|------------|
-| @custom-elements-manifest/analyzer | ^0.10.x | API documentation | Generates JSON manifest of component APIs. Powers Storybook autodocs, IDE autocomplete, React wrapper generation. Community standard. | HIGH |
-| Storybook | ^8.x | Component playground | @storybook/web-components-vite framework. Autodocs from Custom Elements Manifest. Visual testing, controls. | HIGH |
+| API | Purpose | Browser Support |
+|-----|---------|-----------------|
+| ElementInternals.setValidity() | Set validation state | Baseline since March 2023 |
+| ElementInternals.setFormValue() | Set form submission value | Baseline since March 2023 |
+| ElementInternals.checkValidity() | Check validity without UI | Baseline since March 2023 |
+| ElementInternals.reportValidity() | Validate and show native UI | Baseline since March 2023 |
+| ValidityState flags | Structured error reasons | Part of ElementInternals |
 
-### Tailwind + Shadow DOM Integration
+**Why native APIs are sufficient:**
 
-| Technology | Version | Purpose | Why Recommended | Confidence |
-|------------|---------|---------|-----------------|------------|
-| @tailwindcss/vite | ^4.1.x | Vite integration | Native Tailwind v4 plugin. Faster than PostCSS approach. | HIGH |
-| Custom TailwindElement base class | N/A | Shadow DOM injection | Pattern: extend LitElement, inject Tailwind via unsafeCSS. Import CSS with `?inline` suffix. | HIGH |
+1. **Zero bundle size impact** - Browser provides these APIs natively
+2. **Proven in codebase** - Button already uses `static formAssociated = true` and `attachInternals()`
+3. **Framework-agnostic** - Native APIs work everywhere
+4. **SSR compatible** - Existing `isServer` guard pattern handles this
+5. **Full validation coverage** - setValidity() supports all ValidityState flags
 
-## Installation
+---
 
-```bash
-# Core - Component Library
-npm install lit
+## Validation Implementation Pattern
 
-# Core - Styling (Tailwind v4)
-npm install tailwindcss @tailwindcss/vite
+### Strategy: Delegate to Native Input
 
-# CLI Tool Dependencies
-npm install commander inquirer chalk ora fs-extra
+Wrap a native `<input>` or `<textarea>` in Shadow DOM and sync its ValidityState to ElementInternals.
 
-# Dev - Build Tools
-npm install -D vite typescript tsup
+```typescript
+// Pattern proven in Button, extended for input validation
+static formAssociated = true;
+private internals: ElementInternals | null = null;
 
-# Dev - Testing
-npm install -D @web/test-runner @web/test-runner-playwright @open-wc/testing @esm-bundle/chai
+constructor() {
+  super();
+  if (!isServer) {
+    this.internals = this.attachInternals();
+  }
+}
 
-# Dev - Documentation
-npm install -D @custom-elements-manifest/analyzer @storybook/web-components-vite storybook
+// Sync internal input validity to ElementInternals
+private syncValidity() {
+  if (!this.internals || !this.inputEl) return;
+
+  if (this.inputEl.validity.valid) {
+    this.internals.setValidity({});
+  } else {
+    const validity = this.inputEl.validity;
+    const flags: ValidityStateFlags = {};
+
+    if (validity.valueMissing) flags.valueMissing = true;
+    else if (validity.typeMismatch) flags.typeMismatch = true;
+    else if (validity.patternMismatch) flags.patternMismatch = true;
+    else if (validity.tooShort) flags.tooShort = true;
+    else if (validity.tooLong) flags.tooLong = true;
+    else if (validity.rangeUnderflow) flags.rangeUnderflow = true;
+    else if (validity.rangeOverflow) flags.rangeOverflow = true;
+    else if (validity.stepMismatch) flags.stepMismatch = true;
+
+    this.internals.setValidity(
+      flags,
+      this.inputEl.validationMessage,
+      this.inputEl // anchor for native validation popup
+    );
+  }
+}
 ```
 
-## Project Structure
+**Key insight:** Passing the internal `<input>` as the anchor parameter positions the browser's native validation popup correctly relative to the visible input element.
 
-```
-lit-ui/
-├── packages/
-│   ├── components/          # Component source (Lit + Tailwind)
-│   │   ├── src/
-│   │   │   ├── button/
-│   │   │   ├── dialog/
-│   │   │   └── shared/
-│   │   │       └── tailwind-element.ts  # Base class with Tailwind injection
-│   │   ├── package.json
-│   │   └── vite.config.ts
-│   └── cli/                  # CLI distribution tool
-│       ├── src/
-│       │   ├── commands/
-│       │   ├── utils/
-│       │   └── index.ts
-│       ├── package.json
-│       └── tsup.config.ts
-├── .storybook/
-├── package.json              # Workspace root
-└── custom-elements-manifest.config.mjs
+---
+
+## ValidityState Flags Reference
+
+All flags supported by `setValidity()`:
+
+| Flag | Triggers When | Input Types |
+|------|---------------|-------------|
+| `valueMissing` | `required` attribute, no value | All |
+| `typeMismatch` | Invalid format | email, url |
+| `patternMismatch` | Value doesn't match `pattern` | text, search, tel, url, email, password |
+| `tooShort` | Value length < `minlength` | text, search, url, tel, email, password, textarea |
+| `tooLong` | Value length > `maxlength` | text, search, url, tel, email, password, textarea |
+| `rangeUnderflow` | Value < `min` | number, range, date, time, datetime-local, month, week |
+| `rangeOverflow` | Value > `max` | number, range, date, time, datetime-local, month, week |
+| `stepMismatch` | Value doesn't match `step` | number, range, date, time, datetime-local, month, week |
+| `badInput` | Browser can't convert input | number (non-numeric text) |
+| `customError` | `setCustomValidity()` called | All |
+
+---
+
+## Form Lifecycle Callbacks
+
+ElementInternals provides lifecycle callbacks that Input/Textarea should implement:
+
+```typescript
+// Called when containing form is reset
+formResetCallback() {
+  this.value = this.defaultValue;
+  this.syncValidity();
+}
+
+// Called when form is restored (back/forward navigation, autofill)
+formStateRestoreCallback(state: string, reason: 'restore' | 'autocomplete') {
+  this.value = state;
+  this.syncValidity();
+}
+
+// Called when form association changes
+formAssociatedCallback(form: HTMLFormElement | null) {
+  // Optional: track associated form
+}
+
+// Called when disabled state changes via fieldset
+formDisabledCallback(disabled: boolean) {
+  this.disabled = disabled;
+}
 ```
 
-## Key Patterns
+---
+
+## Attribute Forwarding
+
+Input attributes that must be forwarded to the internal `<input>`:
+
+| Component Attribute | Forwarded To | Validation Effect |
+|--------------------|--------------|-------------------|
+| `required` | input.required | Enables valueMissing |
+| `minlength` | input.minLength | Enables tooShort |
+| `maxlength` | input.maxLength | Enables tooLong |
+| `min` | input.min | Enables rangeUnderflow |
+| `max` | input.max | Enables rangeOverflow |
+| `step` | input.step | Enables stepMismatch |
+| `pattern` | input.pattern | Enables patternMismatch |
+| `type` | input.type | Affects typeMismatch |
+| `placeholder` | input.placeholder | - |
+| `autocomplete` | input.autocomplete | - |
+| `readonly` | input.readOnly | - |
+| `disabled` | input.disabled | - |
+
+---
+
+## Libraries Evaluated and Rejected
+
+### @open-wc/form-control (v1.0.0)
+
+| Factor | Assessment |
+|--------|------------|
+| Last publish | October 2023 (2+ years stale) |
+| Weekly downloads | ~1,500 (low adoption) |
+| Value add | Minimal over native APIs |
+
+**Why NOT to use:**
+- Adds abstraction without benefit - ElementInternals API is straightforward
+- Stale package - No updates in 2+ years
+- Validation pattern mismatch - Uses its own validator abstraction; we delegate to native `<input>`
+- Bundle size cost - Adds ~20KB for functionality already available natively
+
+### lit-reactive-forms
+
+**Status:** Does not exist on npm (GitHub repo only, no published package)
+
+### Custom FormControlController
+
+**Status:** NOT recommended for this milestone
+
+**Rationale:** Could be useful for many form components (select, checkbox, radio). For Input and Textarea only:
+- Validation sync logic is ~30 lines
+- Controller adds complexity without reducing it
+- Can refactor to controller later if pattern proves reusable across 3+ components
+
+---
+
+## Validation Error Display
+
+### Recommended: Native Browser Validation UI
+
+Use `reportValidity()` which triggers the browser's built-in validation popup.
+
+**Pros:**
+- Zero implementation cost
+- Accessible by default
+- Localized error messages
+- Positioning handled by browser
+
+**Cons:**
+- Cannot style the popup
+- Popup styling varies by browser
+
+### Future: Custom Validation Messages
+
+Custom-styled validation messages using CSS Anchor Positioning.
+
+**Browser support:**
+- Chrome/Edge: Supported
+- Safari 26+: Supported (September 2025)
+- Firefox: In development
+
+**If implementing custom messages later:**
+1. Use Popover API for error tooltip
+2. Use CSS `anchor-name` / `position-anchor`
+3. Polyfill available: `@oddbird/css-anchor-positioning` (v0.7.0 supports Shadow DOM)
+
+**Recommendation:** Start with native validation UI. Custom styling is a future milestone when Firefox ships support.
+
+---
+
+## CSS Custom Properties
+
+Follow established pattern from Button and Dialog:
+
+```css
+/* Input tokens (add to theme system) */
+--ui-input-bg: var(--ui-color-background);
+--ui-input-border: var(--ui-color-border);
+--ui-input-border-focus: var(--ui-color-ring);
+--ui-input-text: var(--ui-color-foreground);
+--ui-input-placeholder: var(--ui-color-muted-foreground);
+--ui-input-radius: var(--ui-radius);
+--ui-input-padding-x: 0.75rem;
+--ui-input-padding-y: 0.5rem;
+
+/* Error state */
+--ui-input-border-error: var(--ui-color-destructive);
+--ui-input-text-error: var(--ui-color-destructive);
+
+/* Textarea-specific */
+--ui-textarea-min-height: 5rem;
+--ui-textarea-resize: vertical;
+```
+
+---
+
+## Integration Points
 
 ### TailwindElement Base Class
 
 ```typescript
-// packages/components/src/shared/tailwind-element.ts
-import { LitElement, unsafeCSS, CSSResultGroup } from 'lit';
-import tailwindStyles from './tailwind.css?inline';
+import { TailwindElement, tailwindBaseStyles } from '@lit-ui/core';
 
-const tailwindSheet = unsafeCSS(tailwindStyles);
+export class Input extends TailwindElement {
+  static formAssociated = true;
 
-export class TailwindElement extends LitElement {
-  static styles: CSSResultGroup = [tailwindSheet];
-}
-
-// For components with additional styles:
-export function withTailwind(componentStyles: CSSResultGroup) {
-  return [tailwindSheet, componentStyles];
+  static override styles = [
+    ...tailwindBaseStyles,
+    css`/* component-specific styles */`
+  ];
 }
 ```
 
-### Component Structure
+### SSR Compatibility
 
 ```typescript
-// packages/components/src/button/button.ts
-import { html, css } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
-import { TailwindElement, withTailwind } from '../shared/tailwind-element.js';
+import { isServer } from 'lit';
 
-@customElement('lui-button')
-export class LuiButton extends TailwindElement {
-  static styles = withTailwind(css`
-    :host { display: inline-block; }
-  `);
-
-  @property({ type: String }) variant: 'primary' | 'secondary' = 'primary';
-  @property({ type: Boolean }) disabled = false;
-
-  render() {
-    return html`
-      <button
-        class="px-4 py-2 rounded-md ${this.variant === 'primary'
-          ? 'bg-primary text-primary-foreground'
-          : 'bg-secondary text-secondary-foreground'}"
-        ?disabled=${this.disabled}
-      >
-        <slot></slot>
-      </button>
-    `;
+constructor() {
+  super();
+  if (!isServer) {
+    this.internals = this.attachInternals();
   }
 }
 ```
 
-### Tailwind v4 Shadow DOM Fix
-
-Tailwind v4 uses `@property` rules that don't work in Shadow DOM. Apply this PostCSS plugin or vite transform:
+### Event Utilities
 
 ```typescript
-// vite.config.ts plugin to fix @property for Shadow DOM
-function tailwindShadowDomFix() {
-  return {
-    name: 'tailwind-shadow-dom-fix',
-    transform(code: string, id: string) {
-      if (id.endsWith('.css')) {
-        // Convert :root to :root, :host for Shadow DOM
-        return code.replace(/:root\s*\{/g, ':root, :host {');
-      }
-    }
-  };
-}
+import { dispatchCustomEvent } from '@lit-ui/core/utils';
+
+// Emit change event
+dispatchCustomEvent(this, 'ui-change', { value: this.value });
 ```
 
-## Alternatives Considered
+---
 
-| Recommended | Alternative | When to Use Alternative |
-|-------------|-------------|-------------------------|
-| Lit | Stencil | If you need JSX syntax or prefer Angular-style DI. Stencil is heavier (6.2MB vs 4.3MB memory). |
-| Lit | Vanilla Web Components | Only for very simple components. Lit's reactive properties save significant boilerplate. |
-| Vite | Rollup directly | Only if you need maximum control over bundling. Vite abstracts Rollup well for library mode. |
-| @web/test-runner | Vitest Browser Mode | Vitest is more popular but Web Test Runner is Lit's official recommendation. Vitest requires more setup for Shadow DOM. |
-| @web/test-runner | Playwright CT | Experimental for web components. Use playwright-ct-web community package if needed. |
-| Commander.js | yargs | If you prefer chained API. Commander is more widely used for CLIs like shadcn. |
-| tsup | unbuild | If you want unjs ecosystem integration. tsup is simpler for CLI bundling. |
+## Package Structure
 
-## What NOT to Use
-
-| Avoid | Why | Use Instead |
-|-------|-----|-------------|
-| JSDOM for testing | Shadow DOM and custom elements don't work correctly. Missing matchMedia, IntersectionObserver, ResizeObserver. | @web/test-runner with real browsers |
-| Jest with web components | JSDOM limitations. Even JSDOM 16.2+ has incomplete Shadow DOM support. | @web/test-runner or Vitest Browser Mode |
-| Tailwind v3 with Shadow DOM hacks | v4 has native Vite plugin, simpler setup, no tailwind.config.js. Worth the :root/:host fix. | Tailwind v4 with @tailwindcss/vite |
-| postcss-lit for Tailwind | Adds complexity. Vite's `?inline` CSS imports are cleaner. | Native Vite CSS handling with ?inline |
-| Disabling Shadow DOM for Tailwind | Defeats web component encapsulation. Components become non-portable. | TailwindElement pattern with unsafeCSS |
-| Webpack | Slower builds, more configuration. Vite is the modern standard for Lit. | Vite |
-| Rollup directly for dev | No HMR, no dev server. Vite wraps Rollup for better DX. | Vite (uses Rollup for production) |
-| npm link for CLI testing | Fragile, symlink issues. Use npm pack or direct execution. | `npx tsx ./packages/cli/src/index.ts` |
-
-## Version Compatibility
-
-| Package A | Compatible With | Notes |
-|-----------|-----------------|-------|
-| lit@3.x | TypeScript 5.x | Requires `useDefineForClassFields: false` in tsconfig for decorators |
-| lit@3.x | Vite 5.x/6.x | Official template: `npm create vite@latest -- --template lit-ts` |
-| tailwindcss@4.x | @tailwindcss/vite@4.x | Must match major versions |
-| @storybook/web-components-vite@8.x | Lit 3.x | Updated for Lit 3 support |
-| @custom-elements-manifest/analyzer@0.10.x | Lit 3.x | Has built-in Lit plugin |
-
-## TypeScript Configuration
-
-```json
-// tsconfig.json for Lit 3 + decorators
-{
-  "compilerOptions": {
-    "target": "ES2021",
-    "module": "ESNext",
-    "moduleResolution": "bundler",
-    "experimentalDecorators": true,
-    "useDefineForClassFields": false,
-    "declaration": true,
-    "strict": true,
-    "noEmit": true,
-    "isolatedModules": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true
-  }
-}
+```
+packages/input/
+  package.json        # peer deps: lit, @lit-ui/core
+  src/
+    input.ts          # lui-input component
+    textarea.ts       # lui-textarea component
+    index.ts          # exports
+    jsx.d.ts          # JSX types for React/Preact
+  vite.config.ts
+  tsconfig.json
 ```
 
-## CLI Distribution Model (shadcn-style)
+---
 
-Two modes for component installation:
+## What NOT to Add
 
-### Mode 1: Copy Source (Default)
-```bash
-npx lit-ui add button
-# Copies button.ts to user's components/ui/ directory
-# User owns the code, can customize freely
-```
+| Library/Approach | Reason to Avoid |
+|------------------|-----------------|
+| @open-wc/form-control | Stale, adds abstraction without benefit |
+| Zod/Yup/etc | Schema validation is consumer responsibility |
+| Custom validation message component | Premature; use native UI first |
+| FormControlController | Over-engineering for 2 components |
+| element-internals-polyfill | Safari 16.4+ is baseline; no legacy browser support needed |
 
-### Mode 2: npm Package
-```bash
-npm install @lit-ui/button
-# Traditional dependency, no source copying
-# Updates via npm, less customization
-```
+---
 
-The CLI should support both, with copy-source as default (shadcn model).
+## Confidence Assessment
+
+| Area | Confidence | Rationale |
+|------|------------|-----------|
+| ElementInternals API | HIGH | MDN docs verified, proven in Button |
+| setValidity() flags | HIGH | MDN docs explicit, all flags documented |
+| Native input delegation | HIGH | Established web component pattern |
+| No new deps needed | HIGH | All APIs are native browser features |
+
+---
 
 ## Sources
 
-### HIGH Confidence (Context7/Official Docs)
-- [Lit Official Documentation](https://lit.dev/docs/) - v3 features, TypeScript config
-- [Tailwind CSS v4 Announcement](https://tailwindcss.com/blog/tailwindcss-v4) - v4 features, Vite plugin
-- [Vite Documentation](https://vite.dev/guide/) - Library mode, build configuration
-- [Custom Elements Manifest](https://custom-elements-manifest.open-wc.org/) - Analyzer setup, plugins
-
-### HIGH Confidence (GitHub/npm)
-- [Lit GitHub Repository](https://github.com/lit/lit) - lit-element@4.2.1 (July 2025)
-- [@tailwindcss/vite npm](https://www.npmjs.com/package/@tailwindcss/vite) - v4.1.18
-- [shadcn/ui Architecture](https://deepwiki.com/shadcn-ui/ui/2-architecture) - CLI registry pattern
-
-### MEDIUM Confidence (Verified WebSearch)
-- [Modern 2025 Web Components Tech Stack](https://dev.to/matsuuu/the-modern-2025-web-components-tech-stack-1l00) - Stack recommendations
-- [Web Components Tailwind Starter Kit](https://github.com/butopen/web-components-tailwind-starter-kit) - TailwindElement pattern
-- [Lit + Tailwind Integration](https://dev.to/43081j/using-tailwind-at-build-time-with-web-components-1bhm) - Build-time Tailwind approach
-
-### MEDIUM Confidence (Community)
-- [Storybook Web Components Docs](https://storybook.js.org/docs/get-started/frameworks/web-components-vite) - Storybook 8 setup
-- [tsup Documentation](https://tsup.egoist.dev/) - CLI bundling patterns
-- [Commander.js Guide](https://betterstack.com/community/guides/scaling-nodejs/commander-explained/) - CLI patterns
+- [MDN: ElementInternals.setValidity()](https://developer.mozilla.org/en-US/docs/Web/API/ElementInternals/setValidity) - Complete API reference
+- [MDN: Constraint Validation](https://developer.mozilla.org/en-US/docs/Web/HTML/Guides/Constraint_validation) - Native validation overview
+- [WebKit: ElementInternals and Form-Associated Custom Elements](https://webkit.org/blog/13711/elementinternals-and-form-associated-custom-elements/) - Safari baseline announcement
+- [Native Form Validation of Web Components](https://www.dannymoerkerke.com/blog/native-form-validation-of-web-components/) - Implementation pattern reference
+- [OddBird: Anchor Positioning Updates](https://www.oddbird.net/2025/10/13/anchor-position-area-update/) - CSS anchor positioning browser status
+- Existing codebase: `packages/button/src/button.ts` - Proven ElementInternals pattern
 
 ---
-*Stack research for: lit-ui (Lit + Tailwind + CLI component library)*
-*Researched: 2026-01-23*
+
+*Stack research for: LitUI Input & Textarea milestone*
+*Researched: 2026-01-26*

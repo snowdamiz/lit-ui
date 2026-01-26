@@ -1386,7 +1386,898 @@ Before shipping configurator:
 - [Tailwind CSS Best Practices 2025](https://www.frontendtools.tech/blog/tailwind-css-best-practices-design-system-patterns)
 
 ---
+
+# v4.0 Form Inputs Pitfalls
+
+**Focus:** Adding Input and Textarea components with ElementInternals validation and form participation
+**Researched:** 2026-01-26
+**Confidence:** HIGH (verified against MDN, WebKit blog, Lit SSR docs, and multiple authoritative sources)
+
+This section covers pitfalls specific to the v4.0 milestone: building form Input and Textarea components that integrate with native form validation and ElementInternals.
+
+---
+
+## Critical Pitfalls (Form Inputs)
+
+High-impact mistakes that break form functionality or require architectural changes.
+
+---
+
+### INPUT-1: setValidity() vs setCustomValidity() Confusion
+
+**What goes wrong:** Using `setCustomValidity()` (the HTMLInputElement method) instead of `setValidity()` (the ElementInternals method) for form-associated custom elements.
+
+**Why it happens:** Native `<input>` elements use `setCustomValidity(message)` which is a simple string-based API. ElementInternals uses a completely different signature: `setValidity(flags, message, anchor)` with a ValidityState-like flags object.
+
+**Consequences:**
+- Validation appears to work but doesn't integrate with form submission
+- Custom validity messages not displayed
+- Form submits despite invalid state
+- `checkValidity()` returns wrong results
+
+**Warning signs:**
+- Calling `this.setCustomValidity()` in component code
+- Validation messages not appearing
+- Form `reportValidity()` not showing errors
+
+**Prevention:**
+```typescript
+// WRONG - this is for native elements
+this.setCustomValidity('Value is required');
+
+// CORRECT - ElementInternals API
+this.internals.setValidity(
+  { valueMissing: true },           // ValidityState flags
+  'This field is required',          // Custom message
+  this.shadowRoot.querySelector('input')  // Anchor for popup
+);
+
+// To clear validity:
+this.internals.setValidity({});
+```
+
+**Phase to address:** Component implementation - establish validation pattern early
+
+**Source:** [MDN setValidity](https://developer.mozilla.org/en-US/docs/Web/API/ElementInternals/setValidity), [CSS-Tricks ElementInternals](https://css-tricks.com/creating-custom-form-controls-with-elementinternals/)
+
+---
+
+### INPUT-2: Not Providing Validation Anchor Element
+
+**What goes wrong:** Calling `setValidity()` without the third `anchor` parameter causes browser validation UI to point at wrong element or not appear at all.
+
+**Why it happens:** The anchor parameter is "optional" in the spec but critical for UX. Without it, browsers don't know where to position the validation tooltip.
+
+**Consequences:**
+- `reportValidity()` shows error but UI points to wrong location
+- Validation bubble appears at top-left corner of viewport
+- Poor accessibility - screen readers don't associate error with input
+- User confusion about which field has the error
+
+**Warning signs:**
+- Validation errors appearing in unexpected locations
+- No visible validation UI despite invalid state
+- Errors positioned outside component boundaries
+
+**Prevention:**
+```typescript
+private handleValidation(): void {
+  const input = this.shadowRoot?.querySelector('input');
+  if (!input) return;
+
+  if (this.value === '' && this.required) {
+    // ALWAYS provide anchor as third parameter
+    this.internals?.setValidity(
+      { valueMissing: true },
+      'Please fill out this field',
+      input  // <- Critical: anchor element for validation UI
+    );
+  } else {
+    this.internals?.setValidity({});
+  }
+}
+```
+
+**Phase to address:** Component implementation - include anchor from start
+
+**Source:** [WebKit ElementInternals](https://webkit.org/blog/13711/elementinternals-and-form-associated-custom-elements/)
+
+---
+
+### INPUT-3: Forgetting to Clear Validity State
+
+**What goes wrong:** Setting custom validity but never clearing it, causing the field to remain permanently invalid.
+
+**Why it happens:** Developers call `setValidity({ customError: true }, 'message')` but don't call `setValidity({})` when the error condition is resolved.
+
+**Consequences:**
+- Field shows as invalid even after user corrects input
+- Form cannot submit despite valid data
+- User frustration trying to "fix" correct input
+
+**Warning signs:**
+- Field stays red/invalid after entering valid data
+- Form submission always fails
+- Manual inspection shows validity never resets
+
+**Prevention:**
+```typescript
+private validate(): void {
+  const input = this.shadowRoot?.querySelector('input');
+  const value = this.value.trim();
+
+  // Check all validation conditions
+  if (this.required && !value) {
+    this.internals?.setValidity(
+      { valueMissing: true },
+      'This field is required',
+      input
+    );
+    return;
+  }
+
+  if (this.pattern && value && !new RegExp(this.pattern).test(value)) {
+    this.internals?.setValidity(
+      { patternMismatch: true },
+      this.title || 'Please match the requested format',
+      input
+    );
+    return;
+  }
+
+  // CRITICAL: Clear validity when all checks pass
+  this.internals?.setValidity({});
+}
+```
+
+**Phase to address:** Component implementation - validation state machine
+
+**Source:** [DEV Community ElementInternals](https://dev.to/stuffbreaker/custom-forms-with-web-components-and-elementinternals-4jaj)
+
+---
+
+### INPUT-4: Missing formResetCallback Implementation
+
+**What goes wrong:** Form reset button doesn't clear custom input values because `formResetCallback()` isn't implemented.
+
+**Why it happens:** Unlike native inputs which automatically reset, form-associated custom elements must explicitly handle reset via the lifecycle callback.
+
+**Consequences:**
+- `<form>.reset()` has no effect on custom inputs
+- Reset button appears broken to users
+- Inconsistent behavior with native form elements
+
+**Warning signs:**
+- Clicking form reset button leaves custom inputs unchanged
+- Native inputs reset but custom ones retain values
+- No `formResetCallback` method in component
+
+**Prevention:**
+```typescript
+export class Input extends TailwindElement {
+  static formAssociated = true;
+
+  private _defaultValue = '';
+  private internals: ElementInternals | null = null;
+
+  @property({ type: String })
+  value = '';
+
+  connectedCallback(): void {
+    super.connectedCallback();
+    // Capture initial value for reset
+    this._defaultValue = this.value;
+  }
+
+  // REQUIRED: Handle form reset
+  formResetCallback(): void {
+    this.value = this._defaultValue;
+    this.internals?.setFormValue(this._defaultValue);
+    this.internals?.setValidity({});
+  }
+}
+```
+
+**Phase to address:** Component implementation - form lifecycle callbacks
+
+**Source:** [Stencil Form-Associated](https://stenciljs.com/docs/form-associated), [web.dev Form Controls](https://web.dev/articles/more-capable-form-controls)
+
+---
+
+### INPUT-5: formStateRestoreCallback WebKit Limitations
+
+**What goes wrong:** Browser state restoration (back/forward navigation) or autocomplete fails because WebKit only supports string state, not FormData.
+
+**Why it happens:** The spec allows `setFormValue(value, state)` where state can be string, File, or FormData. WebKit currently only supports string for state.
+
+**Consequences:**
+- State not restored correctly in Safari after navigation
+- Autocomplete doesn't work properly in Safari
+- Complex state (multiple values) cannot be preserved cross-browser
+
+**Warning signs:**
+- State restoration works in Chrome but not Safari
+- Passing FormData as second argument to setFormValue
+- Autocomplete regression reports from Safari users
+
+**Prevention:**
+```typescript
+// Set both value and state (use string for Safari compatibility)
+this.internals?.setFormValue(this.value, this.value);
+
+formStateRestoreCallback(state: string | FormData | File, reason: string): void {
+  // Handle both "restore" (navigation) and "autocomplete" reasons
+  // state is ALWAYS a string in Safari, check type for other browsers
+  if (typeof state === 'string') {
+    this.value = state;
+  } else if (state instanceof FormData) {
+    // Non-Safari browsers may pass FormData
+    this.value = state.get(this.name) as string || '';
+  }
+
+  this.internals?.setFormValue(this.value);
+}
+```
+
+**Phase to address:** Component implementation - test cross-browser
+
+**Source:** [WebKit ElementInternals](https://webkit.org/blog/13711/elementinternals-and-form-associated-custom-elements/)
+
+---
+
+### INPUT-6: Not Syncing Value with setFormValue
+
+**What goes wrong:** Input value changes but `setFormValue()` isn't called, so FormData excludes the updated value.
+
+**Why it happens:** Native inputs automatically sync with forms. Custom elements must manually call `setFormValue()` whenever the value changes.
+
+**Consequences:**
+- Form submission includes stale or empty values
+- FormData doesn't reflect current input state
+- Silent data loss on form submission
+
+**Warning signs:**
+- Submitted form data doesn't match displayed values
+- `new FormData(form)` shows wrong values
+- Value property updated but form unaware
+
+**Prevention:**
+```typescript
+@property({ type: String })
+get value(): string {
+  return this._value;
+}
+set value(val: string) {
+  const oldVal = this._value;
+  this._value = val;
+  // ALWAYS sync with form when value changes
+  this.internals?.setFormValue(val);
+  this.requestUpdate('value', oldVal);
+}
+
+// Also sync on input events
+private handleInput(e: Event): void {
+  const input = e.target as HTMLInputElement;
+  this.value = input.value;  // Setter handles setFormValue
+  this.validate();
+}
+```
+
+**Phase to address:** Component implementation - value binding pattern
+
+**Source:** [MDN setFormValue](https://developer.mozilla.org/en-US/docs/Web/API/ElementInternals/setFormValue)
+
+---
+
+### INPUT-7: ElementInternals SSR Crash
+
+**What goes wrong:** Calling `attachInternals()` during server-side rendering throws because the API requires DOM.
+
+**Why it happens:** ElementInternals is inherently a client-side API. During SSR, there's no document or form to associate with.
+
+**Consequences:**
+- SSR crashes with `TypeError: this.attachInternals is not a function`
+- Server-side rendering of pages containing form components fails
+- Build errors in Next.js/Astro/etc. with SSR enabled
+
+**Warning signs:**
+- SSR build fails when adding form components
+- Works in client-only mode but breaks with SSR
+- Error mentions `attachInternals` not being a function
+
+**Prevention:**
+```typescript
+constructor() {
+  super();
+  // Guard with isServer OR environment check
+  if (!isServer && typeof window !== 'undefined') {
+    this.internals = this.attachInternals();
+  }
+}
+
+// In methods that use internals, use optional chaining
+private validate(): void {
+  // internals is null during SSR - this is safe
+  this.internals?.setValidity(...);
+  this.internals?.setFormValue(this.value);
+}
+```
+
+**Note:** The existing Button component already uses this pattern with `isServer` from Lit.
+
+**Phase to address:** Component implementation - follow existing Button pattern
+
+**Source:** [Lit SSR Authoring](https://lit.dev/docs/ssr/authoring/)
+
+---
+
+## Moderate Pitfalls (Form Inputs)
+
+Issues that cause delays or technical debt but are recoverable.
+
+---
+
+### INPUT-8: aria-describedby Broken Across Shadow Boundary
+
+**What goes wrong:** Error messages use `aria-describedby` to associate with the input, but the ID reference breaks across shadow DOM boundaries.
+
+**Why it happens:** Shadow DOM scopes IDs locally. An ID inside shadow DOM can't be referenced from outside, and vice versa.
+
+**Consequences:**
+- Screen readers don't announce error messages
+- Accessibility audit failures
+- Form appears inaccessible to assistive technology users
+
+**Warning signs:**
+- axe-core reports missing aria-describedby references
+- Screen reader doesn't read error when focusing input
+- ARIA IDs resolve to null in accessibility tree
+
+**Prevention:**
+```typescript
+// Keep error message and input in SAME shadow DOM
+render() {
+  const errorId = `${this.id}-error`;
+
+  return html`
+    <input
+      aria-invalid=${this.invalid ? 'true' : 'false'}
+      aria-describedby=${this.invalid ? errorId : nothing}
+    />
+    ${this.invalid && this.errorMessage
+      ? html`<span id=${errorId} class="error" role="alert">
+          ${this.errorMessage}
+        </span>`
+      : nothing
+    }
+  `;
+}
+```
+
+**Alternative approach - use aria-label instead of ID reference:**
+```typescript
+// When error must be in light DOM
+<lui-input aria-label="Email address - Error: Invalid format"></lui-input>
+```
+
+**Phase to address:** Component implementation - accessibility
+
+**Source:** [Nolan Lawson - Shadow DOM ARIA](https://nolanlawson.com/2022/11/28/shadow-dom-and-accessibility-the-trouble-with-aria/), [Igalia Cross-Root ARIA](https://blogs.igalia.com/mrego/solving-cross-root-aria-issues-in-shadow-dom/)
+
+---
+
+### INPUT-9: Textarea Auto-Resize Doesn't Shrink
+
+**What goes wrong:** Textarea grows to fit content but doesn't shrink when content is deleted.
+
+**Why it happens:** Setting `height = scrollHeight` works for growing, but `scrollHeight` doesn't decrease when content is removed - it reflects the current rendered height.
+
+**Consequences:**
+- Textarea becomes permanently expanded after typing long content
+- Deleting text leaves huge empty textarea
+- Poor UX, appears buggy
+
+**Warning signs:**
+- Textarea expands but never contracts
+- `scrollHeight` always returns current height, not content height
+
+**Prevention:**
+```typescript
+private autoResize(): void {
+  const textarea = this.shadowRoot?.querySelector('textarea');
+  if (!textarea) return;
+
+  // CRITICAL: Reset height BEFORE measuring scrollHeight
+  textarea.style.height = 'auto';
+
+  // Now scrollHeight reflects actual content height
+  textarea.style.height = `${textarea.scrollHeight}px`;
+}
+
+// Call on input and value change
+private handleInput(e: Event): void {
+  const textarea = e.target as HTMLTextAreaElement;
+  this.value = textarea.value;
+  this.autoResize();
+}
+
+updated(changedProps: Map<string, unknown>): void {
+  if (changedProps.has('value')) {
+    this.autoResize();
+  }
+}
+```
+
+**Alternative CSS-only approach (Chrome only):**
+```css
+textarea {
+  field-sizing: content;  /* New CSS property, limited support */
+}
+```
+
+**Phase to address:** Textarea component implementation
+
+**Source:** [CSS-Tricks Auto-Growing Textarea](https://css-tricks.com/auto-growing-inputs-textareas/), [Simon Willison TIL](https://til.simonwillison.net/css/resizing-textarea)
+
+---
+
+### INPUT-10: Textarea Pre-populated Content Not Sized Correctly
+
+**What goes wrong:** Textarea with initial value (from SSR or property) doesn't auto-resize on page load.
+
+**Why it happens:** Auto-resize logic typically binds to `input` event, which doesn't fire on initial render.
+
+**Consequences:**
+- Pre-filled textareas show scrollbars or are truncated
+- Content hidden until user types
+- SSR output shows wrong size
+
+**Warning signs:**
+- Textarea has scrollbar immediately on page load
+- Content only fully visible after typing
+- Different sizing in SSR vs client render
+
+**Prevention:**
+```typescript
+firstUpdated(): void {
+  // Size textarea after first render
+  this.autoResize();
+}
+
+updated(changedProps: Map<string, unknown>): void {
+  if (changedProps.has('value')) {
+    // Resize when value changes (including initial hydration)
+    this.autoResize();
+  }
+}
+
+// For SSR, also check after hydration
+connectedCallback(): void {
+  super.connectedCallback();
+
+  if (!isServer) {
+    // Wait for render then resize
+    this.updateComplete.then(() => this.autoResize());
+  }
+}
+```
+
+**Phase to address:** Textarea component implementation
+
+**Source:** [CodeStudy Auto-Resize](https://www.codestudy.net/blog/creating-a-textarea-with-auto-resize/)
+
+---
+
+### INPUT-11: Password Visibility Toggle Security
+
+**What goes wrong:** Password visibility toggle reveals password to shoulder-surfers or screen captures.
+
+**Why it happens:** Common feature, but has security implications if not implemented carefully.
+
+**Consequences:**
+- Passwords visible in screenshots/recordings
+- Shoulder-surfing risk in public spaces
+- Password managers may not recognize toggled field
+
+**Warning signs:**
+- No timeout for visibility
+- Password remains visible indefinitely
+- Toggle state persists across page navigation
+
+**Prevention:**
+```typescript
+// Implement auto-hide timeout
+private showPassword = false;
+private hideTimeout: number | null = null;
+
+private toggleVisibility(): void {
+  this.showPassword = !this.showPassword;
+
+  if (this.showPassword) {
+    // Auto-hide after 5 seconds
+    this.hideTimeout = window.setTimeout(() => {
+      this.showPassword = false;
+      this.requestUpdate();
+    }, 5000);
+  } else if (this.hideTimeout) {
+    clearTimeout(this.hideTimeout);
+    this.hideTimeout = null;
+  }
+
+  this.requestUpdate();
+}
+
+// Clear on blur for additional security
+private handleBlur(): void {
+  if (this.showPassword) {
+    this.showPassword = false;
+    if (this.hideTimeout) {
+      clearTimeout(this.hideTimeout);
+    }
+    this.requestUpdate();
+  }
+}
+
+render() {
+  return html`
+    <input type=${this.showPassword ? 'text' : 'password'} />
+  `;
+}
+```
+
+**Phase to address:** Password input implementation
+
+**Source:** [Kenan Yusuf - Password Visibility](https://kyusuf.com/post/password-visibility-toggles)
+
+---
+
+### INPUT-12: Password Autocomplete Attribute Missing
+
+**What goes wrong:** Browsers warn about missing autocomplete attribute, or password managers don't work correctly.
+
+**Why it happens:** Password fields should specify `autocomplete="current-password"` or `autocomplete="new-password"` for proper password manager integration.
+
+**Consequences:**
+- Chrome DevTools warnings
+- Password managers don't offer to save/fill
+- Poor UX for users relying on password managers
+
+**Warning signs:**
+- Console warnings about autocomplete
+- Password manager doesn't detect login form
+- "Save password?" prompt doesn't appear
+
+**Prevention:**
+```typescript
+@property({ type: String })
+autocomplete: 'current-password' | 'new-password' | 'off' = 'current-password';
+
+render() {
+  return html`
+    <input
+      type=${this.type}
+      autocomplete=${this.type === 'password' ? this.autocomplete : 'on'}
+    />
+  `;
+}
+```
+
+**Document for users:**
+- Use `autocomplete="current-password"` for login forms
+- Use `autocomplete="new-password"` for registration/change password
+- Use `autocomplete="off"` only when genuinely needed (rare)
+
+**Phase to address:** Password input implementation
+
+**Source:** [MDN Autocomplete](https://developer.mozilla.org/en-US/docs/Web/Security/Practical_implementation_guides/Turning_off_form_autocompletion), [Vaadin Issue #2126](https://github.com/vaadin/web-components/issues/2126)
+
+---
+
+### INPUT-13: Native Validation UI Conflict
+
+**What goes wrong:** Both native browser validation UI AND custom error messages appear, creating confusing double validation.
+
+**Why it happens:** Browser shows validation bubble on `reportValidity()`, while component also renders its own error message.
+
+**Consequences:**
+- Duplicate error messages confusing users
+- Inconsistent styling between native bubble and custom message
+- Z-index/positioning conflicts
+
+**Warning signs:**
+- Two error messages appearing for same field
+- Native bubble overlapping custom message
+- Different messages in bubble vs inline error
+
+**Prevention:**
+```typescript
+// Option 1: Use only browser validation UI (simpler)
+checkValidity(): boolean {
+  return this.internals?.checkValidity() ?? true;
+}
+
+reportValidity(): boolean {
+  return this.internals?.reportValidity() ?? true;
+}
+
+// Option 2: Suppress native UI, use only custom messages
+// Set novalidate on form or intercept submission
+private handleInvalid(e: Event): void {
+  e.preventDefault();  // Suppress native UI
+  this.showError = true;  // Show custom message instead
+}
+
+render() {
+  return html`
+    <input @invalid=${this.handleInvalid} />
+    ${this.showError ? html`<span class="error">${this.errorMessage}</span>` : nothing}
+  `;
+}
+```
+
+**Recommendation:** For consistency with library design, use custom error messages and document that forms should use `novalidate` attribute.
+
+**Phase to address:** Component implementation - decide validation UI strategy
+
+**Source:** [SitePoint Constraint Validation](https://www.sitepoint.com/html5-forms-javascript-constraint-validation-api/)
+
+---
+
+### INPUT-14: jsdom Testing Limitations
+
+**What goes wrong:** Unit tests using jsdom fail because ElementInternals is not implemented.
+
+**Why it happens:** jsdom doesn't support ElementInternals API. Tests throw `TypeError: this.internals.setFormValue is not a function`.
+
+**Consequences:**
+- Unit tests fail or require extensive mocking
+- CI pipeline breaks
+- Can't test form functionality in Node environment
+
+**Warning signs:**
+- Tests pass locally (browser) but fail in CI (jsdom)
+- ElementInternals errors in test output
+- Mocking becomes extremely complex
+
+**Prevention:**
+```typescript
+// Option 1: Use polyfill in test setup
+// npm install element-internals-polyfill
+import 'element-internals-polyfill';
+
+// Option 2: Conditional mocking in tests
+beforeEach(() => {
+  if (!('ElementInternals' in window)) {
+    // Minimal mock for testing
+    window.ElementInternals = class MockInternals {
+      setFormValue() {}
+      setValidity() {}
+      checkValidity() { return true; }
+    } as any;
+  }
+});
+
+// Option 3: Use browser-based testing (Playwright/Puppeteer)
+// Skip jsdom entirely for form component tests
+```
+
+**Recommendation:** Use `@open-wc/testing` with Playwright for form component tests, or use the element-internals-polyfill.
+
+**Phase to address:** Testing infrastructure - before writing component tests
+
+**Source:** [jsdom Issue #3831](https://github.com/jsdom/jsdom/issues/3831), [element-internals-polyfill](https://github.com/calebdwilliams/element-internals-polyfill)
+
+---
+
+## Minor Pitfalls (Form Inputs)
+
+Issues that cause annoyance but are quickly fixable.
+
+---
+
+### INPUT-15: Name Attribute Not Reflected
+
+**What goes wrong:** Setting `name` property doesn't add `name` attribute to host element, confusing form serialization debugging.
+
+**Why it happens:** By default, Lit properties don't reflect to attributes unless explicitly configured.
+
+**Consequences:**
+- DevTools doesn't show name attribute
+- FormData debugging harder
+- Potential issues with form libraries expecting attribute
+
+**Prevention:**
+```typescript
+@property({ type: String, reflect: true })
+name = '';
+```
+
+**Phase to address:** Component implementation - property definitions
+
+---
+
+### INPUT-16: Validation Timing Issues
+
+**What goes wrong:** Validation runs too early (before user finishes typing) or too late (after form submission).
+
+**Why it happens:** Unclear when to trigger validation - on input, blur, or submit?
+
+**Consequences:**
+- Premature errors annoying users
+- Delayed errors cause form submission failures
+- Inconsistent UX
+
+**Prevention:**
+```typescript
+// Validate on blur (field loses focus)
+@property({ type: Boolean })
+touched = false;
+
+private handleBlur(): void {
+  this.touched = true;
+  this.validate();
+}
+
+private handleInput(): void {
+  // Only show errors if already touched
+  if (this.touched) {
+    this.validate();
+  }
+  // Always update form value
+  this.internals?.setFormValue(this.value);
+}
+
+// Or use validateOnInput property for immediate validation
+@property({ type: Boolean, attribute: 'validate-on-input' })
+validateOnInput = false;
+```
+
+**Phase to address:** Component implementation - validation strategy
+
+---
+
+### INPUT-17: Missing Disabled/Readonly Styling
+
+**What goes wrong:** Disabled or readonly inputs look identical to enabled inputs.
+
+**Why it happens:** Custom styling doesn't account for all states.
+
+**Consequences:**
+- Users try to interact with disabled fields
+- Confusion about why input won't accept text
+- Accessibility issues - state not communicated visually
+
+**Prevention:**
+```typescript
+static styles = css`
+  :host([disabled]) input {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: var(--ui-input-disabled-bg);
+  }
+
+  :host([readonly]) input {
+    background-color: var(--ui-input-readonly-bg);
+    border-style: dashed;
+  }
+`;
+
+render() {
+  return html`
+    <input
+      ?disabled=${this.disabled}
+      ?readonly=${this.readonly}
+      aria-disabled=${this.disabled ? 'true' : nothing}
+      aria-readonly=${this.readonly ? 'true' : nothing}
+    />
+  `;
+}
+```
+
+**Phase to address:** Component styling
+
+---
+
+### INPUT-18: formDisabledCallback Not Implemented
+
+**What goes wrong:** Disabling a fieldset doesn't disable contained custom inputs.
+
+**Why it happens:** Form-associated custom elements receive `formDisabledCallback(disabled)` when their disabled state changes due to fieldset or form changes.
+
+**Consequences:**
+- Inputs in disabled fieldset remain interactive
+- Inconsistent behavior with native inputs
+
+**Prevention:**
+```typescript
+formDisabledCallback(disabled: boolean): void {
+  this.disabled = disabled;
+  this.requestUpdate();
+}
+```
+
+**Phase to address:** Component implementation - form callbacks
+
+---
+
+## Phase-Specific Warnings Summary (Form Inputs)
+
+| Phase | Likely Pitfall | Priority | Mitigation |
+|-------|---------------|----------|------------|
+| Component Architecture | INPUT-7 SSR crash, INPUT-6 value sync | CRITICAL | Guard attachInternals, sync on every change |
+| Validation Implementation | INPUT-1 setValidity API, INPUT-2 anchor, INPUT-3 clear state | CRITICAL | Study ElementInternals API carefully |
+| Form Lifecycle | INPUT-4 formResetCallback, INPUT-5 restore callback, INPUT-18 disabled | HIGH | Implement all 4 callbacks |
+| Accessibility | INPUT-8 aria-describedby | HIGH | Keep ARIA pairs in same DOM |
+| Textarea Specific | INPUT-9 resize shrink, INPUT-10 initial size | MEDIUM | Reset height before measuring |
+| Password Specific | INPUT-11 security, INPUT-12 autocomplete | MEDIUM | Auto-hide timeout, proper autocomplete |
+| Testing | INPUT-14 jsdom | HIGH | Use polyfill or browser testing |
+| UX Polish | INPUT-13 validation UI, INPUT-16 timing | MEDIUM | Choose one validation UI approach |
+
+---
+
+## Integration with Existing LitUI Patterns
+
+### Pattern Alignment
+
+The existing Button component establishes these patterns that Input/Textarea should follow:
+
+| Pattern | Button Implementation | Input Should Do |
+|---------|----------------------|-----------------|
+| SSR guard | `if (!isServer) { this.internals = this.attachInternals(); }` | Same pattern |
+| Static styles | `static override styles = [...tailwindBaseStyles, css\`...\`]` | Same pattern |
+| Form association | `static formAssociated = true` | Same pattern |
+| Custom events | `this.dispatchEvent(new CustomEvent('lui-click', { composed: true }))` | `lui-input`, `lui-change` events |
+| CSS custom properties | `--ui-button-*` variables | `--ui-input-*`, `--ui-textarea-*` |
+
+### New Patterns for Inputs
+
+Patterns that Button doesn't need but Input/Textarea require:
+
+| Pattern | Why Needed | Implementation |
+|---------|-----------|----------------|
+| Value sync | Inputs have changing values | `setFormValue()` on every change |
+| Validation state | Inputs can be invalid | `setValidity()` with proper flags |
+| Form reset | Inputs need reset behavior | `formResetCallback()` with default value |
+| State restore | Inputs need state preservation | `formStateRestoreCallback()` |
+| Validation anchor | Error UI positioning | Third param to `setValidity()` |
+
+---
+
+## Sources (Form Inputs)
+
+### Official Documentation (HIGH confidence)
+- [MDN ElementInternals](https://developer.mozilla.org/en-US/docs/Web/API/ElementInternals)
+- [MDN setValidity](https://developer.mozilla.org/en-US/docs/Web/API/ElementInternals/setValidity)
+- [MDN setFormValue](https://developer.mozilla.org/en-US/docs/Web/API/ElementInternals/setFormValue)
+- [WebKit ElementInternals Blog](https://webkit.org/blog/13711/elementinternals-and-form-associated-custom-elements/)
+- [Lit SSR Authoring](https://lit.dev/docs/ssr/authoring/)
+- [HTML Standard - Custom Elements](https://html.spec.whatwg.org/multipage/custom-elements.html)
+
+### Implementation Guides (MEDIUM confidence)
+- [CSS-Tricks ElementInternals](https://css-tricks.com/creating-custom-form-controls-with-elementinternals/)
+- [DEV Community ElementInternals](https://dev.to/stuffbreaker/custom-forms-with-web-components-and-elementinternals-4jaj)
+- [web.dev More Capable Form Controls](https://web.dev/articles/more-capable-form-controls)
+- [Benny Powers Form-Associated Custom Elements](https://bennypowers.dev/posts/form-associated-custom-elements/)
+- [Stencil Form-Associated](https://stenciljs.com/docs/form-associated)
+
+### Accessibility (MEDIUM confidence)
+- [Nolan Lawson - Shadow DOM ARIA](https://nolanlawson.com/2022/11/28/shadow-dom-and-accessibility-the-trouble-with-aria/)
+- [Igalia Cross-Root ARIA](https://blogs.igalia.com/mrego/solving-cross-root-aria-issues-in-shadow-dom/)
+- [MDN aria-invalid](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Attributes/aria-invalid)
+- [MDN aria-errormessage](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Attributes/aria-errormessage)
+
+### Textarea Specific (MEDIUM confidence)
+- [CSS-Tricks Auto-Growing Textarea](https://css-tricks.com/auto-growing-inputs-textareas/)
+- [Simon Willison TIL](https://til.simonwillison.net/css/resizing-textarea)
+- [WHATWG Textarea Sizing Issue](https://github.com/whatwg/html/issues/6807)
+
+### Testing (MEDIUM confidence)
+- [jsdom ElementInternals Issue](https://github.com/jsdom/jsdom/issues/3831)
+- [element-internals-polyfill](https://github.com/calebdwilliams/element-internals-polyfill)
+
+---
 *Pitfalls research for: Lit.js Framework-Agnostic Component Library*
 *Original research: 2026-01-23*
 *NPM + SSR research added: 2026-01-24*
 *Theme Customization research added: 2026-01-25*
+*Form Inputs research added: 2026-01-26*
