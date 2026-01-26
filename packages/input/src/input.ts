@@ -16,7 +16,7 @@
  * ```
  */
 
-import { html, css, isServer, nothing } from 'lit';
+import { html, css, svg, isServer, nothing } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
 import { TailwindElement, tailwindBaseStyles } from '@lit-ui/core';
 
@@ -183,6 +183,35 @@ export class Input extends TailwindElement {
    */
   @state()
   private showError = false;
+
+  /**
+   * Whether the password is currently visible (for type="password").
+   */
+  @state()
+  private passwordVisible = false;
+
+  /**
+   * Eye icon SVG (password hidden state - click to show).
+   */
+  private eyeIcon = svg`
+    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"
+          stroke="currentColor" stroke-width="2" fill="none"
+          stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="12" cy="12" r="3"
+            stroke="currentColor" stroke-width="2" fill="none"/>
+  `;
+
+  /**
+   * Eye-off icon SVG (password visible state - click to hide).
+   */
+  private eyeOffIcon = svg`
+    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"
+          stroke="currentColor" stroke-width="2" fill="none"
+          stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="1" y1="1" x2="23" y2="23"
+          stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round"/>
+  `;
 
   constructor() {
     super();
@@ -352,6 +381,51 @@ export class Input extends TailwindElement {
         font-size: 0.875em;
         color: var(--ui-input-text-error);
       }
+
+      /* Password toggle button */
+      .password-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.25rem;
+        margin-right: 0.25rem;
+        border: none;
+        background: transparent;
+        color: var(--color-muted-foreground);
+        cursor: pointer;
+        border-radius: var(--radius-sm, 0.25rem);
+        transition:
+          color 150ms,
+          background-color 150ms;
+      }
+
+      .password-toggle:hover {
+        color: var(--ui-input-text);
+        background-color: var(--color-muted);
+      }
+
+      .password-toggle:focus-visible {
+        outline: 2px solid var(--color-ring);
+        outline-offset: 1px;
+      }
+
+      .toggle-icon {
+        width: 1.25em;
+        height: 1.25em;
+      }
+
+      /* Visually hidden for screen reader only text */
+      .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
     `,
   ];
 
@@ -444,12 +518,58 @@ export class Input extends TailwindElement {
   }
 
   /**
+   * Toggle password visibility between hidden and visible.
+   */
+  private togglePasswordVisibility(): void {
+    this.passwordVisible = !this.passwordVisible;
+  }
+
+  /**
+   * Render the password visibility toggle button.
+   */
+  private renderPasswordToggle() {
+    return html`
+      <button
+        type="button"
+        class="password-toggle"
+        aria-pressed=${this.passwordVisible}
+        aria-controls=${this.inputId}
+        @click=${this.togglePasswordVisibility}
+      >
+        <svg
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+          class="toggle-icon"
+        >
+          ${this.passwordVisible ? this.eyeOffIcon : this.eyeIcon}
+        </svg>
+        <span class="visually-hidden">
+          ${this.passwordVisible ? 'Hide password' : 'Show password'}
+        </span>
+      </button>
+    `;
+  }
+
+  /**
+   * Render the live region for password toggle announcements.
+   */
+  private renderPasswordLiveRegion() {
+    if (this.type !== 'password') return nothing;
+    return html`
+      <span class="visually-hidden" role="status" aria-live="polite">
+        ${this.passwordVisible ? 'Password shown' : 'Password hidden'}
+      </span>
+    `;
+  }
+
+  /**
    * Form lifecycle callback: reset the input to initial state.
    */
   formResetCallback(): void {
     this.value = '';
     this.touched = false;
     this.showError = false;
+    this.passwordVisible = false;
     this.internals?.setFormValue('');
     this.internals?.setValidity({});
   }
@@ -540,7 +660,9 @@ export class Input extends TailwindElement {
             id=${this.inputId}
             part="input"
             class=${this.getInputClasses()}
-            type=${this.type}
+            type=${this.type === 'password' && this.passwordVisible
+              ? 'text'
+              : this.type}
             name=${this.name}
             .value=${this.value}
             placeholder=${this.placeholder || nothing}
@@ -557,6 +679,7 @@ export class Input extends TailwindElement {
             @input=${this.handleInput}
             @blur=${this.handleBlur}
           />
+          ${this.type === 'password' ? this.renderPasswordToggle() : nothing}
           <slot name="suffix" part="suffix" class="input-slot suffix-slot"></slot>
         </div>
 
@@ -571,6 +694,7 @@ export class Input extends TailwindElement {
               >
             `
           : nothing}
+        ${this.renderPasswordLiveRegion()}
       </div>
     `;
   }
