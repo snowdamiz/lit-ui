@@ -91,6 +91,9 @@ v3.0, v3.1, v4.0 decisions validated and archived.
 | Space goes to input in searchable mode | Allows filtering with spaces; toggles in multi-select | 35-01 |
 | Home/End cursor movement in searchable | Ctrl/Cmd + Home/End navigate options instead | 35-01 |
 | Filter cleared on dropdown close | Clean state on reopen, not on blur | 35-01 |
+| Bold highlighting with CSS tokens | Theme customization for highlight appearance | 35-02 |
+| findAllMatches for all occurrences | Highlights every match, not just first | 35-02 |
+| Empty state aria-live=polite | Screen reader announces no results | 35-02 |
 | customFilter preserves highlighting | Custom logic for inclusion, default for highlights | 35-03 |
 | Create option at end of keyboard cycle | Arrow down from last option goes to create option | 35-03 |
 | Exact match check is case-insensitive | Create option hidden when label/value matches exactly | 35-03 |
