@@ -68,6 +68,18 @@ export interface SelectOption {
 }
 
 /**
+ * Filter match result with match indices for highlighting
+ */
+export interface FilterMatch {
+  /** The matched option */
+  option: SelectOption;
+  /** Original index in the effectiveOptions array */
+  originalIndex: number;
+  /** Array of [start, end] tuples indicating match positions */
+  matchIndices: [number, number][];
+}
+
+/**
  * A customizable select component with dropdown.
  * Supports form participation via ElementInternals.
  * Form participation is client-side only (guarded with isServer check).
@@ -202,6 +214,15 @@ export class Select extends TailwindElement {
   customFilter?: FilterFunction;
 
   /**
+   * Whether users can create new options by typing values not in the list.
+   * When enabled, shows a "Create 'xyz'" option when the filter query
+   * doesn't exactly match any existing option.
+   * @default false
+   */
+  @property({ type: Boolean })
+  creatable = false;
+
+  /**
    * Label text displayed above the select.
    * @default ''
    */
@@ -264,6 +285,12 @@ export class Select extends TailwindElement {
    */
   @state()
   private filterQuery = '';
+
+  /**
+   * Whether the create option is currently active (keyboard-focused).
+   */
+  @state()
+  private createOptionActive = false;
 
   /**
    * Internal storage for single-select value.
@@ -1403,6 +1430,24 @@ export class Select extends TailwindElement {
         color: var(--ui-select-placeholder);
         text-align: center;
       }
+
+      /* Match highlight for searchable mode */
+      .highlight {
+        font-weight: var(--ui-select-highlight-weight, 600);
+        color: var(--ui-select-highlight-text, inherit);
+      }
+
+      /* Create option styling for creatable mode */
+      .option-create {
+        border-top: 1px solid var(--ui-select-dropdown-border);
+      }
+
+      .create-icon {
+        width: 1em;
+        height: 1em;
+        margin-right: 0.5rem;
+        flex-shrink: 0;
+      }
     `,
   ];
 
@@ -2079,11 +2124,98 @@ export class Select extends TailwindElement {
         aria-disabled=${option.disabled ? 'true' : 'false'}
         class=${classes.join(' ')}
         @click=${(e: MouseEvent) => this.handleOptionClick(e, index)}
+        @mouseenter=${() => this.setCreateOptionActive(false)}
       >
         ${this.renderSelectionIndicator(isSelected)}
         <span>${option.label || option.value}</span>
       </div>
     `;
+  }
+
+  /**
+   * Check if the create option should be shown.
+   * Returns true when searchable+creatable, filter has value, and no exact match exists.
+   */
+  private shouldShowCreateOption(): boolean {
+    if (!this.searchable || !this.creatable) return false;
+    if (!this.filterQuery || !this.filterQuery.trim()) return false;
+
+    // Check if any option's label or value matches exactly (case-insensitive)
+    const lowerQuery = this.filterQuery.toLowerCase().trim();
+    const exactMatch = this.effectiveOptions.some(
+      (opt) =>
+        (opt.label || opt.value).toLowerCase() === lowerQuery ||
+        opt.value.toLowerCase() === lowerQuery
+    );
+
+    return !exactMatch;
+  }
+
+  /**
+   * Set the create option active state.
+   * When active, deselects regular options.
+   */
+  private setCreateOptionActive(active: boolean): void {
+    this.createOptionActive = active;
+    if (active) {
+      this.activeIndex = -1;
+      // Clear active state on slotted options
+      if (this.isSlottedMode) {
+        this.slottedOptions.forEach((opt) => opt.removeAttribute('data-active'));
+      }
+    }
+  }
+
+  /**
+   * Render the create option for creatable mode.
+   */
+  private renderCreateOption() {
+    if (!this.shouldShowCreateOption()) return nothing;
+
+    const isActive = this.createOptionActive;
+    return html`
+      <div
+        id="${this.selectId}-create-option"
+        class="option option-create ${isActive ? 'option-active' : ''}"
+        role="option"
+        aria-selected="false"
+        @click=${this.handleCreateClick}
+        @mouseenter=${() => this.setCreateOptionActive(true)}
+      >
+        <svg class="create-icon" viewBox="0 0 16 16" aria-hidden="true">
+          <path d="M8 2v12M2 8h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <span>Create "${this.filterQuery}"</span>
+      </div>
+    `;
+  }
+
+  /**
+   * Handle click on the create option.
+   */
+  private handleCreateClick(): void {
+    this.fireCreateEvent();
+  }
+
+  /**
+   * Fire the create event and reset state.
+   */
+  private fireCreateEvent(): void {
+    const value = this.filterQuery.trim();
+    if (!value) return;
+
+    this.dispatchEvent(
+      new CustomEvent('create', {
+        detail: { value },
+        bubbles: true,
+        composed: true,
+      })
+    );
+
+    // Clear filter and close dropdown after create
+    this.filterQuery = '';
+    this.createOptionActive = false;
+    this.closeDropdown();
   }
 
   /**
@@ -2227,6 +2359,7 @@ export class Select extends TailwindElement {
             : this.searchable && this.filterQuery && this.options.length > 0
               ? html`<div class="empty-state">No results found</div>`
               : html`<slot @slotchange=${this.handleSlotChange}></slot>`}
+          ${this.renderCreateOption()}
         </div>
 
         ${this.showError && this.errorMessage
