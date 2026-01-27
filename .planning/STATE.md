@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-26)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** v4.1 Select Component - Phase 35 next
+**Current focus:** v4.1 Select Component - Phase 35 Combobox
 
 ## Current Position
 
-Phase: 34 - Multi-Select COMPLETE
-Plan: 04 of 4 complete
-Status: Phase complete
-Last activity: 2026-01-27 - Completed 34-04-PLAN.md (Final Verification)
+Phase: 35 - Combobox (in progress)
+Plan: 01 of 3 complete
+Status: In progress
+Last activity: 2026-01-27 - Completed 35-01-PLAN.md (Searchable Mode)
 
-Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 SHIPPED | v4.0 SHIPPED | v4.1 [####...] 4/7 phases
+Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 SHIPPED | v4.0 SHIPPED | v4.1 [#####..] 5/7 phases
 
 ## Performance Metrics
 
@@ -43,9 +43,9 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHI
 - Plans completed: 11
 - Total execution time: 30 min
 
-**v4.1 Velocity (complete):**
-- Plans completed: 14
-- Total execution time: 44 min
+**v4.1 Velocity (in progress):**
+- Plans completed: 15
+- Total execution time: 52 min
 
 ## Accumulated Context
 
@@ -88,6 +88,9 @@ v3.0, v3.1, v4.0 decisions validated and archived.
 | ResizeObserver for tag overflow | Dynamic layout measurement without manual resize tracking | 34-03 |
 | requestAnimationFrame for layout updates | Prevent layout thrashing from ResizeObserver callbacks | 34-03 |
 | showSelectAll prop default false | Optional bulk actions to avoid UI clutter | 34-03 |
+| Space goes to input in searchable mode | Allows filtering with spaces; toggles in multi-select | 35-01 |
+| Home/End cursor movement in searchable | Ctrl/Cmd + Home/End navigate options instead | 35-01 |
+| Filter cleared on dropdown close | Clean state on reopen, not on blur | 35-01 |
 
 ### Pending Todos
 
@@ -107,30 +110,31 @@ None.
 - Shadow DOM click-outside requires event.composedPath() [APPLIED in 32-01]
 - iOS VoiceOver has limited aria-activedescendant support [MITIGATED in 32-02 with ARIA live region]
 - Multi-select FormData uses formData.append() for each value [APPLIED in 34-01]
+- Case-insensitive contains matching for searchable [APPLIED in 35-01]
 
 ## Session Continuity
 
 Last session: 2026-01-27
-Stopped at: Completed 34-04-PLAN.md (Final Verification)
+Stopped at: Completed 35-01-PLAN.md (Searchable Mode)
 Resume file: None
 
 ## Next Steps
 
-Phase 34 Multi-Select COMPLETE. v4.1 Select Component milestone complete.
+Phase 35 Combobox in progress. Plan 01 Searchable Mode complete.
 
-**Phase 34 Delivered:**
-- Multi-select mode with multiple prop and string[] value
-- Tag display with removable pills and CSS tokens
-- Tag overflow with +N more indicator via ResizeObserver
-- Select all / clear all bulk actions with showSelectAll prop
-- maxSelections prop for limiting selection count
-- FormData.append() for native getAll() form submission
-- Checkbox indicators in multi-select mode
-- Space toggles, Enter closes keyboard pattern (W3C APG)
-- Option groups support in multi-select
-- Human-verified complete functionality
+**Plan 01 Delivered:**
+- searchable prop to enable text input mode
+- Case-insensitive contains filtering via filteredOptions getter
+- Text input trigger with proper combobox ARIA (aria-autocomplete="list")
+- Keyboard navigation works with text input (arrows navigate, chars type)
+- Filter cleared on close, shows selected label when closed
+- Empty state "No results found" when filter matches nothing
+
+**Remaining in Phase 35:**
+- Plan 02: Match highlighting (bold text for matched portions)
+- Plan 03: Creatable mode (create new options)
 
 **Remaining phases in v4.1:**
-- Phase 35: Combobox
+- Phase 35: Combobox (in progress)
 - Phase 36: Async Loading
 - Phase 37: CLI and Documentation
