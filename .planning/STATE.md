@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-01-27)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** Planning next milestone
+**Current focus:** v4.2 Form Controls (Checkbox, Radio, Switch)
 
 ## Current Position
 
-Phase: Not started — next milestone not yet defined
-Plan: N/A
-Status: Ready to plan
-Last activity: 2026-01-27 — v4.1 milestone complete
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-01-26 — Milestone v4.2 started
 
 Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 SHIPPED | v4.0 SHIPPED | v4.1 SHIPPED
 
@@ -66,10 +66,10 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-01-27
-Stopped at: v4.1 milestone complete
+Last session: 2026-01-26
+Stopped at: v4.2 milestone initialization
 Resume file: None
 
 ## Next Steps
 
-Use `/gsd:new-milestone` to start planning the next milestone.
+Research → Requirements → Roadmap for v4.2 Form Controls.

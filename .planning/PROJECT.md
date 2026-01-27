@@ -62,11 +62,17 @@ Developers can use polished, accessible UI components in any framework without l
 
 ### Active
 
-(No active requirements — next milestone not yet defined)
+- [ ] Checkbox component with checked/unchecked/indeterminate states, animated transitions, form participation
+- [ ] CheckboxGroup container with group validation, select all/none support
+- [ ] Radio component with form participation, animated selection transition
+- [ ] RadioGroup container with mutual exclusion, arrow key navigation, required validation
+- [ ] Switch toggle control (standalone track/thumb), animated slide transition, form participation
+- [ ] Size variants (sm/md/lg), disabled state, error styling, CSS design tokens for all controls
+- [ ] SSR compatibility with isServer guards for all controls
+- [ ] CLI registry entries and docs pages for all controls
 
-### Deferred (v4.2+)
+### Deferred (v4.3+)
 
-- Checkbox, Radio, Switch toggle controls
 - Framework integration guides (React, Vue, Svelte) — from v1.1
 - Accessibility documentation — from v1.1
 - Search functionality in docs — from v1.1
@@ -157,9 +163,15 @@ Developers can use polished, accessible UI components in any framework without l
 - **v4.0 Form Inputs** (2026-01-26): Input and Textarea components with validation, form participation
 - **v4.1 Select Component** (2026-01-27): Full-featured Select with single, multi, combobox, and async loading
 
-## Next Milestone
+## Current Milestone: v4.2 Form Controls
 
-Not yet defined. Use `/gsd:new-milestone` to start planning.
+**Goal:** Add Checkbox, Radio, and Switch toggle components with group containers, completing the core form primitive toolkit.
+
+**Target features:**
+- Checkbox with indeterminate state and CheckboxGroup with select all/none
+- Radio with RadioGroup for mutual exclusion and arrow key navigation
+- Switch toggle (standalone control) with animated slide transition
+- All: form participation via ElementInternals, size variants, animations, CSS design tokens, SSR, CLI, docs
 
 ---
-*Last updated: 2026-01-27 after v4.1 milestone*
+*Last updated: 2026-01-26 after v4.2 milestone started*
