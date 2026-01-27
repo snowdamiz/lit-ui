@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 ## Current Position
 
 Phase: 39 of 41 (Checkbox + CheckboxGroup)
-Plan: 0 of ? in current phase
-Status: Ready to plan
-Last activity: 2026-01-27 — Phase 38 complete (Switch Component verified)
+Plan: 1 of ? in current phase
+Status: In progress
+Last activity: 2026-01-27 — Completed 39-01-PLAN.md (package scaffolding + design tokens)
 
-Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 SHIPPED | v4.0 SHIPPED | v4.1 SHIPPED | v4.2 [##▓.......] 1/4
+Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 SHIPPED | v4.0 SHIPPED | v4.1 SHIPPED | v4.2 [###.......] 2/4
 
 ## Performance Metrics
 
@@ -28,9 +28,9 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 | v2.0 SHIPPED | v3.0 SHIPPED | 
 - v4.1: 28 plans in 141 min
 
 **v4.2 Velocity:**
-- Total plans completed: 2
+- Total plans completed: 3
 - Average duration: 2min
-- Total execution time: 4min
+- Total execution time: 5min
 
 ## Accumulated Context
 
@@ -44,6 +44,7 @@ Recent decisions affecting current work:
 - [Research]: Build order Switch -> Checkbox -> Radio (incremental complexity)
 - [Research]: Skip aria-controls for select-all pattern (poor SR support, cross-shadow boundary issue)
 - [38-02]: Use PropertyValues type (not Map) in updated() to avoid api-extractor DTS rollup crash
+- [39-01]: Checkbox token naming follows --ui-checkbox-* convention; indeterminate shares checked visual weight
 
 ### Pending Todos
 
@@ -57,5 +58,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-01-27
-Stopped at: Phase 38 complete, ready to plan Phase 39
+Stopped at: Completed 39-01-PLAN.md (package scaffolding + design tokens)
 Resume file: None
