@@ -618,6 +618,37 @@ export class Select extends TailwindElement {
   }
 
   /**
+   * Handle input events in searchable mode.
+   * Applies filter and updates dropdown.
+   */
+  private handleInput(e: InputEvent): void {
+    const input = e.target as HTMLInputElement;
+    this.applyFilter(input.value);
+  }
+
+  /**
+   * Handle focus on searchable input.
+   * Opens dropdown and selects input text for easy replacement.
+   */
+  private handleInputFocus(): void {
+    if (!this.open) {
+      this.openDropdown();
+    }
+  }
+
+  /**
+   * Get the display value for the searchable input.
+   * When open: shows filterQuery (what user is typing)
+   * When closed: shows selected option's label
+   */
+  private getInputDisplayValue(): string {
+    if (this.open) {
+      return this.filterQuery;
+    }
+    return this.getSelectedLabel();
+  }
+
+  /**
    * Render the clear button if clearable and value is set.
    */
   private renderClearButton() {
@@ -1322,6 +1353,34 @@ export class Select extends TailwindElement {
       .select-all-btn:hover {
         text-decoration: underline;
       }
+
+      /* Searchable trigger input styling */
+      .trigger-input {
+        flex: 1;
+        border: none;
+        background: transparent;
+        outline: none;
+        font-size: inherit;
+        color: inherit;
+        padding: 0;
+        min-width: 0;
+      }
+
+      .trigger-input::placeholder {
+        color: var(--ui-select-placeholder);
+      }
+
+      .trigger-input:disabled {
+        cursor: not-allowed;
+      }
+
+      /* Empty state when filter has no matches */
+      .empty-state {
+        padding: var(--ui-select-option-padding-y, 0.5rem)
+          var(--ui-select-option-padding-x, 0.75rem);
+        color: var(--ui-select-placeholder);
+        text-align: center;
+      }
     `,
   ];
 
@@ -1417,6 +1476,11 @@ export class Select extends TailwindElement {
 
     this.open = false;
     this.activeIndex = -1;
+
+    // Clear filter query when closing (reset for next open)
+    if (this.searchable) {
+      this.filterQuery = '';
+    }
 
     // Clear active state on slotted options
     if (this.isSlottedMode) {
@@ -1889,9 +1953,112 @@ export class Select extends TailwindElement {
     `;
   }
 
+  /**
+   * Render the searchable trigger (text input mode).
+   * Used when searchable prop is true.
+   */
+  private renderSearchableTrigger(listboxId: string) {
+    return html`
+      <div class=${this.getTriggerClasses()}>
+        <input
+          type="text"
+          id=${this.selectId}
+          class="trigger-input"
+          role="combobox"
+          aria-expanded=${this.open ? 'true' : 'false'}
+          aria-haspopup="listbox"
+          aria-controls=${listboxId}
+          aria-autocomplete="list"
+          aria-activedescendant=${this.open && this.activeIndex >= 0
+            ? `${this.selectId}-option-${this.activeIndex}`
+            : ''}
+          aria-invalid=${this.showError ? 'true' : nothing}
+          placeholder=${this.placeholder}
+          .value=${this.getInputDisplayValue()}
+          ?disabled=${this.disabled}
+          @input=${this.handleInput}
+          @keydown=${this.handleKeydown}
+          @focus=${this.handleInputFocus}
+          @blur=${this.handleBlur}
+        />
+        <div class="trigger-actions">
+          ${this.renderClearButton()}
+          <svg
+            class="chevron ${this.open ? 'chevron-open' : ''}"
+            viewBox="0 0 16 16"
+            fill="none"
+            stroke="currentColor"
+            aria-hidden="true"
+          >
+            <path
+              d="M4 6l4 4 4-4"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </div>
+      </div>
+    `;
+  }
+
+  /**
+   * Render the default trigger (button-like div mode).
+   * Used when searchable prop is false.
+   */
+  private renderDefaultTrigger(listboxId: string, selectedLabel: string) {
+    return html`
+      <div
+        id=${this.selectId}
+        class=${this.getTriggerClasses()}
+        role="combobox"
+        aria-expanded=${this.open ? 'true' : 'false'}
+        aria-haspopup="listbox"
+        aria-controls=${listboxId}
+        aria-activedescendant=${this.open && this.activeIndex >= 0
+          ? this.isSlottedMode
+            ? this.slottedOptions[this.activeIndex]?.getId() || ''
+            : `${this.selectId}-option-${this.activeIndex}`
+          : ''}
+        aria-disabled=${this.disabled ? 'true' : 'false'}
+        aria-invalid=${this.showError ? 'true' : nothing}
+        tabindex=${this.disabled ? '-1' : '0'}
+        @click=${this.handleTriggerClick}
+        @keydown=${this.handleKeydown}
+        @blur=${this.handleBlur}
+      >
+        ${this.multiple && this.selectedValues.size > 0
+          ? this.renderTags()
+          : selectedLabel
+            ? html`<span class="selected-value">${selectedLabel}</span>`
+            : html`<span class="placeholder">${this.placeholder}</span>`}
+        <div class="trigger-actions">
+          ${this.renderClearButton()}
+          <svg
+            class="chevron ${this.open ? 'chevron-open' : ''}"
+            viewBox="0 0 16 16"
+            fill="none"
+            stroke="currentColor"
+            aria-hidden="true"
+          >
+            <path
+              d="M4 6l4 4 4-4"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </div>
+      </div>
+    `;
+  }
+
   override render() {
     const selectedLabel = this.getSelectedLabel();
     const listboxId = `${this.selectId}-listbox`;
+
+    // Get options to render (filtered if searchable, all otherwise)
+    const optionsToRender = this.searchable ? this.filteredOptions : this.options;
 
     return html`
       <div class="select-wrapper">
@@ -1906,48 +2073,9 @@ export class Select extends TailwindElement {
             `
           : nothing}
 
-        <div
-          id=${this.selectId}
-          class=${this.getTriggerClasses()}
-          role="combobox"
-          aria-expanded=${this.open ? 'true' : 'false'}
-          aria-haspopup="listbox"
-          aria-controls=${listboxId}
-          aria-activedescendant=${this.open && this.activeIndex >= 0
-            ? this.isSlottedMode
-              ? this.slottedOptions[this.activeIndex]?.getId() || ''
-              : `${this.selectId}-option-${this.activeIndex}`
-            : ''}
-          aria-disabled=${this.disabled ? 'true' : 'false'}
-          aria-invalid=${this.showError ? 'true' : nothing}
-          tabindex=${this.disabled ? '-1' : '0'}
-          @click=${this.handleTriggerClick}
-          @keydown=${this.handleKeydown}
-          @blur=${this.handleBlur}
-        >
-          ${this.multiple && this.selectedValues.size > 0
-            ? this.renderTags()
-            : selectedLabel
-              ? html`<span class="selected-value">${selectedLabel}</span>`
-              : html`<span class="placeholder">${this.placeholder}</span>`}
-          <div class="trigger-actions">
-            ${this.renderClearButton()}
-            <svg
-              class="chevron ${this.open ? 'chevron-open' : ''}"
-              viewBox="0 0 16 16"
-              fill="none"
-              stroke="currentColor"
-              aria-hidden="true"
-            >
-              <path
-                d="M4 6l4 4 4-4"
-                stroke-width="2"
-                stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-            </svg>
-          </div>
-        </div>
+        ${this.searchable
+          ? this.renderSearchableTrigger(listboxId)
+          : this.renderDefaultTrigger(listboxId, selectedLabel)}
 
         <!-- Dropdown listbox -->
         <div
@@ -1959,11 +2087,13 @@ export class Select extends TailwindElement {
           ?hidden=${!this.open}
         >
           ${this.renderSelectAllActions()}
-          ${this.options.length > 0
-            ? this.options.map((option, index) =>
+          ${optionsToRender.length > 0
+            ? optionsToRender.map((option, index) =>
                 this.renderOption(option, index)
               )
-            : html`<slot @slotchange=${this.handleSlotChange}></slot>`}
+            : this.searchable && this.filterQuery && this.options.length > 0
+              ? html`<div class="empty-state">No results found</div>`
+              : html`<slot @slotchange=${this.handleSlotChange}></slot>`}
         </div>
 
         ${this.showError && this.errorMessage
