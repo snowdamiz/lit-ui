@@ -917,30 +917,125 @@ export class Select extends TailwindElement {
   }
 
   /**
+   * Find all occurrences of query in text (case-insensitive).
+   * Returns array of [start, end] tuples for ALL matches.
+   * @example findAllMatches("Banana", "an") returns [[1, 3], [3, 5]]
+   */
+  private findAllMatches(text: string, query: string): [number, number][] {
+    if (!query) return [];
+
+    const matches: [number, number][] = [];
+    const lowerText = text.toLowerCase();
+    const lowerQuery = query.toLowerCase();
+    let startIndex = 0;
+
+    while (startIndex < lowerText.length) {
+      const foundIndex = lowerText.indexOf(lowerQuery, startIndex);
+      if (foundIndex === -1) break;
+
+      matches.push([foundIndex, foundIndex + lowerQuery.length]);
+      startIndex = foundIndex + 1; // Allow overlapping matches
+    }
+
+    return matches;
+  }
+
+  /**
    * Get filtered options based on filterQuery.
-   * Returns all options if not searchable or filter is empty.
+   * Returns FilterMatch[] with match indices for highlighting.
    * Uses customFilter if provided, otherwise case-insensitive contains matching.
    */
-  private get filteredOptions(): SelectOption[] {
+  private get filteredOptions(): FilterMatch[] {
     const options = this.effectiveOptions;
 
-    // Return all options if not searchable or filter is empty
+    // Return all options with empty matchIndices if not searchable or filter is empty
     if (!this.searchable || !this.filterQuery) {
-      return options;
+      return options.map((option, index) => ({
+        option,
+        originalIndex: index,
+        matchIndices: [],
+      }));
     }
 
-    // Use custom filter if provided
+    // Use custom filter if provided (no highlighting for custom filters)
     if (this.customFilter) {
-      return options.filter((option) => this.customFilter!(option, this.filterQuery));
+      return options
+        .map((option, index) => ({
+          option,
+          originalIndex: index,
+          matchIndices: [] as [number, number][],
+        }))
+        .filter((fm) => this.customFilter!(fm.option, this.filterQuery));
     }
 
-    // Default: case-insensitive contains matching on label
-    const lowerQuery = this.filterQuery.toLowerCase();
+    // Default: case-insensitive contains matching on label with match indices
+    const results: FilterMatch[] = [];
 
-    return options.filter((option) => {
-      const searchText = (option.label || option.value).toLowerCase();
-      return searchText.includes(lowerQuery);
-    });
+    for (let index = 0; index < options.length; index++) {
+      const option = options[index];
+      const searchText = option.label || option.value;
+      const matchIndices = this.findAllMatches(searchText, this.filterQuery);
+
+      if (matchIndices.length > 0) {
+        results.push({
+          option,
+          originalIndex: index,
+          matchIndices,
+        });
+      }
+    }
+
+    return results;
+  }
+
+  /**
+   * Render label with highlighted matches.
+   * @param label The full label text
+   * @param matchIndices Array of [start, end] tuples for match positions
+   * @returns Template with highlighted portions
+   */
+  private renderHighlightedLabel(label: string, matchIndices: [number, number][]) {
+    if (matchIndices.length === 0) {
+      return label;
+    }
+
+    // Sort and merge overlapping matches
+    const sorted = [...matchIndices].sort((a, b) => a[0] - b[0]);
+    const merged: [number, number][] = [];
+
+    for (const [start, end] of sorted) {
+      if (merged.length === 0 || start > merged[merged.length - 1][1]) {
+        merged.push([start, end]);
+      } else {
+        // Merge overlapping
+        merged[merged.length - 1][1] = Math.max(merged[merged.length - 1][1], end);
+      }
+    }
+
+    // Build segments
+    const segments: Array<{ text: string; highlighted: boolean }> = [];
+    let lastEnd = 0;
+
+    for (const [start, end] of merged) {
+      // Non-matching text before this match
+      if (start > lastEnd) {
+        segments.push({ text: label.slice(lastEnd, start), highlighted: false });
+      }
+      // Matching text
+      segments.push({ text: label.slice(start, end), highlighted: true });
+      lastEnd = end;
+    }
+
+    // Remaining text after last match
+    if (lastEnd < label.length) {
+      segments.push({ text: label.slice(lastEnd), highlighted: false });
+    }
+
+    return html`${segments.map((seg) =>
+      seg.highlighted
+        ? html`<strong class="highlight">${seg.text}</strong>`
+        : seg.text
+    )}`;
   }
 
   /**
@@ -963,11 +1058,14 @@ export class Select extends TailwindElement {
     // Reset active index based on filtered results
     const filtered = this.filteredOptions;
     if (filtered.length > 0) {
-      this.activeIndex = filtered.findIndex((o) => !o.disabled);
+      this.activeIndex = filtered.findIndex((fm) => !fm.option.disabled);
       if (this.activeIndex < 0) this.activeIndex = 0;
     } else {
       this.activeIndex = -1;
     }
+
+    // Clear create option active when filter changes
+    this.createOptionActive = false;
 
     this.requestUpdate();
   }
@@ -1543,6 +1641,7 @@ export class Select extends TailwindElement {
 
     this.open = false;
     this.activeIndex = -1;
+    this.createOptionActive = false;
 
     // Clear filter query when closing (reset for next open)
     if (this.searchable) {
@@ -1760,6 +1859,11 @@ export class Select extends TailwindElement {
         break;
       case 'Enter':
         e.preventDefault();
+        // Handle create option selection
+        if (this.createOptionActive) {
+          this.fireCreateEvent();
+          break;
+        }
         if (this.multiple) {
           // Multi-select: Enter closes dropdown
           this.closeDropdown();
@@ -1772,6 +1876,12 @@ export class Select extends TailwindElement {
         }
         break;
       case ' ':
+        // Handle create option selection via Space
+        if (this.createOptionActive) {
+          e.preventDefault();
+          this.fireCreateEvent();
+          break;
+        }
         // In searchable mode, Space goes to input (for typing)
         // But in multi-select, if we have an active option, toggle it
         if (this.multiple && this.activeIndex >= 0) {
@@ -1877,9 +1987,13 @@ export class Select extends TailwindElement {
 
   /**
    * Get the options list for navigation (filtered if searchable, all otherwise).
+   * Extracts SelectOption from FilterMatch when in searchable mode.
    */
   private get navigationOptions(): SelectOption[] {
-    return this.searchable ? this.filteredOptions : this.effectiveOptions;
+    if (this.searchable) {
+      return this.filteredOptions.map((fm) => fm.option);
+    }
+    return this.effectiveOptions;
   }
 
   /**
@@ -1908,8 +2022,16 @@ export class Select extends TailwindElement {
 
   /**
    * Focus the next enabled option (wraps to first).
+   * If create option is visible and we're at the last option, focus create option.
    */
   private focusNextEnabledOption(): void {
+    // If create option is active, wrap to first option
+    if (this.createOptionActive) {
+      this.setCreateOptionActive(false);
+      this.focusFirstEnabledOption();
+      return;
+    }
+
     const opts = this.navigationOptions;
     for (let i = this.activeIndex + 1; i < opts.length; i++) {
       if (!opts[i].disabled) {
@@ -1917,14 +2039,36 @@ export class Select extends TailwindElement {
         return;
       }
     }
+
+    // At end of options - check if create option should be focused
+    if (this.shouldShowCreateOption()) {
+      this.setCreateOptionActive(true);
+      // Scroll create option into view
+      this.updateComplete.then(() => {
+        const createEl = this.shadowRoot?.getElementById(
+          `${this.selectId}-create-option`
+        );
+        createEl?.scrollIntoView({ block: 'nearest' });
+      });
+      return;
+    }
+
     // Wrap to first if at end
     this.focusFirstEnabledOption();
   }
 
   /**
    * Focus the previous enabled option (wraps to last).
+   * If create option is active, focus last regular option instead.
    */
   private focusPreviousEnabledOption(): void {
+    // If create option is active, go to last regular option
+    if (this.createOptionActive) {
+      this.setCreateOptionActive(false);
+      this.focusLastEnabledOption();
+      return;
+    }
+
     const opts = this.navigationOptions;
     for (let i = this.activeIndex - 1; i >= 0; i--) {
       if (!opts[i].disabled) {
@@ -1932,15 +2076,31 @@ export class Select extends TailwindElement {
         return;
       }
     }
+
+    // At beginning - if create option visible, go to it; otherwise wrap to last
+    if (this.shouldShowCreateOption()) {
+      this.setCreateOptionActive(true);
+      this.updateComplete.then(() => {
+        const createEl = this.shadowRoot?.getElementById(
+          `${this.selectId}-create-option`
+        );
+        createEl?.scrollIntoView({ block: 'nearest' });
+      });
+      return;
+    }
+
     // Wrap to last if at beginning
     this.focusLastEnabledOption();
   }
 
   /**
    * Set the active option index and scroll into view.
+   * Clears createOptionActive when setting a regular option active.
    */
   private setActiveIndex(index: number): void {
     this.activeIndex = index;
+    // Clear create option active when selecting a regular option
+    this.createOptionActive = false;
 
     // Sync active state for slotted options
     if (this.isSlottedMode) {
@@ -1966,9 +2126,14 @@ export class Select extends TailwindElement {
    * In single-select mode, sets value and closes dropdown.
    */
   private selectOption(index: number): void {
-    // In searchable mode, get option from filtered list
-    const opts = this.searchable ? this.filteredOptions : this.effectiveOptions;
-    const option = opts[index];
+    // In searchable mode, get option from filtered list (extract from FilterMatch)
+    let option: SelectOption | undefined;
+    if (this.searchable) {
+      const fm = this.filteredOptions[index];
+      option = fm?.option;
+    } else {
+      option = this.effectiveOptions[index];
+    }
     if (!option || option.disabled) return;
 
     if (this.multiple) {
@@ -2044,7 +2209,15 @@ export class Select extends TailwindElement {
    * Get the label of the currently active option for ARIA live region.
    */
   private getActiveOptionLabel(): string {
-    const opts = this.searchable ? this.filteredOptions : this.effectiveOptions;
+    if (this.searchable) {
+      const filtered = this.filteredOptions;
+      if (this.activeIndex < 0 || this.activeIndex >= filtered.length) {
+        return '';
+      }
+      const fm = filtered[this.activeIndex];
+      return fm.option.label || fm.option.value;
+    }
+    const opts = this.effectiveOptions;
     if (this.activeIndex < 0 || this.activeIndex >= opts.length) {
       return '';
     }
@@ -2056,8 +2229,10 @@ export class Select extends TailwindElement {
    * Get the count of enabled options (uses filtered list in searchable mode).
    */
   private getEnabledOptionsCount(): number {
-    const opts = this.searchable ? this.filteredOptions : this.effectiveOptions;
-    return opts.filter((o) => !o.disabled).length;
+    if (this.searchable) {
+      return this.filteredOptions.filter((fm) => !fm.option.disabled).length;
+    }
+    return this.effectiveOptions.filter((o) => !o.disabled).length;
   }
 
   /**
@@ -2105,8 +2280,11 @@ export class Select extends TailwindElement {
 
   /**
    * Render an individual option.
+   * @param filterMatch The FilterMatch containing option and match indices
+   * @param index The index in the filtered/displayed list
    */
-  private renderOption(option: SelectOption, index: number) {
+  private renderOption(filterMatch: FilterMatch, index: number) {
+    const { option, matchIndices } = filterMatch;
     const isActive = index === this.activeIndex;
     const isSelected = this.multiple
       ? this.selectedValues.has(option.value)
@@ -2115,6 +2293,13 @@ export class Select extends TailwindElement {
     if (isActive) classes.push('option-active');
     if (isSelected) classes.push('option-selected');
     if (option.disabled) classes.push('option-disabled');
+
+    // Use highlighted label when filtering, plain label otherwise
+    const label = option.label || option.value;
+    const labelContent =
+      this.searchable && this.filterQuery && matchIndices.length > 0
+        ? this.renderHighlightedLabel(label, matchIndices)
+        : label;
 
     return html`
       <div
@@ -2127,7 +2312,7 @@ export class Select extends TailwindElement {
         @mouseenter=${() => this.setCreateOptionActive(false)}
       >
         ${this.renderSelectionIndicator(isSelected)}
-        <span>${option.label || option.value}</span>
+        <span>${labelContent}</span>
       </div>
     `;
   }
@@ -2219,6 +2404,29 @@ export class Select extends TailwindElement {
   }
 
   /**
+   * Get the aria-activedescendant value based on current state.
+   * Handles both regular options and create option.
+   */
+  private getAriaActiveDescendant(): string {
+    if (!this.open) return '';
+
+    // Create option is active
+    if (this.createOptionActive) {
+      return `${this.selectId}-create-option`;
+    }
+
+    // Regular option is active
+    if (this.activeIndex >= 0) {
+      if (this.isSlottedMode) {
+        return this.slottedOptions[this.activeIndex]?.getId() || '';
+      }
+      return `${this.selectId}-option-${this.activeIndex}`;
+    }
+
+    return '';
+  }
+
+  /**
    * Render the searchable trigger (text input mode).
    * Used when searchable prop is true.
    */
@@ -2234,9 +2442,7 @@ export class Select extends TailwindElement {
           aria-haspopup="listbox"
           aria-controls=${listboxId}
           aria-autocomplete="list"
-          aria-activedescendant=${this.open && this.activeIndex >= 0
-            ? `${this.selectId}-option-${this.activeIndex}`
-            : ''}
+          aria-activedescendant=${this.getAriaActiveDescendant()}
           aria-invalid=${this.showError ? 'true' : nothing}
           placeholder=${this.placeholder}
           .value=${this.getInputDisplayValue()}
@@ -2280,11 +2486,7 @@ export class Select extends TailwindElement {
         aria-expanded=${this.open ? 'true' : 'false'}
         aria-haspopup="listbox"
         aria-controls=${listboxId}
-        aria-activedescendant=${this.open && this.activeIndex >= 0
-          ? this.isSlottedMode
-            ? this.slottedOptions[this.activeIndex]?.getId() || ''
-            : `${this.selectId}-option-${this.activeIndex}`
-          : ''}
+        aria-activedescendant=${this.getAriaActiveDescendant()}
         aria-disabled=${this.disabled ? 'true' : 'false'}
         aria-invalid=${this.showError ? 'true' : nothing}
         tabindex=${this.disabled ? '-1' : '0'}
@@ -2322,8 +2524,21 @@ export class Select extends TailwindElement {
     const selectedLabel = this.getSelectedLabel();
     const listboxId = `${this.selectId}-listbox`;
 
-    // Get options to render (filtered if searchable, all otherwise)
-    const optionsToRender = this.searchable ? this.filteredOptions : this.options;
+    // Get options to render as FilterMatch[]
+    // When searchable, use filteredOptions (already FilterMatch[])
+    // When not searchable but using options prop, convert to FilterMatch[]
+    let optionsToRender: FilterMatch[];
+    if (this.searchable) {
+      optionsToRender = this.filteredOptions;
+    } else if (this.options.length > 0) {
+      optionsToRender = this.options.map((option, index) => ({
+        option,
+        originalIndex: index,
+        matchIndices: [],
+      }));
+    } else {
+      optionsToRender = [];
+    }
 
     return html`
       <div class="select-wrapper">
@@ -2353,8 +2568,8 @@ export class Select extends TailwindElement {
         >
           ${this.renderSelectAllActions()}
           ${optionsToRender.length > 0
-            ? optionsToRender.map((option, index) =>
-                this.renderOption(option, index)
+            ? optionsToRender.map((filterMatch, index) =>
+                this.renderOption(filterMatch, index)
               )
             : this.searchable && this.filterQuery && this.options.length > 0
               ? html`<div class="empty-state">No results found</div>`
