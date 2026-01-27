@@ -285,10 +285,12 @@ export class Select extends TailwindElement {
 
   /**
    * Array of options to display in the dropdown.
+   * Can be a static array OR a Promise that resolves to options.
+   * When a Promise is provided, component shows loading state until resolved.
    * @default []
    */
-  @property({ type: Array })
-  options: SelectOption[] = [];
+  @property({ attribute: false })
+  options: SelectOption[] | Promise<SelectOption[]> = [];
 
   /**
    * Whether the dropdown is currently open.
@@ -363,6 +365,25 @@ export class Select extends TailwindElement {
    */
   @state()
   private _searchResults: SelectOption[] | null = null;
+
+  /**
+   * Options loaded from async source (Promise).
+   * Used internally to track resolved async options.
+   */
+  @state()
+  private _loadedAsyncOptions: SelectOption[] | null = null;
+
+  /**
+   * Whether async options are currently loading.
+   */
+  @state()
+  private _asyncLoading = false;
+
+  /**
+   * Error from async options loading.
+   */
+  @state()
+  private _asyncError: Error | null = null;
 
   /**
    * Internal storage for single-select value.
@@ -468,12 +489,54 @@ export class Select extends TailwindElement {
   }
 
   /**
+   * Task controller for loading async options.
+   * Handles Promise-based options with proper state management.
+   */
+  private _optionsTask = new Task(this, {
+    task: async ([optionsProp], { signal }) => {
+      // Sync array - return immediately
+      if (Array.isArray(optionsProp)) {
+        this._loadedAsyncOptions = null;
+        this._asyncLoading = false;
+        this._asyncError = null;
+        return optionsProp;
+      }
+
+      // Promise - track loading state
+      this._asyncLoading = true;
+      this._asyncError = null;
+
+      try {
+        const resolved = await optionsProp;
+        signal.throwIfAborted();
+        this._loadedAsyncOptions = resolved;
+        this._asyncLoading = false;
+        return resolved;
+      } catch (err) {
+        if ((err as Error).name === 'AbortError') {
+          throw err; // Let Task handle abort
+        }
+        this._asyncLoading = false;
+        this._asyncError = err as Error;
+        // Clear selection on error (per CONTEXT.md decision)
+        if (this.multiple) {
+          this.selectedValues.clear();
+        } else {
+          this._value = '';
+        }
+        this.updateFormValue();
+        throw err;
+      }
+    },
+    args: () => [this.options] as const,
+  });
+
+  /**
+  /**
    * Check if component is in async options mode (Promise-based options).
-   * Stub for Plan 36-02 - async options loading.
    */
   private get _isAsyncMode(): boolean {
-    // Will be implemented by Plan 36-02
-    return false;
+    return this.options instanceof Promise || this._loadedAsyncOptions !== null;
   }
 
   /**
@@ -1151,7 +1214,7 @@ export class Select extends TailwindElement {
 
   /**
    * Get the effective options list.
-   * Options property takes precedence over slotted options (backwards compatible).
+   * Resolves async options, search results, or slotted options.
    * Returns array of objects with value, label, disabled.
    */
   private get effectiveOptions(): SelectOption[] {
@@ -1159,8 +1222,12 @@ export class Select extends TailwindElement {
     if (this._searchResults !== null) {
       return this._searchResults;
     }
-    // Options property takes precedence (backwards compatible)
-    if (this.options.length > 0) {
+    // Loaded async options next (when options is a Promise)
+    if (this._loadedAsyncOptions !== null) {
+      return this._loadedAsyncOptions;
+    }
+    // Static options property (backwards compatible)
+    if (Array.isArray(this.options) && this.options.length > 0) {
       return this.options;
     }
     // Otherwise use slotted options
@@ -1175,7 +1242,9 @@ export class Select extends TailwindElement {
    * Check if using slotted mode (no options property, has slotted children).
    */
   private get isSlottedMode(): boolean {
-    return this.options.length === 0 && this.slottedOptions.length > 0;
+    const hasStaticOptions = Array.isArray(this.options) && this.options.length > 0;
+    const hasAsyncOptions = this._loadedAsyncOptions !== null && this._loadedAsyncOptions.length > 0;
+    return !hasStaticOptions && !hasAsyncOptions && this.slottedOptions.length > 0;
   }
 
   /**
@@ -1205,10 +1274,20 @@ export class Select extends TailwindElement {
   /**
    * Get filtered options based on filterQuery.
    * Returns FilterMatch[] with match indices for highlighting.
+   * In async search mode, returns effectiveOptions directly (server filters).
    * Uses customFilter if provided, otherwise case-insensitive contains matching.
    */
   private get filteredOptions(): FilterMatch[] {
     const options = this.effectiveOptions;
+
+    // In async search mode, server handles filtering - return all options
+    if (this._isAsyncSearchMode && this._searchResults !== null) {
+      return options.map((option, index) => ({
+        option,
+        originalIndex: index,
+        matchIndices: [], // No highlighting for async results (server filtered)
+      }));
+    }
 
     // Return all options with empty matchIndices if not searchable or filter is empty
     if (!this.searchable || !this.filterQuery) {
@@ -2470,12 +2549,22 @@ export class Select extends TailwindElement {
 
   /**
    * Set the active option index and scroll into view.
+   * Uses virtualizer.scrollToIndex when virtualized, otherwise native scrollIntoView.
    * Clears createOptionActive when setting a regular option active.
    */
   private setActiveIndex(index: number): void {
     this.activeIndex = index;
     // Clear create option active when selecting a regular option
     this.createOptionActive = false;
+
+    // Use virtualizer scrollToIndex when virtualized
+    if (this._isVirtualized && this._virtualizer) {
+      this._virtualizer.getVirtualizer().scrollToIndex(index, {
+        align: 'auto',
+        behavior: 'auto',
+      });
+      return;
+    }
 
     // Sync active state for slotted options
     if (this.isSlottedMode) {
@@ -2985,12 +3074,13 @@ export class Select extends TailwindElement {
 
     // Get options to render as FilterMatch[]
     // When searchable, use filteredOptions (already FilterMatch[])
-    // When not searchable but using options prop, convert to FilterMatch[]
+    // When not searchable, convert effectiveOptions to FilterMatch[]
+    const effective = this.effectiveOptions;
     let optionsToRender: FilterMatch[];
     if (this.searchable) {
       optionsToRender = this.filteredOptions;
-    } else if (this.options.length > 0) {
-      optionsToRender = this.options.map((option, index) => ({
+    } else if (effective.length > 0) {
+      optionsToRender = effective.map((option, index) => ({
         option,
         originalIndex: index,
         matchIndices: [],
