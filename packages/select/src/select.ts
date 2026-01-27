@@ -1565,6 +1565,48 @@ export class Select extends TailwindElement {
         margin-right: 0.5rem;
         flex-shrink: 0;
       }
+
+      /* Skeleton loading placeholders */
+      .option-skeleton {
+        display: flex;
+        align-items: center;
+        padding: var(--ui-select-option-padding-y, 0.5rem)
+          var(--ui-select-option-padding-x, 0.75rem);
+        gap: 0.5rem;
+      }
+
+      .skeleton-indicator {
+        width: 1rem;
+        height: 1rem;
+        border-radius: var(--radius-sm, 0.25rem);
+        background: var(--ui-select-skeleton-bg, hsl(200, 20%, 88%));
+        animation: skeleton-pulse 1.5s ease-in-out infinite;
+        flex-shrink: 0;
+      }
+
+      .skeleton-text {
+        height: 1rem;
+        border-radius: var(--radius-sm, 0.25rem);
+        background: var(--ui-select-skeleton-bg, hsl(200, 20%, 88%));
+        animation: skeleton-pulse 1.5s ease-in-out infinite;
+      }
+
+      /* Vary skeleton text widths for natural appearance */
+      .skeleton-text-1 { width: 70%; }
+      .skeleton-text-2 { width: 55%; }
+      .skeleton-text-3 { width: 80%; }
+      .skeleton-text-4 { width: 60%; }
+
+      @keyframes skeleton-pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+      }
+
+      /* Dark mode skeleton colors */
+      :host-context(.dark) .skeleton-indicator,
+      :host-context(.dark) .skeleton-text {
+        background: var(--ui-select-skeleton-bg, hsl(200, 10%, 30%));
+      }
     `,
   ];
 
@@ -2403,6 +2445,27 @@ export class Select extends TailwindElement {
         </svg>
         <span>Create "${this.filterQuery}"</span>
       </div>
+    `;
+  }
+
+  /**
+   * Render skeleton loading placeholders.
+   * Used during initial async load, search loading, and load-more.
+   * @param count Number of skeleton rows to render (default 4)
+   */
+  private renderSkeletonOptions(count = 4) {
+    // Rotate through text widths for natural appearance
+    const textWidths = ['skeleton-text-1', 'skeleton-text-2', 'skeleton-text-3', 'skeleton-text-4'];
+
+    return html`
+      ${Array.from({ length: count }).map((_, index) => html`
+        <div class="option-skeleton" role="presentation" aria-hidden="true">
+          ${this.multiple ? html`
+            <div class="skeleton-indicator"></div>
+          ` : nothing}
+          <div class="skeleton-text ${textWidths[index % textWidths.length]}"></div>
+        </div>
+      `)}
     `;
   }
 
