@@ -124,66 +124,66 @@ Deferred to later milestones.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CHKB-01 | TBD | Pending |
-| CHKB-02 | TBD | Pending |
-| CHKB-03 | TBD | Pending |
-| CHKB-04 | TBD | Pending |
-| CHKB-05 | TBD | Pending |
-| CHKB-06 | TBD | Pending |
-| CHKB-07 | TBD | Pending |
-| CHKB-08 | TBD | Pending |
-| CHKB-09 | TBD | Pending |
-| CHKB-10 | TBD | Pending |
-| CHKB-11 | TBD | Pending |
-| CHKB-12 | TBD | Pending |
-| CHKB-13 | TBD | Pending |
-| CHKB-14 | TBD | Pending |
-| CGRP-01 | TBD | Pending |
-| CGRP-02 | TBD | Pending |
-| CGRP-03 | TBD | Pending |
-| CGRP-04 | TBD | Pending |
-| CGRP-05 | TBD | Pending |
-| RDIO-01 | TBD | Pending |
-| RDIO-02 | TBD | Pending |
-| RDIO-03 | TBD | Pending |
-| RDIO-04 | TBD | Pending |
-| RDIO-05 | TBD | Pending |
-| RDIO-06 | TBD | Pending |
-| RDIO-07 | TBD | Pending |
-| RDIO-08 | TBD | Pending |
-| RGRP-01 | TBD | Pending |
-| RGRP-02 | TBD | Pending |
-| RGRP-03 | TBD | Pending |
-| RGRP-04 | TBD | Pending |
-| RGRP-05 | TBD | Pending |
-| RGRP-06 | TBD | Pending |
-| RGRP-07 | TBD | Pending |
-| RGRP-08 | TBD | Pending |
-| SWCH-01 | TBD | Pending |
-| SWCH-02 | TBD | Pending |
-| SWCH-03 | TBD | Pending |
-| SWCH-04 | TBD | Pending |
-| SWCH-05 | TBD | Pending |
-| SWCH-06 | TBD | Pending |
-| SWCH-07 | TBD | Pending |
-| SWCH-08 | TBD | Pending |
-| SWCH-09 | TBD | Pending |
-| SWCH-10 | TBD | Pending |
-| SWCH-11 | TBD | Pending |
-| SWCH-12 | TBD | Pending |
-| SWCH-13 | TBD | Pending |
-| SWCH-14 | TBD | Pending |
-| CLIDOC-01 | TBD | Pending |
-| CLIDOC-02 | TBD | Pending |
-| CLIDOC-03 | TBD | Pending |
-| CLIDOC-04 | TBD | Pending |
-| CLIDOC-05 | TBD | Pending |
+| SWCH-01 | Phase 38 | Pending |
+| SWCH-02 | Phase 38 | Pending |
+| SWCH-03 | Phase 38 | Pending |
+| SWCH-04 | Phase 38 | Pending |
+| SWCH-05 | Phase 38 | Pending |
+| SWCH-06 | Phase 38 | Pending |
+| SWCH-07 | Phase 38 | Pending |
+| SWCH-08 | Phase 38 | Pending |
+| SWCH-09 | Phase 38 | Pending |
+| SWCH-10 | Phase 38 | Pending |
+| SWCH-11 | Phase 38 | Pending |
+| SWCH-12 | Phase 38 | Pending |
+| SWCH-13 | Phase 38 | Pending |
+| SWCH-14 | Phase 38 | Pending |
+| CHKB-01 | Phase 39 | Pending |
+| CHKB-02 | Phase 39 | Pending |
+| CHKB-03 | Phase 39 | Pending |
+| CHKB-04 | Phase 39 | Pending |
+| CHKB-05 | Phase 39 | Pending |
+| CHKB-06 | Phase 39 | Pending |
+| CHKB-07 | Phase 39 | Pending |
+| CHKB-08 | Phase 39 | Pending |
+| CHKB-09 | Phase 39 | Pending |
+| CHKB-10 | Phase 39 | Pending |
+| CHKB-11 | Phase 39 | Pending |
+| CHKB-12 | Phase 39 | Pending |
+| CHKB-13 | Phase 39 | Pending |
+| CHKB-14 | Phase 39 | Pending |
+| CGRP-01 | Phase 39 | Pending |
+| CGRP-02 | Phase 39 | Pending |
+| CGRP-03 | Phase 39 | Pending |
+| CGRP-04 | Phase 39 | Pending |
+| CGRP-05 | Phase 39 | Pending |
+| RDIO-01 | Phase 40 | Pending |
+| RDIO-02 | Phase 40 | Pending |
+| RDIO-03 | Phase 40 | Pending |
+| RDIO-04 | Phase 40 | Pending |
+| RDIO-05 | Phase 40 | Pending |
+| RDIO-06 | Phase 40 | Pending |
+| RDIO-07 | Phase 40 | Pending |
+| RDIO-08 | Phase 40 | Pending |
+| RGRP-01 | Phase 40 | Pending |
+| RGRP-02 | Phase 40 | Pending |
+| RGRP-03 | Phase 40 | Pending |
+| RGRP-04 | Phase 40 | Pending |
+| RGRP-05 | Phase 40 | Pending |
+| RGRP-06 | Phase 40 | Pending |
+| RGRP-07 | Phase 40 | Pending |
+| RGRP-08 | Phase 40 | Pending |
+| CLIDOC-01 | Phase 41 | Pending |
+| CLIDOC-02 | Phase 41 | Pending |
+| CLIDOC-03 | Phase 41 | Pending |
+| CLIDOC-04 | Phase 41 | Pending |
+| CLIDOC-05 | Phase 41 | Pending |
 
 **Coverage:**
-- v4.2 requirements: 51 total
-- Mapped to phases: 0
-- Unmapped: 51
+- v4.2 requirements: 54 total
+- Mapped to phases: 54
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-01-26*
-*Last updated: 2026-01-26 after initial definition*
+*Last updated: 2026-01-26 after roadmap phase mapping*
