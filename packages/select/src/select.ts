@@ -511,6 +511,12 @@ export class Select extends TailwindElement {
         signal.throwIfAborted();
         this._loadedAsyncOptions = resolved;
         this._asyncLoading = false;
+        // Schedule virtualizer update after render
+        this.updateComplete.then(() => {
+          if (this._isVirtualized && this.open) {
+            this.updateVirtualizer();
+          }
+        });
         return resolved;
       } catch (err) {
         if ((err as Error).name === 'AbortError') {
@@ -601,6 +607,12 @@ export class Select extends TailwindElement {
         }
 
         this.requestUpdate();
+        // Update virtualizer with new options count
+        this.updateComplete.then(() => {
+          if (this._isVirtualized && this.open) {
+            this.updateVirtualizer();
+          }
+        });
       } catch (err) {
         // Ignore AbortError - expected when request is cancelled
         if ((err as Error).name === 'AbortError') {
@@ -1916,7 +1928,7 @@ export class Select extends TailwindElement {
         font-style: italic;
       }
 
-      /* Error state for async loading/search failures */
+      /* Error state styling */
       .error-state {
         padding: var(--ui-select-option-padding-y, 0.5rem)
           var(--ui-select-option-padding-x, 0.75rem);
@@ -1928,17 +1940,17 @@ export class Select extends TailwindElement {
         flex-direction: column;
         align-items: center;
         gap: 0.5rem;
+        color: var(--ui-select-text-error, var(--color-destructive));
       }
 
       .error-message {
-        color: var(--ui-select-text-error, var(--color-destructive));
         font-size: 0.875em;
       }
 
       .retry-link {
+        color: var(--color-primary);
         background: none;
         border: none;
-        color: var(--color-primary, var(--ui-color-primary));
         cursor: pointer;
         font-size: 0.875em;
         text-decoration: underline;
@@ -1947,6 +1959,12 @@ export class Select extends TailwindElement {
 
       .retry-link:hover {
         text-decoration: none;
+      }
+
+      .retry-link:focus-visible {
+        outline: 2px solid var(--ui-select-ring);
+        outline-offset: 2px;
+        border-radius: var(--radius-sm, 0.25rem);
       }
 
       /* Match highlight for searchable mode */
@@ -2103,12 +2121,16 @@ export class Select extends TailwindElement {
 
     this.requestUpdate();
 
-    // Position after render
+    // Position after render and initialize virtualizer for async mode
     this.updateComplete.then(() => {
       this.positionDropdown(this.triggerEl, this.listboxEl);
       // Sync active state for slotted options
       if (this.isSlottedMode) {
         this.syncSlottedActiveState();
+      }
+      // Initialize virtualizer for async mode
+      if (this._isVirtualized) {
+        this.updateVirtualizer();
       }
     });
   }
@@ -2913,11 +2935,12 @@ export class Select extends TailwindElement {
 
   /**
    * Render error state with retry action.
-   * Handles search errors.
+   * Handles both async options errors and search errors.
    * Supports error slot for full customization.
    */
   private renderErrorState() {
-    const errorMessage = this._searchError?.message || 'Failed to load options';
+    const errorMessage = this._asyncError?.message || this._searchError?.message || 'Failed to load options';
+    const handleRetry = this._asyncError ? this.handleRetry : this.handleSearchRetry;
 
     return html`
       <div class="error-state" role="alert">
@@ -2927,7 +2950,7 @@ export class Select extends TailwindElement {
             <button
               type="button"
               class="retry-link"
-              @click=${this.handleSearchRetry}
+              @click=${handleRetry}
             >
               Try again
             </button>
@@ -2935,6 +2958,15 @@ export class Select extends TailwindElement {
         </slot>
       </div>
     `;
+  }
+
+  /**
+   * Handle retry button click to re-fetch async options.
+   */
+  private handleRetry(): void {
+    this._asyncError = null;
+    this._asyncLoading = true;
+    this._optionsTask.run();
   }
 
   /**
@@ -3176,26 +3208,29 @@ export class Select extends TailwindElement {
         <!-- Dropdown listbox -->
         <div
           id=${listboxId}
-          class="listbox"
+          class="listbox ${this._isVirtualized ? 'listbox-virtual' : ''}"
           role="listbox"
           aria-labelledby=${this.selectId}
           aria-multiselectable=${this.multiple ? 'true' : nothing}
           ?hidden=${!this.open}
+          ${this._isVirtualized ? ref(this._listboxRef) : nothing}
         >
           ${this.renderSelectAllActions()}
-          ${this._searchLoading
+          ${this._asyncLoading || this._searchLoading
             ? this.renderSkeletonOptions(4)
-            : this._searchError
+            : this._asyncError || this._searchError
               ? this.renderErrorState()
-              : optionsToRender.length > 0
-                ? optionsToRender.map((filterMatch, index) =>
-                    this.renderOption(filterMatch, index)
-                  )
-                : this.searchable && this.filterQuery
-                  ? this.renderEmptyState()
-                  : nothing}
+              : this._isVirtualized && optionsToRender.length > 0
+                ? this.renderVirtualizedOptions()
+                : optionsToRender.length > 0
+                  ? optionsToRender.map((filterMatch, index) =>
+                      this.renderOption(filterMatch, index)
+                    )
+                  : this.searchable && this.filterQuery
+                    ? this.renderEmptyState()
+                    : nothing}
           <!-- Always render slot to keep it in DOM, hide when rendering programmatic options -->
-          <div style=${optionsToRender.length > 0 || (this.searchable && this.filterQuery) || this._searchLoading || this._searchError ? 'display:none' : ''}>
+          <div style=${optionsToRender.length > 0 || (this.searchable && this.filterQuery) || this._asyncLoading || this._asyncError || this._searchLoading || this._searchError || this._isVirtualized ? 'display:none' : ''}>
             <slot @slotchange=${this.handleSlotChange}></slot>
           </div>
           ${this.renderCreateOption()}
