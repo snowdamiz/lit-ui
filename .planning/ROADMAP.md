@@ -290,7 +290,11 @@ Plans:
 
 **Requirements:** INFRA-05, INFRA-06
 
-**Plans:** TBD
+**Plans:** 2 plans
+
+Plans:
+- [ ] 37-01-PLAN.md — CLI NPM mode and list command integration
+- [ ] 37-02-PLAN.md — Async & Performance documentation section
 
 **Success Criteria:**
 
