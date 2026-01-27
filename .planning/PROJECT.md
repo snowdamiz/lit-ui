@@ -4,20 +4,21 @@
 
 A framework-agnostic component library built on Lit.js, following ShadCN's philosophy of beautiful defaults and CLI-driven installation. Components work natively in React, Vue, Svelte, or plain HTML because they're standard web components underneath.
 
-Now with **dual distribution** (copy-source or npm), **SSR support** via Declarative Shadow DOM, and **build-time theme customization** via visual configurator.
+Now with **dual distribution** (copy-source or npm), **SSR support** via Declarative Shadow DOM, **build-time theme customization** via visual configurator, and **form components** (Input, Textarea, Select with multi-select, combobox, and async loading).
 
 ## Core Value
 
 Developers can use polished, accessible UI components in any framework without lock-in — one component library that works everywhere.
 
-## Current State (v3.0)
+## Current State (v4.1)
 
-- ~10,900 lines TypeScript across packages and apps
-- Tech stack: Lit.js 3, Tailwind CSS v4, Vite, TypeScript, pnpm workspaces, colorjs.io
-- 5 publishable packages: @lit-ui/core, @lit-ui/button, @lit-ui/dialog, @lit-ui/ssr, lit-ui (CLI)
+- ~26,000 lines TypeScript across packages and apps
+- Tech stack: Lit.js 3, Tailwind CSS v4, Vite, TypeScript, pnpm workspaces, colorjs.io, Floating UI, @tanstack/lit-virtual
+- 8 publishable packages: @lit-ui/core, @lit-ui/button, @lit-ui/dialog, @lit-ui/input, @lit-ui/textarea, @lit-ui/select, @lit-ui/ssr, lit-ui (CLI)
 - Framework examples: Next.js App Router, Astro, Express/Node.js
 - Distribution: copy-source (CLI) or npm packages with SSR support
 - Theme customization: Visual configurator + CLI `--theme` parameter
+- Form components: Input, Textarea, Select (single, multi, combobox, async)
 
 ## Requirements
 
@@ -49,16 +50,19 @@ Developers can use polished, accessible UI components in any framework without l
 - ✓ Preset themes (default, ocean, forest, sunset) — v3.0
 - ✓ Shareable theme URLs — v3.0
 - ✓ Generated npx command display in configurator — v3.0
+- ✓ Input component with validation, character counter, password toggle — v4.0
+- ✓ Textarea component with auto-resize, character counter — v4.0
+- ✓ Select component with single-select dropdown — v4.1
+- ✓ Multi-select with tag display, overflow, select all — v4.1
+- ✓ Combobox with search/filter, match highlighting, creatable mode — v4.1
+- ✓ Async option loading with loading states, infinite scroll, virtual scrolling — v4.1
+- ✓ Keyboard navigation (arrow keys, type-ahead, Escape to close) — v4.1
+- ✓ Form participation via ElementInternals for all form components — v4.1
+- ✓ ARIA 1.2 combobox pattern with full accessibility compliance — v4.1
 
 ### Active
 
-- [ ] Select component with single-select dropdown
-- [ ] Multi-select with tag display for selected items
-- [ ] Combobox with search/filter functionality
-- [ ] Async option loading with loading states
-- [ ] Keyboard navigation (arrow keys, type-ahead, Escape to close)
-- [ ] Form participation via ElementInternals
-- [ ] Visual states matching Input/Textarea patterns
+(No active requirements — next milestone not yet defined)
 
 ### Deferred (v4.2+)
 
@@ -136,6 +140,13 @@ Developers can use polished, accessible UI components in any framework without l
 | OKLCH color space | Perceptual uniformity for calculated shades | ✓ Good — mathematically correct shade scales |
 | Direct --ui-* component variables | Shadow DOM can't inherit through @theme | ✓ Good — reliable Shadow DOM theming |
 | Browser-compatible base64url | Node Buffer not available in browsers | ✓ Good — works everywhere |
+| Floating UI for dropdown positioning | Collision detection, auto-placement, framework-agnostic | ✓ Good — zero-config positioning |
+| ARIA 1.2 combobox pattern | Modern standard, uses aria-controls not aria-owns | ✓ Good — correct screen reader behavior |
+| Slot + property fallback for options | Slot always rendered; property options when slot empty | ✓ Good — flexible API |
+| @tanstack/lit-virtual for large lists | DOM recycling for 100+ options | ✓ Good — 60fps scroll performance |
+| AbortController for async search | Cancel previous requests on new input | ✓ Good — no race conditions |
+| IntersectionObserver for infinite scroll | Sentinel element at bottom triggers load | ✓ Good — reliable pagination |
+| Minimal CLI starter template | Full select is 1500+ lines; starter provides ~200 line shell | ✓ Good — manageable starting point |
 
 ## Shipped Milestones
 
@@ -144,19 +155,11 @@ Developers can use polished, accessible UI components in any framework without l
 - **v3.0 Theme Customization** (2026-01-25): Visual configurator, OKLCH themes, preset themes, shareable URLs
 - **v3.1 Docs Dark Mode** (2026-01-25): Global theme toggle, localStorage persistence, full dark mode styling
 - **v4.0 Form Inputs** (2026-01-26): Input and Textarea components with validation, form participation
+- **v4.1 Select Component** (2026-01-27): Full-featured Select with single, multi, combobox, and async loading
 
-## Current Milestone: v4.1 Select Component
+## Next Milestone
 
-**Goal:** Add a full-featured Select component with single-select, multi-select, combobox/autocomplete, and async data loading — completing the form toolkit with the most complex form primitive.
-
-**Target features:**
-- Single-select dropdown (native `<select>` replacement)
-- Multi-select with tag display for selected items
-- Combobox with search/filter functionality
-- Async option loading with loading states and infinite scroll
-- Full keyboard navigation (arrow keys, type-ahead, Escape)
-- Form participation via ElementInternals
-- Visual states matching Input/Textarea patterns
+Not yet defined. Use `/gsd:new-milestone` to start planning.
 
 ---
-*Last updated: 2026-01-26 after v4.1 milestone started*
+*Last updated: 2026-01-27 after v4.1 milestone*

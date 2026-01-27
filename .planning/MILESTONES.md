@@ -1,5 +1,34 @@
 # Project Milestones: LitUI
 
+## v4.1 Select Component (Shipped: 2026-01-27)
+
+**Delivered:** Full-featured Select component with single-select, multi-select, combobox/autocomplete, and async data loading — completing the form toolkit with the most complex form primitive.
+
+**Phases completed:** 31-37 (28 plans total)
+
+**Key accomplishments:**
+
+- Full-featured single-select dropdown with ARIA 1.2 combobox pattern, keyboard navigation, type-ahead, and form participation via ElementInternals
+- Multi-select mode with checkbox indicators, removable tags, overflow display (+N more), and select all/deselect all
+- Combobox/autocomplete with real-time filtering, match highlighting, custom filter functions, and creatable mode
+- Async data loading with Promise-based options, debounced async search with AbortController, virtual scrolling via @tanstack/lit-virtual, and infinite scroll pagination
+- 45 CSS design tokens (--ui-select-*) for full theme customization across all select states
+- CLI integration with registry entry, 302-line starter template, and 1363-line docs page with 20 interactive examples and accessibility section
+
+**Stats:**
+
+- 94 files created/modified
+- 21,453 lines of TypeScript added
+- 7 phases, 28 plans
+- 4 days (2026-01-23 → 2026-01-27)
+- 111 commits
+
+**Git range:** `feat(31-01)` → `docs(37-04)`
+
+**What's next:** Additional form components (checkbox, radio, switch) or documentation site completion
+
+---
+
 ## v3.0 Theme Customization (Shipped: 2026-01-25)
 
 **Delivered:** Visual theme configurator on docs site with OKLCH color customization, preset themes, shareable URLs, and CLI integration that generates Tailwind-compatible CSS for build-time theming.
