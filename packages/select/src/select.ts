@@ -270,6 +270,23 @@ export class Select extends TailwindElement {
   asyncSearch?: AsyncSearchFunction;
 
   /**
+   * Callback to load more options for infinite scroll.
+   * Called when user scrolls near the bottom of the option list.
+   * Return additional options to append, or empty array when no more data.
+   *
+   * @example
+   * ```typescript
+   * let page = 1;
+   * loadMore={async () => {
+   *   const res = await fetch(`/api/options?page=${++page}`);
+   *   return res.json();
+   * }}
+   * ```
+   */
+  @property({ attribute: false })
+  loadMore?: () => Promise<SelectOption[]>;
+
+  /**
    * Message displayed when no options match the filter query.
    * @default 'No results found'
    */
@@ -386,6 +403,19 @@ export class Select extends TailwindElement {
   private _asyncError: Error | null = null;
 
   /**
+   * Whether there are more options to load.
+   * Set to false when loadMore returns empty array.
+   */
+  @state()
+  private _hasMore = true;
+
+  /**
+   * Whether currently loading more options.
+   */
+  @state()
+  private _loadingMore = false;
+
+  /**
    * Internal storage for single-select value.
    */
   private _value = '';
@@ -446,6 +476,16 @@ export class Select extends TailwindElement {
    * Reference to the listbox scroll container for virtual scrolling.
    */
   private _listboxRef: Ref<HTMLDivElement> = createRef();
+
+  /**
+   * Reference to the load-more sentinel element.
+   */
+  private _sentinelRef: Ref<HTMLDivElement> = createRef();
+
+  /**
+   * IntersectionObserver for infinite scroll trigger.
+   */
+  private _loadMoreObserver?: IntersectionObserver;
 
   /**
    * VirtualizerController for rendering large option lists efficiently.
@@ -549,6 +589,13 @@ export class Select extends TailwindElement {
    */
   private get _isAsyncSearchMode(): boolean {
     return this.searchable && !!this.asyncSearch;
+  }
+
+  /**
+   * Check if infinite scroll is enabled.
+   */
+  private get _isInfiniteScrollEnabled(): boolean {
+    return !!this.loadMore && this._hasMore;
   }
 
   /**
