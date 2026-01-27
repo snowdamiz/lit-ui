@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 ## Current Position
 
 Phase: 36 - Async Loading (in progress)
-Plan: 3 of 6 (Plans 02, 03, 04 executing in parallel)
+Plan: 4 of 6 (Plans 02, 03, 04 complete, plan 05/06 remaining)
 Status: In progress
-Last activity: 2026-01-27 - Completed 36-03-PLAN.md
+Last activity: 2026-01-27 - Completed 36-04-PLAN.md
 
 Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 SHIPPED | v4.0 SHIPPED | v4.1 [######.] 6/7 phases
 
@@ -44,8 +44,8 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHI
 - Total execution time: 30 min
 
 **v4.1 Velocity (in progress):**
-- Plans completed: 21
-- Total execution time: 78 min
+- Plans completed: 22
+- Total execution time: 90 min
 
 ## Accumulated Context
 
@@ -106,6 +106,9 @@ v3.0, v3.1, v4.0 decisions validated and archived.
 | AbortController cancels previous search requests | Prevents race conditions in async search | 36-03 |
 | Server-filtered results bypass local filtering | No highlighting needed for server-side filtered results | 36-03 |
 | Search state cleared on dropdown close | Clean state for next open | 36-03 |
+| Virtual scrolling auto-enabled for async modes | Promise options and async search always use virtualization | 36-04 |
+| VirtualizerController recreated on count change | Simpler than partial options update | 36-04 |
+| scrollToIndex with align:auto behavior:auto | Smooth keyboard navigation scrolling | 36-04 |
 
 ### Pending Todos
 
@@ -124,16 +127,17 @@ None.
 - Multi-select FormData uses formData.append() for each value [APPLIED in 34-01]
 - Case-insensitive contains matching for searchable [APPLIED in 35-01]
 - Async search needs AbortController to prevent race conditions [APPLIED in 36-03]
+- @tanstack/lit-virtual VirtualizerController for efficient large list rendering [APPLIED in 36-04]
 
 ## Session Continuity
 
 Last session: 2026-01-27
-Stopped at: Completed 36-03-PLAN.md
+Stopped at: Completed 36-04-PLAN.md
 Resume file: None
 
 ## Next Steps
 
-Phase 36 Async Loading in progress. Plans 01, 02, 03 complete.
+Phase 36 Async Loading in progress. Plans 01, 02, 03, 04 complete.
 
 **Phase 36-01 Deliverables:**
 - @lit/task and @tanstack/lit-virtual dependencies added
@@ -150,9 +154,14 @@ Phase 36 Async Loading in progress. Plans 01, 02, 03 complete.
 - debounceDelay (default 300ms) and minSearchLength (default 0) configuration
 - Search loading skeleton and error state with retry
 
+**Phase 36-04 Deliverables:**
+- VirtualizerController integration for large option lists
+- renderVirtualizedOptions method with getVirtualItems()
+- scrollToIndex for keyboard navigation in virtualized mode
+- Auto-enabled for async modes (Promise options, async search)
+
 **Remaining in Phase 36:**
-- Plan 04: Load more / infinite scroll
-- Plan 05: Virtual scrolling
+- Plan 05: Polling/refresh patterns
 - Plan 06: Human verification
 
 **Remaining phases in v4.1:**
