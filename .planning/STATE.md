@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 ## Current Position
 
 Phase: 38 of 41 (Switch Component)
-Plan: 1 of ? in current phase
+Plan: 2 of ? in current phase
 Status: In progress
-Last activity: 2026-01-27 — Completed 38-01-PLAN.md (package scaffolding & tokens)
+Last activity: 2026-01-27 — Completed 38-02-PLAN.md (switch component implementation)
 
-Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 SHIPPED | v4.0 SHIPPED | v4.1 SHIPPED | v4.2 [#.........] 1/4
+Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 SHIPPED | v4.0 SHIPPED | v4.1 SHIPPED | v4.2 [##........] 2/4
 
 ## Performance Metrics
 
@@ -28,9 +28,9 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 | v2.0 SHIPPED | v3.0 SHIPPED | 
 - v4.1: 28 plans in 141 min
 
 **v4.2 Velocity:**
-- Total plans completed: 1
-- Average duration: 1min
-- Total execution time: 1min
+- Total plans completed: 2
+- Average duration: 2min
+- Total execution time: 4min
 
 ## Accumulated Context
 
@@ -43,6 +43,7 @@ Recent decisions affecting current work:
 - [Research]: Zero new dependencies -- CSS transitions for all animation
 - [Research]: Build order Switch -> Checkbox -> Radio (incremental complexity)
 - [Research]: Skip aria-controls for select-all pattern (poor SR support, cross-shadow boundary issue)
+- [38-02]: Use PropertyValues type (not Map) in updated() to avoid api-extractor DTS rollup crash
 
 ### Pending Todos
 
@@ -56,5 +57,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-01-27
-Stopped at: Completed 38-01-PLAN.md (package scaffolding & design tokens)
+Stopped at: Completed 38-02-PLAN.md (switch component implementation)
 Resume file: None
