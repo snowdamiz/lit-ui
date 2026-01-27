@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-26)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** v4.1 Select Component - Phase 34 in progress
+**Current focus:** v4.1 Select Component - COMPLETE
 
 ## Current Position
 
-Phase: 34 - Multi-Select (in progress)
-Plan: 03 of 4 complete
-Status: In progress
-Last activity: 2026-01-27 - Completed 34-03-PLAN.md (Overflow Handling)
+Phase: 34 - Multi-Select (COMPLETE)
+Plan: 04 of 4 complete
+Status: Phase complete
+Last activity: 2026-01-27 - Completed 34-04-PLAN.md (Final Verification)
 
-Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 SHIPPED | v4.0 SHIPPED | v4.1 [######..] 6/7 phases
+Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 SHIPPED | v4.0 SHIPPED | v4.1 [#######.] 7/7 phases
 
 ## Performance Metrics
 
@@ -43,8 +43,8 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHI
 - Plans completed: 11
 - Total execution time: 30 min
 
-**v4.1 Velocity (in progress):**
-- Plans completed: 13
+**v4.1 Velocity (complete):**
+- Plans completed: 14
 - Total execution time: 44 min
 
 ## Accumulated Context
@@ -110,20 +110,31 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-01-27 01:56Z
-Stopped at: Completed 34-03-PLAN.md (Overflow Handling)
+Last session: 2026-01-27
+Stopped at: Completed 34-04-PLAN.md (Final Verification)
 Resume file: None
 
 ## Next Steps
 
-Phase 34 Plan 03 complete. Continue with remaining plans.
+Phase 34 Multi-Select COMPLETE. v4.1 Select Component milestone complete.
 
-**Phase 34 Plan 03 Delivered:**
+**Phase 34 Delivered:**
+- Multi-select mode with multiple prop and string[] value
+- Tag display with removable pills and CSS tokens
 - Tag overflow with +N more indicator via ResizeObserver
-- Tooltip on overflow showing hidden selection labels
 - Select all / clear all bulk actions with showSelectAll prop
-- Select all respects maxSelections limit
-- Improved multi-select validation message
+- maxSelections prop for limiting selection count
+- FormData.append() for native getAll() form submission
+- Checkbox indicators in multi-select mode
+- Space toggles, Enter closes keyboard pattern (W3C APG)
+- Option groups support in multi-select
+- Human-verified complete functionality
 
-**Remaining plans in Phase 34:**
-- Plan 04: Final Verification
+**v4.1 Milestone Complete:**
+All 7 phases of v4.1 Select Component shipped:
+- Phase 31: Select Design Tokens
+- Phase 32: Select Core Implementation
+- Phase 33: Select Enhancements
+- Phase 34: Multi-Select
+
+Ready for next milestone (v4.2 or combobox phase).
