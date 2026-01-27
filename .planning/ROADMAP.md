@@ -210,7 +210,13 @@ Plans:
 
 **Requirements:** MULTI-01, MULTI-02, MULTI-03, MULTI-04, MULTI-05, MULTI-06, MULTI-07
 
-**Plans:** TBD
+**Plans:** 4 plans
+
+Plans:
+- [ ] 34-01-PLAN.md — Core multi-select mode with selection tracking and form participation
+- [ ] 34-02-PLAN.md — Tag display with removal functionality
+- [ ] 34-03-PLAN.md — Tag overflow and select all / deselect all actions
+- [ ] 34-04-PLAN.md — Human verification checkpoint
 
 **Success Criteria:**
 
@@ -327,7 +333,7 @@ Plans:
 | 31. Select Infrastructure | v4.1 | 2/2 | Complete | 2026-01-26 |
 | 32. Core Single Select | v4.1 | 4/4 | Complete | 2026-01-26 |
 | 33. Select Enhancements | v4.1 | 4/4 | Complete | 2026-01-26 |
-| 34. Multi-Select | v4.1 | 0/? | Not started | - |
+| 34. Multi-Select | v4.1 | 0/4 | Not started | - |
 | 35. Combobox | v4.1 | 0/? | Not started | - |
 | 36. Async Loading | v4.1 | 0/? | Not started | - |
 | 37. CLI and Documentation | v4.1 | 0/? | Not started | - |
