@@ -365,6 +365,34 @@ export class Select extends TailwindElement {
   }
 
   /**
+   * Handle tag removal in multi-select mode.
+   * Removes the selection without opening the dropdown.
+   */
+  private handleTagRemove(e: Event, value: string): void {
+    e.stopPropagation(); // Don't open/close dropdown
+    e.preventDefault();
+
+    this.selectedValues.delete(value);
+    this.updateFormValue();
+    this.requestUpdate();
+
+    // Sync slotted option states
+    this.syncSlottedOptionStates();
+
+    // Dispatch change event
+    this.dispatchEvent(
+      new CustomEvent('change', {
+        detail: { value: Array.from(this.selectedValues) },
+        bubbles: true,
+        composed: true,
+      })
+    );
+
+    // Focus trigger after removal
+    this.triggerEl?.focus();
+  }
+
+  /**
    * Get the current validation error message.
    */
   private get errorMessage(): string {
@@ -475,6 +503,53 @@ export class Select extends TailwindElement {
           ${this.xCircleIcon}
         </svg>
       </button>
+    `;
+  }
+
+  /**
+   * Render tags for multi-select mode.
+   * Shows selected items as removable pill-shaped tags.
+   */
+  private renderTags() {
+    if (!this.multiple || this.selectedValues.size === 0) {
+      return nothing;
+    }
+
+    const selectedOptions = this.effectiveOptions.filter((o) =>
+      this.selectedValues.has(o.value)
+    );
+
+    return html`
+      <div class="tag-container">
+        ${selectedOptions.map(
+          (opt) => html`
+            <span class="tag" title="${opt.label}">
+              <span class="tag-label">${opt.label}</span>
+              <button
+                type="button"
+                class="tag-remove"
+                aria-label="Remove ${opt.label}"
+                tabindex="-1"
+                @click=${(e: Event) => this.handleTagRemove(e, opt.value)}
+                @mousedown=${(e: MouseEvent) => e.preventDefault()}
+              >
+                <svg
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M4 4l8 8M12 4l-8 8"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  />
+                </svg>
+              </button>
+            </span>
+          `
+        )}
+      </div>
     `;
   }
 
@@ -909,6 +984,63 @@ export class Select extends TailwindElement {
         align-items: center;
         gap: 0.25rem;
         flex-shrink: 0;
+      }
+
+      /* Tag container for multi-select */
+      .tag-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--ui-select-tag-gap, 0.25rem);
+        align-items: center;
+        min-height: 1.5em;
+        flex: 1;
+        min-width: 0;
+      }
+
+      /* Individual tag/chip styling - Gmail-style pill */
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: var(--ui-select-tag-padding-y, 0.125rem) var(--ui-select-tag-padding-x, 0.5rem);
+        background-color: var(--ui-select-tag-bg);
+        color: var(--ui-select-tag-text);
+        border-radius: var(--radius-full, 9999px);
+        font-size: 0.875em;
+        max-width: 100%;
+        overflow: hidden;
+      }
+
+      .tag-label {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .tag-remove {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        border: none;
+        background: transparent;
+        color: currentColor;
+        cursor: pointer;
+        opacity: 0.7;
+        flex-shrink: 0;
+        border-radius: var(--radius-full, 9999px);
+        width: 1em;
+        height: 1em;
+      }
+
+      .tag-remove:hover {
+        opacity: 1;
+        background-color: rgba(0, 0, 0, 0.1);
+      }
+
+      .tag-remove svg {
+        width: 0.75em;
+        height: 0.75em;
       }
     `,
   ];
@@ -1498,9 +1630,11 @@ export class Select extends TailwindElement {
           @keydown=${this.handleKeydown}
           @blur=${this.handleBlur}
         >
-          ${selectedLabel
-            ? html`<span class="selected-value">${selectedLabel}</span>`
-            : html`<span class="placeholder">${this.placeholder}</span>`}
+          ${this.multiple && this.selectedValues.size > 0
+            ? this.renderTags()
+            : selectedLabel
+              ? html`<span class="selected-value">${selectedLabel}</span>`
+              : html`<span class="placeholder">${this.placeholder}</span>`}
           <div class="trigger-actions">
             ${this.renderClearButton()}
             <svg
