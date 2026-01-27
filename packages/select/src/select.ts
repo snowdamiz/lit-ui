@@ -1916,6 +1916,39 @@ export class Select extends TailwindElement {
         font-style: italic;
       }
 
+      /* Error state for async loading/search failures */
+      .error-state {
+        padding: var(--ui-select-option-padding-y, 0.5rem)
+          var(--ui-select-option-padding-x, 0.75rem);
+        text-align: center;
+      }
+
+      .error-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .error-message {
+        color: var(--ui-select-text-error, var(--color-destructive));
+        font-size: 0.875em;
+      }
+
+      .retry-link {
+        background: none;
+        border: none;
+        color: var(--color-primary, var(--ui-color-primary));
+        cursor: pointer;
+        font-size: 0.875em;
+        text-decoration: underline;
+        padding: 0;
+      }
+
+      .retry-link:hover {
+        text-decoration: none;
+      }
+
       /* Match highlight for searchable mode */
       .highlight {
         font-weight: var(--ui-select-highlight-weight, 600);
@@ -2879,6 +2912,40 @@ export class Select extends TailwindElement {
   }
 
   /**
+   * Render error state with retry action.
+   * Handles search errors.
+   * Supports error slot for full customization.
+   */
+  private renderErrorState() {
+    const errorMessage = this._searchError?.message || 'Failed to load options';
+
+    return html`
+      <div class="error-state" role="alert">
+        <slot name="error">
+          <div class="error-content">
+            <span class="error-message">${errorMessage}</span>
+            <button
+              type="button"
+              class="retry-link"
+              @click=${this.handleSearchRetry}
+            >
+              Try again
+            </button>
+          </div>
+        </slot>
+      </div>
+    `;
+  }
+
+  /**
+   * Handle retry for async search error.
+   */
+  private handleSearchRetry(): void {
+    this._searchError = null;
+    this.executeAsyncSearch(this.filterQuery);
+  }
+
+  /**
    * Render the create option for creatable mode.
    */
   private renderCreateOption() {
@@ -3116,15 +3183,19 @@ export class Select extends TailwindElement {
           ?hidden=${!this.open}
         >
           ${this.renderSelectAllActions()}
-          ${optionsToRender.length > 0
-            ? optionsToRender.map((filterMatch, index) =>
-                this.renderOption(filterMatch, index)
-              )
-            : this.searchable && this.filterQuery
-              ? this.renderEmptyState()
-              : nothing}
+          ${this._searchLoading
+            ? this.renderSkeletonOptions(4)
+            : this._searchError
+              ? this.renderErrorState()
+              : optionsToRender.length > 0
+                ? optionsToRender.map((filterMatch, index) =>
+                    this.renderOption(filterMatch, index)
+                  )
+                : this.searchable && this.filterQuery
+                  ? this.renderEmptyState()
+                  : nothing}
           <!-- Always render slot to keep it in DOM, hide when rendering programmatic options -->
-          <div style=${optionsToRender.length > 0 || (this.searchable && this.filterQuery) ? 'display:none' : ''}>
+          <div style=${optionsToRender.length > 0 || (this.searchable && this.filterQuery) || this._searchLoading || this._searchError ? 'display:none' : ''}>
             <slot @slotchange=${this.handleSlotChange}></slot>
           </div>
           ${this.renderCreateOption()}
