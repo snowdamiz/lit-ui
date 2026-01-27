@@ -25,16 +25,20 @@ export const navigation: NavSection[] = [
       { title: "Styling", href: "/guides/styling" },
       { title: "SSR Setup", href: "/guides/ssr" },
       { title: "Migration", href: "/guides/migration" },
+      { title: "Agent Skills", href: "/guides/agent-skills" },
     ],
   },
   {
     title: "Components",
     items: [
       { title: "Button", href: "/components/button" },
+      { title: "Checkbox", href: "/components/checkbox" },
       { title: "Dialog", href: "/components/dialog" },
       { title: "Input", href: "/components/input" },
-      { title: "Textarea", href: "/components/textarea" },
+      { title: "Radio", href: "/components/radio" },
       { title: "Select", href: "/components/select" },
+      { title: "Switch", href: "/components/switch" },
+      { title: "Textarea", href: "/components/textarea" },
     ],
   },
   {

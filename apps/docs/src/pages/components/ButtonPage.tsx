@@ -486,7 +486,7 @@ export function ButtonPage() {
         <div className="divider-fade mb-8" />
         <PrevNextNav
           prev={{ title: 'Getting Started', href: '/getting-started' }}
-          next={{ title: 'Dialog', href: '/components/dialog' }}
+          next={{ title: 'Checkbox', href: '/components/checkbox' }}
         />
       </div>
     </FrameworkProvider>

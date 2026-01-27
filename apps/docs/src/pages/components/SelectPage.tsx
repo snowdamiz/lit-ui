@@ -1353,8 +1353,8 @@ export function SelectPage() {
         {/* Navigation */}
         <div className="divider-fade mb-8" />
         <PrevNextNav
-          prev={{ title: 'Textarea', href: '/components/textarea' }}
-          next={{ title: 'Theme Configurator', href: '/configurator' }}
+          prev={{ title: 'Radio', href: '/components/radio' }}
+          next={{ title: 'Switch', href: '/components/switch' }}
         />
       </div>
     </FrameworkProvider>

@@ -638,7 +638,8 @@ export function TextareaPage() {
         {/* Navigation */}
         <div className="divider-fade mb-8" />
         <PrevNextNav
-          prev={{ title: 'Input', href: '/components/input' }}
+          prev={{ title: 'Switch', href: '/components/switch' }}
+          next={{ title: 'Theme Configurator', href: '/configurator' }}
         />
       </div>
     </FrameworkProvider>
