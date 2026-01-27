@@ -477,6 +477,56 @@
   /* Combobox highlight */
   --ui-select-highlight-weight: 600;
   --ui-select-highlight-text: inherit;
+
+  /* -------------------------------------------------------------------------
+   * Switch Component
+   * ------------------------------------------------------------------------- */
+
+  /* Track dimensions - Small */
+  --ui-switch-track-width-sm: 2rem;
+  --ui-switch-track-height-sm: 1.125rem;
+  --ui-switch-thumb-size-sm: 0.875rem;
+
+  /* Track dimensions - Medium */
+  --ui-switch-track-width-md: 2.5rem;
+  --ui-switch-track-height-md: 1.375rem;
+  --ui-switch-thumb-size-md: 1.125rem;
+
+  /* Track dimensions - Large */
+  --ui-switch-track-width-lg: 3rem;
+  --ui-switch-track-height-lg: 1.625rem;
+  --ui-switch-thumb-size-lg: 1.375rem;
+
+  /* Layout */
+  --ui-switch-radius: 9999px;
+  --ui-switch-thumb-radius: 9999px;
+  --ui-switch-thumb-offset: 2px;
+  --ui-switch-label-gap: 0.5rem;
+  --ui-switch-transition: 150ms;
+
+  /* Label typography (matches input pattern) */
+  --ui-switch-font-size-sm: 0.875rem;
+  --ui-switch-font-size-md: 1rem;
+  --ui-switch-font-size-lg: 1.125rem;
+
+  /* Default state (unchecked) */
+  --ui-switch-track-bg: var(--color-muted, var(--ui-color-muted));
+  --ui-switch-track-border: var(--color-border, var(--ui-color-border));
+  --ui-switch-thumb-bg: white;
+
+  /* Checked state */
+  --ui-switch-track-bg-checked: var(--color-primary, var(--ui-color-primary));
+
+  /* Disabled state */
+  --ui-switch-track-bg-disabled: var(--color-muted, var(--ui-color-muted));
+  --ui-switch-thumb-bg-disabled: var(--color-muted-foreground, var(--ui-color-muted-foreground));
+
+  /* Focus state */
+  --ui-switch-ring: var(--color-ring, var(--ui-color-ring));
+
+  /* Error state */
+  --ui-switch-border-error: var(--color-destructive, var(--ui-color-destructive));
+  --ui-switch-text-error: var(--color-destructive, var(--ui-color-destructive));
 }
 
 /* ==========================================================================
