@@ -211,6 +211,18 @@ export const tokens = {
     optionText: 'var(--ui-select-option-text)',
     optionTextDisabled: 'var(--ui-select-option-text-disabled)',
     optionCheck: 'var(--ui-select-option-check)',
+
+    // Tag tokens (multi-select)
+    tagBg: 'var(--ui-select-tag-bg)',
+    tagText: 'var(--ui-select-tag-text)',
+    tagGap: 'var(--ui-select-tag-gap)',
+    tagPaddingX: 'var(--ui-select-tag-padding-x)',
+    tagPaddingY: 'var(--ui-select-tag-padding-y)',
+
+    // Checkbox tokens (multi-select)
+    checkboxBorder: 'var(--ui-select-checkbox-border)',
+    checkboxBgChecked: 'var(--ui-select-checkbox-bg-checked)',
+    checkboxCheck: 'var(--ui-select-checkbox-check)',
   },
 } as const;
 

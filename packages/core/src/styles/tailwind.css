@@ -461,6 +461,18 @@
   --ui-select-option-text: var(--color-foreground, var(--ui-color-foreground));
   --ui-select-option-text-disabled: var(--color-muted-foreground, var(--ui-color-muted-foreground));
   --ui-select-option-check: var(--color-primary, var(--ui-color-primary));
+
+  /* Multi-select tag tokens */
+  --ui-select-tag-bg: var(--color-secondary, var(--ui-color-secondary));
+  --ui-select-tag-text: var(--color-secondary-foreground, var(--ui-color-secondary-foreground));
+  --ui-select-tag-gap: 0.25rem;
+  --ui-select-tag-padding-x: 0.5rem;
+  --ui-select-tag-padding-y: 0.125rem;
+
+  /* Checkbox indicator tokens */
+  --ui-select-checkbox-border: var(--color-border, var(--ui-color-border));
+  --ui-select-checkbox-bg-checked: var(--color-primary, var(--ui-color-primary));
+  --ui-select-checkbox-check: white;
 }
 
 /* ==========================================================================
