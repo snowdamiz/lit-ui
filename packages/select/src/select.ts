@@ -1510,11 +1510,18 @@ export class Select extends TailwindElement {
 
   /**
    * Handle keydown events for keyboard navigation following W3C APG.
+   * In searchable mode, allows text input while maintaining option navigation.
    */
   private handleKeydown(e: KeyboardEvent): void {
     const key = e.key;
 
-    // Handle closed state
+    // Handle searchable mode differently
+    if (this.searchable) {
+      this.handleSearchableKeydown(e);
+      return;
+    }
+
+    // Handle closed state (non-searchable)
     if (!this.open) {
       switch (key) {
         case 'ArrowDown':
@@ -1563,7 +1570,7 @@ export class Select extends TailwindElement {
       return;
     }
 
-    // Handle open state
+    // Handle open state (non-searchable)
     switch (key) {
       case 'ArrowDown':
         e.preventDefault();
@@ -1616,6 +1623,110 @@ export class Select extends TailwindElement {
           e.preventDefault();
           this.handleTypeahead(key);
         }
+    }
+  }
+
+  /**
+   * Handle keydown events in searchable mode.
+   * Allows text input while maintaining option navigation.
+   */
+  private handleSearchableKeydown(e: KeyboardEvent): void {
+    const key = e.key;
+
+    // Handle closed state in searchable mode
+    if (!this.open) {
+      switch (key) {
+        case 'ArrowDown':
+        case 'ArrowUp':
+          e.preventDefault();
+          this.openDropdown();
+          if (key === 'ArrowUp') {
+            this.focusLastEnabledOption();
+          } else {
+            this.focusFirstEnabledOption();
+          }
+          break;
+        case 'Enter':
+          // In searchable closed state, Enter opens dropdown
+          e.preventDefault();
+          this.openDropdown();
+          break;
+        case 'Escape':
+          // If there's a filter, clear it; otherwise do nothing
+          if (this.filterQuery) {
+            e.preventDefault();
+            this.filterQuery = '';
+            this.requestUpdate();
+          }
+          break;
+        // Let all other keys (including Space, printable chars) go to input
+        // The input event handler will apply the filter
+      }
+      return;
+    }
+
+    // Handle open state in searchable mode
+    switch (key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        this.focusNextEnabledOption();
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        this.focusPreviousEnabledOption();
+        break;
+      case 'Home':
+        // Let input handle cursor movement unless Ctrl/Cmd is pressed
+        if (e.ctrlKey || e.metaKey) {
+          e.preventDefault();
+          this.focusFirstEnabledOption();
+        }
+        // Otherwise let input move cursor to start
+        break;
+      case 'End':
+        // Let input handle cursor movement unless Ctrl/Cmd is pressed
+        if (e.ctrlKey || e.metaKey) {
+          e.preventDefault();
+          this.focusLastEnabledOption();
+        }
+        // Otherwise let input move cursor to end
+        break;
+      case 'Enter':
+        e.preventDefault();
+        if (this.multiple) {
+          // Multi-select: Enter closes dropdown
+          this.closeDropdown();
+        } else if (this.activeIndex >= 0) {
+          // Single-select: Enter selects and closes
+          this.selectOption(this.activeIndex);
+        } else {
+          // No active option - just close
+          this.closeDropdown();
+        }
+        break;
+      case ' ':
+        // In searchable mode, Space goes to input (for typing)
+        // But in multi-select, if we have an active option, toggle it
+        if (this.multiple && this.activeIndex >= 0) {
+          e.preventDefault();
+          this.selectOption(this.activeIndex);
+        }
+        // Otherwise let space go to input
+        break;
+      case 'Escape':
+        e.preventDefault();
+        this.closeDropdown();
+        break;
+      case 'Tab':
+        // Tab closes dropdown
+        if (!this.multiple && this.activeIndex >= 0) {
+          this.selectOption(this.activeIndex);
+        } else {
+          this.closeDropdown();
+        }
+        break;
+      // Let all other keys (Backspace, Delete, ArrowLeft, ArrowRight,
+      // printable characters) go to input for text editing
     }
   }
 
