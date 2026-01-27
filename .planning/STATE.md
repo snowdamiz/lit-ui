@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 ## Current Position
 
 Phase: 37 - CLI and Documentation (in progress)
-Plan: 2 of 2
+Plan: 3 of 4
 Status: In progress
-Last activity: 2026-01-27 - Completed 37-02-PLAN.md
+Last activity: 2026-01-27 - Completed 37-03-PLAN.md
 
 Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 SHIPPED | v4.0 SHIPPED | v4.1 [######.] 6/7 phases
 
@@ -44,8 +44,8 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHI
 - Total execution time: 30 min
 
 **v4.1 Velocity (in progress):**
-- Plans completed: 25
-- Total execution time: 135 min
+- Plans completed: 26
+- Total execution time: 137 min
 
 ## Accumulated Context
 
@@ -114,6 +114,7 @@ v3.0, v3.1, v4.0 decisions validated and archived.
 | Observer re-established in updated() | Handle DOM changes after new options load | 36-05 |
 | preview={null} for async doc examples | Interactive demos require server APIs not available in static docs | 37-02 |
 | Amber color for Phase 36 badge | Distinct from blue (33), green (34), purple (35) phase badges | 37-02 |
+| Minimal starter template for complex CLI components | Full select is 1500+ lines; starter provides ~200 line shell with NPM redirect | 37-03 |
 
 ### Pending Todos
 
@@ -138,15 +139,16 @@ None.
 ## Session Continuity
 
 Last session: 2026-01-27
-Stopped at: Completed 37-02-PLAN.md
+Stopped at: Completed 37-03-PLAN.md
 Resume file: None
 
 ## Next Steps
 
-Phase 37 Plan 02 complete. Async & Performance documentation added to SelectPage.tsx.
+Phase 37 Plan 03 complete. Select added to CLI registry and templates.
 
 **Phase 37 Progress:**
 - Plan 01: CLI tooling documentation (complete)
 - Plan 02: Select async documentation (complete)
+- Plan 03: CLI registry select entry (complete)
 
-**Remaining:** Phase 37 may be complete pending confirmation of total plan count.
+**Remaining:** Plan 04 (accessibility docs) pending.
