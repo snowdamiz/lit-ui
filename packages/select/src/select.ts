@@ -851,11 +851,15 @@ export class Select extends TailwindElement {
     this.slottedOptions = options;
 
     // Attach click handlers to slotted options
+    // Only update attributes if changed to avoid triggering MutationObserver loops
     this.slottedOptions.forEach((opt, index) => {
       opt.removeEventListener('click', this.handleSlottedOptionClick);
       opt.addEventListener('click', this.handleSlottedOptionClick);
-      // Store index as data attribute for click handling
-      opt.dataset.optionIndex = String(index);
+      // Store index as data attribute for click handling (only if changed)
+      const indexStr = String(index);
+      if (opt.dataset.optionIndex !== indexStr) {
+        opt.dataset.optionIndex = indexStr;
+      }
     });
 
     this.syncSlottedOptionStates();
@@ -875,13 +879,20 @@ export class Select extends TailwindElement {
   /**
    * Sync selected state to slotted option elements.
    * Also sets multiselect attribute for checkbox display.
+   * Only updates if values have changed to avoid triggering MutationObserver loops.
    */
   private syncSlottedOptionStates(): void {
     for (const opt of this.slottedOptions) {
-      opt.multiselect = this.multiple;
-      opt.selected = this.multiple
+      // Only update if changed to avoid triggering mutations
+      if (opt.multiselect !== this.multiple) {
+        opt.multiselect = this.multiple;
+      }
+      const isSelected = this.multiple
         ? this.selectedValues.has(opt.value)
         : opt.value === this._value;
+      if (opt.selected !== isSelected) {
+        opt.selected = isSelected;
+      }
     }
   }
 
