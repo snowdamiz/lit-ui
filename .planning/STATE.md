@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 ## Current Position
 
 Phase: 34 - Multi-Select (in progress)
-Plan: 02 of 4 complete
+Plan: 03 of 4 complete
 Status: In progress
-Last activity: 2026-01-27 - Completed 34-02-PLAN.md (Tag Display)
+Last activity: 2026-01-27 - Completed 34-03-PLAN.md (Overflow Handling)
 
 Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 SHIPPED | v4.0 SHIPPED | v4.1 [######..] 6/7 phases
 
@@ -44,8 +44,8 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHI
 - Total execution time: 30 min
 
 **v4.1 Velocity (in progress):**
-- Plans completed: 12
-- Total execution time: 41 min
+- Plans completed: 13
+- Total execution time: 44 min
 
 ## Accumulated Context
 
@@ -85,6 +85,9 @@ v3.0, v3.1, v4.0 decisions validated and archived.
 | Show up to 3 labels then "N selected" | Prevents trigger overflow with many selections | 34-01 |
 | Tag background uses secondary color | Consistent with typical chip/tag styling patterns | 34-02 |
 | Tag remove button tabindex=-1 | Trigger handles keyboard interaction, not individual tag buttons | 34-02 |
+| ResizeObserver for tag overflow | Dynamic layout measurement without manual resize tracking | 34-03 |
+| requestAnimationFrame for layout updates | Prevent layout thrashing from ResizeObserver callbacks | 34-03 |
+| showSelectAll prop default false | Optional bulk actions to avoid UI clutter | 34-03 |
 
 ### Pending Todos
 
@@ -107,21 +110,20 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-01-27 01:51Z
-Stopped at: Completed 34-02-PLAN.md (Tag Display)
+Last session: 2026-01-27 01:56Z
+Stopped at: Completed 34-03-PLAN.md (Overflow Handling)
 Resume file: None
 
 ## Next Steps
 
-Phase 34 Plan 02 complete. Continue with remaining plans.
+Phase 34 Plan 03 complete. Continue with remaining plans.
 
-**Phase 34 Plan 02 Delivered:**
-- CSS tokens for tag styling (--ui-select-tag-*)
-- CSS tokens for checkbox styling (--ui-select-checkbox-*)
-- Pill-shaped tags with remove button
-- Tag truncation with ellipsis and title tooltip
-- Focus management after tag removal
+**Phase 34 Plan 03 Delivered:**
+- Tag overflow with +N more indicator via ResizeObserver
+- Tooltip on overflow showing hidden selection labels
+- Select all / clear all bulk actions with showSelectAll prop
+- Select all respects maxSelections limit
+- Improved multi-select validation message
 
 **Remaining plans in Phase 34:**
-- Plan 03: Overflow Handling
 - Plan 04: Final Verification
