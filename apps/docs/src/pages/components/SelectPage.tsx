@@ -362,6 +362,55 @@ const searchableMultiCode = `<lui-select label="Skills" searchable multiple plac
   <lui-option value="ruby">Ruby</lui-option>
 </lui-select>`;
 
+// Async examples (Phase 36)
+const asyncOptionsCode = `// Options can be a Promise - shows loading skeleton while pending
+const options = new Promise(resolve =>
+  setTimeout(() => resolve([
+    { value: 'a', label: 'Option A' },
+    { value: 'b', label: 'Option B' },
+    { value: 'c', label: 'Option C' },
+  ]), 1000)
+);
+
+<lui-select
+  label="Async Options"
+  placeholder="Loading..."
+  .options=\${options}
+></lui-select>`;
+
+const asyncSearchCode = `// Async search with debounce and cancellation
+<lui-select
+  label="Search Users"
+  searchable
+  placeholder="Type to search..."
+  debounceDelay={300}
+  minSearchLength={2}
+  .asyncSearch=\${async (query, signal) => {
+    const res = await fetch(\`/api/users?q=\${query}\`, { signal });
+    const data = await res.json();
+    return data.map(u => ({ value: u.id, label: u.name }));
+  }}
+></lui-select>`;
+
+const infiniteScrollCode = `// Infinite scroll loads more options when scrolling near bottom
+let page = 1;
+
+<lui-select
+  label="All Products"
+  placeholder="Select product..."
+  .options=\${fetchProducts(1)}
+  .loadMore=\${async () => {
+    page++;
+    return fetchProducts(page);
+  }}
+></lui-select>`;
+
+const virtualScrollNote = `// Virtual scrolling is auto-enabled for:
+// - Promise-based options (async loading)
+// - asyncSearch mode
+// - Large option lists (1000+ items)
+// This ensures 60fps scroll performance with large datasets.`;
+
 export function SelectPage() {
   return (
     <FrameworkProvider>
@@ -858,6 +907,84 @@ export function SelectPage() {
               vue={searchableMultiCode}
               svelte={searchableMultiCode}
             />
+          </section>
+
+          {/* Async & Performance Section Header */}
+          <div className="mt-16 mb-8">
+            <div className="flex items-center gap-4">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400">
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+                </svg>
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
+                  Async & Performance
+                  <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded">Phase 36</span>
+                </h2>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Promise-based options, async search, and infinite scroll for large datasets</p>
+              </div>
+              <div className="flex-1 h-px bg-gradient-to-r from-gray-200 dark:from-gray-700 to-transparent" />
+            </div>
+          </div>
+
+          {/* 17. Async Options with Loading State */}
+          <section>
+            <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-2">Promise-Based Options</h3>
+            <p className="text-gray-500 dark:text-gray-400 mb-4 text-sm">
+              Pass a Promise to the <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">options</code> prop.
+              A loading skeleton displays while the Promise is pending. If rejected, an error state with retry button appears.
+            </p>
+            <ExampleBlock
+              preview={null}
+              html={asyncOptionsCode}
+              react={asyncOptionsCode}
+              vue={asyncOptionsCode}
+              svelte={asyncOptionsCode}
+            />
+          </section>
+
+          {/* 18. Async Search */}
+          <section>
+            <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-2">Async Search</h3>
+            <p className="text-gray-500 dark:text-gray-400 mb-4 text-sm">
+              Use <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">asyncSearch</code> for server-side filtering.
+              The function receives the search query and an AbortSignal for cancellation. Previous requests are automatically cancelled.
+            </p>
+            <ExampleBlock
+              preview={null}
+              html={asyncSearchCode}
+              react={asyncSearchCode}
+              vue={asyncSearchCode}
+              svelte={asyncSearchCode}
+            />
+          </section>
+
+          {/* 19. Infinite Scroll */}
+          <section>
+            <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-2">Infinite Scroll</h3>
+            <p className="text-gray-500 dark:text-gray-400 mb-4 text-sm">
+              Use <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">loadMore</code> for pagination.
+              The callback is triggered when scrolling near the bottom of the dropdown. New options are appended to the list.
+            </p>
+            <ExampleBlock
+              preview={null}
+              html={infiniteScrollCode}
+              react={infiniteScrollCode}
+              vue={infiniteScrollCode}
+              svelte={infiniteScrollCode}
+            />
+          </section>
+
+          {/* 20. Virtual Scrolling Note */}
+          <section>
+            <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-2">Virtual Scrolling</h3>
+            <p className="text-gray-500 dark:text-gray-400 mb-4 text-sm">
+              Virtual scrolling is automatically enabled when using async features or large option lists. This ensures smooth 60fps scrolling even with thousands of options.
+            </p>
+            <div className="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 p-4">
+              <pre className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap font-mono">{virtualScrollNote}</pre>
+            </div>
           </section>
         </div>
 
