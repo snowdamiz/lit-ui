@@ -20,7 +20,7 @@
  * ```
  */
 
-import { html, css, nothing, isServer } from 'lit';
+import { html, css, nothing, isServer, type PropertyValues } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import { TailwindElement, tailwindBaseStyles } from '@lit-ui/core';
 import { dispatchCustomEvent } from '@lit-ui/core';
@@ -140,7 +140,7 @@ export class Switch extends TailwindElement {
   /**
    * Keep form state in sync when checked property changes externally.
    */
-  protected override updated(changedProperties: Map<string, unknown>): void {
+  protected override updated(changedProperties: PropertyValues): void {
     if (changedProperties.has('checked')) {
       this.updateFormValue();
       this.validate();
