@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 ## Current Position
 
 Phase: 34 - Multi-Select (in progress)
-Plan: 01 of 4 complete
+Plan: 02 of 4 complete
 Status: In progress
-Last activity: 2026-01-27 - Completed 34-01-PLAN.md (Core Multi-Select)
+Last activity: 2026-01-27 - Completed 34-02-PLAN.md (Tag Display)
 
 Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 SHIPPED | v4.0 SHIPPED | v4.1 [######..] 6/7 phases
 
@@ -44,8 +44,8 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHI
 - Total execution time: 30 min
 
 **v4.1 Velocity (in progress):**
-- Plans completed: 11
-- Total execution time: 38 min
+- Plans completed: 12
+- Total execution time: 41 min
 
 ## Accumulated Context
 
@@ -83,6 +83,8 @@ v3.0, v3.1, v4.0 decisions validated and archived.
 | Space toggles, Enter closes in multi-select | W3C APG pattern for listbox multi-select | 34-01 |
 | Checkbox indicator for multi-select options | Visual distinction from single-select checkmark | 34-01 |
 | Show up to 3 labels then "N selected" | Prevents trigger overflow with many selections | 34-01 |
+| Tag background uses secondary color | Consistent with typical chip/tag styling patterns | 34-02 |
+| Tag remove button tabindex=-1 | Trigger handles keyboard interaction, not individual tag buttons | 34-02 |
 
 ### Pending Todos
 
@@ -105,22 +107,21 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-01-27 01:47Z
-Stopped at: Completed 34-01-PLAN.md (Core Multi-Select)
+Last session: 2026-01-27 01:51Z
+Stopped at: Completed 34-02-PLAN.md (Tag Display)
 Resume file: None
 
 ## Next Steps
 
-Phase 34 Plan 01 complete. Continue with remaining plans.
+Phase 34 Plan 02 complete. Continue with remaining plans.
 
-**Phase 34 Plan 01 Delivered:**
-- Multi-select mode with multiple prop
-- Selection tracking via Set<string>
-- FormData.append() for multi-value form submission
-- Checkbox indicators for multi-select options
-- Space toggles, Enter closes keyboard pattern
+**Phase 34 Plan 02 Delivered:**
+- CSS tokens for tag styling (--ui-select-tag-*)
+- CSS tokens for checkbox styling (--ui-select-checkbox-*)
+- Pill-shaped tags with remove button
+- Tag truncation with ellipsis and title tooltip
+- Focus management after tag removal
 
 **Remaining plans in Phase 34:**
-- Plan 02: Tag Display
 - Plan 03: Overflow Handling
 - Plan 04: Final Verification
