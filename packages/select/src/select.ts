@@ -170,6 +170,14 @@ export class Select extends TailwindElement {
   maxSelections?: number;
 
   /**
+   * Whether to show select all / clear all button in dropdown.
+   * Only applies to multi-select mode.
+   * @default false
+   */
+  @property({ type: Boolean })
+  showSelectAll = false;
+
+  /**
    * Label text displayed above the select.
    * @default ''
    */
@@ -305,7 +313,9 @@ export class Select extends TailwindElement {
     if (this.required && !hasValue) {
       this.internals.setValidity(
         { valueMissing: true },
-        'Please select an option',
+        this.multiple
+          ? 'Please select at least one option'
+          : 'Please select an option',
         this.triggerEl
       );
       return false;
@@ -373,6 +383,54 @@ export class Select extends TailwindElement {
     this.dispatchEvent(
       new CustomEvent('change', {
         detail: { value: Array.from(this.selectedValues) },
+        bubbles: true,
+        composed: true,
+      })
+    );
+  }
+
+  /**
+   * Select all enabled options in multi-select mode.
+   * Respects maxSelections limit if set.
+   */
+  private selectAll(): void {
+    const enabledOptions = this.effectiveOptions.filter((o) => !o.disabled);
+
+    // Respect maxSelections limit
+    if (this.maxSelections && this.maxSelections > 0) {
+      const toSelect = enabledOptions.slice(0, this.maxSelections);
+      this.selectedValues = new Set(toSelect.map((o) => o.value));
+    } else {
+      this.selectedValues = new Set(enabledOptions.map((o) => o.value));
+    }
+
+    this.visibleTagCount = Infinity;
+    this.updateFormValue();
+    this.syncSlottedOptionStates();
+    this.requestUpdate();
+
+    this.dispatchEvent(
+      new CustomEvent('change', {
+        detail: { value: Array.from(this.selectedValues) },
+        bubbles: true,
+        composed: true,
+      })
+    );
+  }
+
+  /**
+   * Deselect all options in multi-select mode.
+   */
+  private deselectAll(): void {
+    this.selectedValues.clear();
+    this.visibleTagCount = Infinity;
+    this.updateFormValue();
+    this.syncSlottedOptionStates();
+    this.requestUpdate();
+
+    this.dispatchEvent(
+      new CustomEvent('change', {
+        detail: { value: [] },
         bubbles: true,
         composed: true,
       })
@@ -633,6 +691,33 @@ export class Select extends TailwindElement {
               </span>
             `
           : nothing}
+      </div>
+    `;
+  }
+
+  /**
+   * Render select all / clear all actions in dropdown.
+   * Only rendered in multi-select mode when showSelectAll is true.
+   */
+  private renderSelectAllActions() {
+    if (!this.multiple || !this.showSelectAll) return nothing;
+
+    const enabledCount = this.effectiveOptions.filter((o) => !o.disabled).length;
+    const allSelected =
+      this.selectedValues.size === enabledCount ||
+      (this.maxSelections !== undefined &&
+        this.selectedValues.size >= this.maxSelections);
+
+    return html`
+      <div class="select-all-actions">
+        <button
+          type="button"
+          class="select-all-btn"
+          @click=${allSelected ? this.deselectAll : this.selectAll}
+          @mousedown=${(e: MouseEvent) => e.preventDefault()}
+        >
+          ${allSelected ? 'Clear all' : 'Select all'}
+        </button>
       </div>
     `;
   }
@@ -1153,6 +1238,25 @@ export class Select extends TailwindElement {
         background-color: var(--ui-select-option-bg-hover, var(--color-accent));
         cursor: default;
         flex-shrink: 0;
+      }
+
+      /* Select all actions container */
+      .select-all-actions {
+        padding: 0.5rem 0.75rem;
+        border-bottom: 1px solid var(--ui-select-dropdown-border);
+      }
+
+      .select-all-btn {
+        font-size: 0.875em;
+        color: var(--color-primary, var(--ui-color-primary));
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+      }
+
+      .select-all-btn:hover {
+        text-decoration: underline;
       }
     `,
   ];
@@ -1775,6 +1879,7 @@ export class Select extends TailwindElement {
           aria-multiselectable=${this.multiple ? 'true' : nothing}
           ?hidden=${!this.open}
         >
+          ${this.renderSelectAllActions()}
           ${this.options.length > 0
             ? this.options.map((option, index) =>
                 this.renderOption(option, index)
