@@ -239,10 +239,10 @@ Plans:
 **Plans:** 4 plans
 
 Plans:
-- [ ] 35-01-PLAN.md — Searchable mode foundation with filtering and input trigger
-- [ ] 35-02-PLAN.md — Match highlighting and empty state
-- [ ] 35-03-PLAN.md — Custom filter function and creatable mode
-- [ ] 35-04-PLAN.md — Human verification checkpoint
+- [x] 35-01-PLAN.md — Searchable mode foundation with filtering and input trigger
+- [x] 35-02-PLAN.md — Match highlighting and empty state
+- [x] 35-03-PLAN.md — Custom filter function and creatable mode
+- [x] 35-04-PLAN.md — Human verification checkpoint
 
 **Success Criteria:**
 
@@ -340,7 +340,7 @@ Plans:
 | 32. Core Single Select | v4.1 | 4/4 | Complete | 2026-01-26 |
 | 33. Select Enhancements | v4.1 | 4/4 | Complete | 2026-01-26 |
 | 34. Multi-Select | v4.1 | 4/4 | Complete | 2026-01-27 |
-| 35. Combobox | v4.1 | 0/4 | Not started | - |
+| 35. Combobox | v4.1 | 4/4 | Complete | 2026-01-27 |
 | 36. Async Loading | v4.1 | 0/? | Not started | - |
 | 37. CLI and Documentation | v4.1 | 0/? | Not started | - |
 

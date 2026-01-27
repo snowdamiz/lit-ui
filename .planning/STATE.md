@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-26)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** v4.1 Select Component - Phase 35 Combobox
+**Current focus:** v4.1 Select Component - Phase 36 Async Loading
 
 ## Current Position
 
-Phase: 35 - Combobox (in progress)
-Plan: 03 of 3 complete
-Status: Phase complete
-Last activity: 2026-01-27 - Completed 35-03-PLAN.md (Custom Filter and Creatable)
+Phase: 36 - Async Loading (not started)
+Plan: 0 of ?
+Status: Ready to plan
+Last activity: 2026-01-27 - Phase 35 verified complete
 
-Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 SHIPPED | v4.0 SHIPPED | v4.1 [######.] 6/7 phases
+Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 SHIPPED | v4.0 SHIPPED | v4.1 [#####..] 5/7 phases
 
 ## Performance Metrics
 
@@ -121,18 +121,19 @@ None.
 ## Session Continuity
 
 Last session: 2026-01-27
-Stopped at: Completed 35-03-PLAN.md (Custom Filter and Creatable)
+Stopped at: Phase 35 verified and complete
 Resume file: None
 
 ## Next Steps
 
-Phase 35 Combobox complete. All 3 plans delivered.
+Phase 35 Combobox verified complete. All 4 plans delivered including human verification.
 
-**Phase 35 Complete:**
+**Phase 35 Deliverables:**
 - Plan 01: Searchable mode with filtering
 - Plan 02: Match highlighting for filtered text
 - Plan 03: Custom filter function and creatable mode
+- Plan 04: Human verification checkpoint (render loop fix applied)
 
 **Remaining phases in v4.1:**
-- Phase 36: Async Loading
+- Phase 36: Async Loading (next)
 - Phase 37: CLI and Documentation
