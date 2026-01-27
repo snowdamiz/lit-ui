@@ -570,6 +570,48 @@
 
   /* Group tokens */
   --ui-checkbox-group-gap: 0.5rem;
+
+  /* -------------------------------------------------------------------------
+   * Radio Component
+   * ------------------------------------------------------------------------- */
+
+  /* Circle dimensions per size */
+  --ui-radio-size-sm: 1rem;
+  --ui-radio-size-md: 1.25rem;
+  --ui-radio-size-lg: 1.5rem;
+
+  /* Dot dimensions per size (inner filled circle) */
+  --ui-radio-dot-size-sm: 0.5rem;
+  --ui-radio-dot-size-md: 0.625rem;
+  --ui-radio-dot-size-lg: 0.75rem;
+
+  /* Layout */
+  --ui-radio-label-gap: 0.5rem;
+  --ui-radio-transition: 150ms;
+  --ui-radio-border-width: 2px;
+
+  /* Label typography */
+  --ui-radio-font-size-sm: 0.875rem;
+  --ui-radio-font-size-md: 1rem;
+  --ui-radio-font-size-lg: 1.125rem;
+
+  /* Default state (unchecked) */
+  --ui-radio-bg: var(--color-background, white);
+  --ui-radio-border: var(--color-border, var(--ui-color-border));
+
+  /* Checked state */
+  --ui-radio-border-checked: var(--color-primary, var(--ui-color-primary));
+  --ui-radio-dot-color: var(--color-primary, var(--ui-color-primary));
+
+  /* Focus state */
+  --ui-radio-ring: var(--color-ring, var(--ui-color-ring));
+
+  /* Error state */
+  --ui-radio-border-error: var(--color-destructive, var(--ui-color-destructive));
+  --ui-radio-text-error: var(--color-destructive, var(--ui-color-destructive));
+
+  /* Group tokens */
+  --ui-radio-group-gap: 0.5rem;
 }
 
 /* ==========================================================================
