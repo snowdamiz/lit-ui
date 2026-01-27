@@ -73,11 +73,11 @@ Requirements for Checkbox, Radio, and Switch components. Each maps to roadmap ph
 
 ### CLI and Documentation
 
-- [ ] **CLIDOC-01**: CLI registry entries for checkbox, radio, and switch components
-- [ ] **CLIDOC-02**: Docs page for Checkbox with interactive examples
-- [ ] **CLIDOC-03**: Docs page for Radio with interactive examples
-- [ ] **CLIDOC-04**: Docs page for Switch with interactive examples
-- [ ] **CLIDOC-05**: Navigation updated with new component pages
+- [x] **CLIDOC-01**: CLI registry entries for checkbox, radio, and switch components
+- [x] **CLIDOC-02**: Docs page for Checkbox with interactive examples
+- [x] **CLIDOC-03**: Docs page for Radio with interactive examples
+- [x] **CLIDOC-04**: Docs page for Switch with interactive examples
+- [x] **CLIDOC-05**: Navigation updated with new component pages
 
 ## Future Requirements
 
@@ -173,11 +173,11 @@ Deferred to later milestones.
 | RGRP-06 | Phase 40 | Complete |
 | RGRP-07 | Phase 40 | Complete |
 | RGRP-08 | Phase 40 | Complete |
-| CLIDOC-01 | Phase 41 | Pending |
-| CLIDOC-02 | Phase 41 | Pending |
-| CLIDOC-03 | Phase 41 | Pending |
-| CLIDOC-04 | Phase 41 | Pending |
-| CLIDOC-05 | Phase 41 | Pending |
+| CLIDOC-01 | Phase 41 | Complete |
+| CLIDOC-02 | Phase 41 | Complete |
+| CLIDOC-03 | Phase 41 | Complete |
+| CLIDOC-04 | Phase 41 | Complete |
+| CLIDOC-05 | Phase 41 | Complete |
 
 **Coverage:**
 - v4.2 requirements: 54 total

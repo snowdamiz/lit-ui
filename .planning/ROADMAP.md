@@ -151,7 +151,7 @@ Full details: [milestones/v4.1-ROADMAP.md](milestones/v4.1-ROADMAP.md)
 - [x] **Phase 38: Switch Component** - Standalone toggle proving form participation and animation patterns
 - [x] **Phase 39: Checkbox + CheckboxGroup** - Checked/indeterminate states with group communication
 - [x] **Phase 40: Radio + RadioGroup** - Mutual exclusion with roving tabindex and group form ownership
-- [ ] **Phase 41: CLI and Documentation** - Registry entries and docs pages for all three controls
+- [x] **Phase 41: CLI and Documentation** - Registry entries and docs pages for all three controls
 
 ### Phase 38: Switch Component
 **Goal**: Users can toggle a switch control on/off with animated slide transition, form submission, and full keyboard/screen reader accessibility
@@ -208,13 +208,13 @@ Plans:
   1. Running `npx lit-ui add checkbox`, `npx lit-ui add radio`, and `npx lit-ui add switch` installs the respective component with correct dependencies
   2. Docs site has dedicated pages for Checkbox, Radio, and Switch, each with interactive examples covering variants, states, groups, and form integration
   3. Docs navigation includes all three new component pages in the correct section
-**Plans**: 5 plans
+**Plans**: 5 plans (complete)
 Plans:
-- [ ] 41-01-PLAN.md — CLI registry, templates, NPM mapping, list categories
-- [ ] 41-02-PLAN.md — Docs infrastructure (deps, JSX types, nav, routes, PrevNextNav)
-- [ ] 41-03-PLAN.md — CheckboxPage.tsx documentation
-- [ ] 41-04-PLAN.md — RadioPage.tsx documentation
-- [ ] 41-05-PLAN.md — SwitchPage.tsx documentation
+- [x] 41-01-PLAN.md — CLI registry, templates, NPM mapping, list categories
+- [x] 41-02-PLAN.md — Docs infrastructure (deps, JSX types, nav, routes, PrevNextNav)
+- [x] 41-03-PLAN.md — CheckboxPage.tsx documentation
+- [x] 41-04-PLAN.md — RadioPage.tsx documentation
+- [x] 41-05-PLAN.md — SwitchPage.tsx documentation
 
 ## Progress
 
@@ -270,8 +270,8 @@ Plans:
 | 38. Switch Component | v4.2 | 2/2 | Complete | 2026-01-27 |
 | 39. Checkbox + CheckboxGroup | v4.2 | 3/3 | Complete | 2026-01-27 |
 | 40. Radio + RadioGroup | v4.2 | 3/3 | Complete | 2026-01-27 |
-| 41. CLI and Documentation | v4.2 | 0/? | Not started | - |
+| 41. CLI and Documentation | v4.2 | 5/5 | Complete | 2026-01-27 |
 
 ---
 *Roadmap created: 2026-01-24*
-*Last updated: 2026-01-27 (Phase 40 complete)*
+*Last updated: 2026-01-27 (Phase 41 complete — v4.2 milestone complete)*
