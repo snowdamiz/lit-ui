@@ -56,6 +56,35 @@
       ],
       "dependencies": [],
       "registryDependencies": []
+    },
+    {
+      "name": "checkbox",
+      "description": "Accessible checkbox with indeterminate state and CheckboxGroup with select-all",
+      "files": [
+        { "path": "components/checkbox/checkbox.ts", "type": "component" },
+        { "path": "components/checkbox/checkbox-group.ts", "type": "component" }
+      ],
+      "dependencies": [],
+      "registryDependencies": []
+    },
+    {
+      "name": "radio",
+      "description": "Accessible radio button with RadioGroup for mutual exclusion and arrow key navigation",
+      "files": [
+        { "path": "components/radio/radio.ts", "type": "component" },
+        { "path": "components/radio/radio-group.ts", "type": "component" }
+      ],
+      "dependencies": [],
+      "registryDependencies": []
+    },
+    {
+      "name": "switch",
+      "description": "Toggle switch with animated slide transition and form participation",
+      "files": [
+        { "path": "components/switch/switch.ts", "type": "component" }
+      ],
+      "dependencies": [],
+      "registryDependencies": []
     }
   ]
 }

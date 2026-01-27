@@ -12,6 +12,9 @@ export const componentToPackage: Record<string, string> = {
   input: '@lit-ui/input',
   textarea: '@lit-ui/textarea',
   select: '@lit-ui/select',
+  checkbox: '@lit-ui/checkbox',
+  radio: '@lit-ui/radio',
+  switch: '@lit-ui/switch',
 };
 
 /**
