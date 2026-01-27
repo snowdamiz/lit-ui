@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 ## Current Position
 
 Phase: 40 of 41 (Radio + RadioGroup)
-Plan: 0 of ? in current phase
-Status: Ready to plan
-Last activity: 2026-01-27 — Phase 39 complete (Checkbox + CheckboxGroup verified)
+Plan: 1 of 3 in current phase
+Status: In progress
+Last activity: 2026-01-27 — Completed 40-01-PLAN.md (package scaffolding + radio tokens)
 
-Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 SHIPPED | v4.0 SHIPPED | v4.1 SHIPPED | v4.2 [#####.....] 2/4
+Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 SHIPPED | v4.0 SHIPPED | v4.1 SHIPPED | v4.2 [######....] 3/4
 
 ## Performance Metrics
 
@@ -28,9 +28,9 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 | v2.0 SHIPPED | v3.0 SHIPPED | 
 - v4.1: 28 plans in 141 min
 
 **v4.2 Velocity:**
-- Total plans completed: 5
+- Total plans completed: 6
 - Average duration: 2min
-- Total execution time: 9min
+- Total execution time: 10min
 
 ## Accumulated Context
 
@@ -47,6 +47,7 @@ Recent decisions affecting current work:
 - [39-01]: Checkbox token naming follows --ui-checkbox-* convention; indeterminate shares checked visual weight
 - [39-02]: Space-only keyboard for checkbox (W3C APG spec); click handler on wrapper for label toggle
 - [39-03]: CheckboxGroup NOT form-associated; batch update flag for select-all race condition prevention
+- [40-01]: Radio tokens omit radius/bg-checked/indeterminate; add dot-size tokens unique to radio
 
 ### Pending Todos
 
@@ -60,5 +61,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-01-27
-Stopped at: Phase 39 complete, ready to plan Phase 40
+Stopped at: Completed 40-01-PLAN.md (package scaffolding + radio tokens)
 Resume file: None
