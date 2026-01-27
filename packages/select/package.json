@@ -42,7 +42,9 @@
     "@lit-ui/core": "^1.0.0"
   },
   "dependencies": {
-    "@floating-ui/dom": "^1.7.4"
+    "@floating-ui/dom": "^1.7.4",
+    "@lit/task": "^1.0.3",
+    "@tanstack/lit-virtual": "^3.13.2"
   },
   "devDependencies": {
     "@lit-ui/core": "workspace:*",
