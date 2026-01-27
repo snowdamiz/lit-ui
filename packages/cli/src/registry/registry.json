@@ -45,6 +45,17 @@
       ],
       "dependencies": [],
       "registryDependencies": []
+    },
+    {
+      "name": "select",
+      "description": "Accessible select dropdown with single/multi-select, combobox search, option groups, and async loading",
+      "files": [
+        { "path": "components/select/select.ts", "type": "component" },
+        { "path": "components/select/option.ts", "type": "component" },
+        { "path": "components/select/option-group.ts", "type": "component" }
+      ],
+      "dependencies": [],
+      "registryDependencies": []
     }
   ]
 }
