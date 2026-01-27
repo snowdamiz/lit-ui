@@ -1670,6 +1670,15 @@ export class Select extends TailwindElement {
     if (this._isVirtualized && this.open) {
       this.updateVirtualizer();
     }
+
+    // Re-observe sentinel after render if needed
+    if (this.loadMore && this._hasMore && this.open && this._loadMoreObserver) {
+      const sentinel = this._sentinelRef.value;
+      if (sentinel) {
+        this._loadMoreObserver.disconnect();
+        this._loadMoreObserver.observe(sentinel);
+      }
+    }
   }
 
   /**
@@ -2166,6 +2175,16 @@ export class Select extends TailwindElement {
       :host-context(.dark) .skeleton-indicator,
       :host-context(.dark) .skeleton-text {
         background: var(--ui-select-skeleton-bg, hsl(200, 10%, 30%));
+      }
+
+      /* Infinite scroll sentinel and loading */
+      .load-more-sentinel {
+        height: 1px;
+        width: 100%;
+      }
+
+      .loading-more-container {
+        padding: 0;
       }
 
       /* Virtualized listbox container */
@@ -2988,6 +3007,7 @@ export class Select extends TailwindElement {
   /**
    * Render options using virtual scrolling.
    * Only renders visible items plus overscan for smooth scrolling.
+   * Accounts for loading-more skeleton height.
    */
   private renderVirtualizedOptions(): TemplateResult {
     if (!this._virtualizer) {
@@ -2999,10 +3019,13 @@ export class Select extends TailwindElement {
     const totalSize = virtualizer.getTotalSize();
     const options = this.effectiveOptions;
 
+    // Add extra height for loading-more skeletons
+    const loadingMoreHeight = this._loadingMore ? 3 * Select.OPTION_HEIGHT : 0;
+
     return html`
       <div
         class="listbox-virtual-content"
-        style="height: ${totalSize}px;"
+        style="height: ${totalSize + loadingMoreHeight}px;"
       >
         ${virtualItems.map((virtualItem) => {
           const option = options[virtualItem.index];
@@ -3168,6 +3191,25 @@ export class Select extends TailwindElement {
           <div class="skeleton-text ${textWidths[index % textWidths.length]}"></div>
         </div>
       `)}
+    `;
+  }
+
+  /**
+   * Render the load-more sentinel and loading indicator.
+   * Sentinel triggers IntersectionObserver when visible.
+   */
+  private renderLoadMoreSentinel(): TemplateResult | typeof nothing {
+    if (!this.loadMore || !this._hasMore) return nothing;
+
+    return html`
+      <div class="loading-more-container">
+        ${this._loadingMore ? this.renderSkeletonOptions(3) : nothing}
+        <div
+          ${ref(this._sentinelRef)}
+          class="load-more-sentinel"
+          aria-hidden="true"
+        ></div>
+      </div>
     `;
   }
 
@@ -3370,11 +3412,17 @@ export class Select extends TailwindElement {
             : this._asyncError || this._searchError
               ? this.renderErrorState()
               : this._isVirtualized && optionsToRender.length > 0
-                ? this.renderVirtualizedOptions()
+                ? html`
+                    ${this.renderVirtualizedOptions()}
+                    ${this.renderLoadMoreSentinel()}
+                  `
                 : optionsToRender.length > 0
-                  ? optionsToRender.map((filterMatch, index) =>
-                      this.renderOption(filterMatch, index)
-                    )
+                  ? html`
+                      ${optionsToRender.map((filterMatch, index) =>
+                        this.renderOption(filterMatch, index)
+                      )}
+                      ${this.renderLoadMoreSentinel()}
+                    `
                   : this.searchable && this.filterQuery
                     ? this.renderEmptyState()
                     : nothing}
