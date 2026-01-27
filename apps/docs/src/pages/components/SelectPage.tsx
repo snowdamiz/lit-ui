@@ -23,9 +23,9 @@ const selectProps: PropDef[] = [
   },
   {
     name: 'value',
-    type: 'string',
+    type: 'string | string[]',
     default: '""',
-    description: 'Current selected value.',
+    description: 'Current selected value. Returns string[] in multi-select mode.',
   },
   {
     name: 'placeholder',
@@ -62,6 +62,24 @@ const selectProps: PropDef[] = [
     type: 'boolean',
     default: 'false',
     description: 'Show clear button when a value is selected.',
+  },
+  {
+    name: 'multiple',
+    type: 'boolean',
+    default: 'false',
+    description: 'Enable multi-select mode. Selected items display as tags.',
+  },
+  {
+    name: 'maxSelections',
+    type: 'number',
+    default: 'undefined',
+    description: 'Maximum number of selections allowed in multi-select mode.',
+  },
+  {
+    name: 'showSelectAll',
+    type: 'boolean',
+    default: 'false',
+    description: 'Show "Select all" / "Clear all" button in multi-select dropdown.',
   },
 ];
 
@@ -217,6 +235,45 @@ const disabledCode = `<lui-select label="Disabled Select" disabled placeholder="
 const requiredCode = `<lui-select label="Required Field" required placeholder="Please select">
   <lui-option value="1">Option 1</lui-option>
   <lui-option value="2">Option 2</lui-option>
+</lui-select>`;
+
+// Multi-select examples
+const multiSelectBasicCode = `<lui-select label="Skills" multiple placeholder="Select skills">
+  <lui-option value="js">JavaScript</lui-option>
+  <lui-option value="ts">TypeScript</lui-option>
+  <lui-option value="py">Python</lui-option>
+  <lui-option value="go">Go</lui-option>
+  <lui-option value="rust">Rust</lui-option>
+</lui-select>`;
+
+const multiSelectGroupsCode = `<lui-select label="Technologies" multiple placeholder="Select technologies">
+  <lui-option-group label="Frontend">
+    <lui-option value="react">React</lui-option>
+    <lui-option value="vue">Vue</lui-option>
+    <lui-option value="svelte">Svelte</lui-option>
+  </lui-option-group>
+  <lui-option-group label="Backend">
+    <lui-option value="node">Node.js</lui-option>
+    <lui-option value="django">Django</lui-option>
+    <lui-option value="rails">Rails</lui-option>
+  </lui-option-group>
+</lui-select>`;
+
+const multiSelectAllCode = `<lui-select label="Fruits" multiple showSelectAll placeholder="Select fruits">
+  <lui-option value="apple">Apple</lui-option>
+  <lui-option value="banana">Banana</lui-option>
+  <lui-option value="cherry">Cherry</lui-option>
+  <lui-option value="date">Date</lui-option>
+  <lui-option value="elderberry">Elderberry</lui-option>
+  <lui-option value="fig">Fig</lui-option>
+</lui-select>`;
+
+const multiSelectMaxCode = `<lui-select label="Top 3 Colors" multiple maxSelections="3" placeholder="Select up to 3 colors">
+  <lui-option value="red">Red</lui-option>
+  <lui-option value="blue">Blue</lui-option>
+  <lui-option value="green">Green</lui-option>
+  <lui-option value="yellow">Yellow</lui-option>
+  <lui-option value="purple">Purple</lui-option>
 </lui-select>`;
 
 export function SelectPage() {
@@ -470,6 +527,126 @@ export function SelectPage() {
               svelte={requiredCode}
             />
           </section>
+
+          {/* Multi-Select Section Header */}
+          <div className="mt-16 mb-8">
+            <div className="flex items-center gap-4">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
+                  Multi-Select
+                  <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded">Phase 34</span>
+                </h2>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Select multiple values with tags, overflow handling, and bulk actions</p>
+              </div>
+              <div className="flex-1 h-px bg-gradient-to-r from-gray-200 dark:from-gray-700 to-transparent" />
+            </div>
+          </div>
+
+          {/* 9. Basic Multi-Select */}
+          <section>
+            <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-2">Basic Multi-Select</h3>
+            <p className="text-gray-500 dark:text-gray-400 mb-4 text-sm">
+              Add <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">multiple</code> to enable multi-select.
+              Selected items appear as removable tags. Dropdown stays open while selecting.
+            </p>
+            <ExampleBlock
+              preview={
+                <lui-select label="Skills" multiple placeholder="Select skills">
+                  <lui-option value="js">JavaScript</lui-option>
+                  <lui-option value="ts">TypeScript</lui-option>
+                  <lui-option value="py">Python</lui-option>
+                  <lui-option value="go">Go</lui-option>
+                  <lui-option value="rust">Rust</lui-option>
+                </lui-select>
+              }
+              html={multiSelectBasicCode}
+              react={multiSelectBasicCode}
+              vue={multiSelectBasicCode}
+              svelte={multiSelectBasicCode}
+            />
+          </section>
+
+          {/* 10. Multi-Select with Groups */}
+          <section>
+            <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-2">Multi-Select with Option Groups</h3>
+            <p className="text-gray-500 dark:text-gray-400 mb-4 text-sm">
+              Combine multi-select with option groups for organized selection across categories.
+            </p>
+            <ExampleBlock
+              preview={
+                <lui-select label="Technologies" multiple placeholder="Select technologies">
+                  <lui-option-group label="Frontend">
+                    <lui-option value="react">React</lui-option>
+                    <lui-option value="vue">Vue</lui-option>
+                    <lui-option value="svelte">Svelte</lui-option>
+                  </lui-option-group>
+                  <lui-option-group label="Backend">
+                    <lui-option value="node">Node.js</lui-option>
+                    <lui-option value="django">Django</lui-option>
+                    <lui-option value="rails">Rails</lui-option>
+                  </lui-option-group>
+                </lui-select>
+              }
+              html={multiSelectGroupsCode}
+              react={multiSelectGroupsCode}
+              vue={multiSelectGroupsCode}
+              svelte={multiSelectGroupsCode}
+            />
+          </section>
+
+          {/* 11. Select All / Clear All */}
+          <section>
+            <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-2">Select All / Clear All</h3>
+            <p className="text-gray-500 dark:text-gray-400 mb-4 text-sm">
+              Add <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">showSelectAll</code> for bulk selection actions.
+              The button toggles between "Select all" and "Clear all" based on current selection state.
+            </p>
+            <ExampleBlock
+              preview={
+                <lui-select label="Fruits" multiple showSelectAll placeholder="Select fruits">
+                  <lui-option value="apple">Apple</lui-option>
+                  <lui-option value="banana">Banana</lui-option>
+                  <lui-option value="cherry">Cherry</lui-option>
+                  <lui-option value="date">Date</lui-option>
+                  <lui-option value="elderberry">Elderberry</lui-option>
+                  <lui-option value="fig">Fig</lui-option>
+                </lui-select>
+              }
+              html={multiSelectAllCode}
+              react={multiSelectAllCode}
+              vue={multiSelectAllCode}
+              svelte={multiSelectAllCode}
+            />
+          </section>
+
+          {/* 12. Max Selections */}
+          <section>
+            <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-2">Maximum Selections</h3>
+            <p className="text-gray-500 dark:text-gray-400 mb-4 text-sm">
+              Use <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">maxSelections</code> to limit how many options can be selected.
+              "Select all" also respects this limit.
+            </p>
+            <ExampleBlock
+              preview={
+                <lui-select label="Top 3 Colors" multiple maxSelections={3} placeholder="Select up to 3 colors">
+                  <lui-option value="red">Red</lui-option>
+                  <lui-option value="blue">Blue</lui-option>
+                  <lui-option value="green">Green</lui-option>
+                  <lui-option value="yellow">Yellow</lui-option>
+                  <lui-option value="purple">Purple</lui-option>
+                </lui-select>
+              }
+              html={multiSelectMaxCode}
+              react={multiSelectMaxCode}
+              vue={multiSelectMaxCode}
+              svelte={multiSelectMaxCode}
+            />
+          </section>
         </div>
 
         {/* API Reference */}
@@ -615,8 +792,12 @@ export function SelectPage() {
               </thead>
               <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
                 <tr>
-                  <td className="px-4 py-3"><kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-xs font-mono">Enter</kbd> / <kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-xs font-mono">Space</kbd></td>
-                  <td className="px-4 py-3 text-gray-600 dark:text-gray-400">Open dropdown / Select option</td>
+                  <td className="px-4 py-3"><kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-xs font-mono">Enter</kbd></td>
+                  <td className="px-4 py-3 text-gray-600 dark:text-gray-400">Open dropdown / Select option and close (single) / Close dropdown (multi)</td>
+                </tr>
+                <tr>
+                  <td className="px-4 py-3"><kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-xs font-mono">Space</kbd></td>
+                  <td className="px-4 py-3 text-gray-600 dark:text-gray-400">Open dropdown / Select option (single) / Toggle selection (multi, stays open)</td>
                 </tr>
                 <tr>
                   <td className="px-4 py-3"><kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-xs font-mono">Arrow Down</kbd> / <kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-xs font-mono">Arrow Up</kbd></td>
