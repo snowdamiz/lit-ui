@@ -44,8 +44,8 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHI
 - Total execution time: 30 min
 
 **v4.1 Velocity (in progress):**
-- Plans completed: 20
-- Total execution time: 66 min
+- Plans completed: 21
+- Total execution time: 78 min
 
 ## Accumulated Context
 
@@ -100,6 +100,9 @@ v3.0, v3.1, v4.0 decisions validated and archived.
 | Skeleton text widths vary for natural appearance | 70%, 55%, 80%, 60% rotation avoids repetitive look | 36-01 |
 | Checkbox indicator in multi-select skeleton | Visual consistency with real options | 36-01 |
 | Dark mode via :host-context(.dark) | Standard pattern for dark mode skeleton colors | 36-01 |
+| Options prop changed to attribute: false | Promise cannot be serialized to/from attribute | 36-02 |
+| Selection cleared on async error | Clean state for retry attempts | 36-02 |
+| Task controller for async options | @lit/task manages Promise lifecycle | 36-02 |
 | AbortController cancels previous search requests | Prevents race conditions in async search | 36-03 |
 | Server-filtered results bypass local filtering | No highlighting needed for server-side filtered results | 36-03 |
 | Search state cleared on dropdown close | Clean state for next open | 36-03 |
@@ -130,12 +133,17 @@ Resume file: None
 
 ## Next Steps
 
-Phase 36 Async Loading in progress. Plans 01, 03 complete. Plans 02, 04 in parallel execution.
+Phase 36 Async Loading in progress. Plans 01, 02, 03 complete.
 
 **Phase 36-01 Deliverables:**
 - @lit/task and @tanstack/lit-virtual dependencies added
 - Skeleton loading CSS with pulse animation
 - renderSkeletonOptions method for async loading UI
+
+**Phase 36-02 Deliverables:**
+- Options prop accepts Promise<SelectOption[]>
+- Task controller for async state management
+- Error state with retry functionality
 
 **Phase 36-03 Deliverables:**
 - asyncSearch prop with debounce and AbortController
@@ -143,8 +151,7 @@ Phase 36 Async Loading in progress. Plans 01, 03 complete. Plans 02, 04 in paral
 - Search loading skeleton and error state with retry
 
 **Remaining in Phase 36:**
-- Plan 02: Async options loading (in progress)
-- Plan 04: Load more / infinite scroll (in progress)
+- Plan 04: Load more / infinite scroll
 - Plan 05: Virtual scrolling
 - Plan 06: Human verification
 
