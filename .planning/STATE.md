@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 ## Current Position
 
 Phase: 37 - CLI and Documentation (in progress)
-Plan: 1 of 2
+Plan: 2 of 2
 Status: In progress
-Last activity: 2026-01-26 - Completed 37-01-PLAN.md
+Last activity: 2026-01-27 - Completed 37-02-PLAN.md
 
 Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 SHIPPED | v4.0 SHIPPED | v4.1 [######.] 6/7 phases
 
@@ -44,8 +44,8 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHI
 - Total execution time: 30 min
 
 **v4.1 Velocity (in progress):**
-- Plans completed: 24
-- Total execution time: 132 min
+- Plans completed: 25
+- Total execution time: 135 min
 
 ## Accumulated Context
 
@@ -112,6 +112,8 @@ v3.0, v3.1, v4.0 decisions validated and archived.
 | IntersectionObserver rootMargin for 80% scroll trigger | 0px 0px 20% 0px triggers when 20% from bottom | 36-05 |
 | Sentinel element for infinite scroll detection | Reliable intersection observation pattern | 36-05 |
 | Observer re-established in updated() | Handle DOM changes after new options load | 36-05 |
+| preview={null} for async doc examples | Interactive demos require server APIs not available in static docs | 37-02 |
+| Amber color for Phase 36 badge | Distinct from blue (33), green (34), purple (35) phase badges | 37-02 |
 
 ### Pending Todos
 
@@ -135,21 +137,16 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-01-26
-Stopped at: Completed 37-01-PLAN.md
+Last session: 2026-01-27
+Stopped at: Completed 37-02-PLAN.md
 Resume file: None
 
 ## Next Steps
 
-Phase 36 Async Loading verified complete. All 6 plans delivered including human verification.
+Phase 37 Plan 02 complete. Async & Performance documentation added to SelectPage.tsx.
 
-**Phase 36 Deliverables:**
-- Plan 01: @lit/task and @tanstack/lit-virtual dependencies, skeleton loading UI
-- Plan 02: Promise-based options with Task controller, error state with retry
-- Plan 03: Async search with debounce and AbortController
-- Plan 04: Virtual scrolling with VirtualizerController
-- Plan 05: Infinite scroll pagination with IntersectionObserver
-- Plan 06: Human verification (all 7 test scenarios passed)
+**Phase 37 Progress:**
+- Plan 01: CLI tooling documentation (complete)
+- Plan 02: Select async documentation (complete)
 
-**Remaining phases in v4.1:**
-- Phase 37: CLI and Documentation (next)
+**Remaining:** Phase 37 may be complete pending confirmation of total plan count.
