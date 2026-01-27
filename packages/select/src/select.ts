@@ -221,6 +221,13 @@ export class Select extends TailwindElement {
   private selectedValues: Set<string> = new Set();
 
   /**
+   * Number of visible tags before overflow indicator.
+   * Infinity means show all tags.
+   */
+  @state()
+  private visibleTagCount: number = Infinity;
+
+  /**
    * Internal storage for single-select value.
    */
   private _value = '';
@@ -261,6 +268,11 @@ export class Select extends TailwindElement {
    * Mutation observer for detecting dynamically added options inside groups.
    */
   private mutationObserver: MutationObserver | null = null;
+
+  /**
+   * ResizeObserver for tracking tag container width changes.
+   */
+  private resizeObserver: ResizeObserver | null = null;
 
   /**
    * X-circle icon SVG for clear button.
@@ -351,6 +363,9 @@ export class Select extends TailwindElement {
     // Sync slotted option states
     this.syncSlottedOptionStates();
 
+    // Reset visible tag count for recalculation
+    this.visibleTagCount = Infinity;
+
     this.updateFormValue();
     this.requestUpdate();
 
@@ -373,6 +388,10 @@ export class Select extends TailwindElement {
     e.preventDefault();
 
     this.selectedValues.delete(value);
+
+    // Reset visible tag count for recalculation
+    this.visibleTagCount = Infinity;
+
     this.updateFormValue();
     this.requestUpdate();
 
@@ -390,6 +409,51 @@ export class Select extends TailwindElement {
 
     // Focus trigger after removal
     this.triggerEl?.focus();
+  }
+
+  /**
+   * Calculate how many tags are visible based on container width.
+   * Uses requestAnimationFrame to avoid layout thrashing.
+   */
+  private calculateVisibleTags(containerWidth: number): void {
+    if (!this.multiple || this.selectedValues.size === 0) {
+      this.visibleTagCount = Infinity;
+      return;
+    }
+
+    const tags = this.shadowRoot?.querySelectorAll('.tag:not(.tag-overflow)');
+    if (!tags || tags.length === 0) {
+      this.visibleTagCount = Infinity;
+      return;
+    }
+
+    const moreButtonWidth = 60; // Reserve space for "+N more"
+    const gap = 4; // Gap between tags
+    let totalWidth = 0;
+    let count = 0;
+
+    for (const tag of tags) {
+      const tagWidth = tag.getBoundingClientRect().width + gap;
+      if (totalWidth + tagWidth + moreButtonWidth > containerWidth && count > 0) {
+        break;
+      }
+      totalWidth += tagWidth;
+      count++;
+    }
+
+    // Use requestAnimationFrame to avoid layout thrashing
+    requestAnimationFrame(() => {
+      if (count !== this.visibleTagCount && count > 0) {
+        this.visibleTagCount = count;
+      }
+    });
+  }
+
+  /**
+   * Get comma-separated list of hidden selection labels for tooltip.
+   */
+  private getHiddenSelectionsList(hiddenOptions: SelectOption[]): string {
+    return hiddenOptions.map((o) => o.label).join(', ');
   }
 
   /**
@@ -509,6 +573,7 @@ export class Select extends TailwindElement {
   /**
    * Render tags for multi-select mode.
    * Shows selected items as removable pill-shaped tags.
+   * Respects visibleTagCount and shows overflow indicator.
    */
   private renderTags() {
     if (!this.multiple || this.selectedValues.size === 0) {
@@ -519,9 +584,16 @@ export class Select extends TailwindElement {
       this.selectedValues.has(o.value)
     );
 
+    const visibleOptions =
+      this.visibleTagCount < selectedOptions.length
+        ? selectedOptions.slice(0, this.visibleTagCount)
+        : selectedOptions;
+
+    const hiddenCount = selectedOptions.length - visibleOptions.length;
+
     return html`
       <div class="tag-container">
-        ${selectedOptions.map(
+        ${visibleOptions.map(
           (opt) => html`
             <span class="tag" title="${opt.label}">
               <span class="tag-label">${opt.label}</span>
@@ -549,6 +621,18 @@ export class Select extends TailwindElement {
             </span>
           `
         )}
+        ${hiddenCount > 0
+          ? html`
+              <span
+                class="tag tag-overflow"
+                title="${this.getHiddenSelectionsList(
+                  selectedOptions.slice(this.visibleTagCount)
+                )}"
+              >
+                +${hiddenCount} more
+              </span>
+            `
+          : nothing}
       </div>
     `;
   }
@@ -683,6 +767,13 @@ export class Select extends TailwindElement {
         });
       });
       this.mutationObserver.observe(this, { childList: true, subtree: true });
+
+      // Add ResizeObserver for tag overflow calculation
+      this.resizeObserver = new ResizeObserver((entries) => {
+        for (const entry of entries) {
+          this.calculateVisibleTags(entry.contentRect.width);
+        }
+      });
     }
   }
 
@@ -698,6 +789,20 @@ export class Select extends TailwindElement {
       // Disconnect mutation observer
       this.mutationObserver?.disconnect();
       this.mutationObserver = null;
+
+      // Disconnect resize observer
+      this.resizeObserver?.disconnect();
+      this.resizeObserver = null;
+    }
+  }
+
+  override updated(): void {
+    // Start observing tag container for overflow
+    if (this.multiple && this.selectedValues.size > 0) {
+      const tagContainer = this.shadowRoot?.querySelector('.tag-container');
+      if (tagContainer && this.resizeObserver) {
+        this.resizeObserver.observe(tagContainer);
+      }
     }
   }
 
@@ -1041,6 +1146,13 @@ export class Select extends TailwindElement {
       .tag-remove svg {
         width: 0.75em;
         height: 0.75em;
+      }
+
+      /* Overflow indicator tag */
+      .tag-overflow {
+        background-color: var(--ui-select-option-bg-hover, var(--color-accent));
+        cursor: default;
+        flex-shrink: 0;
       }
     `,
   ];
