@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 ## Current Position
 
 Phase: 39 of 41 (Checkbox + CheckboxGroup)
-Plan: 2 of ? in current phase
+Plan: 3 of ? in current phase
 Status: In progress
-Last activity: 2026-01-27 — Completed 39-02-PLAN.md (checkbox component implementation)
+Last activity: 2026-01-27 — Completed 39-03-PLAN.md (CheckboxGroup component implementation)
 
-Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 SHIPPED | v4.0 SHIPPED | v4.1 SHIPPED | v4.2 [####......] 3/4
+Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 SHIPPED | v4.0 SHIPPED | v4.1 SHIPPED | v4.2 [#####.....] 4/4
 
 ## Performance Metrics
 
@@ -28,9 +28,9 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 | v2.0 SHIPPED | v3.0 SHIPPED | 
 - v4.1: 28 plans in 141 min
 
 **v4.2 Velocity:**
-- Total plans completed: 4
+- Total plans completed: 5
 - Average duration: 2min
-- Total execution time: 7min
+- Total execution time: 9min
 
 ## Accumulated Context
 
@@ -46,6 +46,7 @@ Recent decisions affecting current work:
 - [38-02]: Use PropertyValues type (not Map) in updated() to avoid api-extractor DTS rollup crash
 - [39-01]: Checkbox token naming follows --ui-checkbox-* convention; indeterminate shares checked visual weight
 - [39-02]: Space-only keyboard for checkbox (W3C APG spec); click handler on wrapper for label toggle
+- [39-03]: CheckboxGroup NOT form-associated; batch update flag for select-all race condition prevention
 
 ### Pending Todos
 
@@ -59,5 +60,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-01-27
-Stopped at: Completed 39-02-PLAN.md (checkbox component implementation)
+Stopped at: Completed 39-03-PLAN.md (CheckboxGroup component implementation)
 Resume file: None
