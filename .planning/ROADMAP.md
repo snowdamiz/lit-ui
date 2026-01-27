@@ -150,7 +150,7 @@ Full details: [milestones/v4.1-ROADMAP.md](milestones/v4.1-ROADMAP.md)
 
 - [x] **Phase 38: Switch Component** - Standalone toggle proving form participation and animation patterns
 - [x] **Phase 39: Checkbox + CheckboxGroup** - Checked/indeterminate states with group communication
-- [ ] **Phase 40: Radio + RadioGroup** - Mutual exclusion with roving tabindex and group form ownership
+- [x] **Phase 40: Radio + RadioGroup** - Mutual exclusion with roving tabindex and group form ownership
 - [ ] **Phase 41: CLI and Documentation** - Registry entries and docs pages for all three controls
 
 ### Phase 38: Switch Component
@@ -194,11 +194,11 @@ Plans:
   3. RadioGroup participates in forms via ElementInternals: submits the selected radio's value, supports `required` validation, and resets on form reset
   4. RadioGroup with `disabled` makes all child radios non-interactive; individual radios can also be independently disabled
   5. Screen readers announce `role="radiogroup"` on the group and `role="radio"` with checked state on each option, with proper group labeling
-**Plans**: 3 plans
+**Plans**: 3 plans (complete)
 Plans:
-- [ ] 40-01-PLAN.md — Package scaffolding + CSS design tokens
-- [ ] 40-02-PLAN.md — Radio component implementation
-- [ ] 40-03-PLAN.md — RadioGroup component implementation
+- [x] 40-01-PLAN.md — Package scaffolding + CSS design tokens
+- [x] 40-02-PLAN.md — Radio component implementation
+- [x] 40-03-PLAN.md — RadioGroup component implementation
 
 ### Phase 41: CLI and Documentation
 **Goal**: All three new components are installable via CLI and documented with interactive examples on the docs site
@@ -263,9 +263,9 @@ Plans:
 | 37. CLI and Documentation | v4.1 | 4/4 | Complete | 2026-01-27 |
 | 38. Switch Component | v4.2 | 2/2 | Complete | 2026-01-27 |
 | 39. Checkbox + CheckboxGroup | v4.2 | 3/3 | Complete | 2026-01-27 |
-| 40. Radio + RadioGroup | v4.2 | 0/? | Not started | - |
+| 40. Radio + RadioGroup | v4.2 | 3/3 | Complete | 2026-01-27 |
 | 41. CLI and Documentation | v4.2 | 0/? | Not started | - |
 
 ---
 *Roadmap created: 2026-01-24*
-*Last updated: 2026-01-27 (Phase 39 complete)*
+*Last updated: 2026-01-27 (Phase 40 complete)*

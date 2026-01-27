@@ -34,25 +34,25 @@ Requirements for Checkbox, Radio, and Switch components. Each maps to roadmap ph
 
 ### Radio
 
-- [ ] **RDIO-01**: User can select a radio option (checked/unchecked visual state)
-- [ ] **RDIO-02**: Radio renders label text via `label` property or default slot
-- [ ] **RDIO-03**: Radio supports `disabled` state
-- [ ] **RDIO-04**: Radio has size variants (sm/md/lg)
-- [ ] **RDIO-05**: Radio has animated dot scale transition on selection
-- [ ] **RDIO-06**: Radio has CSS design tokens (`--ui-radio-*`) for full theming
-- [ ] **RDIO-07**: Radio supports dark mode via token system
-- [ ] **RDIO-08**: Radio is SSR-compatible with `isServer` guards
+- [x] **RDIO-01**: User can select a radio option (checked/unchecked visual state)
+- [x] **RDIO-02**: Radio renders label text via `label` property or default slot
+- [x] **RDIO-03**: Radio supports `disabled` state
+- [x] **RDIO-04**: Radio has size variants (sm/md/lg)
+- [x] **RDIO-05**: Radio has animated dot scale transition on selection
+- [x] **RDIO-06**: Radio has CSS design tokens (`--ui-radio-*`) for full theming
+- [x] **RDIO-07**: Radio supports dark mode via token system
+- [x] **RDIO-08**: Radio is SSR-compatible with `isServer` guards
 
 ### Radio Group
 
-- [ ] **RGRP-01**: RadioGroup enforces mutual exclusion (only one radio selected at a time)
-- [ ] **RGRP-02**: RadioGroup participates in forms via ElementInternals (`name`, `value`, `setFormValue`)
-- [ ] **RGRP-03**: RadioGroup implements roving tabindex keyboard navigation (arrow keys move + select, Tab exits group)
-- [ ] **RGRP-04**: RadioGroup supports `required` validation with `setValidity`
-- [ ] **RGRP-05**: RadioGroup renders with `role="radiogroup"` and `aria-labelledby`
-- [ ] **RGRP-06**: RadioGroup propagates `disabled` state to all children
-- [ ] **RGRP-07**: RadioGroup supports form reset via `formResetCallback`
-- [ ] **RGRP-08**: RadioGroup displays error state with validation message
+- [x] **RGRP-01**: RadioGroup enforces mutual exclusion (only one radio selected at a time)
+- [x] **RGRP-02**: RadioGroup participates in forms via ElementInternals (`name`, `value`, `setFormValue`)
+- [x] **RGRP-03**: RadioGroup implements roving tabindex keyboard navigation (arrow keys move + select, Tab exits group)
+- [x] **RGRP-04**: RadioGroup supports `required` validation with `setValidity`
+- [x] **RGRP-05**: RadioGroup renders with `role="radiogroup"` and `aria-labelledby`
+- [x] **RGRP-06**: RadioGroup propagates `disabled` state to all children
+- [x] **RGRP-07**: RadioGroup supports form reset via `formResetCallback`
+- [x] **RGRP-08**: RadioGroup displays error state with validation message
 
 ### Switch
 
@@ -157,22 +157,22 @@ Deferred to later milestones.
 | CGRP-03 | Phase 39 | Complete |
 | CGRP-04 | Phase 39 | Complete |
 | CGRP-05 | Phase 39 | Complete |
-| RDIO-01 | Phase 40 | Pending |
-| RDIO-02 | Phase 40 | Pending |
-| RDIO-03 | Phase 40 | Pending |
-| RDIO-04 | Phase 40 | Pending |
-| RDIO-05 | Phase 40 | Pending |
-| RDIO-06 | Phase 40 | Pending |
-| RDIO-07 | Phase 40 | Pending |
-| RDIO-08 | Phase 40 | Pending |
-| RGRP-01 | Phase 40 | Pending |
-| RGRP-02 | Phase 40 | Pending |
-| RGRP-03 | Phase 40 | Pending |
-| RGRP-04 | Phase 40 | Pending |
-| RGRP-05 | Phase 40 | Pending |
-| RGRP-06 | Phase 40 | Pending |
-| RGRP-07 | Phase 40 | Pending |
-| RGRP-08 | Phase 40 | Pending |
+| RDIO-01 | Phase 40 | Complete |
+| RDIO-02 | Phase 40 | Complete |
+| RDIO-03 | Phase 40 | Complete |
+| RDIO-04 | Phase 40 | Complete |
+| RDIO-05 | Phase 40 | Complete |
+| RDIO-06 | Phase 40 | Complete |
+| RDIO-07 | Phase 40 | Complete |
+| RDIO-08 | Phase 40 | Complete |
+| RGRP-01 | Phase 40 | Complete |
+| RGRP-02 | Phase 40 | Complete |
+| RGRP-03 | Phase 40 | Complete |
+| RGRP-04 | Phase 40 | Complete |
+| RGRP-05 | Phase 40 | Complete |
+| RGRP-06 | Phase 40 | Complete |
+| RGRP-07 | Phase 40 | Complete |
+| RGRP-08 | Phase 40 | Complete |
 | CLIDOC-01 | Phase 41 | Pending |
 | CLIDOC-02 | Phase 41 | Pending |
 | CLIDOC-03 | Phase 41 | Pending |
@@ -186,4 +186,4 @@ Deferred to later milestones.
 
 ---
 *Requirements defined: 2026-01-26*
-*Last updated: 2026-01-27 — Phase 39 CHKB/CGRP requirements complete*
+*Last updated: 2026-01-27 — Phase 40 RDIO/RGRP requirements complete*
