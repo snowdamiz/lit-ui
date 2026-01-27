@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 
 ## Current Position
 
-Phase: 36 - Async Loading (not started)
-Plan: 0 of ?
-Status: Ready to plan
-Last activity: 2026-01-27 - Phase 35 verified complete
+Phase: 36 - Async Loading (in progress)
+Plan: 1 of 6
+Status: In progress
+Last activity: 2026-01-27 - Completed 36-01-PLAN.md
 
-Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 SHIPPED | v4.0 SHIPPED | v4.1 [#####..] 5/7 phases
+Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 SHIPPED | v4.0 SHIPPED | v4.1 [######.] 6/7 phases
 
 ## Performance Metrics
 
@@ -44,8 +44,8 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHI
 - Total execution time: 30 min
 
 **v4.1 Velocity (in progress):**
-- Plans completed: 18
-- Total execution time: 58 min
+- Plans completed: 19
+- Total execution time: 60 min
 
 ## Accumulated Context
 
@@ -97,6 +97,9 @@ v3.0, v3.1, v4.0 decisions validated and archived.
 | customFilter preserves highlighting | Custom logic for inclusion, default for highlights | 35-03 |
 | Create option at end of keyboard cycle | Arrow down from last option goes to create option | 35-03 |
 | Exact match check is case-insensitive | Create option hidden when label/value matches exactly | 35-03 |
+| Skeleton text widths vary for natural appearance | 70%, 55%, 80%, 60% rotation avoids repetitive look | 36-01 |
+| Checkbox indicator in multi-select skeleton | Visual consistency with real options | 36-01 |
+| Dark mode via :host-context(.dark) | Standard pattern for dark mode skeleton colors | 36-01 |
 
 ### Pending Todos
 
@@ -121,19 +124,27 @@ None.
 ## Session Continuity
 
 Last session: 2026-01-27
-Stopped at: Phase 35 verified and complete
+Stopped at: Completed 36-01-PLAN.md
 Resume file: None
 
 ## Next Steps
 
-Phase 35 Combobox verified complete. All 4 plans delivered including human verification.
+Phase 36 Async Loading in progress. Plan 01 complete.
 
-**Phase 35 Deliverables:**
-- Plan 01: Searchable mode with filtering
-- Plan 02: Match highlighting for filtered text
-- Plan 03: Custom filter function and creatable mode
-- Plan 04: Human verification checkpoint (render loop fix applied)
+**Phase 36-01 Deliverables:**
+- @lit/task and @tanstack/lit-virtual dependencies added
+- Skeleton loading CSS with pulse animation
+- renderSkeletonOptions method for async loading UI
+
+**Next: Plan 02** - Async options loading with Task controller
+
+**Remaining in Phase 36:**
+- Plan 02: Async options loading
+- Plan 03: Async search
+- Plan 04: Load more / infinite scroll
+- Plan 05: Virtual scrolling
+- Plan 06: Human verification
 
 **Remaining phases in v4.1:**
-- Phase 36: Async Loading (next)
+- Phase 36: Async Loading (in progress)
 - Phase 37: CLI and Documentation
