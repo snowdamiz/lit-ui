@@ -290,11 +290,13 @@ Plans:
 
 **Requirements:** INFRA-05, INFRA-06
 
-**Plans:** 2 plans
+**Plans:** 4 plans
 
 Plans:
 - [ ] 37-01-PLAN.md — CLI NPM mode and list command integration
 - [ ] 37-02-PLAN.md — Async & Performance documentation section
+- [ ] 37-03-PLAN.md — CLI registry and template gap closure
+- [ ] 37-04-PLAN.md — Accessibility documentation section
 
 **Success Criteria:**
 
