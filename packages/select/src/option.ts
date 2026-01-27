@@ -10,7 +10,7 @@
  * - slot="description": Description text below the label
  * - default slot: Custom label content (alternative to label property)
  */
-import { html, css } from 'lit';
+import { html, css, nothing } from 'lit';
 import { property } from 'lit/decorators.js';
 import { TailwindElement, tailwindBaseStyles } from '@lit-ui/core';
 
@@ -47,6 +47,14 @@ export class Option extends TailwindElement {
    */
   @property({ type: Boolean, reflect: true })
   selected = false;
+
+  /**
+   * Whether this option is inside a multi-select.
+   * When true, displays checkbox indicator instead of checkmark.
+   * @default false
+   */
+  @property({ type: Boolean, reflect: true })
+  multiselect = false;
 
   /**
    * Unique ID for aria-activedescendant reference.
@@ -107,6 +115,40 @@ export class Option extends TailwindElement {
         display: block;
       }
 
+      /* Checkbox indicator for multi-select mode */
+      .checkbox-indicator {
+        width: 1em;
+        height: 1em;
+        flex-shrink: 0;
+        border: 2px solid var(--ui-select-checkbox-border, var(--color-border));
+        border-radius: var(--radius-sm, 0.25rem);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 0.5rem;
+        background-color: transparent;
+        transition:
+          background-color 150ms,
+          border-color 150ms;
+      }
+
+      .checkbox-indicator.checked {
+        background-color: var(
+          --ui-select-checkbox-bg-checked,
+          var(--color-primary)
+        );
+        border-color: var(
+          --ui-select-checkbox-bg-checked,
+          var(--color-primary)
+        );
+      }
+
+      .checkbox-indicator svg {
+        width: 0.75em;
+        height: 0.75em;
+        color: var(--ui-select-checkbox-check, white);
+      }
+
       .slot-start,
       .slot-end {
         display: flex;
@@ -158,6 +200,50 @@ export class Option extends TailwindElement {
     return this.label || this.textContent?.trim() || this.value;
   }
 
+  /**
+   * Render the selection indicator based on multiselect mode.
+   * Shows checkbox in multi-select, checkmark in single-select.
+   */
+  private renderSelectionIndicator() {
+    if (this.multiselect) {
+      return html`
+        <span class="checkbox-indicator ${this.selected ? 'checked' : ''}">
+          ${this.selected
+            ? html`
+                <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                  <path
+                    d="M3 8l4 4 6-7"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    fill="none"
+                  />
+                </svg>
+              `
+            : nothing}
+        </span>
+      `;
+    }
+    // Single-select checkmark
+    return html`
+      <svg
+        class="check-icon"
+        viewBox="0 0 16 16"
+        fill="none"
+        stroke="currentColor"
+        aria-hidden="true"
+      >
+        <path
+          d="M3 8l4 4 6-7"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+    `;
+  }
+
   override render() {
     const classes = ['option'];
     if (this.disabled) classes.push('option-disabled');
@@ -171,20 +257,7 @@ export class Option extends TailwindElement {
         aria-disabled=${this.disabled ? 'true' : 'false'}
         class=${classes.join(' ')}
       >
-        <svg
-          class="check-icon"
-          viewBox="0 0 16 16"
-          fill="none"
-          stroke="currentColor"
-          aria-hidden="true"
-        >
-          <path
-            d="M3 8l4 4 6-7"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          />
-        </svg>
+        ${this.renderSelectionIndicator()}
         <span class="slot-start"><slot name="start"></slot></span>
         <span class="option-content">
           <span class="option-label">${this.label || html`<slot></slot>`}</span>
