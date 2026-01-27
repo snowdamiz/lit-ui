@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-01-26)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** v4.1 Select Component - Phase 34 next
+**Current focus:** v4.1 Select Component - Phase 34 in progress
 
 ## Current Position
 
-Phase: 33 - Select Enhancements COMPLETE
-Plan: 04 of 4 complete
-Status: Phase complete
-Last activity: 2026-01-26 - Completed 33-04-PLAN.md (Final Verification)
+Phase: 34 - Multi-Select (in progress)
+Plan: 01 of 4 complete
+Status: In progress
+Last activity: 2026-01-27 - Completed 34-01-PLAN.md (Core Multi-Select)
 
 Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 SHIPPED | v4.0 SHIPPED | v4.1 [######..] 6/7 phases
 
@@ -44,8 +44,8 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHI
 - Total execution time: 30 min
 
 **v4.1 Velocity (in progress):**
-- Plans completed: 10
-- Total execution time: 34 min
+- Plans completed: 11
+- Total execution time: 38 min
 
 ## Accumulated Context
 
@@ -78,6 +78,11 @@ v3.0, v3.1, v4.0 decisions validated and archived.
 | Delete/Backspace for keyboard clear | Keyboard accessible clear without adding button to tab order | 33-03 |
 | Dropdown minWidth instead of fixed width | Allows dropdown content to size naturally beyond trigger width | 33-04 |
 | display:none for unselected check icon | Removes padding from unselected options vs visibility:hidden | 33-04 |
+| Value returns string[] in multi-select | Type-safe distinction between modes | 34-01 |
+| FormData.append() for multi-select | Supports native getAll() for form submission | 34-01 |
+| Space toggles, Enter closes in multi-select | W3C APG pattern for listbox multi-select | 34-01 |
+| Checkbox indicator for multi-select options | Visual distinction from single-select checkmark | 34-01 |
+| Show up to 3 labels then "N selected" | Prevents trigger overflow with many selections | 34-01 |
 
 ### Pending Todos
 
@@ -90,32 +95,32 @@ None.
 - Tracked in v3.0-MILESTONE-AUDIT.md (archived)
 
 **Research findings to apply:**
-- Multi-select FormData uses formData.append() for each value
 - Async search needs AbortController to prevent race conditions
 
 **Applied from research:**
 - ARIA 1.2 combobox pattern (not 1.1) - use aria-controls, not aria-owns [APPLIED in 32-01]
 - Shadow DOM click-outside requires event.composedPath() [APPLIED in 32-01]
 - iOS VoiceOver has limited aria-activedescendant support [MITIGATED in 32-02 with ARIA live region]
+- Multi-select FormData uses formData.append() for each value [APPLIED in 34-01]
 
 ## Session Continuity
 
-Last session: 2026-01-27 00:02Z
-Stopped at: Completed 33-04-PLAN.md (Final Verification) - Phase 33 complete
+Last session: 2026-01-27 01:47Z
+Stopped at: Completed 34-01-PLAN.md (Core Multi-Select)
 Resume file: None
 
 ## Next Steps
 
-Phase 33 (Select Enhancements) COMPLETE. Ready for Phase 34.
+Phase 34 Plan 01 complete. Continue with remaining plans.
 
-**Phase 33 Delivered:**
-- lui-option-group component with ARIA structure
-- Slot-based lui-option with start, end, description slots
-- Clearable select with X button and keyboard clear
-- Full human verification passed
+**Phase 34 Plan 01 Delivered:**
+- Multi-select mode with multiple prop
+- Selection tracking via Set<string>
+- FormData.append() for multi-value form submission
+- Checkbox indicators for multi-select options
+- Space toggles, Enter closes keyboard pattern
 
-**Remaining phases in v4.1:**
-- Phase 34: Multi-Select
-- Phase 35: Combobox
-- Phase 36: Async Loading
-- Phase 37: CLI and Documentation
+**Remaining plans in Phase 34:**
+- Plan 02: Tag Display
+- Plan 03: Overflow Handling
+- Plan 04: Final Verification
