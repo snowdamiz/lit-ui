@@ -10,6 +10,7 @@ import {
 } from '../utils/registry';
 import { copyComponentFiles, type CopyResult } from '../utils/copy-component';
 import { installComponent, isNpmComponent } from '../utils/install-component';
+import { injectComponentSkills } from '../utils/inject-skills';
 
 /**
  * Add command - adds a component to the user's project
@@ -71,10 +72,12 @@ export const add = defineCommand({
         process.exit(1);
       }
 
-      const success = await installComponent(componentName, cwd);
-      if (!success) {
+      const installSuccess = await installComponent(componentName, cwd);
+      if (!installSuccess) {
         process.exit(1);
       }
+      // Inject component-specific AI skill
+      await injectComponentSkills(cwd, componentName, { yes: args.yes });
       return; // Exit early, skip copy logic
     }
 
@@ -168,7 +171,14 @@ export const add = defineCommand({
       );
     }
 
-    // Step 9: Next steps
+    // Step 9: Inject AI skills for added components
+    if (addedComponents.length > 0) {
+      for (const comp of addedComponents) {
+        await injectComponentSkills(cwd, comp, { yes: args.yes });
+      }
+    }
+
+    // Step 10: Next steps
     if (addedComponents.length > 0) {
       console.log('');
       consola.info('Next steps:');

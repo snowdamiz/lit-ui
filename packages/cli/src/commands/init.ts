@@ -20,6 +20,7 @@ import {
 } from '../utils/detect-package-manager';
 import { success, warn, info, error, spinner, file, highlight, command } from '../utils/logger';
 import { applyTheme } from '../utils/apply-theme';
+import { injectOverviewSkills } from '../utils/inject-skills';
 
 // =============================================================================
 // EMBEDDED TEMPLATES
@@ -523,6 +524,10 @@ Components are ready to use - no additional setup required.
     console.log('');
 
     success('lit-ui initialized successfully!');
+
+    // Inject Agent Skills for AI coding tools
+    console.log('');
+    await injectOverviewSkills(cwd, { yes: args.yes });
 
     // Handle theme if provided
     if (args.theme) {
