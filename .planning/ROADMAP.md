@@ -265,12 +265,12 @@ Plans:
 **Plans:** 6 plans
 
 Plans:
-- [ ] 36-01-PLAN.md — Add dependencies and skeleton loading placeholders
-- [ ] 36-02-PLAN.md — Promise-based options with loading/error states
-- [ ] 36-03-PLAN.md — Async search with debounce and AbortController
-- [ ] 36-04-PLAN.md — Virtual scrolling integration
-- [ ] 36-05-PLAN.md — Infinite scroll pagination
-- [ ] 36-06-PLAN.md — Human verification checkpoint
+- [x] 36-01-PLAN.md — Add dependencies and skeleton loading placeholders
+- [x] 36-02-PLAN.md — Promise-based options with loading/error states
+- [x] 36-03-PLAN.md — Async search with debounce and AbortController
+- [x] 36-04-PLAN.md — Virtual scrolling integration
+- [x] 36-05-PLAN.md — Infinite scroll pagination
+- [x] 36-06-PLAN.md — Human verification checkpoint
 
 **Success Criteria:**
 
@@ -349,9 +349,9 @@ Plans:
 | 33. Select Enhancements | v4.1 | 4/4 | Complete | 2026-01-26 |
 | 34. Multi-Select | v4.1 | 4/4 | Complete | 2026-01-27 |
 | 35. Combobox | v4.1 | 4/4 | Complete | 2026-01-27 |
-| 36. Async Loading | v4.1 | 0/? | Not started | - |
+| 36. Async Loading | v4.1 | 6/6 | Complete | 2026-01-27 |
 | 37. CLI and Documentation | v4.1 | 0/? | Not started | - |
 
 ---
 *Roadmap created: 2026-01-24*
-*Last updated: 2026-01-27 (Phase 35 planned)*
+*Last updated: 2026-01-27 (Phase 36 complete)*

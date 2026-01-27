@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-01-26)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** v4.1 Select Component - Phase 36 Async Loading
+**Current focus:** v4.1 Select Component - Phase 37 CLI and Documentation
 
 ## Current Position
 
-Phase: 36 - Async Loading (in progress)
-Plan: 5 of 6 (Plans 01-05 complete, plan 06 remaining)
-Status: In progress
-Last activity: 2026-01-27 - Completed 36-05-PLAN.md
+Phase: 37 - CLI and Documentation (not started)
+Plan: 0 of ?
+Status: Ready to plan
+Last activity: 2026-01-27 - Phase 36 verified complete
 
 Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 SHIPPED | v4.0 SHIPPED | v4.1 [######.] 6/7 phases
 
@@ -44,8 +44,8 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHI
 - Total execution time: 30 min
 
 **v4.1 Velocity (in progress):**
-- Plans completed: 23
-- Total execution time: 94 min
+- Plans completed: 24
+- Total execution time: 132 min
 
 ## Accumulated Context
 
@@ -136,43 +136,20 @@ None.
 ## Session Continuity
 
 Last session: 2026-01-27
-Stopped at: Completed 36-05-PLAN.md
+Stopped at: Phase 36 verified complete
 Resume file: None
 
 ## Next Steps
 
-Phase 36 Async Loading in progress. Plans 01-05 complete.
+Phase 36 Async Loading verified complete. All 6 plans delivered including human verification.
 
-**Phase 36-01 Deliverables:**
-- @lit/task and @tanstack/lit-virtual dependencies added
-- Skeleton loading CSS with pulse animation
-- renderSkeletonOptions method for async loading UI
-
-**Phase 36-02 Deliverables:**
-- Options prop accepts Promise<SelectOption[]>
-- Task controller for async state management
-- Error state with retry functionality
-
-**Phase 36-03 Deliverables:**
-- asyncSearch prop with debounce and AbortController
-- debounceDelay (default 300ms) and minSearchLength (default 0) configuration
-- Search loading skeleton and error state with retry
-
-**Phase 36-04 Deliverables:**
-- VirtualizerController integration for large option lists
-- renderVirtualizedOptions method with getVirtualItems()
-- scrollToIndex for keyboard navigation in virtualized mode
-- Auto-enabled for async modes (Promise options, async search)
-
-**Phase 36-05 Deliverables:**
-- loadMore callback prop for infinite scroll pagination
-- IntersectionObserver with 80% scroll threshold
-- Skeleton loading indicators during pagination fetch
-- Observer cleanup on close and disconnect
-
-**Remaining in Phase 36:**
-- Plan 06: Human verification
+**Phase 36 Deliverables:**
+- Plan 01: @lit/task and @tanstack/lit-virtual dependencies, skeleton loading UI
+- Plan 02: Promise-based options with Task controller, error state with retry
+- Plan 03: Async search with debounce and AbortController
+- Plan 04: Virtual scrolling with VirtualizerController
+- Plan 05: Infinite scroll pagination with IntersectionObserver
+- Plan 06: Human verification (all 7 test scenarios passed)
 
 **Remaining phases in v4.1:**
-- Phase 36: Async Loading (in progress)
-- Phase 37: CLI and Documentation
+- Phase 37: CLI and Documentation (next)
