@@ -2507,6 +2507,1971 @@ declare global {
 `;
 
 /**
+ * Switch component template
+ */
+export const SWITCH_TEMPLATE = `/**
+ * lui-switch - An accessible toggle switch component
+ *
+ * Features:
+ * - Toggle between on/off states via click, Space, or Enter
+ * - Animated track + thumb with CSS slide transition
+ * - Form participation via ElementInternals (setFormValue, setValidity, formResetCallback)
+ * - Required validation and disabled state
+ * - Label via property or default slot
+ * - Three sizes: sm, md, lg using CSS tokens
+ * - role="switch" with aria-checked for screen readers
+ * - prefers-reduced-motion support
+ * - SSR compatible via isServer guards
+ *
+ * @example
+ * \`\`\`html
+ * <lui-switch label="Notifications" size="md"></lui-switch>
+ * <lui-switch checked name="dark-mode" value="on"></lui-switch>
+ * <lui-switch required label="Accept terms"></lui-switch>
+ * \`\`\`
+ */
+
+import { html, css, nothing, isServer, type PropertyValues } from 'lit';
+import { property, state } from 'lit/decorators.js';
+import { TailwindElement, tailwindBaseStyles } from '../../lib/lit-ui/tailwind-element';
+
+/**
+ * Dispatch a custom event from an element.
+ */
+function dispatchCustomEvent(el: HTMLElement, name: string, detail?: unknown) {
+  el.dispatchEvent(new CustomEvent(name, { detail, bubbles: true, composed: true }));
+}
+
+/**
+ * Switch size types for track and thumb dimensions.
+ */
+export type SwitchSize = 'sm' | 'md' | 'lg';
+
+/**
+ * An accessible toggle switch component with form participation.
+ * Renders a track + thumb visual with animated CSS slide transition.
+ * Form participation is client-side only (guarded with isServer check).
+ *
+ * @slot default - Custom label content (alternative to label property)
+ */
+export class Switch extends TailwindElement {
+  /**
+   * Enable form association for this custom element.
+   * This allows the switch to participate in form submission.
+   */
+  static formAssociated = true;
+
+  /**
+   * ElementInternals for form participation.
+   * Null during SSR since attachInternals() is not available.
+   */
+  private internals: ElementInternals | null = null;
+
+  /**
+   * Unique ID for label association.
+   */
+  private switchId = \`lui-switch-\${Math.random().toString(36).substr(2, 9)}\`;
+
+  /**
+   * Stores the initial checked state for formResetCallback.
+   */
+  private defaultChecked = false;
+
+  /**
+   * Whether the switch is in the on state.
+   * @default false
+   */
+  @property({ type: Boolean, reflect: true })
+  checked = false;
+
+  /**
+   * Whether the switch is disabled.
+   * @default false
+   */
+  @property({ type: Boolean, reflect: true })
+  disabled = false;
+
+  /**
+   * Whether the switch is required for form submission.
+   * @default false
+   */
+  @property({ type: Boolean, reflect: true })
+  required = false;
+
+  /**
+   * The name of the switch for form submission.
+   * @default ''
+   */
+  @property({ type: String })
+  name = '';
+
+  /**
+   * The value submitted when checked.
+   * @default 'on'
+   */
+  @property({ type: String })
+  value = 'on';
+
+  /**
+   * Label text displayed next to the switch.
+   * @default ''
+   */
+  @property({ type: String })
+  label = '';
+
+  /**
+   * The size of the switch affecting track and thumb dimensions.
+   * @default 'md'
+   */
+  @property({ type: String })
+  size: SwitchSize = 'md';
+
+  /**
+   * Whether the switch has been interacted with.
+   * Used for validation display timing.
+   */
+  @state()
+  private touched = false;
+
+  /**
+   * Whether to show error state.
+   * True when switch is invalid and has been touched.
+   */
+  @state()
+  private showError = false;
+
+  constructor() {
+    super();
+    // Only attach internals on client (not during SSR)
+    if (!isServer) {
+      this.internals = this.attachInternals();
+    }
+  }
+
+  override connectedCallback(): void {
+    super.connectedCallback();
+    this.defaultChecked = this.checked;
+    this.updateFormValue();
+  }
+
+  /**
+   * Keep form state in sync when checked property changes externally.
+   */
+  protected override updated(changedProperties: PropertyValues): void {
+    if (changedProperties.has('checked')) {
+      this.updateFormValue();
+      this.validate();
+    }
+  }
+
+  /**
+   * Static styles for the switch component.
+   * Uses CSS custom properties from the switch token block.
+   */
+  static override styles = [
+    ...tailwindBaseStyles,
+    css\`
+      :host {
+        display: inline-block;
+      }
+
+      :host([disabled]) {
+        pointer-events: none;
+      }
+
+      /* Switch wrapper - flexbox row for label + track */
+      .switch-wrapper {
+        display: flex;
+        flex-direction: row;
+        gap: var(--ui-switch-label-gap);
+        align-items: center;
+      }
+
+      /* Track - the oval background */
+      .switch-track {
+        display: inline-flex;
+        align-items: center;
+        position: relative;
+        border-radius: var(--ui-switch-radius);
+        background-color: var(--ui-switch-track-bg);
+        cursor: pointer;
+        border: 1px solid var(--ui-switch-track-border);
+        transition: background-color var(--ui-switch-transition) ease-in-out;
+        flex-shrink: 0;
+      }
+
+      .switch-track[aria-checked='true'] {
+        background-color: var(--ui-switch-track-bg-checked);
+        border-color: var(--ui-switch-track-bg-checked);
+      }
+
+      .switch-track[aria-disabled='true'] {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      /* Thumb - the sliding circle */
+      .switch-thumb {
+        position: absolute;
+        left: var(--ui-switch-thumb-offset);
+        top: 50%;
+        transform: translateY(-50%);
+        border-radius: var(--ui-switch-thumb-radius);
+        background-color: var(--ui-switch-thumb-bg);
+        transition: transform var(--ui-switch-transition) ease-in-out;
+      }
+
+      /* Size: sm */
+      .track-sm {
+        width: var(--ui-switch-track-width-sm);
+        height: var(--ui-switch-track-height-sm);
+      }
+
+      .track-sm .switch-thumb {
+        width: var(--ui-switch-thumb-size-sm);
+        height: var(--ui-switch-thumb-size-sm);
+      }
+
+      .track-sm[aria-checked='true'] .switch-thumb {
+        transform: translateX(
+            calc(
+              var(--ui-switch-track-width-sm) - var(--ui-switch-thumb-size-sm) -
+                var(--ui-switch-thumb-offset) * 2
+            )
+          )
+          translateY(-50%);
+      }
+
+      /* Size: md */
+      .track-md {
+        width: var(--ui-switch-track-width-md);
+        height: var(--ui-switch-track-height-md);
+      }
+
+      .track-md .switch-thumb {
+        width: var(--ui-switch-thumb-size-md);
+        height: var(--ui-switch-thumb-size-md);
+      }
+
+      .track-md[aria-checked='true'] .switch-thumb {
+        transform: translateX(
+            calc(
+              var(--ui-switch-track-width-md) - var(--ui-switch-thumb-size-md) -
+                var(--ui-switch-thumb-offset) * 2
+            )
+          )
+          translateY(-50%);
+      }
+
+      /* Size: lg */
+      .track-lg {
+        width: var(--ui-switch-track-width-lg);
+        height: var(--ui-switch-track-height-lg);
+      }
+
+      .track-lg .switch-thumb {
+        width: var(--ui-switch-thumb-size-lg);
+        height: var(--ui-switch-thumb-size-lg);
+      }
+
+      .track-lg[aria-checked='true'] .switch-thumb {
+        transform: translateX(
+            calc(
+              var(--ui-switch-track-width-lg) - var(--ui-switch-thumb-size-lg) -
+                var(--ui-switch-thumb-offset) * 2
+            )
+          )
+          translateY(-50%);
+      }
+
+      /* Focus ring */
+      .switch-track:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 2px var(--ui-switch-ring);
+      }
+
+      /* Error state */
+      .switch-track.has-error {
+        border-color: var(--ui-switch-border-error);
+      }
+
+      /* Label */
+      .switch-label {
+        font-weight: 500;
+        color: var(--ui-input-text, inherit);
+      }
+
+      .label-sm {
+        font-size: var(--ui-switch-font-size-sm);
+      }
+
+      .label-md {
+        font-size: var(--ui-switch-font-size-md);
+      }
+
+      .label-lg {
+        font-size: var(--ui-switch-font-size-lg);
+      }
+
+      /* Error text */
+      .error-text {
+        font-size: 0.75rem;
+        color: var(--ui-switch-text-error);
+        margin-top: 0.25rem;
+      }
+
+      /* Reduced motion */
+      @media (prefers-reduced-motion: reduce) {
+        .switch-thumb,
+        .switch-track {
+          transition-duration: 0ms;
+        }
+      }
+    \`,
+  ];
+
+  /**
+   * Toggle the switch state.
+   * Dispatches ui-change event with checked state and value.
+   */
+  private toggle(): void {
+    if (this.disabled) return;
+    this.checked = !this.checked;
+    this.touched = true;
+    this.updateFormValue();
+    this.validate();
+    dispatchCustomEvent(this, 'ui-change', {
+      checked: this.checked,
+      value: this.checked ? this.value : null,
+    });
+  }
+
+  /**
+   * Handle click events on the switch track.
+   */
+  private handleClick(): void {
+    this.toggle();
+  }
+
+  /**
+   * Handle keyboard events for Space and Enter keys.
+   * Prevents default to avoid page scroll on Space.
+   */
+  private handleKeyDown(e: KeyboardEvent): void {
+    if (e.key === ' ' || e.key === 'Enter') {
+      e.preventDefault();
+      this.toggle();
+    }
+  }
+
+  /**
+   * Sync the checked state to the form via ElementInternals.
+   * Submits value when checked, null when unchecked (matches native checkbox).
+   */
+  private updateFormValue(): void {
+    this.internals?.setFormValue(this.checked ? this.value : null);
+  }
+
+  /**
+   * Validate the switch and sync validity state to ElementInternals.
+   * @returns true if valid, false if invalid
+   */
+  private validate(): boolean {
+    if (!this.internals) return true;
+
+    if (this.required && !this.checked) {
+      this.internals.setValidity(
+        { valueMissing: true },
+        'Please toggle this switch.',
+        this.shadowRoot?.querySelector('.switch-track') as HTMLElement
+      );
+      this.showError = this.touched;
+      return false;
+    }
+
+    this.internals.setValidity({});
+    this.showError = false;
+    return true;
+  }
+
+  /**
+   * Form lifecycle callback: reset the switch to initial state.
+   */
+  formResetCallback(): void {
+    this.checked = this.defaultChecked;
+    this.touched = false;
+    this.showError = false;
+    this.updateFormValue();
+    this.internals?.setValidity({});
+  }
+
+  /**
+   * Form lifecycle callback: handle disabled state from form.
+   */
+  formDisabledCallback(disabled: boolean): void {
+    this.disabled = disabled;
+  }
+
+  override render() {
+    return html\`
+      <div class="switch-wrapper">
+        \${this.label
+          ? html\`<label
+              id="\${this.switchId}-label"
+              class="switch-label label-\${this.size}"
+              >\${this.label}</label
+            >\`
+          : html\`<label
+              id="\${this.switchId}-label"
+              class="switch-label label-\${this.size}"
+              ><slot></slot
+            ></label>\`}
+        <div
+          role="switch"
+          aria-checked=\${this.checked ? 'true' : 'false'}
+          aria-disabled=\${this.disabled ? 'true' : nothing}
+          aria-required=\${this.required ? 'true' : nothing}
+          aria-labelledby="\${this.switchId}-label"
+          tabindex=\${this.disabled ? '-1' : '0'}
+          class="switch-track track-\${this.size} \${this.showError
+            ? 'has-error'
+            : ''}"
+          @click=\${this.handleClick}
+          @keydown=\${this.handleKeyDown}
+        >
+          <span class="switch-thumb"></span>
+        </div>
+      </div>
+      \${this.showError
+        ? html\`<div class="error-text" role="alert">
+            Please toggle this switch.
+          </div>\`
+        : nothing}
+    \`;
+  }
+}
+
+// TypeScript global interface declaration for HTMLElementTagNameMap
+declare global {
+  interface HTMLElementTagNameMap {
+    'lui-switch': Switch;
+  }
+}
+`;
+
+/**
+ * Checkbox component template
+ */
+export const CHECKBOX_TEMPLATE = `/**
+ * lui-checkbox - An accessible checkbox component with animated SVG checkmark
+ *
+ * Features:
+ * - Toggle between checked/unchecked states via click or Space key
+ * - Animated SVG checkmark draw-in transition when checked
+ * - Indeterminate tri-state with dash icon and aria-checked="mixed"
+ * - Indeterminate clears on user interaction (always results in checked or unchecked)
+ * - Form participation via ElementInternals (setFormValue, setValidity, formResetCallback)
+ * - Required validation with touched-based error display
+ * - Label via property or default slot
+ * - Three sizes: sm, md, lg using CSS tokens
+ * - role="checkbox" with aria-checked (true/false/mixed) for screen readers
+ * - prefers-reduced-motion support
+ * - SSR compatible via isServer guards
+ *
+ * @example
+ * \`\`\`html
+ * <lui-checkbox label="Accept terms" required></lui-checkbox>
+ * <lui-checkbox checked name="newsletter" value="yes"></lui-checkbox>
+ * <lui-checkbox indeterminate label="Select all"></lui-checkbox>
+ * \`\`\`
+ */
+
+import { html, css, nothing, isServer, type PropertyValues } from 'lit';
+import { property, state } from 'lit/decorators.js';
+import { TailwindElement, tailwindBaseStyles } from '../../lib/lit-ui/tailwind-element';
+
+/**
+ * Dispatch a custom event from an element.
+ */
+function dispatchCustomEvent(el: HTMLElement, name: string, detail?: unknown) {
+  el.dispatchEvent(new CustomEvent(name, { detail, bubbles: true, composed: true }));
+}
+
+/**
+ * Checkbox size types for box dimensions and label typography.
+ */
+export type CheckboxSize = 'sm' | 'md' | 'lg';
+
+/**
+ * An accessible checkbox component with animated SVG checkmark,
+ * indeterminate tri-state, and form participation.
+ * Form participation is client-side only (guarded with isServer check).
+ *
+ * @slot default - Custom label content (alternative to label property)
+ */
+export class Checkbox extends TailwindElement {
+  /**
+   * Enable form association for this custom element.
+   * This allows the checkbox to participate in form submission.
+   */
+  static formAssociated = true;
+
+  /**
+   * ElementInternals for form participation.
+   * Null during SSR since attachInternals() is not available.
+   */
+  private internals: ElementInternals | null = null;
+
+  /**
+   * Unique ID for label association.
+   */
+  private checkboxId = \`lui-cb-\${Math.random().toString(36).substr(2, 9)}\`;
+
+  /**
+   * Stores the initial checked state for formResetCallback.
+   */
+  private defaultChecked = false;
+
+  /**
+   * Whether the checkbox is in the checked state.
+   * @default false
+   */
+  @property({ type: Boolean, reflect: true })
+  checked = false;
+
+  /**
+   * Whether the checkbox is disabled.
+   * @default false
+   */
+  @property({ type: Boolean, reflect: true })
+  disabled = false;
+
+  /**
+   * Whether the checkbox is required for form submission.
+   * @default false
+   */
+  @property({ type: Boolean, reflect: true })
+  required = false;
+
+  /**
+   * Whether the checkbox is in an indeterminate state.
+   * JS-only property, not reflected (matches native convention).
+   * @default false
+   */
+  @property({ type: Boolean })
+  indeterminate = false;
+
+  /**
+   * The name of the checkbox for form submission.
+   * @default ''
+   */
+  @property({ type: String })
+  name = '';
+
+  /**
+   * The value submitted when checked.
+   * @default 'on'
+   */
+  @property({ type: String })
+  value = 'on';
+
+  /**
+   * Label text displayed next to the checkbox.
+   * @default ''
+   */
+  @property({ type: String })
+  label = '';
+
+  /**
+   * The size of the checkbox affecting box dimensions and label typography.
+   * @default 'md'
+   */
+  @property({ type: String })
+  size: CheckboxSize = 'md';
+
+  /**
+   * Whether the checkbox has been interacted with.
+   * Used for validation display timing.
+   */
+  @state()
+  private touched = false;
+
+  /**
+   * Whether to show error state.
+   * True when checkbox is invalid and has been touched.
+   */
+  @state()
+  private showError = false;
+
+  constructor() {
+    super();
+    // Only attach internals on client (not during SSR)
+    if (!isServer) {
+      this.internals = this.attachInternals();
+    }
+  }
+
+  override connectedCallback(): void {
+    super.connectedCallback();
+    this.defaultChecked = this.checked;
+    this.updateFormValue();
+  }
+
+  /**
+   * Keep form state in sync when checked or indeterminate property changes externally.
+   */
+  protected override updated(changedProperties: PropertyValues): void {
+    if (
+      changedProperties.has('checked') ||
+      changedProperties.has('indeterminate')
+    ) {
+      this.updateFormValue();
+      this.validate();
+    }
+  }
+
+  /**
+   * Static styles for the checkbox component.
+   * Uses CSS custom properties from the checkbox token block.
+   */
+  static override styles = [
+    ...tailwindBaseStyles,
+    css\`
+      :host {
+        display: inline-block;
+      }
+
+      :host([disabled]) {
+        pointer-events: none;
+      }
+
+      /* Checkbox wrapper - flexbox row for label + box */
+      .checkbox-wrapper {
+        display: flex;
+        flex-direction: row;
+        gap: var(--ui-checkbox-label-gap);
+        align-items: center;
+        cursor: pointer;
+      }
+
+      /* Checkbox box - the square container */
+      .checkbox-box {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: var(--ui-checkbox-border-width) solid var(--ui-checkbox-border);
+        border-radius: var(--ui-checkbox-radius);
+        background-color: var(--ui-checkbox-bg);
+        cursor: pointer;
+        transition:
+          background-color var(--ui-checkbox-transition) ease-in-out,
+          border-color var(--ui-checkbox-transition) ease-in-out;
+        flex-shrink: 0;
+        color: var(--ui-checkbox-check-color);
+      }
+
+      /* Checked and indeterminate states */
+      .checkbox-box[aria-checked='true'],
+      .checkbox-box[aria-checked='mixed'] {
+        background-color: var(--ui-checkbox-bg-checked);
+        border-color: var(--ui-checkbox-border-checked);
+      }
+
+      /* SVG icon sizing */
+      .checkbox-icon {
+        width: 75%;
+        height: 75%;
+      }
+
+      /* Checkmark draw-in animation via stroke-dashoffset */
+      .check-path {
+        stroke-dasharray: 14;
+        stroke-dashoffset: 14;
+        transition: stroke-dashoffset var(--ui-checkbox-transition) ease-in-out;
+      }
+
+      /* When checked: draw in (offset to 0) */
+      .checkbox-box[aria-checked='true'] .check-path {
+        stroke-dashoffset: 0;
+      }
+
+      /* Indeterminate dash - use opacity for cross-fade */
+      .dash-path {
+        opacity: 0;
+        transition: opacity var(--ui-checkbox-transition) ease-in-out;
+      }
+
+      .checkbox-box[aria-checked='mixed'] .dash-path {
+        opacity: 1;
+      }
+
+      /* Hide checkmark when indeterminate */
+      .checkbox-box[aria-checked='mixed'] .check-path {
+        stroke-dashoffset: 14;
+      }
+
+      /* Size: sm */
+      .box-sm {
+        width: var(--ui-checkbox-size-sm);
+        height: var(--ui-checkbox-size-sm);
+      }
+
+      /* Size: md */
+      .box-md {
+        width: var(--ui-checkbox-size-md);
+        height: var(--ui-checkbox-size-md);
+      }
+
+      /* Size: lg */
+      .box-lg {
+        width: var(--ui-checkbox-size-lg);
+        height: var(--ui-checkbox-size-lg);
+      }
+
+      /* Focus ring */
+      .checkbox-box:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 2px var(--ui-checkbox-ring);
+      }
+
+      /* Disabled */
+      .checkbox-box[aria-disabled='true'] {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      /* Label */
+      .checkbox-label {
+        font-weight: 500;
+        color: var(--ui-input-text, inherit);
+        cursor: pointer;
+      }
+
+      .label-sm {
+        font-size: var(--ui-checkbox-font-size-sm);
+      }
+
+      .label-md {
+        font-size: var(--ui-checkbox-font-size-md);
+      }
+
+      .label-lg {
+        font-size: var(--ui-checkbox-font-size-lg);
+      }
+
+      /* Error text */
+      .error-text {
+        font-size: 0.75rem;
+        color: var(--ui-checkbox-text-error);
+        margin-top: 0.25rem;
+      }
+
+      /* Error border */
+      .checkbox-box.has-error {
+        border-color: var(--ui-checkbox-border-error);
+      }
+
+      /* Reduced motion */
+      @media (prefers-reduced-motion: reduce) {
+        .check-path,
+        .dash-path,
+        .checkbox-box {
+          transition-duration: 0ms;
+        }
+      }
+    \`,
+  ];
+
+  /**
+   * Toggle the checkbox state.
+   * Always clears indeterminate on user interaction.
+   * Dispatches ui-change event with checked state and value.
+   */
+  private toggle(): void {
+    if (this.disabled) return;
+    this.indeterminate = false;
+    this.checked = !this.checked;
+    this.touched = true;
+    this.updateFormValue();
+    this.validate();
+    dispatchCustomEvent(this, 'ui-change', {
+      checked: this.checked,
+      value: this.checked ? this.value : null,
+    });
+  }
+
+  /**
+   * Handle click events on the checkbox wrapper.
+   * Click handler is on the wrapper so clicking the label also toggles.
+   */
+  private handleClick(): void {
+    this.toggle();
+  }
+
+  /**
+   * Handle keyboard events for Space key only.
+   * Per W3C APG checkbox spec, Space toggles the checkbox.
+   * Enter is NOT specified for checkbox (unlike switch).
+   * preventDefault stops page scroll on Space.
+   */
+  private handleKeyDown(e: KeyboardEvent): void {
+    if (e.key === ' ') {
+      e.preventDefault();
+      this.toggle();
+    }
+  }
+
+  /**
+   * Sync the checked state to the form via ElementInternals.
+   * Submits value when checked, null when unchecked.
+   * Indeterminate does NOT affect form value.
+   */
+  private updateFormValue(): void {
+    this.internals?.setFormValue(this.checked ? this.value : null);
+  }
+
+  /**
+   * Validate the checkbox and sync validity state to ElementInternals.
+   * @returns true if valid, false if invalid
+   */
+  private validate(): boolean {
+    if (!this.internals) return true;
+
+    if (this.required && !this.checked) {
+      this.internals.setValidity(
+        { valueMissing: true },
+        'Please check this box.',
+        this.shadowRoot?.querySelector('.checkbox-box') as HTMLElement
+      );
+      this.showError = this.touched;
+      return false;
+    }
+
+    this.internals.setValidity({});
+    this.showError = false;
+    return true;
+  }
+
+  /**
+   * Form lifecycle callback: reset the checkbox to initial state.
+   */
+  formResetCallback(): void {
+    this.checked = this.defaultChecked;
+    this.indeterminate = false;
+    this.touched = false;
+    this.showError = false;
+    this.updateFormValue();
+    this.internals?.setValidity({});
+  }
+
+  /**
+   * Form lifecycle callback: handle disabled state from form.
+   */
+  formDisabledCallback(disabled: boolean): void {
+    this.disabled = disabled;
+  }
+
+  override render() {
+    return html\`
+      <div class="checkbox-wrapper" @click=\${this.handleClick}>
+        <div
+          role="checkbox"
+          aria-checked=\${this.indeterminate
+            ? 'mixed'
+            : this.checked
+              ? 'true'
+              : 'false'}
+          aria-disabled=\${this.disabled ? 'true' : nothing}
+          aria-required=\${this.required ? 'true' : nothing}
+          aria-labelledby="\${this.checkboxId}-label"
+          tabindex=\${this.disabled ? '-1' : '0'}
+          class="checkbox-box box-\${this.size} \${this.showError
+            ? 'has-error'
+            : ''}"
+          @keydown=\${this.handleKeyDown}
+        >
+          <svg
+            class="checkbox-icon"
+            viewBox="0 0 12 12"
+            fill="none"
+            aria-hidden="true"
+          >
+            <path
+              class="check-path"
+              d="M2 6L5 9L10 3"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              class="dash-path"
+              d="M3 6H9"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+          </svg>
+        </div>
+        \${this.label
+          ? html\`<label
+              id="\${this.checkboxId}-label"
+              class="checkbox-label label-\${this.size}"
+              >\${this.label}</label
+            >\`
+          : html\`<label
+              id="\${this.checkboxId}-label"
+              class="checkbox-label label-\${this.size}"
+              ><slot></slot
+            ></label>\`}
+      </div>
+      \${this.showError
+        ? html\`<div class="error-text" role="alert">
+            Please check this box.
+          </div>\`
+        : nothing}
+    \`;
+  }
+}
+
+// TypeScript global interface declaration for HTMLElementTagNameMap
+declare global {
+  interface HTMLElementTagNameMap {
+    'lui-checkbox': Checkbox;
+  }
+}
+`;
+
+/**
+ * CheckboxGroup component template
+ */
+export const CHECKBOX_GROUP_TEMPLATE = `/**
+ * lui-checkbox-group - An accessible checkbox group container
+ *
+ * Features:
+ * - role="group" with aria-labelledby for screen reader grouping
+ * - Label text display for group identification
+ * - Disabled propagation to all child lui-checkbox elements
+ * - Select-all checkbox with indeterminate (mixed) state coordination
+ * - Batch update flag prevents race conditions during select-all toggling
+ * - Group-level validation (required: at least one must be checked)
+ * - NOT form-associated: each child checkbox submits independently
+ * - Child discovery via slotchange event
+ * - SSR compatible
+ *
+ * @example
+ * \`\`\`html
+ * <lui-checkbox-group label="Preferences" required>
+ *   <lui-checkbox label="Email" name="pref" value="email"></lui-checkbox>
+ *   <lui-checkbox label="SMS" name="pref" value="sms"></lui-checkbox>
+ * </lui-checkbox-group>
+ * \`\`\`
+ *
+ * @example Select-all
+ * \`\`\`html
+ * <lui-checkbox-group label="Toppings" select-all>
+ *   <lui-checkbox label="Cheese" name="topping" value="cheese"></lui-checkbox>
+ *   <lui-checkbox label="Pepperoni" name="topping" value="pepperoni"></lui-checkbox>
+ * </lui-checkbox-group>
+ * \`\`\`
+ */
+
+import { html, css, nothing, type PropertyValues } from 'lit';
+import { property, state } from 'lit/decorators.js';
+import { TailwindElement, tailwindBaseStyles } from '../../lib/lit-ui/tailwind-element';
+import type { Checkbox } from './checkbox';
+
+/**
+ * Dispatch a custom event from an element.
+ */
+function dispatchCustomEvent(el: HTMLElement, name: string, detail?: unknown) {
+  el.dispatchEvent(new CustomEvent(name, { detail, bubbles: true, composed: true }));
+}
+
+/**
+ * An accessible checkbox group container with disabled propagation,
+ * select-all coordination, and group-level validation.
+ * NOT form-associated -- each child checkbox submits independently.
+ *
+ * @slot default - Child lui-checkbox elements
+ */
+export class CheckboxGroup extends TailwindElement {
+  // NOT form-associated -- children submit themselves
+
+  /**
+   * Unique ID for label association.
+   */
+  private groupId = \`lui-cbg-\${Math.random().toString(36).substr(2, 9)}\`;
+
+  /**
+   * Discovered child checkboxes (NOT including select-all).
+   */
+  private checkboxes: Checkbox[] = [];
+
+  /**
+   * Flag to prevent select-all race condition during batch updates.
+   * When true, handleChildChange skips recalculation.
+   */
+  private _batchUpdating = false;
+
+  /**
+   * Reference to the internal select-all checkbox element.
+   */
+  private selectAllEl: Checkbox | null = null;
+
+  /**
+   * Label text displayed above the group.
+   * @default ''
+   */
+  @property({ type: String })
+  label = '';
+
+  /**
+   * Whether all child checkboxes should be disabled.
+   * @default false
+   */
+  @property({ type: Boolean, reflect: true })
+  disabled = false;
+
+  /**
+   * Whether at least one checkbox must be checked (group-level validation).
+   * @default false
+   */
+  @property({ type: Boolean })
+  required = false;
+
+  /**
+   * Custom error message for group validation.
+   * @default ''
+   */
+  @property({ type: String })
+  error = '';
+
+  /**
+   * Whether to show a select-all checkbox.
+   * @default false
+   */
+  @property({ type: Boolean, attribute: 'select-all' })
+  selectAll = false;
+
+  /**
+   * Whether to show the validation error message.
+   */
+  @state()
+  private showError = false;
+
+  /**
+   * Static styles for the checkbox group component.
+   */
+  static override styles = [
+    ...tailwindBaseStyles,
+    css\`
+      :host {
+        display: block;
+      }
+
+      :host([disabled]) {
+        opacity: 0.5;
+      }
+
+      .group-wrapper {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .group-label {
+        font-weight: 500;
+        margin-bottom: 0.375rem;
+        font-size: 0.875rem;
+        color: var(--ui-input-text, inherit);
+      }
+
+      .group-items {
+        display: flex;
+        flex-direction: column;
+        gap: var(--ui-checkbox-group-gap);
+      }
+
+      .select-all-wrapper {
+        padding-bottom: var(--ui-checkbox-group-gap);
+        border-bottom: 1px solid var(--ui-checkbox-border);
+        margin-bottom: var(--ui-checkbox-group-gap);
+      }
+
+      .error-text {
+        font-size: 0.75rem;
+        color: var(--ui-checkbox-text-error);
+        margin-top: 0.25rem;
+      }
+    \`,
+  ];
+
+  /**
+   * Sync disabled state and select-all reference when properties change.
+   */
+  protected override updated(changedProperties: PropertyValues): void {
+    if (changedProperties.has('disabled')) {
+      this.syncDisabledState();
+    }
+
+    if (changedProperties.has('selectAll') || changedProperties.has('disabled')) {
+      // Get select-all checkbox reference after render
+      if (this.selectAll) {
+        this.selectAllEl = this.shadowRoot?.querySelector(
+          '.select-all-wrapper lui-checkbox'
+        ) as Checkbox | null;
+        this.updateSelectAllState();
+      } else {
+        this.selectAllEl = null;
+      }
+    }
+  }
+
+  /**
+   * Handle slot changes to discover child checkboxes.
+   * Filters for LUI-CHECKBOX elements and syncs disabled state.
+   */
+  private handleSlotChange(e: Event): void {
+    const slot = e.target as HTMLSlotElement;
+    const assigned = slot.assignedElements({ flatten: true });
+    this.checkboxes = assigned.filter(
+      (el) => el.tagName === 'LUI-CHECKBOX'
+    ) as Checkbox[];
+    this.syncDisabledState();
+    this.updateSelectAllState();
+  }
+
+  /**
+   * Propagate disabled state to all child checkboxes.
+   * Called when disabled property changes or children are discovered.
+   */
+  private syncDisabledState(): void {
+    if (this.disabled) {
+      this.checkboxes.forEach((cb) => (cb.disabled = true));
+    }
+  }
+
+  /**
+   * Handle ui-change events bubbling from child checkboxes.
+   * Skips during batch updates to prevent race conditions.
+   */
+  private handleChildChange(): void {
+    if (this._batchUpdating) return;
+
+    if (this.selectAll) {
+      this.updateSelectAllState();
+    }
+    this.validateGroup();
+  }
+
+  /**
+   * Update the select-all checkbox to reflect the aggregate state of children.
+   * - All checked: checked=true, indeterminate=false
+   * - None checked: checked=false, indeterminate=false
+   * - Some checked: checked=false, indeterminate=true
+   */
+  private updateSelectAllState(): void {
+    if (!this.selectAllEl || this.checkboxes.length === 0) return;
+
+    const enabled = this.checkboxes.filter((cb) => !cb.disabled);
+    const checkedCount = enabled.filter((cb) => cb.checked).length;
+    const total = enabled.length;
+
+    if (checkedCount === 0) {
+      this.selectAllEl.checked = false;
+      this.selectAllEl.indeterminate = false;
+    } else if (checkedCount === total) {
+      this.selectAllEl.checked = true;
+      this.selectAllEl.indeterminate = false;
+    } else {
+      this.selectAllEl.checked = false;
+      this.selectAllEl.indeterminate = true;
+    }
+  }
+
+  /**
+   * Handle the select-all checkbox toggle.
+   * Uses batch update flag to prevent race conditions.
+   * Stops propagation to prevent handleChildChange from also firing.
+   */
+  private handleSelectAllToggle(e: Event): void {
+    e.stopPropagation();
+
+    const shouldCheck = !this.checkboxes
+      .filter((cb) => !cb.disabled)
+      .every((cb) => cb.checked);
+
+    this._batchUpdating = true;
+    this.checkboxes.forEach((cb) => {
+      if (!cb.disabled) {
+        cb.checked = shouldCheck;
+      }
+    });
+    this._batchUpdating = false;
+
+    this.updateSelectAllState();
+    this.validateGroup();
+
+    dispatchCustomEvent(this, 'ui-change', {
+      allChecked: shouldCheck,
+      checkedCount: this.checkboxes.filter((cb) => cb.checked).length,
+      totalCount: this.checkboxes.length,
+    });
+  }
+
+  /**
+   * Validate group-level required constraint.
+   * Shows error if required and no children are checked.
+   */
+  private validateGroup(): void {
+    if (this.required && !this.checkboxes.some((cb) => cb.checked)) {
+      this.showError = true;
+    } else {
+      this.showError = false;
+    }
+  }
+
+  override render() {
+    return html\`
+      <div
+        class="group-wrapper"
+        role="group"
+        aria-labelledby="\${this.groupId}-label"
+        @ui-change=\${this.handleChildChange}
+      >
+        \${this.label
+          ? html\`<span id="\${this.groupId}-label" class="group-label"
+              >\${this.label}</span
+            >\`
+          : nothing}
+        \${this.selectAll
+          ? html\`
+              <div class="select-all-wrapper">
+                <lui-checkbox
+                  label="Select all"
+                  @ui-change=\${this.handleSelectAllToggle}
+                  .disabled=\${this.disabled}
+                ></lui-checkbox>
+              </div>
+            \`
+          : nothing}
+        <div class="group-items">
+          <slot @slotchange=\${this.handleSlotChange}></slot>
+        </div>
+        \${this.showError
+          ? html\`<div class="error-text" role="alert">
+              \${this.error || 'Please select at least one option.'}
+            </div>\`
+          : nothing}
+      </div>
+    \`;
+  }
+}
+
+// TypeScript global interface declaration for HTMLElementTagNameMap
+declare global {
+  interface HTMLElementTagNameMap {
+    'lui-checkbox-group': CheckboxGroup;
+  }
+}
+`;
+
+/**
+ * Radio component template
+ */
+export const RADIO_TEMPLATE = `/**
+ * lui-radio - An accessible radio button component with animated dot transition
+ *
+ * Features:
+ * - Circular radio button with animated dot scale transition when checked
+ * - Click or Space key dispatches ui-radio-change event to parent RadioGroup
+ * - Radio does NOT toggle its own checked state (group manages mutual exclusion)
+ * - NOT form-associated (RadioGroup owns form participation)
+ * - Label via property or default slot
+ * - Three sizes: sm, md, lg using CSS tokens
+ * - role="radio" with aria-checked for screen readers
+ * - prefers-reduced-motion support
+ * - SSR compatible via isServer guards
+ *
+ * @example
+ * \`\`\`html
+ * <lui-radio value="option1" label="Option 1"></lui-radio>
+ * <lui-radio value="option2" checked label="Option 2"></lui-radio>
+ * <lui-radio value="option3" disabled label="Option 3"></lui-radio>
+ * \`\`\`
+ *
+ * @slot default - Custom label content (alternative to label property)
+ */
+
+import { html, css, nothing } from 'lit';
+import { property } from 'lit/decorators.js';
+import { TailwindElement, tailwindBaseStyles } from '../../lib/lit-ui/tailwind-element';
+
+/**
+ * Dispatch a custom event from an element.
+ */
+function dispatchCustomEvent(el: HTMLElement, name: string, detail?: unknown) {
+  el.dispatchEvent(new CustomEvent(name, { detail, bubbles: true, composed: true }));
+}
+
+/**
+ * Radio size types for circle dimensions and label typography.
+ */
+export type RadioSize = 'sm' | 'md' | 'lg';
+
+/**
+ * An accessible radio button component with animated dot transition.
+ * Presentational child of RadioGroup -- does NOT participate in forms.
+ *
+ * @slot default - Custom label content (alternative to label property)
+ */
+export class Radio extends TailwindElement {
+  // NOT form-associated -- RadioGroup owns form participation
+  // NO internals / attachInternals()
+
+  /**
+   * Unique ID for label association.
+   */
+  private radioId = \`lui-radio-\${Math.random().toString(36).substr(2, 9)}\`;
+
+  /**
+   * The value this radio represents.
+   * @default ''
+   */
+  @property({ type: String })
+  value = '';
+
+  /**
+   * Whether the radio is in the checked state.
+   * Set by RadioGroup, not by the radio itself.
+   * @default false
+   */
+  @property({ type: Boolean, reflect: true })
+  checked = false;
+
+  /**
+   * Whether the radio is disabled.
+   * @default false
+   */
+  @property({ type: Boolean, reflect: true })
+  disabled = false;
+
+  /**
+   * Label text displayed next to the radio.
+   * @default ''
+   */
+  @property({ type: String })
+  label = '';
+
+  /**
+   * The size of the radio affecting circle dimensions and label typography.
+   * @default 'md'
+   */
+  @property({ type: String })
+  size: RadioSize = 'md';
+
+  /**
+   * Static styles for the radio component.
+   * Uses CSS custom properties from the radio token block.
+   */
+  static override styles = [
+    ...tailwindBaseStyles,
+    css\`
+      :host {
+        display: inline-block;
+      }
+
+      :host([disabled]) {
+        pointer-events: none;
+      }
+
+      /* Radio wrapper - flexbox row for label + circle */
+      .radio-wrapper {
+        display: flex;
+        flex-direction: row;
+        gap: var(--ui-radio-label-gap);
+        align-items: center;
+        cursor: pointer;
+      }
+
+      /* Radio circle - the outer border */
+      .radio-circle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: var(--ui-radio-border-width) solid var(--ui-radio-border);
+        border-radius: 50%;
+        background-color: var(--ui-radio-bg);
+        cursor: pointer;
+        transition: border-color var(--ui-radio-transition) ease-in-out;
+        flex-shrink: 0;
+      }
+
+      /* Checked state */
+      .radio-circle[aria-checked='true'] {
+        border-color: var(--ui-radio-border-checked);
+      }
+
+      /* Inner dot */
+      .radio-dot {
+        border-radius: 50%;
+        background-color: var(--ui-radio-dot-color);
+        transform: scale(0);
+        transition: transform var(--ui-radio-transition) ease-in-out;
+      }
+
+      /* Dot visible when checked */
+      .radio-circle[aria-checked='true'] .radio-dot {
+        transform: scale(1);
+      }
+
+      /* Size: sm */
+      .circle-sm {
+        width: var(--ui-radio-size-sm);
+        height: var(--ui-radio-size-sm);
+      }
+
+      .dot-sm {
+        width: var(--ui-radio-dot-size-sm);
+        height: var(--ui-radio-dot-size-sm);
+      }
+
+      /* Size: md */
+      .circle-md {
+        width: var(--ui-radio-size-md);
+        height: var(--ui-radio-size-md);
+      }
+
+      .dot-md {
+        width: var(--ui-radio-dot-size-md);
+        height: var(--ui-radio-dot-size-md);
+      }
+
+      /* Size: lg */
+      .circle-lg {
+        width: var(--ui-radio-size-lg);
+        height: var(--ui-radio-size-lg);
+      }
+
+      .dot-lg {
+        width: var(--ui-radio-dot-size-lg);
+        height: var(--ui-radio-dot-size-lg);
+      }
+
+      /* Focus ring */
+      .radio-circle:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 2px var(--ui-radio-ring);
+      }
+
+      /* Disabled */
+      .radio-circle[aria-disabled='true'] {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      /* Label */
+      .radio-label {
+        font-weight: 500;
+        color: var(--ui-input-text, inherit);
+        cursor: pointer;
+      }
+
+      .label-sm {
+        font-size: var(--ui-radio-font-size-sm);
+      }
+
+      .label-md {
+        font-size: var(--ui-radio-font-size-md);
+      }
+
+      .label-lg {
+        font-size: var(--ui-radio-font-size-lg);
+      }
+
+      /* Reduced motion */
+      @media (prefers-reduced-motion: reduce) {
+        .radio-dot,
+        .radio-circle {
+          transition-duration: 0ms;
+        }
+      }
+    \`,
+  ];
+
+  /**
+   * Handle click events on the radio wrapper.
+   * Click handler is on the wrapper so clicking the label also triggers selection.
+   * Radio does NOT toggle its own checked state -- it dispatches ui-radio-change
+   * and the RadioGroup handles mutual exclusion.
+   */
+  private handleClick(): void {
+    if (this.disabled) return;
+    dispatchCustomEvent(this, 'ui-radio-change', {
+      value: this.value,
+    });
+  }
+
+  /**
+   * Handle keyboard events for Space key only.
+   * Per W3C APG radio spec, Space checks the focused radio.
+   * Arrow keys are handled by the RadioGroup, not individual radios.
+   * preventDefault stops page scroll on Space.
+   */
+  private handleKeyDown(e: KeyboardEvent): void {
+    if (e.key === ' ') {
+      e.preventDefault();
+      this.handleClick();
+    }
+  }
+
+  override render() {
+    return html\`
+      <div class="radio-wrapper" @click=\${this.handleClick}>
+        <div
+          role="radio"
+          aria-checked=\${this.checked ? 'true' : 'false'}
+          aria-disabled=\${this.disabled ? 'true' : nothing}
+          aria-labelledby="\${this.radioId}-label"
+          tabindex="-1"
+          class="radio-circle circle-\${this.size}"
+          @keydown=\${this.handleKeyDown}
+        >
+          <span class="radio-dot dot-\${this.size}"></span>
+        </div>
+        \${this.label
+          ? html\`<label
+              id="\${this.radioId}-label"
+              class="radio-label label-\${this.size}"
+              >\${this.label}</label
+            >\`
+          : html\`<label
+              id="\${this.radioId}-label"
+              class="radio-label label-\${this.size}"
+              ><slot></slot
+            ></label>\`}
+      </div>
+    \`;
+  }
+}
+
+// TypeScript global interface declaration for HTMLElementTagNameMap
+declare global {
+  interface HTMLElementTagNameMap {
+    'lui-radio': Radio;
+  }
+}
+`;
+
+/**
+ * RadioGroup component template
+ */
+export const RADIO_GROUP_TEMPLATE = `/**
+ * lui-radio-group - An accessible radio group with mutual exclusion and roving tabindex
+ *
+ * Features:
+ * - role="radiogroup" with aria-labelledby for screen reader grouping
+ * - Mutual exclusion: only one radio checked at a time
+ * - Roving tabindex: single tab stop, arrow keys move focus AND selection with wrapping
+ * - Form participation via ElementInternals (setFormValue, setValidity, formResetCallback)
+ * - Required validation prevents form submission when nothing selected
+ * - Disabled propagation to all child lui-radio elements
+ * - Child discovery via slotchange event
+ * - SSR compatible via isServer guards
+ *
+ * Keyboard navigation (W3C APG Radio Group pattern):
+ * - Tab/Shift+Tab: Move into/out of group (single tab stop)
+ * - ArrowDown/ArrowRight: Move focus and selection to next radio (wraps)
+ * - ArrowUp/ArrowLeft: Move focus and selection to previous radio (wraps)
+ * - Space: Selects the focused radio (handled by individual lui-radio)
+ *
+ * @example
+ * \`\`\`html
+ * <lui-radio-group name="color" label="Favorite color" required>
+ *   <lui-radio value="red" label="Red"></lui-radio>
+ *   <lui-radio value="green" label="Green"></lui-radio>
+ *   <lui-radio value="blue" label="Blue"></lui-radio>
+ * </lui-radio-group>
+ * \`\`\`
+ *
+ * @example With initial value
+ * \`\`\`html
+ * <lui-radio-group name="size" value="md" label="Size">
+ *   <lui-radio value="sm" label="Small"></lui-radio>
+ *   <lui-radio value="md" label="Medium"></lui-radio>
+ *   <lui-radio value="lg" label="Large"></lui-radio>
+ * </lui-radio-group>
+ * \`\`\`
+ *
+ * @slot default - Child lui-radio elements
+ */
+
+import { html, css, nothing, isServer, type PropertyValues } from 'lit';
+import { property, state } from 'lit/decorators.js';
+import { TailwindElement, tailwindBaseStyles } from '../../lib/lit-ui/tailwind-element';
+import type { Radio } from './radio';
+
+/**
+ * Dispatch a custom event from an element.
+ */
+function dispatchCustomEvent(el: HTMLElement, name: string, detail?: unknown) {
+  el.dispatchEvent(new CustomEvent(name, { detail, bubbles: true, composed: true }));
+}
+
+/**
+ * An accessible radio group container with mutual exclusion, roving tabindex,
+ * form participation via ElementInternals, and group-level validation.
+ *
+ * @slot default - Child lui-radio elements
+ */
+export class RadioGroup extends TailwindElement {
+  /**
+   * Enable form association for this custom element.
+   * RadioGroup owns form participation (individual radios do not).
+   */
+  static formAssociated = true;
+
+  /**
+   * ElementInternals for form participation.
+   * Null during SSR since attachInternals() is not available.
+   */
+  private internals: ElementInternals | null = null;
+
+  /**
+   * Unique ID for label association.
+   */
+  private groupId = \`lui-rg-\${Math.random().toString(36).substr(2, 9)}\`;
+
+  /**
+   * Discovered child radio elements.
+   */
+  private radios: Radio[] = [];
+
+  /**
+   * Stores the initial value for formResetCallback.
+   */
+  private defaultValue = '';
+
+  /**
+   * The name of the radio group for form submission.
+   * @default ''
+   */
+  @property({ type: String })
+  name = '';
+
+  /**
+   * The currently selected radio's value.
+   * @default ''
+   */
+  @property({ type: String })
+  value = '';
+
+  /**
+   * Whether a selection is required for form validity.
+   * @default false
+   */
+  @property({ type: Boolean, reflect: true })
+  required = false;
+
+  /**
+   * Whether all child radios should be disabled.
+   * @default false
+   */
+  @property({ type: Boolean, reflect: true })
+  disabled = false;
+
+  /**
+   * Label text displayed above the group.
+   * @default ''
+   */
+  @property({ type: String })
+  label = '';
+
+  /**
+   * Custom error message for required validation.
+   * @default ''
+   */
+  @property({ type: String })
+  error = '';
+
+  /**
+   * Whether the user has interacted with the group.
+   * Used for validation display timing.
+   */
+  @state()
+  private touched = false;
+
+  /**
+   * Whether to show the validation error message.
+   */
+  @state()
+  private showError = false;
+
+  /**
+   * Static styles for the radio group component.
+   */
+  static override styles = [
+    ...tailwindBaseStyles,
+    css\`
+      :host {
+        display: block;
+      }
+
+      :host([disabled]) {
+        opacity: 0.5;
+      }
+
+      .group-wrapper {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .group-label {
+        font-weight: 500;
+        margin-bottom: 0.375rem;
+        font-size: 0.875rem;
+        color: var(--ui-input-text, inherit);
+      }
+
+      .group-items {
+        display: flex;
+        flex-direction: column;
+        gap: var(--ui-radio-group-gap);
+      }
+
+      .error-text {
+        font-size: 0.75rem;
+        color: var(--ui-radio-text-error);
+        margin-top: 0.25rem;
+      }
+    \`,
+  ];
+
+  constructor() {
+    super();
+    // Only attach internals on client (not during SSR)
+    if (!isServer) {
+      this.internals = this.attachInternals();
+    }
+  }
+
+  override connectedCallback(): void {
+    super.connectedCallback();
+    this.defaultValue = this.value;
+    this.updateFormValue();
+  }
+
+  /**
+   * Sync child states and form value when properties change.
+   * Uses PropertyValues type (not Map) to avoid api-extractor DTS rollup crash.
+   */
+  protected override updated(changedProperties: PropertyValues): void {
+    if (changedProperties.has('value')) {
+      this.syncChildStates();
+      this.updateRovingTabindex();
+      this.updateFormValue();
+      this.validate();
+    }
+
+    if (changedProperties.has('disabled')) {
+      this.syncDisabledState();
+      this.updateRovingTabindex();
+    }
+  }
+
+  /**
+   * Handle slot changes to discover child radio elements.
+   * Filters for LUI-RADIO elements and syncs state.
+   */
+  private handleSlotChange(e: Event): void {
+    const slot = e.target as HTMLSlotElement;
+    const assigned = slot.assignedElements({ flatten: true });
+    this.radios = assigned.filter(
+      (el) => el.tagName === 'LUI-RADIO'
+    ) as Radio[];
+    this.syncChildStates();
+    this.syncDisabledState();
+    this.updateRovingTabindex();
+  }
+
+  /**
+   * Enforce mutual exclusion: only the radio matching group value is checked.
+   */
+  private syncChildStates(): void {
+    for (const radio of this.radios) {
+      radio.checked = radio.value === this.value;
+    }
+  }
+
+  /**
+   * Propagate disabled state to all child radios.
+   * Called when disabled property changes or children are discovered.
+   */
+  private syncDisabledState(): void {
+    if (this.disabled) {
+      this.radios.forEach((r) => (r.disabled = true));
+    }
+  }
+
+  /**
+   * Manage roving tabindex: only the checked (or first enabled) radio gets tabindex 0.
+   * All other radios get tabindex -1. This creates a single tab stop for the group.
+   */
+  private updateRovingTabindex(): void {
+    const enabledRadios = this.radios.filter((r) => !r.disabled);
+    if (enabledRadios.length === 0) return;
+
+    const checkedRadio = enabledRadios.find((r) => r.checked);
+    const focusTarget = checkedRadio || enabledRadios[0];
+
+    for (const radio of this.radios) {
+      // Set tabIndex on the HOST element (lui-radio), not inner shadow DOM
+      radio.tabIndex = radio === focusTarget && !radio.disabled ? 0 : -1;
+    }
+  }
+
+  /**
+   * Handle arrow key navigation within the group.
+   * Arrow keys move focus AND selection simultaneously with wrapping.
+   */
+  private handleKeyDown(e: KeyboardEvent): void {
+    const arrowKeys = ['ArrowDown', 'ArrowRight', 'ArrowUp', 'ArrowLeft'];
+    if (!arrowKeys.includes(e.key)) return;
+    e.preventDefault();
+
+    const enabledRadios = this.radios.filter((r) => !r.disabled);
+    if (enabledRadios.length === 0) return;
+
+    const currentIndex = enabledRadios.findIndex((r) => r.tabIndex === 0);
+    const forward = e.key === 'ArrowDown' || e.key === 'ArrowRight';
+    const nextIndex = forward
+      ? (currentIndex + 1) % enabledRadios.length
+      : (currentIndex - 1 + enabledRadios.length) % enabledRadios.length;
+
+    // Arrow keys MOVE FOCUS AND SELECT simultaneously
+    const nextRadio = enabledRadios[nextIndex];
+    this.value = nextRadio.value;
+    this.touched = true;
+    this.syncChildStates();
+    this.updateRovingTabindex();
+    this.updateFormValue();
+    this.validate();
+    nextRadio.focus();
+
+    dispatchCustomEvent(this, 'ui-change', {
+      value: this.value,
+    });
+  }
+
+  /**
+   * Handle internal ui-radio-change events from child radios.
+   * Stops propagation (internal event) and dispatches consumer-facing ui-change.
+   */
+  private handleRadioChange(e: CustomEvent): void {
+    e.stopPropagation(); // Internal event, don't leak to consumer
+    this.value = e.detail.value;
+    this.touched = true;
+    this.syncChildStates();
+    this.updateRovingTabindex();
+    this.updateFormValue();
+    this.validate();
+
+    // Dispatch consumer-facing event
+    dispatchCustomEvent(this, 'ui-change', {
+      value: this.value,
+    });
+  }
+
+  /**
+   * Sync the selected value to the form via ElementInternals.
+   * Submits value when selected, null when nothing selected.
+   */
+  private updateFormValue(): void {
+    this.internals?.setFormValue(this.value || null);
+  }
+
+  /**
+   * Validate required constraint and sync validity to ElementInternals.
+   * @returns true if valid, false if invalid
+   */
+  private validate(): boolean {
+    if (!this.internals) return true;
+
+    if (this.required && !this.value) {
+      this.internals.setValidity(
+        { valueMissing: true },
+        this.error || 'Please select an option.',
+        this.radios[0] ||
+          (this.shadowRoot?.querySelector('.group-items') as HTMLElement)
+      );
+      this.showError = this.touched;
+      return false;
+    }
+
+    this.internals.setValidity({});
+    this.showError = false;
+    return true;
+  }
+
+  /**
+   * Form lifecycle callback: reset the group to initial value.
+   */
+  formResetCallback(): void {
+    this.value = this.defaultValue;
+    this.syncChildStates();
+    this.updateRovingTabindex();
+    this.updateFormValue();
+    this.touched = false;
+    this.showError = false;
+    this.internals?.setValidity({});
+  }
+
+  /**
+   * Form lifecycle callback: handle disabled state from fieldset or form.
+   */
+  formDisabledCallback(disabled: boolean): void {
+    this.disabled = disabled;
+    this.syncDisabledState();
+    this.updateRovingTabindex();
+  }
+
+  override render() {
+    return html\`
+      <div
+        class="group-wrapper"
+        role="radiogroup"
+        aria-labelledby="\${this.groupId}-label"
+        aria-required=\${this.required ? 'true' : nothing}
+        @ui-radio-change=\${this.handleRadioChange}
+        @keydown=\${this.handleKeyDown}
+      >
+        \${this.label
+          ? html\`<span id="\${this.groupId}-label" class="group-label"
+              >\${this.label}</span
+            >\`
+          : nothing}
+        <div class="group-items">
+          <slot @slotchange=\${this.handleSlotChange}></slot>
+        </div>
+        \${this.showError
+          ? html\`<div class="error-text" role="alert">
+              \${this.error || 'Please select an option.'}
+            </div>\`
+          : nothing}
+      </div>
+    \`;
+  }
+}
+
+// TypeScript global interface declaration for HTMLElementTagNameMap
+declare global {
+  interface HTMLElementTagNameMap {
+    'lui-radio-group': RadioGroup;
+  }
+}
+`;
+
+/**
  * Map of component names to their templates
  */
 export const COMPONENT_TEMPLATES: Record<string, string> = {
@@ -2515,6 +4480,11 @@ export const COMPONENT_TEMPLATES: Record<string, string> = {
   input: INPUT_TEMPLATE,
   textarea: TEXTAREA_TEMPLATE,
   select: SELECT_TEMPLATE,
+  switch: SWITCH_TEMPLATE,
+  checkbox: CHECKBOX_TEMPLATE,
+  'checkbox-group': CHECKBOX_GROUP_TEMPLATE,
+  radio: RADIO_TEMPLATE,
+  'radio-group': RADIO_GROUP_TEMPLATE,
 };
 
 /**

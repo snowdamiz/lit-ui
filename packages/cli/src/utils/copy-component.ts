@@ -1,6 +1,6 @@
 import fsExtra from 'fs-extra';
 import { consola } from 'consola';
-import { resolve, dirname, basename } from 'pathe';
+import { resolve, dirname, basename, parse } from 'pathe';
 import type { RegistryFile } from './registry';
 import type { LitUIConfig } from './config';
 import { getComponentTemplate } from '../templates';
@@ -135,10 +135,16 @@ export async function copyComponentFiles(
 ): Promise<CopyResult[]> {
   const results: CopyResult[] = [];
 
-  // Get the embedded template for this component
-  const content = getComponentContent(componentName);
-
   for (const file of files) {
+    // Look up template by file stem (e.g., "checkbox-group" from "checkbox-group.ts")
+    // Falls back to component name for single-file components
+    const fileStem = parse(file.path).name;
+    const template = getComponentTemplate(fileStem) ?? getComponentTemplate(componentName);
+    if (!template) {
+      throw new Error(`Component template not found: ${fileStem} (component: ${componentName})`);
+    }
+    const content = template;
+
     const targetPath = getTargetPath(file, config, cwd);
     const copied = await copyComponent(content, targetPath, options);
 
