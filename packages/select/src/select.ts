@@ -484,6 +484,113 @@ export class Select extends TailwindElement {
   }
 
   /**
+   * Execute async search with debounce and AbortController.
+   * Cancels previous requests to prevent race conditions.
+   */
+  private async executeAsyncSearch(query: string): Promise<void> {
+    // Clear previous debounce timeout
+    if (this._searchDebounceTimeout) {
+      clearTimeout(this._searchDebounceTimeout);
+      this._searchDebounceTimeout = undefined;
+    }
+
+    // Abort previous request
+    if (this._searchAbortController) {
+      this._searchAbortController.abort();
+      this._searchAbortController = undefined;
+    }
+
+    // Check minimum length threshold
+    if (query.length < this.minSearchLength) {
+      // Below threshold - clear search results and show default options
+      this._searchResults = null;
+      this._searchLoading = false;
+      this._searchError = null;
+      this.requestUpdate();
+      return;
+    }
+
+    // Show loading immediately for user feedback
+    this._searchLoading = true;
+    this._searchError = null;
+    this.requestUpdate();
+
+    // Debounce the actual API call
+    this._searchDebounceTimeout = setTimeout(async () => {
+      this._searchAbortController = new AbortController();
+
+      try {
+        const results = await this.asyncSearch!(
+          query,
+          this._searchAbortController.signal
+        );
+
+        // Update results only if not aborted
+        this._searchResults = results;
+        this._searchLoading = false;
+
+        // Reset active index to first enabled result
+        if (results.length > 0) {
+          const firstEnabled = results.findIndex((o) => !o.disabled);
+          this.activeIndex = firstEnabled >= 0 ? firstEnabled : 0;
+        } else {
+          this.activeIndex = -1;
+        }
+
+        this.requestUpdate();
+      } catch (err) {
+        // Ignore AbortError - expected when request is cancelled
+        if ((err as Error).name === 'AbortError') {
+          return;
+        }
+
+        // Handle actual errors
+        this._searchError = err as Error;
+        this._searchLoading = false;
+        this._searchResults = null;
+        this.requestUpdate();
+      }
+    }, this.debounceDelay);
+  }
+
+  /**
+   * Fetch default options when search is cleared.
+   * Calls asyncSearch with empty string if provided.
+   */
+  private async fetchDefaultOptions(): Promise<void> {
+    if (!this.asyncSearch) return;
+
+    // Abort any pending search
+    if (this._searchAbortController) {
+      this._searchAbortController.abort();
+      this._searchAbortController = undefined;
+    }
+
+    // Clear debounce
+    if (this._searchDebounceTimeout) {
+      clearTimeout(this._searchDebounceTimeout);
+      this._searchDebounceTimeout = undefined;
+    }
+
+    this._searchLoading = true;
+    this._searchError = null;
+    this._searchAbortController = new AbortController();
+
+    try {
+      const results = await this.asyncSearch('', this._searchAbortController.signal);
+      this._searchResults = results;
+      this._searchLoading = false;
+      this.requestUpdate();
+    } catch (err) {
+      if ((err as Error).name !== 'AbortError') {
+        this._searchError = err as Error;
+        this._searchLoading = false;
+      }
+      this.requestUpdate();
+    }
+  }
+
+  /**
    * Validate the select and sync validity state to ElementInternals.
    * @returns true if valid, false if invalid
    */
@@ -790,10 +897,23 @@ export class Select extends TailwindElement {
   /**
    * Handle input events in searchable mode.
    * Applies filter and updates dropdown.
+   * Uses async search when asyncSearch prop is provided.
    */
   private handleInput(e: InputEvent): void {
     const input = e.target as HTMLInputElement;
-    this.applyFilter(input.value);
+    const query = input.value;
+
+    // Update filter query for display
+    this.filterQuery = query;
+
+    // Use async search if available
+    if (this._isAsyncSearchMode) {
+      this.executeAsyncSearch(query);
+      return;
+    }
+
+    // Otherwise use local filtering (existing behavior)
+    this.applyFilter(query);
   }
 
   /**
@@ -1035,6 +1155,10 @@ export class Select extends TailwindElement {
    * Returns array of objects with value, label, disabled.
    */
   private get effectiveOptions(): SelectOption[] {
+    // Async search results take highest precedence
+    if (this._searchResults !== null) {
+      return this._searchResults;
+    }
     // Options property takes precedence (backwards compatible)
     if (this.options.length > 0) {
       return this.options;
@@ -1286,6 +1410,18 @@ export class Select extends TailwindElement {
 
       // Clean up virtualizer
       this._virtualizer = undefined;
+
+      // Clear search debounce timeout
+      if (this._searchDebounceTimeout) {
+        clearTimeout(this._searchDebounceTimeout);
+        this._searchDebounceTimeout = undefined;
+      }
+
+      // Abort pending search request
+      if (this._searchAbortController) {
+        this._searchAbortController.abort();
+        this._searchAbortController = undefined;
+      }
     }
   }
 
@@ -1760,6 +1896,24 @@ export class Select extends TailwindElement {
       :host-context(.dark) .skeleton-text {
         background: var(--ui-select-skeleton-bg, hsl(200, 10%, 30%));
       }
+
+      /* Virtualized listbox container */
+      .listbox-virtual {
+        position: relative;
+        overflow-y: auto;
+      }
+
+      .listbox-virtual-content {
+        position: relative;
+        width: 100%;
+      }
+
+      .option-virtual {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+      }
     `,
   ];
 
@@ -1860,6 +2014,13 @@ export class Select extends TailwindElement {
     // Clear filter query when closing (reset for next open)
     if (this.searchable) {
       this.filterQuery = '';
+    }
+
+    // Clear async search state when closing
+    if (this._isAsyncSearchMode) {
+      this._searchResults = null;
+      this._searchLoading = false;
+      this._searchError = null;
     }
 
     // Clear active state on slotted options
@@ -2527,6 +2688,57 @@ export class Select extends TailwindElement {
       >
         ${this.renderSelectionIndicator(isSelected)}
         <span>${labelContent}</span>
+      </div>
+    `;
+  }
+
+  /**
+   * Render options using virtual scrolling.
+   * Only renders visible items plus overscan for smooth scrolling.
+   */
+  private renderVirtualizedOptions(): TemplateResult {
+    if (!this._virtualizer) {
+      return html``;
+    }
+
+    const virtualizer = this._virtualizer.getVirtualizer();
+    const virtualItems = virtualizer.getVirtualItems();
+    const totalSize = virtualizer.getTotalSize();
+    const options = this.effectiveOptions;
+
+    return html`
+      <div
+        class="listbox-virtual-content"
+        style="height: ${totalSize}px;"
+      >
+        ${virtualItems.map((virtualItem) => {
+          const option = options[virtualItem.index];
+          if (!option) return nothing;
+
+          const isActive = virtualItem.index === this.activeIndex;
+          const isSelected = this.multiple
+            ? this.selectedValues.has(option.value)
+            : option.value === this._value;
+          const classes = ['option', 'option-virtual'];
+          if (isActive) classes.push('option-active');
+          if (isSelected) classes.push('option-selected');
+          if (option.disabled) classes.push('option-disabled');
+
+          return html`
+            <div
+              id="${this.selectId}-option-${virtualItem.index}"
+              role="option"
+              aria-selected=${isSelected ? 'true' : 'false'}
+              aria-disabled=${option.disabled ? 'true' : 'false'}
+              class=${classes.join(' ')}
+              style="transform: translateY(${virtualItem.start}px); height: ${virtualItem.size}px;"
+              @click=${(e: MouseEvent) => this.handleOptionClick(e, virtualItem.index)}
+            >
+              ${this.renderSelectionIndicator(isSelected)}
+              <span>${option.label || option.value}</span>
+            </div>
+          `;
+        })}
       </div>
     `;
   }
