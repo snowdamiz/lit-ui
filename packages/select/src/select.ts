@@ -577,10 +577,9 @@ export class Select extends TailwindElement {
       .listbox {
         position: fixed;
         z-index: var(--ui-select-z-index, 50);
-        min-width: 100%;
         max-height: var(--ui-select-dropdown-max-height, 240px);
         overflow-y: auto;
-        border-radius: var(--ui-select-dropdown-radius);
+        border-radius: var(--ui-select-radius);
         border: 1px solid var(--ui-select-dropdown-border);
         background-color: var(--ui-select-dropdown-bg);
         box-shadow: var(--ui-select-dropdown-shadow);
@@ -761,6 +760,9 @@ export class Select extends TailwindElement {
     // Skip during SSR - dropdown isn't visible anyway
     if (isServer) return;
 
+    // Get trigger width to match dropdown width
+    const triggerWidth = trigger.offsetWidth;
+
     const { x, y } = await computePosition(trigger, dropdown, {
       placement: 'bottom-start',
       strategy: 'fixed',
@@ -781,6 +783,7 @@ export class Select extends TailwindElement {
     Object.assign(dropdown.style, {
       left: `${x}px`,
       top: `${y}px`,
+      width: `${triggerWidth}px`,
     });
   }
 
