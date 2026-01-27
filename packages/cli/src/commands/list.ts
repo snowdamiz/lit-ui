@@ -29,7 +29,7 @@ export const list = defineCommand({
 
     // Define component categories
     const categories: Record<string, string[]> = {
-      'Form': ['input', 'textarea'],
+      'Form': ['input', 'textarea', 'select'],
       'Feedback': ['dialog'],
       'Actions': ['button'],
     };
