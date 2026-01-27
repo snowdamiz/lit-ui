@@ -41,9 +41,9 @@ const selectProps: PropDef[] = [
   },
   {
     name: 'options',
-    type: 'SelectOption[]',
+    type: 'SelectOption[] | Promise<SelectOption[]>',
     default: '[]',
-    description: 'Array of options with value, label, and optional disabled.',
+    description: 'Array of options or Promise that resolves to options. Shows loading skeleton when Promise is pending.',
   },
   {
     name: 'required',
@@ -104,6 +104,30 @@ const selectProps: PropDef[] = [
     type: '(option, query) => boolean',
     default: 'undefined',
     description: 'Custom filter function to override default contains matching.',
+  },
+  {
+    name: 'debounceDelay',
+    type: 'number',
+    default: '300',
+    description: 'Debounce delay in milliseconds for async search.',
+  },
+  {
+    name: 'minSearchLength',
+    type: 'number',
+    default: '0',
+    description: 'Minimum characters before triggering async search.',
+  },
+  {
+    name: 'asyncSearch',
+    type: '(query: string, signal: AbortSignal) => Promise<SelectOption[]>',
+    default: 'undefined',
+    description: 'Async function called when user types. Receives query and AbortSignal for cancellation.',
+  },
+  {
+    name: 'loadMore',
+    type: '() => Promise<SelectOption[]>',
+    default: 'undefined',
+    description: 'Callback for infinite scroll pagination. Called when scrolling near bottom.',
   },
 ];
 
