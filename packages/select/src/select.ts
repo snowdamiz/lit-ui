@@ -223,6 +223,13 @@ export class Select extends TailwindElement {
   creatable = false;
 
   /**
+   * Message displayed when no options match the filter query.
+   * @default 'No results found'
+   */
+  @property({ type: String })
+  noResultsMessage = 'No results found';
+
+  /**
    * Label text displayed above the select.
    * @default ''
    */
@@ -1527,6 +1534,7 @@ export class Select extends TailwindElement {
           var(--ui-select-option-padding-x, 0.75rem);
         color: var(--ui-select-placeholder);
         text-align: center;
+        font-style: italic;
       }
 
       /* Match highlight for searchable mode */
@@ -2352,6 +2360,18 @@ export class Select extends TailwindElement {
   }
 
   /**
+   * Render the empty state when no options match the filter.
+   * Includes ARIA live region for screen reader announcement.
+   */
+  private renderEmptyState() {
+    return html`
+      <div class="empty-state" role="status" aria-live="polite">
+        ${this.noResultsMessage}
+      </div>
+    `;
+  }
+
+  /**
    * Render the create option for creatable mode.
    */
   private renderCreateOption() {
@@ -2572,7 +2592,7 @@ export class Select extends TailwindElement {
                 this.renderOption(filterMatch, index)
               )
             : this.searchable && this.filterQuery && this.options.length > 0
-              ? html`<div class="empty-state">No results found</div>`
+              ? this.renderEmptyState()
               : html`<slot @slotchange=${this.handleSlotChange}></slot>`}
           ${this.renderCreateOption()}
         </div>
