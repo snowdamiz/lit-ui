@@ -194,7 +194,11 @@ Plans:
   3. RadioGroup participates in forms via ElementInternals: submits the selected radio's value, supports `required` validation, and resets on form reset
   4. RadioGroup with `disabled` makes all child radios non-interactive; individual radios can also be independently disabled
   5. Screen readers announce `role="radiogroup"` on the group and `role="radio"` with checked state on each option, with proper group labeling
-**Plans**: TBD
+**Plans**: 3 plans
+Plans:
+- [ ] 40-01-PLAN.md — Package scaffolding + CSS design tokens
+- [ ] 40-02-PLAN.md — Radio component implementation
+- [ ] 40-03-PLAN.md — RadioGroup component implementation
 
 ### Phase 41: CLI and Documentation
 **Goal**: All three new components are installable via CLI and documented with interactive examples on the docs site
