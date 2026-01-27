@@ -1,5 +1,5 @@
 /**
- * JSX type declarations for lui-radio custom element.
+ * JSX type declarations for lui-radio and lui-radio-group custom elements.
  * Provides type support for React, Vue, and Svelte.
  */
 
@@ -14,6 +14,16 @@ interface LuiRadioAttributes {
   size?: RadioSize;
 }
 
+// Common attributes for lui-radio-group
+interface LuiRadioGroupAttributes {
+  name?: string;
+  value?: string;
+  required?: boolean;
+  disabled?: boolean;
+  label?: string;
+  error?: string;
+}
+
 // React JSX support
 declare global {
   namespace JSX {
@@ -21,6 +31,10 @@ declare global {
       'lui-radio': React.DetailedHTMLProps<
         React.HTMLAttributes<Radio> & LuiRadioAttributes,
         Radio
+      >;
+      'lui-radio-group': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement> & LuiRadioGroupAttributes,
+        HTMLElement
       >;
     }
   }
@@ -30,6 +44,7 @@ declare global {
 declare module 'vue' {
   export interface GlobalComponents {
     'lui-radio': import('vue').DefineComponent<LuiRadioAttributes>;
+    'lui-radio-group': import('vue').DefineComponent<LuiRadioGroupAttributes>;
   }
 }
 
@@ -38,6 +53,9 @@ declare namespace svelteHTML {
   interface IntrinsicElements {
     'lui-radio': LuiRadioAttributes & {
       'on:ui-radio-change'?: (e: CustomEvent) => void;
+    };
+    'lui-radio-group': LuiRadioGroupAttributes & {
+      'on:ui-change'?: (e: CustomEvent) => void;
     };
   }
 }
