@@ -4,21 +4,21 @@
 
 A framework-agnostic component library built on Lit.js, following ShadCN's philosophy of beautiful defaults and CLI-driven installation. Components work natively in React, Vue, Svelte, or plain HTML because they're standard web components underneath.
 
-Now with **dual distribution** (copy-source or npm), **SSR support** via Declarative Shadow DOM, **build-time theme customization** via visual configurator, and **form components** (Input, Textarea, Select with multi-select, combobox, and async loading).
+Now with **dual distribution** (copy-source or npm), **SSR support** via Declarative Shadow DOM, **build-time theme customization** via visual configurator, and **complete form toolkit** (Input, Textarea, Select, Checkbox, Radio, Switch with group containers).
 
 ## Core Value
 
 Developers can use polished, accessible UI components in any framework without lock-in — one component library that works everywhere.
 
-## Current State (v4.1)
+## Current State (v4.2)
 
-- ~26,000 lines TypeScript across packages and apps
+- ~29,000 lines TypeScript across packages and apps
 - Tech stack: Lit.js 3, Tailwind CSS v4, Vite, TypeScript, pnpm workspaces, colorjs.io, Floating UI, @tanstack/lit-virtual
-- 8 publishable packages: @lit-ui/core, @lit-ui/button, @lit-ui/dialog, @lit-ui/input, @lit-ui/textarea, @lit-ui/select, @lit-ui/ssr, lit-ui (CLI)
+- 11 publishable packages: @lit-ui/core, @lit-ui/button, @lit-ui/dialog, @lit-ui/input, @lit-ui/textarea, @lit-ui/select, @lit-ui/checkbox, @lit-ui/radio, @lit-ui/switch, @lit-ui/ssr, lit-ui (CLI)
 - Framework examples: Next.js App Router, Astro, Express/Node.js
 - Distribution: copy-source (CLI) or npm packages with SSR support
 - Theme customization: Visual configurator + CLI `--theme` parameter
-- Form components: Input, Textarea, Select (single, multi, combobox, async)
+- Form components: Input, Textarea, Select (single, multi, combobox, async), Checkbox (with group), Radio (with group), Switch
 
 ## Requirements
 
@@ -59,17 +59,17 @@ Developers can use polished, accessible UI components in any framework without l
 - ✓ Keyboard navigation (arrow keys, type-ahead, Escape to close) — v4.1
 - ✓ Form participation via ElementInternals for all form components — v4.1
 - ✓ ARIA 1.2 combobox pattern with full accessibility compliance — v4.1
+- ✓ Checkbox with indeterminate tri-state, animated SVG checkmark, form participation — v4.2
+- ✓ CheckboxGroup with select-all coordination, disabled propagation, group validation — v4.2
+- ✓ Radio with animated dot transition, presentational child pattern — v4.2
+- ✓ RadioGroup with mutual exclusion, roving tabindex, form-associated via ElementInternals — v4.2
+- ✓ Switch toggle with role="switch", animated track+thumb, form participation — v4.2
+- ✓ 67+ CSS design tokens for checkbox, radio, switch theming — v4.2
+- ✓ CLI registry (8 components), copy-source templates, docs pages for all form controls — v4.2
 
 ### Active
 
-- [ ] Checkbox component with checked/unchecked/indeterminate states, animated transitions, form participation
-- [ ] CheckboxGroup container with group validation, select all/none support
-- [ ] Radio component with form participation, animated selection transition
-- [ ] RadioGroup container with mutual exclusion, arrow key navigation, required validation
-- [ ] Switch toggle control (standalone track/thumb), animated slide transition, form participation
-- [ ] Size variants (sm/md/lg), disabled state, error styling, CSS design tokens for all controls
-- [ ] SSR compatibility with isServer guards for all controls
-- [ ] CLI registry entries and docs pages for all controls
+(No active requirements — planning next milestone)
 
 ### Deferred (v4.3+)
 
@@ -153,6 +153,11 @@ Developers can use polished, accessible UI components in any framework without l
 | AbortController for async search | Cancel previous requests on new input | ✓ Good — no race conditions |
 | IntersectionObserver for infinite scroll | Sentinel element at bottom triggers load | ✓ Good — reliable pagination |
 | Minimal CLI starter template | Full select is 1500+ lines; starter provides ~200 line shell | ✓ Good — manageable starting point |
+| RadioGroup owns form participation | Shadow DOM breaks native radio name-grouping | ✓ Good — correct form behavior |
+| CheckboxGroup NOT form-associated | Children submit independently (matches native HTML) | ✓ Good — simpler, correct semantics |
+| Space-only keyboard for checkbox | W3C APG checkbox spec does not include Enter | ✓ Good — spec-compliant |
+| CSS transitions for all animations | Zero new dependencies, consistent with existing approach | ✓ Good — no runtime overhead |
+| Per-file template lookup in CLI | Multi-file components need different templates per file | ✓ Good — correct copy-source output |
 
 ## Shipped Milestones
 
@@ -162,16 +167,7 @@ Developers can use polished, accessible UI components in any framework without l
 - **v3.1 Docs Dark Mode** (2026-01-25): Global theme toggle, localStorage persistence, full dark mode styling
 - **v4.0 Form Inputs** (2026-01-26): Input and Textarea components with validation, form participation
 - **v4.1 Select Component** (2026-01-27): Full-featured Select with single, multi, combobox, and async loading
-
-## Current Milestone: v4.2 Form Controls
-
-**Goal:** Add Checkbox, Radio, and Switch toggle components with group containers, completing the core form primitive toolkit.
-
-**Target features:**
-- Checkbox with indeterminate state and CheckboxGroup with select all/none
-- Radio with RadioGroup for mutual exclusion and arrow key navigation
-- Switch toggle (standalone control) with animated slide transition
-- All: form participation via ElementInternals, size variants, animations, CSS design tokens, SSR, CLI, docs
+- **v4.2 Form Controls** (2026-01-27): Checkbox, Radio, Switch with group containers, completing form primitives
 
 ---
-*Last updated: 2026-01-26 after v4.2 milestone started*
+*Last updated: 2026-01-27 after v4.2 milestone*

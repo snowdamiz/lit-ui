@@ -1,5 +1,33 @@
 # Project Milestones: LitUI
 
+## v4.2 Form Controls (Shipped: 2026-01-27)
+
+**Delivered:** Checkbox, Radio, and Switch toggle components with group containers, completing the core form primitive toolkit with zero new dependencies.
+
+**Phases completed:** 38-41 (13 plans total)
+
+**Key accomplishments:**
+
+- Switch component with role="switch", animated track+thumb slide transition, form participation via ElementInternals, required validation, 3 sizes
+- Checkbox with animated SVG checkmark draw-in, indeterminate tri-state (aria-checked="mixed"), Space-only keyboard per W3C APG
+- CheckboxGroup with select-all coordination, indeterminate parent, disabled propagation, group validation
+- RadioGroup with mutual exclusion, roving tabindex keyboard navigation (arrow keys move+select), form-associated via ElementInternals
+- 67+ CSS design tokens (--ui-switch-*, --ui-checkbox-*, --ui-radio-*) for full theme customization
+- CLI integration with 8 total registered components, 5 copy-source templates, and 3 documentation pages with 27 interactive examples
+
+**Stats:**
+
+- 76 files created/modified
+- 2,764 lines of TypeScript (new component packages)
+- 4 phases, 13 plans, ~25 tasks
+- 4 days (2026-01-23 → 2026-01-27)
+
+**Git range:** `feat(38-01)` → `docs(41)`
+
+**What's next:** Documentation site completion or additional components
+
+---
+
 ## v4.1 Select Component (Shipped: 2026-01-27)
 
 **Delivered:** Full-featured Select component with single-select, multi-select, combobox/autocomplete, and async data loading — completing the form toolkit with the most complex form primitive.
