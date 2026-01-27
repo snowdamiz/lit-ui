@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 ## Current Position
 
 Phase: 35 - Combobox (in progress)
-Plan: 01 of 3 complete
-Status: In progress
-Last activity: 2026-01-27 - Completed 35-01-PLAN.md (Searchable Mode)
+Plan: 03 of 3 complete
+Status: Phase complete
+Last activity: 2026-01-27 - Completed 35-03-PLAN.md (Custom Filter and Creatable)
 
-Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 SHIPPED | v4.0 SHIPPED | v4.1 [#####..] 5/7 phases
+Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 SHIPPED | v4.0 SHIPPED | v4.1 [######.] 6/7 phases
 
 ## Performance Metrics
 
@@ -44,8 +44,8 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHI
 - Total execution time: 30 min
 
 **v4.1 Velocity (in progress):**
-- Plans completed: 15
-- Total execution time: 52 min
+- Plans completed: 18
+- Total execution time: 58 min
 
 ## Accumulated Context
 
@@ -91,6 +91,9 @@ v3.0, v3.1, v4.0 decisions validated and archived.
 | Space goes to input in searchable mode | Allows filtering with spaces; toggles in multi-select | 35-01 |
 | Home/End cursor movement in searchable | Ctrl/Cmd + Home/End navigate options instead | 35-01 |
 | Filter cleared on dropdown close | Clean state on reopen, not on blur | 35-01 |
+| customFilter preserves highlighting | Custom logic for inclusion, default for highlights | 35-03 |
+| Create option at end of keyboard cycle | Arrow down from last option goes to create option | 35-03 |
+| Exact match check is case-insensitive | Create option hidden when label/value matches exactly | 35-03 |
 
 ### Pending Todos
 
@@ -115,26 +118,18 @@ None.
 ## Session Continuity
 
 Last session: 2026-01-27
-Stopped at: Completed 35-01-PLAN.md (Searchable Mode)
+Stopped at: Completed 35-03-PLAN.md (Custom Filter and Creatable)
 Resume file: None
 
 ## Next Steps
 
-Phase 35 Combobox in progress. Plan 01 Searchable Mode complete.
+Phase 35 Combobox complete. All 3 plans delivered.
 
-**Plan 01 Delivered:**
-- searchable prop to enable text input mode
-- Case-insensitive contains filtering via filteredOptions getter
-- Text input trigger with proper combobox ARIA (aria-autocomplete="list")
-- Keyboard navigation works with text input (arrows navigate, chars type)
-- Filter cleared on close, shows selected label when closed
-- Empty state "No results found" when filter matches nothing
-
-**Remaining in Phase 35:**
-- Plan 02: Match highlighting (bold text for matched portions)
-- Plan 03: Creatable mode (create new options)
+**Phase 35 Complete:**
+- Plan 01: Searchable mode with filtering
+- Plan 02: Match highlighting for filtered text
+- Plan 03: Custom filter function and creatable mode
 
 **Remaining phases in v4.1:**
-- Phase 35: Combobox (in progress)
 - Phase 36: Async Loading
 - Phase 37: CLI and Documentation
