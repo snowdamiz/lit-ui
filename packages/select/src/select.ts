@@ -538,7 +538,6 @@ export class Select extends TailwindElement {
   });
 
   /**
-  /**
    * Check if component is in async options mode (Promise-based options).
    */
   private get _isAsyncMode(): boolean {
