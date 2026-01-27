@@ -81,6 +81,30 @@ const selectProps: PropDef[] = [
     default: 'false',
     description: 'Show "Select all" / "Clear all" button in multi-select dropdown.',
   },
+  {
+    name: 'searchable',
+    type: 'boolean',
+    default: 'false',
+    description: 'Transform trigger into text input for filtering options.',
+  },
+  {
+    name: 'creatable',
+    type: 'boolean',
+    default: 'false',
+    description: 'Allow creating new options when searchable and no match exists.',
+  },
+  {
+    name: 'noResultsMessage',
+    type: 'string',
+    default: '"No results found"',
+    description: 'Message shown when filter produces no matches.',
+  },
+  {
+    name: 'customFilter',
+    type: '(option, query) => boolean',
+    default: 'undefined',
+    description: 'Custom filter function to override default contains matching.',
+  },
 ];
 
 // Props data for lui-option
@@ -274,6 +298,44 @@ const multiSelectMaxCode = `<lui-select label="Top 3 Colors" multiple maxSelecti
   <lui-option value="green">Green</lui-option>
   <lui-option value="yellow">Yellow</lui-option>
   <lui-option value="purple">Purple</lui-option>
+</lui-select>`;
+
+// Combobox examples (Phase 35)
+const searchableCode = `<lui-select label="Country" searchable placeholder="Search countries...">
+  <lui-option value="us">United States</lui-option>
+  <lui-option value="ca">Canada</lui-option>
+  <lui-option value="uk">United Kingdom</lui-option>
+  <lui-option value="au">Australia</lui-option>
+  <lui-option value="de">Germany</lui-option>
+  <lui-option value="fr">France</lui-option>
+  <lui-option value="jp">Japan</lui-option>
+</lui-select>`;
+
+const searchableHighlightCode = `<lui-select label="Fruit" searchable placeholder="Type 'an' to test highlighting...">
+  <lui-option value="apple">Apple</lui-option>
+  <lui-option value="banana">Banana</lui-option>
+  <lui-option value="mango">Mango</lui-option>
+  <lui-option value="orange">Orange</lui-option>
+  <lui-option value="tangerine">Tangerine</lui-option>
+  <lui-option value="cantaloupe">Cantaloupe</lui-option>
+</lui-select>`;
+
+const creatableCode = `<lui-select label="Tags" searchable creatable placeholder="Search or create tag...">
+  <lui-option value="bug">Bug</lui-option>
+  <lui-option value="feature">Feature</lui-option>
+  <lui-option value="docs">Documentation</lui-option>
+  <lui-option value="help">Help Wanted</lui-option>
+</lui-select>`;
+
+const searchableMultiCode = `<lui-select label="Skills" searchable multiple placeholder="Search and select skills...">
+  <lui-option value="js">JavaScript</lui-option>
+  <lui-option value="ts">TypeScript</lui-option>
+  <lui-option value="py">Python</lui-option>
+  <lui-option value="go">Go</lui-option>
+  <lui-option value="rust">Rust</lui-option>
+  <lui-option value="java">Java</lui-option>
+  <lui-option value="csharp">C#</lui-option>
+  <lui-option value="ruby">Ruby</lui-option>
 </lui-select>`;
 
 export function SelectPage() {
@@ -647,6 +709,132 @@ export function SelectPage() {
               svelte={multiSelectMaxCode}
             />
           </section>
+
+          {/* Combobox Section Header */}
+          <div className="mt-16 mb-8">
+            <div className="flex items-center gap-4">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400">
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                </svg>
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
+                  Combobox / Searchable
+                  <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 rounded">Phase 35</span>
+                </h2>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Type to filter options with match highlighting and creatable mode</p>
+              </div>
+              <div className="flex-1 h-px bg-gradient-to-r from-gray-200 dark:from-gray-700 to-transparent" />
+            </div>
+          </div>
+
+          {/* 13. Basic Searchable */}
+          <section>
+            <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-2">Searchable Select</h3>
+            <p className="text-gray-500 dark:text-gray-400 mb-4 text-sm">
+              Add <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">searchable</code> to enable text input filtering.
+              Options filter in real-time as you type.
+            </p>
+            <ExampleBlock
+              preview={
+                <lui-select label="Country" searchable placeholder="Search countries...">
+                  <lui-option value="us">United States</lui-option>
+                  <lui-option value="ca">Canada</lui-option>
+                  <lui-option value="uk">United Kingdom</lui-option>
+                  <lui-option value="au">Australia</lui-option>
+                  <lui-option value="de">Germany</lui-option>
+                  <lui-option value="fr">France</lui-option>
+                  <lui-option value="jp">Japan</lui-option>
+                </lui-select>
+              }
+              html={searchableCode}
+              react={searchableCode}
+              vue={searchableCode}
+              svelte={searchableCode}
+            />
+          </section>
+
+          {/* 14. Match Highlighting */}
+          <section>
+            <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-2">Match Highlighting</h3>
+            <p className="text-gray-500 dark:text-gray-400 mb-4 text-sm">
+              Matching text is highlighted in <strong>bold</strong>. Try typing "an" to see ALL occurrences highlighted
+              (e.g., both "an"s in "B<strong>an</strong><strong>an</strong>a").
+            </p>
+            <ExampleBlock
+              preview={
+                <lui-select label="Fruit" searchable placeholder="Type 'an' to test highlighting...">
+                  <lui-option value="apple">Apple</lui-option>
+                  <lui-option value="banana">Banana</lui-option>
+                  <lui-option value="mango">Mango</lui-option>
+                  <lui-option value="orange">Orange</lui-option>
+                  <lui-option value="tangerine">Tangerine</lui-option>
+                  <lui-option value="cantaloupe">Cantaloupe</lui-option>
+                </lui-select>
+              }
+              html={searchableHighlightCode}
+              react={searchableHighlightCode}
+              vue={searchableHighlightCode}
+              svelte={searchableHighlightCode}
+            />
+          </section>
+
+          {/* 15. Creatable Mode */}
+          <section>
+            <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-2">Creatable Mode</h3>
+            <p className="text-gray-500 dark:text-gray-400 mb-4 text-sm">
+              Add <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">creatable</code> to allow creating new options.
+              A "Create 'xyz'" option appears when no exact match exists. Listen to the <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">create</code> event.
+            </p>
+            <ExampleBlock
+              preview={
+                <lui-select
+                  label="Tags"
+                  searchable
+                  creatable
+                  placeholder="Search or create tag..."
+                  onCreate={(e: CustomEvent) => console.log('onCreate:', e.detail)}
+                >
+                  <lui-option value="bug">Bug</lui-option>
+                  <lui-option value="feature">Feature</lui-option>
+                  <lui-option value="docs">Documentation</lui-option>
+                  <lui-option value="help">Help Wanted</lui-option>
+                </lui-select>
+              }
+              html={creatableCode}
+              react={creatableCode}
+              vue={creatableCode}
+              svelte={creatableCode}
+            />
+          </section>
+
+          {/* 16. Searchable Multi-Select */}
+          <section>
+            <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-2">Searchable Multi-Select</h3>
+            <p className="text-gray-500 dark:text-gray-400 mb-4 text-sm">
+              Combine <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">searchable</code> with <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">multiple</code> for
+              searchable multi-select. Selections persist while filtering.
+            </p>
+            <ExampleBlock
+              preview={
+                <lui-select label="Skills" searchable multiple placeholder="Search and select skills...">
+                  <lui-option value="js">JavaScript</lui-option>
+                  <lui-option value="ts">TypeScript</lui-option>
+                  <lui-option value="py">Python</lui-option>
+                  <lui-option value="go">Go</lui-option>
+                  <lui-option value="rust">Rust</lui-option>
+                  <lui-option value="java">Java</lui-option>
+                  <lui-option value="csharp">C#</lui-option>
+                  <lui-option value="ruby">Ruby</lui-option>
+                </lui-select>
+              }
+              html={searchableMultiCode}
+              react={searchableMultiCode}
+              vue={searchableMultiCode}
+              svelte={searchableMultiCode}
+            />
+          </section>
         </div>
 
         {/* API Reference */}
@@ -760,6 +948,9 @@ export function SelectPage() {
                   </p>
                   <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
                     <code className="px-2 py-1 bg-gray-900 text-white rounded-lg text-xs font-mono font-medium">clear</code> - Fired when selection is cleared via the clear button or keyboard.
+                  </p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                    <code className="px-2 py-1 bg-gray-900 text-white rounded-lg text-xs font-mono font-medium">create</code> - Fired in creatable mode when user creates a new option. <code className="text-xs">event.detail.value</code> contains the typed text.
                   </p>
                 </div>
               </div>

@@ -82,6 +82,13 @@ declare global {
           required?: boolean;
           disabled?: boolean;
           clearable?: boolean;
+          multiple?: boolean;
+          maxSelections?: number;
+          showSelectAll?: boolean;
+          searchable?: boolean;
+          creatable?: boolean;
+          noResultsMessage?: string;
+          onCreate?: (e: CustomEvent) => void;
         },
         HTMLElement
       >;
