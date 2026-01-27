@@ -1,313 +1,327 @@
 # Project Research Summary
 
-**Project:** LitUI v4.1 Select/Combobox Component
-**Domain:** Web Components - Accessible Select/Combobox with Lit.js
+**Project:** LitUI v4.2 - Form Controls Milestone (Checkbox, Radio, Switch)
+**Domain:** Web component toggle controls with group containers
 **Researched:** 2026-01-26
 **Confidence:** HIGH
 
 ## Executive Summary
 
-The Select/Combobox component follows the LitUI pattern of leveraging native browser capabilities while providing modern styling and framework-agnostic web components. The recommended approach uses the **Popover API** for dropdown management combined with **CSS Anchor Positioning** for modern browsers, with **Floating UI** as a progressive enhancement fallback. This matches LitUI's existing Dialog pattern of using native browser features (native `<dialog>` element) while maintaining full control over styling.
+This research covers the v4.2 milestone: building production-ready Checkbox, Radio, and Switch components for the LitUI web component library. These are fundamentally simpler than the v4.1 Select component -- they require no positioning logic, no virtualization, and no async operations. **Zero new npm dependencies are needed.** All animation is achievable with pure CSS transitions, and all form participation uses the existing ElementInternals pattern already proven in Button, Input, Textarea, and Select.
 
-The component requires **two new dependencies**: `@floating-ui/dom` (v1.7.4) for positioning fallback and `@tanstack/lit-virtual` (v3.13.19) for optional virtual scrolling with large datasets. Both are stable, production-ready libraries with excellent Lit integration patterns. The architecture uses three components: `lui-select` (state management), `lui-option` (individual items), and `lui-option-group` (grouping), with a slot-based API that mirrors native `<select>`/`<option>` for developer familiarity.
+The recommended architecture follows established LitUI patterns: three separate packages (`@lit-ui/checkbox`, `@lit-ui/radio`, `@lit-ui/switch`), each extending TailwindElement and using form-associated custom elements. The critical architectural insight is that RadioGroup must own form participation (not individual radios) because native radio mutual exclusion breaks across Shadow DOM boundaries. CheckboxGroup is simpler -- it's a layout/accessibility container only, with each checkbox managing its own form value. Switch is fully standalone with no group needed.
 
-The **critical risk** is ARIA implementation. The W3C changed the combobox pattern significantly between ARIA 1.1 and 1.2, and many online tutorials use the outdated pattern. Following only the current [W3C APG Combobox Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/) and testing with real screen readers (NVDA, JAWS, VoiceOver) from Phase 1 will prevent broken accessibility. Additional mobile-specific concerns include iOS VoiceOver's limited `aria-activedescendant` support and iOS Safari double-UI issues with custom selects, both addressed by early mobile device testing and potential native fallback options.
+The primary risks are cross-Shadow-DOM challenges inherent to web components: radio grouping requires explicit state management by RadioGroup, roving tabindex must operate on host elements (not shadow internals), and ARIA ID references like `aria-controls` cannot cross shadow boundaries. All of these have proven solutions documented in the W3C APG and reference implementations like Google's HowTo Components. Implementation order matters: build Switch first (simplest standalone pattern), then Checkbox/CheckboxGroup (introduces group communication without form ownership complexity), then Radio/RadioGroup last (combines group communication with form ownership and roving tabindex navigation).
 
 ## Key Findings
 
 ### Recommended Stack
 
-Two new dependencies are required for features that should not be built from scratch. Both have excellent Lit-specific solutions with verified stable versions and minimal bundle impact (combined ~5KB gzipped).
+**Verdict: Zero new dependencies required.** All capabilities needed for Checkbox, Radio, and Switch exist in the current stack: Lit 3.3.2, TailwindElement from `@lit-ui/core`, ElementInternals for form participation, and CSS transitions for animation. No positioning libraries (Floating UI), no virtualization (TanStack Virtual), no async task management.
 
-**Core technologies:**
-- **@floating-ui/dom (v1.7.4)**: Dropdown positioning with collision detection — framework-agnostic, explicit Shadow DOM support, tree-shakeable. Essential for reliable positioning across viewport edges, scrolling containers, and transformed ancestors. Fallback for browsers without CSS Anchor Positioning support (76% as of 2026-01).
-- **@tanstack/lit-virtual (v3.13.19)**: Virtual scrolling for large option lists — stable API (vs experimental @lit-labs/virtualizer), Reactive Controller pattern for natural Lit integration, headless design for full control. Optional feature for datasets >100 options.
-- **Native APIs**: IntersectionObserver (97% support) for infinite scroll, Popover API (90% support) for top-layer dropdown management, CSS Anchor Positioning (76% support, progressive enhancement).
+**Core technologies (all existing):**
+- **Lit 3.3.2**: Component framework with `html`, `css`, `svg` template literals, reactive properties, Shadow DOM
+- **@lit-ui/core TailwindElement**: Base class providing Tailwind utility injection, design token system, dispatchCustomEvent helper
+- **ElementInternals**: Form-associated custom elements API for form submission, validation, reset lifecycle (pattern established in Input/Select)
+- **CSS transitions**: GPU-composited animations for checkbox checkmark draw (`stroke-dashoffset`), radio dot scale (`transform: scale`), switch thumb slide (`transform: translateX`)
+- **TypeScript 5.9.3**: Type safety for component properties and DOM interactions
 
-**Rejected alternatives:**
-- `@lit-labs/virtualizer`: Experimental status, breaking changes expected
-- Popper.js: Deprecated, replaced by Floating UI
-- Native `<select>` styling (appearance: base-select): Chrome 133+ only, insufficient browser support
-- Manual positioning: Too complex for edge cases Floating UI already handles
+**CSS animation techniques (no JS libraries):**
+- Checkbox: SVG `<polyline>` with `stroke-dasharray`/`stroke-dashoffset` animation for checkmark drawing (150ms + 50ms delay after box fill)
+- Radio: CSS `transform: scale(0)` to `scale(1)` on inner dot element (150ms)
+- Switch: CSS `transform: translateX()` on thumb element (150ms), simultaneous `background-color` transition on track
+
+**Package structure:** Three new packages following existing convention (mirroring `@lit-ui/input`, `@lit-ui/button`):
+- `@lit-ui/checkbox` contains `lui-checkbox` + `lui-checkbox-group`
+- `@lit-ui/radio` contains `lui-radio` + `lui-radio-group`
+- `@lit-ui/switch` contains `lui-switch` only
+
+Each package has zero runtime dependencies -- only peer dependencies on `lit ^3.0.0` and `@lit-ui/core ^1.0.0`.
 
 ### Expected Features
 
-Research analyzed shadcn/ui, Radix UI, Headless UI, MUI, Chakra UI, and Ariakit. Clear consensus on table stakes and competitive differentiators emerged.
-
 **Must have (table stakes):**
-- Single-select with controlled/uncontrolled modes
-- Full keyboard navigation (arrows, Enter, Escape, Home/End, type-ahead)
-- Complete ARIA combobox implementation per W3C APG
-- Dropdown positioning with collision detection (flip when near edge)
-- Option disabled states and component disabled state
-- Form participation via ElementInternals (consistent with Input/Textarea)
-- Placeholder text, clearable selection
-- Size variants (sm/md/lg) matching existing components
-- Error state styling and required validation
-- SSR compatibility with isServer guards
 
-**Should have (competitive advantage):**
-- Multi-select with tag/chip display and removal (X button, backspace)
-- Combobox mode with text input filtering and custom filter functions
-- Highlight matched text in search results (differentiator vs competition)
-- Option groups with labels
-- Async options loading with loading/error states
-- Debounced search (150ms default)
-- Creatable options (add new values from input)
-- Optional virtual scrolling for 100+ options
+**Checkbox:**
+- Checked/unchecked toggle with `checked` boolean property
+- Indeterminate (tri-state) state for "select all" parent checkboxes (set via JS only, matches native behavior)
+- Form participation via ElementInternals: `name`, `value`, submit when checked
+- `required` validation via `setValidity({ valueMissing })`
+- Size variants (sm/md/lg) matching existing LitUI convention
+- `role="checkbox"` with `aria-checked="true|false|mixed"`
+- Space key toggles (not Enter -- per W3C APG spec)
+- CSS design tokens following `--ui-checkbox-*` pattern
 
-**Defer (v2+ or explicit anti-features):**
-- Nested/tree select (complex, rare use case)
-- Drag-and-drop reordering (scope creep)
-- Rich HTML content in options (XSS risk, a11y issues)
-- Color/date picker integration (separate components)
-- Built-in data fetching (consumer responsibility)
-- Heavy animations (performance, motion sickness)
+**CheckboxGroup:**
+- Group label with `role="group"` and `aria-labelledby`
+- Vertical layout by default
+- Optional group-level required validation ("at least one must be checked")
+- Error message display matching Input/Select pattern
+- NOT form-associated -- each child checkbox submits independently
+
+**Radio:**
+- Checked/unchecked state with mutual exclusion managed by parent group
+- `value` attribute identifying which option is selected
+- Size variants, label support, disabled state
+- `role="radio"` with `aria-checked="true|false"` (no mixed state)
+- Individual radios are NOT form-associated
+
+**RadioGroup:**
+- Mutual exclusion (checking one unchecks all siblings) -- CRITICAL because native radio grouping breaks across Shadow DOM
+- Arrow key navigation with roving tabindex (Up/Left = previous, Down/Right = next, with wrapping)
+- `role="radiogroup"` with `aria-labelledby`
+- Group IS form-associated, submits selected radio's value
+- `required` validation, `name` attribute, `value` property reflecting current selection
+
+**Switch:**
+- On/off toggle with `checked` boolean property
+- Track + thumb visual (thumb slides left/right)
+- Form participation (like individual checkbox)
+- `role="switch"` with `aria-checked="true|false"` (no mixed state -- distinct from checkbox semantics)
+- Space key toggles (Enter optional but recommended)
+- Size variants, CSS design tokens following `--ui-switch-*` pattern
+
+**Should have (competitive differentiators):**
+- Animated check transition for checkbox (SVG stroke-dashoffset draw-in)
+- Animated radio selection transition (scale transform on dot)
+- Animated switch thumb slide (translateX with track color cross-fade)
+- `defaultChecked` property for proper form reset behavior
+- CSS parts for deep styling (`::part(box)`, `::part(track)`, etc.)
+- Help text below controls with `aria-describedby`
+- Horizontal layout option for groups (`orientation="horizontal"`)
+
+**Defer to v2+:**
+- Select all/none helper (tri-state parent checkbox managing group) -- high complexity, niche use case
+- Radio button variant (pill/segmented button style) -- high complexity, defer
+- Switch loading state (async operations) -- nice-to-have, can add later
+- Min/max validation on CheckboxGroup -- uncommon requirement
+- Custom thumb content slot on Switch (icons inside thumb) -- advanced theming
 
 ### Architecture Approach
 
-Three-component composition: `lui-select` (container, state, form), `lui-option` (items), `lui-option-group` (grouping). State ownership is centralized in `lui-select` with options as stateless presentational components. Selection state is derived from parent's value property, not stored in child components.
+The architecture follows Lit's "properties down, events up" pattern with slot-based parent-child communication, proven in the existing `lui-select` / `lui-option` implementation.
 
-**Major components:**
-1. **lui-select** — State management (value, open, activeDescendant, searchQuery), keyboard navigation, ARIA combobox role, form participation via ElementInternals, dropdown positioning via Popover API + CSS Anchor/Floating UI fallback
-2. **lui-option** — Stateless display of label/value, selected state reflected from parent, disabled support, emits selection events that bubble to parent
-3. **lui-option-group** — Optional grouping with label header, can disable all children, uses slots for contained options
+**Major components and responsibilities:**
 
-**Key patterns:**
-- **Slot-based API** over attribute-based for declarative HTML, SSR-friendliness, framework agnosticism, rich content support
-- **Popover API + CSS Anchor Positioning** for dropdown (native top-layer, built-in light dismiss, Esc handling), Floating UI fallback for older browsers
-- **aria-activedescendant** for focus management (DOM focus stays on combobox, not options) per W3C APG pattern
-- **Lit Task controller** for async loading state management (pending/complete/error states)
-- **ElementInternals** for form participation with FormData for multi-select (multiple values with same name)
+1. **Individual Toggle Controls** (Checkbox, Radio, Switch) -- Each extends TailwindElement, implements ElementInternals (except Radio), handles keyboard interaction, emits `ui-change` events. Radio is NOT form-associated individually because it depends on group for mutual exclusion.
 
-### Critical Pitfalls
+2. **CheckboxGroup** -- Layout and accessibility container only. Discovers children via `slotchange`, can propagate disabled/size properties, optionally validates "at least N checked." NOT form-associated -- children submit independently.
 
-Top 5 pitfalls that cause major issues if not addressed early:
+3. **RadioGroup** -- Owns all state and behavior: form participation (form-associated), mutual exclusion logic (unchecks siblings when one is checked), roving tabindex management (only one radio has `tabindex="0"` at a time), arrow key navigation with wrapping. Discovers children via `slotchange`, sets properties imperatively, listens for `ui-radio-change` events.
 
-1. **ARIA 1.1 vs 1.2 pattern confusion** — W3C changed combobox pattern significantly. Many tutorials use outdated ARIA 1.1 with `aria-owns` instead of `aria-controls`. Prevention: Follow ONLY current [W3C APG Combobox Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/), test with NVDA/JAWS/VoiceOver from Phase 1. Role="combobox" must be on input element, not wrapper.
+**Parent-child communication pattern:**
+1. Child discovery via `slotchange` event (same as Select uses for Options)
+2. Properties down: parent sets properties directly on child elements (`radio.checked = true`)
+3. Events up: children dispatch `composed: true` custom events that bubble to parent (`ui-radio-change`)
 
-2. **Click-outside detection fails in Shadow DOM** — Standard `event.target !== element` fails due to event retargeting. Dropdowns close when clicking inside or fail to close when clicking outside. Prevention: Use `event.composedPath().includes(this)` instead of checking `event.target`.
+**Form ownership:** RadioGroup is form-associated and calls `setFormValue()` with the selected radio's value. Individual radios are presentational. This is the key architectural decision that solves the "radio buttons in Shadow DOM break native grouping" problem.
 
-3. **Multi-select form submission loses values** — `setFormValue()` accepts FormData, but `Object.fromEntries()` loses all but last value. Server receives single value instead of array. Prevention: Use `formData.append(name, value)` for each selection, server uses `getAll()` not `get()`.
+**Keyboard navigation:** RadioGroup uses roving tabindex on host elements (not shadow DOM internals). Only the checked radio (or first if none checked) has `tabindex="0"`. Arrow keys move focus AND selection simultaneously with wrapping. CheckboxGroup uses standard tabbing (each checkbox is independently focusable).
 
-4. **iOS VoiceOver ignores aria-activedescendant** — Mobile screen readers (iOS/Android) poorly support `aria-activedescendant`. Desktop works, mobile fails. Prevention: Test on real devices, consider native `<select>` fallback on mobile, ensure options are independently accessible.
+**Shared patterns:** All three toggle controls share similar property surfaces (checked, disabled, required, name, value, label, size) but do NOT use a shared mixin/base class. LitUI deliberately avoids mixins to keep components self-contained for CLI copy-source mode. Small duplication is acceptable.
 
-5. **Async search race conditions** — User types "abc" then "abcd". "abc" results return after "abcd", overwriting correct results. Prevention: Use AbortController to cancel previous requests, debounce 300-500ms, verify query still matches before updating options.
+### Critical Pitfalls (Top 5 for Phase 1)
+
+1. **Radio Buttons as Separate Web Components Break Native Grouping** -- Shadow DOM encapsulation prevents native radio mutual exclusion. Multiple radios can be checked simultaneously, arrow keys fail, FormData contains conflicts. **Prevention:** RadioGroup is the form-associated element with `formAssociated = true`. Individual radios are presentational children. Group manages `setFormValue()` with selected value.
+
+2. **Roving Tabindex Fails When Radio Items Are in Separate Shadow DOMs** -- Shadow boundaries prevent parent from manipulating tabindex on elements inside children's shadow roots. **Prevention:** Manage tabindex on host elements (the `<lui-radio>` custom elements themselves), not shadow internals. Use `delegatesFocus: true` on radio components. Arrow keys MUST wrap (first to last, last to first).
+
+3. **aria-controls on Mixed-State Checkbox Cannot Cross Shadow DOM Boundaries** -- ARIA ID references (`aria-controls`, `aria-labelledby`) are scoped to their DOM tree, cannot cross shadow boundaries. Parent "select all" checkbox cannot reference child checkboxes. **Prevention:** Keep parent and children in the same DOM tree, or skip `aria-controls` entirely (has poor screen reader support anyway). Rely on clear labeling instead.
+
+4. **role="switch" Screen Reader Inconsistency** -- `role="switch"` is not consistently announced. VoiceOver and NVDA often announce switches as "checkboxes." **Prevention:** Still use `role="switch"` (correct semantics, improving support). Never use `aria-checked="mixed"` on switches (spec forbids it). Test with VoiceOver+Safari, NVDA+Chrome, TalkBack+Chrome. Use visual design (sliding thumb) to reinforce toggle semantics.
+
+5. **Checkbox Group Form Submission Loses Unchecked Values** -- Native checkboxes submit nothing when unchecked. `setFormValue(null)` removes field from FormData entirely. Server-side code expecting field presence fails. **Prevention:** Decide on submission model early: (1) submit only checked values (matches native), or (2) always submit, empty string when none checked (developer-friendly). Document the chosen approach.
+
+**Additional critical considerations:**
+- Indeterminate state is visual/ARIA only (`aria-checked="mixed"`), never a submitted form value
+- Radio group arrow keys change selection AND move focus (unlike checkbox groups where arrow keys only move focus)
+- Missing form lifecycle callbacks (`formResetCallback`, `formDisabledCallback`, `formStateRestoreCallback`) breaks form reset and bfcache
+- Switch animation must respect `prefers-reduced-motion` for WCAG 2.3.3 compliance
 
 ## Implications for Roadmap
 
-Research reveals clear dependencies and natural groupings. Architecture research identified four phases; features research confirms complexity estimates; pitfalls research highlights critical testing requirements in Phase 1.
+Based on research, suggested phase structure (3 phases):
 
-### Phase 1: Single Select Foundation
-**Rationale:** Core functionality with highest complexity. ARIA implementation and keyboard navigation are foundational requirements that all other features depend on. 13 of 18 identified pitfalls occur in this phase, requiring extra attention to accessibility and mobile testing.
+### Phase 1: Switch Component (Standalone Fundamentals)
+**Rationale:** Switch is the simplest toggle control -- fully standalone, no group coordination needed, no mutual exclusion logic. Validates the toggle visual pattern (track + thumb CSS animation), form participation pattern (ElementInternals), and ARIA semantics (`role="switch"`) before tackling more complex group components.
 
-**Delivers:** Production-ready single-select component with full keyboard navigation, ARIA compliance, form participation, positioning, and mobile support.
+**Delivers:**
+- Complete `@lit-ui/switch` package with `lui-switch` element
+- Form-associated custom element with ElementInternals
+- CSS `transform: translateX()` animation for thumb slide
+- Size variants (sm/md/lg) and design tokens
+- ARIA `role="switch"` with `aria-checked`
+- Space/Enter keyboard support
+- `prefers-reduced-motion` support
+- Form lifecycle callbacks (reset, disabled, restore)
 
-**Addresses (from FEATURES.md):**
-- Single-select controlled/uncontrolled modes
-- Full keyboard navigation (arrows, Enter, Escape, Home/End, type-ahead)
-- Complete ARIA combobox pattern per W3C APG
-- Dropdown positioning with collision detection
-- Placeholder, clearable, disabled states
-- Form participation via ElementInternals
-- Required validation
-- Size variants (sm/md/lg)
-- Error state styling
-- SSR compatibility
+**Addresses from FEATURES.md:**
+- Table stakes: on/off toggle, track + thumb visual, disabled state, form participation, size variants, keyboard interaction
+- Differentiators: animated slide transition, CSS parts for styling
 
-**Avoids (from PITFALLS.md):**
-- Pitfall #1: ARIA 1.1 vs 1.2 confusion (use APG pattern, test early)
-- Pitfall #2: Shadow DOM click-outside (use composedPath)
-- Pitfall #4: Mobile aria-activedescendant (test real devices)
-- Pitfall #6: Missing keyboard nav (implement full APG spec)
-- Pitfall #8: CSS Anchor cross-tree (keep popup in same shadow tree)
-- Pitfall #12: iOS double UI (no hidden native select)
-- Pitfall #13: Sticky hover (use @media hover: hover)
-- Pitfall #17: Slotted options a11y (property-based API)
-- Pitfall #18: Wrong validity states (Select-specific validation)
+**Avoids from PITFALLS.md:**
+- Pitfall 4: role="switch" screen reader inconsistency (test across SR/browser combos)
+- Pitfall 9: missing `prefers-reduced-motion` (include from start)
+- Pitfall 10: missing form lifecycle callbacks (copy pattern from Input)
+- Pitfall 12: dynamic switch labels (document: labels describe setting, not action)
+- Pitfall 15: missing `delegatesFocus` (set in shadowRootOptions)
 
-**Stack dependencies:**
-- `@floating-ui/dom` for positioning fallback
-- Native Popover API + CSS Anchor Positioning (progressive enhancement)
-- ElementInternals (existing pattern from Input)
+**Testing requirements:** Switch is a new ARIA role for LitUI. Must test with VoiceOver (macOS/iOS), NVDA (Windows), TalkBack (Android) to verify announcement behavior. Document observed inconsistencies.
 
-### Phase 2: Multi-Select
-**Rationale:** Builds on Phase 1 foundation, adds array value handling and tag display. Natural progression after single-select is stable. Two specific pitfalls (FormData handling, state restoration) unique to multi-select.
+### Phase 2: Checkbox + CheckboxGroup (Parent-Child Communication)
+**Rationale:** Checkbox standalone works like Switch (same form participation pattern). CheckboxGroup introduces slot-based child discovery and parent-child communication without the complexity of form ownership (children are independently form-associated). This establishes the group communication pattern before tackling RadioGroup's form ownership.
 
-**Delivers:** Multiple selection with tag/chip display, removal interactions, overflow handling.
+**Delivers:**
+- Complete `@lit-ui/checkbox` package with `lui-checkbox` and `lui-checkbox-group` elements
+- Checkbox: checked/unchecked, indeterminate tri-state, form participation, `role="checkbox"`
+- SVG checkmark animation with `stroke-dashoffset` (draw-in effect)
+- CheckboxGroup: slot discovery, `role="group"`, optional aggregate validation (min/max selections)
+- Vertical/horizontal layout options
+- Group propagation of disabled/size to children
 
-**Addresses (from FEATURES.md):**
-- Multiple selection mode with array values
-- Tag/chip display of selected items
-- Tag removal (X button and backspace)
-- Optional max selection limit
-- Overflow collapse ("+N more")
-- Option groups with labels
+**Addresses from FEATURES.md:**
+- Table stakes: checked/unchecked/indeterminate, form submission, required validation, size variants, ARIA semantics, Space key toggle
+- CheckboxGroup: group label, layout, error display, disabled propagation
+- Differentiators: animated check transition, `defaultChecked`, CSS parts, help text
 
-**Avoids (from PITFALLS.md):**
-- Pitfall #3: Multi-select FormData (use FormData.append for each value)
-- Pitfall #16: State restoration (handle FormData in formStateRestoreCallback)
+**Avoids from PITFALLS.md:**
+- Pitfall 3: `aria-controls` cross-shadow boundary (skip `aria-controls` for select-all pattern, use clear labeling)
+- Pitfall 5: checkbox group form submission model (document: each checkbox submits independently)
+- Pitfall 6: indeterminate as form value (document: mixed is visual/ARIA only)
+- Pitfall 11: missing group role/label (add `role="group"` with `aria-labelledby` from start)
 
-**Stack dependencies:**
-- Extends Phase 1 architecture
-- Tag/chip component (new UI element)
+**Dependencies:** Builds on Switch's form participation pattern. Uses same ElementInternals approach, same event naming convention (`ui-change`), same CSS animation timing.
 
-### Phase 3: Combobox/Search
-**Rationale:** Text input filtering is independent feature that can be added after selection mechanics are proven. Builds on Phase 1's keyboard navigation for filtered results.
+**Research flags:** Indeterminate state and parent-child checkbox relationships have nuanced ARIA semantics. Reference W3C APG mixed-state checkbox example during implementation. Consider deferring "select all/none" helper to post-MVP (listed as high complexity differentiator).
 
-**Delivers:** Type-to-filter functionality with customizable matching, empty states, and highlighted matches.
+### Phase 3: Radio + RadioGroup (Form Ownership + Roving Tabindex)
+**Rationale:** Radio is the most complex component due to RadioGroup owning form participation AND managing mutual exclusion AND implementing roving tabindex keyboard navigation. Benefits from lessons learned in CheckboxGroup's slot communication pattern. Must be built last because it combines all complexity.
 
-**Addresses (from FEATURES.md):**
-- Text input for filtering options
-- Default case-insensitive matching
-- Custom filter function support
-- Empty state ("No results found")
-- Highlight matched text (differentiator)
-- `aria-autocomplete` support
+**Delivers:**
+- Complete `@lit-ui/radio` package with `lui-radio` and `lui-radio-group` elements
+- RadioGroup: form-associated, owns form value submission
+- Mutual exclusion logic (checking one radio unchecks all siblings)
+- Roving tabindex navigation (only one radio focusable at a time)
+- Arrow key navigation (Up/Left = previous, Down/Right = next) with wrapping
+- `role="radiogroup"` on group, `role="radio"` on children
+- Space key checks focused radio
 
-**Avoids (from PITFALLS.md):**
-- Pitfall #5: VoiceOver with filled input (live region fallback)
+**Addresses from FEATURES.md:**
+- Table stakes: checked state, value attribute, mutual exclusion, arrow key navigation with roving tabindex, form participation (group owns), required validation
+- Differentiators: animated selection transition (scale transform), CSS parts, horizontal layout option
 
-**Stack dependencies:**
-- Extends Phase 1 architecture
-- Input element integration for search field
+**Avoids from PITFALLS.md:**
+- Pitfall 1: separate radio web components break grouping (group is form-associated, radios are presentational)
+- Pitfall 2: roving tabindex across shadow boundaries (manage on host elements, arrow keys wrap)
+- Pitfall 7: radio vs checkbox keyboard differences (arrows change selection in radio, only move focus in checkbox)
+- Pitfall 8: avoid `aria-activedescendant` for radio group (use roving tabindex, not activedescendant)
 
-### Phase 4: Async Loading
-**Rationale:** Most complex feature requiring Promise handling, loading states, debouncing, and race condition management. Should come after synchronous features are stable.
+**Uses from STACK.md:**
+- ElementInternals for RadioGroup form participation
+- Slot discovery pattern from CheckboxGroup
+- CSS `transform: scale()` animation for radio dot
+- `dispatchCustomEvent` from `@lit-ui/core` for `ui-radio-change` internal event
 
-**Delivers:** Async options loading, debounced search, loading/error states, optional creatable mode, optional virtual scrolling.
+**Implements from ARCHITECTURE.md:**
+- Group owns form value (calls `setFormValue()`)
+- Roving tabindex on host elements via `updateTabindex()` method
+- Keyboard handler on group container, not individual radios
+- Arrow keys wrap at boundaries
 
-**Addresses (from FEATURES.md):**
-- Async options loading with Promise support
-- Loading indicator
-- Error state display
-- Debounced search (150ms default)
-- Optional creatable mode (add new values)
-- Optional virtual scrolling for 100+ options
+**Testing requirements:** Roving tabindex is a new navigation pattern for LitUI. Must test keyboard navigation thoroughly (arrow wrapping, disabled skipping, Tab exit). Test with screen readers to verify "X of Y" position announcements and group context.
 
-**Avoids (from PITFALLS.md):**
-- Pitfall #10: Async race conditions (AbortController + debounce + query validation)
-- Pitfall #15: No loading state (immediate indicator + live region)
-- Pitfall #11: Virtualized list a11y (aria-setsize/posinset)
-
-**Stack dependencies:**
-- `@tanstack/lit-virtual` for virtual scrolling (optional)
-- Lit Task controller for async state management
-- IntersectionObserver for infinite scroll
+**Research flags:** Roving tabindex keyboard navigation is well-documented in W3C APG but new to this codebase. Reference W3C APG Radio Group example and Google HowTo Radio Group implementation during development. Consider creating keyboard nav utility if complexity warrants extraction.
 
 ### Phase Ordering Rationale
 
-- **Dependencies flow naturally:** Phase 2-4 all depend on Phase 1's foundation (ARIA, keyboard, positioning). Phase 3 and 4 are independent and could be reversed, but async is more complex and benefits from combobox input integration being proven first.
-- **Risk management:** Highest-risk items (ARIA, Shadow DOM, mobile) are in Phase 1 where they can be addressed before building on them. 13 of 18 pitfalls occur in Phase 1, requiring extra attention and testing.
-- **User value delivery:** Each phase delivers a complete, usable feature increment. Phase 1 alone provides a production-ready select component. Phases 2-4 are additive enhancements.
-- **Testing strategy:** Accessibility testing (screen readers, keyboard-only, mobile) must start in Phase 1 and continue through all phases. Virtual scrolling (Phase 4) adds new accessibility concerns (aria-setsize, posinset) that need verification.
+- **Switch first** because it's fully standalone with zero group complexity. Establishes toggle form participation, CSS animation, and ARIA semantics foundation.
+- **Checkbox second** because CheckboxGroup introduces parent-child slot communication without form ownership complexity. Each checkbox manages its own form value, making the group a simpler coordination container.
+- **Radio last** because RadioGroup combines group communication (from CheckboxGroup) with form ownership (new) AND roving tabindex navigation (new). It's the most complex integration.
+
+This ordering allows incremental complexity addition: standalone toggle → group coordination → group + form ownership + advanced keyboard nav.
+
+Each phase is independently shippable and valuable. Users can consume Switch alone, or Switch + Checkbox, or all three.
 
 ### Research Flags
 
-**Phases with well-documented patterns (skip additional research):**
-- **Phase 1:** W3C APG provides complete specification for ARIA combobox pattern. Floating UI documentation is comprehensive. Existing LitUI patterns cover ElementInternals and SSR.
-- **Phase 2:** Multi-select is standard pattern with MDN documentation for FormData handling. Tag/chip UI is straightforward.
-- **Phase 3:** String filtering algorithms are well-understood. Input integration follows existing patterns.
+**Phases needing focused implementation research:**
+- **Phase 2 (Indeterminate):** W3C APG mixed-state checkbox example should be referenced for tri-state semantics. Consider whether parent "select all" checkbox belongs in Phase 2 or deferred to v4.3.
+- **Phase 3 (Roving Tabindex):** First implementation of roving tabindex in LitUI. Reference W3C APG keyboard practices and Google HowTo Radio Group code. May warrant keyboard navigation utility abstraction if other components need this pattern.
 
-**Phases needing validation during implementation:**
-- **Phase 1 (Mobile):** Despite research, iOS-specific issues may surface requiring device testing. Consider `/gsd:research-phase` if iOS double-UI problem appears.
-- **Phase 4 (Virtual scrolling):** TanStack Virtual's Lit integration is documented but not widely adopted. May need `/gsd:research-phase` if integration issues arise.
+**Phases with standard patterns (minimal additional research):**
+- **Phase 1 (Switch):** Straightforward form participation and CSS animation. Pattern established in Input/Select.
+- **Phase 2 (Checkbox standalone):** Form participation matches Switch pattern exactly.
+- **Phase 2 (CheckboxGroup):** Slot discovery matches Select/Option pattern.
+
+**Cross-phase considerations:**
+- Shadow DOM + ARIA challenges are consistent across all phases. Keep ARIA ID references in same DOM tree or avoid them.
+- Form lifecycle callbacks must be implemented in Phase 1 and copied to Phases 2-3.
+- Animation `prefers-reduced-motion` support must be in Phase 1 and copied to Phases 2-3.
+- Test coverage for screen readers should be established in Phase 1 and reused in later phases.
 
 ## Confidence Assessment
 
 | Area | Confidence | Notes |
 |------|------------|-------|
-| Stack | HIGH | Versions verified via npm registry, Floating UI and TanStack Virtual have stable APIs and active maintenance. Browser support data from CanIUse is authoritative. |
-| Features | HIGH | Analysis of 6 major UI libraries (shadcn, Radix, Headless UI, MUI, Chakra, Ariakit) shows strong consensus on table stakes and differentiators. W3C APG provides authoritative feature requirements. |
-| Architecture | HIGH | Based on existing LitUI patterns (Input, Dialog, Button), W3C APG specifications, and Lit official documentation. Component composition pattern is proven in multiple frameworks. |
-| Pitfalls | HIGH | All 18 pitfalls sourced from W3C specifications, MDN documentation, official Chrome/webkit blogs, and expert articles (Sarah Higley, etc.). Cross-referenced with real-world issues from GitHub discussions. |
+| Stack | HIGH | Zero new dependencies needed. All capabilities (Lit, ElementInternals, CSS transitions) proven in existing components. |
+| Features | HIGH | W3C APG patterns are stable, well-documented standards. Shoelace provides production reference implementations. |
+| Architecture | HIGH | Package structure, parent-child communication, form ownership decisions all follow established LitUI patterns or proven web component practices. |
+| Pitfalls | HIGH | Cross-Shadow-DOM ARIA challenges are well-documented by experts (Nolan Lawson, Adrian Roselli, Alice Boxhall). Solutions proven in Google HowTo Components. |
 
 **Overall confidence:** HIGH
 
 ### Gaps to Address
 
-While research confidence is high, some areas need validation during implementation:
+**Screen reader support variability for role="switch":**
+- Research documents inconsistent switch announcements across SR/browser combos
+- VoiceOver and NVDA often announce switches as "checkboxes"
+- **Mitigation:** Document observed behavior in component API docs. Ensure visual design clearly communicates toggle semantics. Still use `role="switch"` (correct semantics, support improving).
 
-- **iOS VoiceOver behavior with filled input** — Pitfall #5 has medium confidence. The workaround (live region fallback) needs testing with real devices to verify effectiveness. Consider user testing in Phase 1.
-- **CSS Anchor Positioning browser support evolution** — Currently 76% support. Monitor browser releases during implementation. Fallback to Floating UI is proven, but may want to increase threshold before relying on native positioning.
-- **Virtual scrolling accessibility** — TanStack Virtual's accessibility approach (aria-setsize/posinset) is theoretically correct but needs validation with actual screen readers. Plan extra testing time in Phase 4 if virtualization is implemented.
-- **Mobile native select fallback decision** — Research suggests considering native `<select>` on iOS/Android due to touch-optimized UI and better accessibility. This is a UX decision requiring stakeholder input in Phase 1. Could be implemented as `nativeMobile` prop for progressive enhancement.
-- **Popover API adoption** — Currently 90% support. Verify this meets LitUI's browser support policy. If supporting older browsers is critical, may need to rely more heavily on manual dropdown management (still using Floating UI).
+**Indeterminate checkbox "select all" pattern:**
+- Research confirms the pattern exists and ARIA semantics are clear
+- Implementation complexity is high (listed as Phase 4 or defer)
+- **Mitigation:** Implement basic indeterminate state in Phase 2 (tri-state property, mixed aria-checked, dash icon). Defer parent-child "select all" coordination to post-MVP unless users strongly request it.
+
+**Roving tabindex keyboard navigation:**
+- Pattern is well-documented but new to this codebase
+- Arrow key wrapping and disabled item skipping need careful implementation
+- **Mitigation:** Reference W3C APG example code directly. Add comprehensive keyboard navigation tests. Consider extracting reusable utility if pattern is needed elsewhere (unlikely for v4.2 scope).
+
+**CSS animation timing:**
+- Research provides specific durations (150ms base, 200ms for checkbox with 50ms delay) based on existing Button transition patterns
+- Actual perceived quality needs user testing
+- **Mitigation:** Start with researched timings. Add CSS custom properties for transition durations so consumers can tune. Gather feedback during beta.
 
 ## Sources
 
 ### Primary (HIGH confidence)
+- [W3C WAI-ARIA APG: Checkbox Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/checkbox/) -- ARIA roles, keyboard interaction, indeterminate state
+- [W3C WAI-ARIA APG: Radio Group Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/radio/) -- Roving tabindex specification, mutual exclusion, arrow key wrapping
+- [W3C WAI-ARIA APG: Switch Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/switch/) -- role="switch" vs role="checkbox" semantics, aria-checked values
+- [MDN: ElementInternals](https://developer.mozilla.org/en-US/docs/Web/API/ElementInternals) -- Form-associated custom elements API, setFormValue, lifecycle callbacks
+- [MDN: ElementInternals.ariaChecked](https://developer.mozilla.org/en-US/docs/Web/API/ElementInternals/ariaChecked) -- Setting ARIA checked state via ElementInternals
+- [WebKit: ElementInternals and Form-Associated Custom Elements](https://webkit.org/blog/13711/elementinternals-and-form-associated-custom-elements/) -- Form participation patterns, lifecycle callbacks
+- [Shoelace: Checkbox](https://shoelace.style/components/checkbox), [Radio](https://shoelace.style/components/radio), [Switch](https://shoelace.style/components/switch) -- Production reference implementations
+- Existing LitUI codebase: `packages/input/src/input.ts`, `packages/select/src/select.ts`, `packages/core/src/tailwind-element.ts` -- Established patterns for ElementInternals, slot communication, TailwindElement
 
-**Official Standards:**
-- [W3C ARIA APG Combobox Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/) - ARIA structure, keyboard requirements
-- [W3C ARIA APG Listbox Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/listbox/) - Option navigation
-- [W3C ARIA APG Select-Only Combobox Example](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/examples/combobox-select-only/) - Implementation reference
-- [MDN ARIA combobox role](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/combobox_role) - Browser support
-- [MDN aria-activedescendant](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-activedescendant) - Focus management
-- [MDN ElementInternals.setFormValue()](https://developer.mozilla.org/en-US/docs/Web/API/ElementInternals/setFormValue) - Form API
-- [MDN Popover API](https://developer.mozilla.org/en-US/docs/Web/API/Popover_API) - Native popover
+### Expert Articles (HIGH confidence)
+- [Adrian Roselli: Switch Role Support](https://adrianroselli.com/2021/10/switch-role-support.html) -- Screen reader support matrix for role="switch"
+- [Nolan Lawson: Shadow DOM and Accessibility](https://nolanlawson.com/2022/11/28/shadow-dom-and-accessibility-the-trouble-with-aria/) -- Cross-root ARIA problem documentation
+- [Alice Boxhall: Shadow DOM and Accessibility in Conflict](https://alice.pages.igalia.com/blog/how-shadow-dom-and-accessibility-are-in-conflict/) -- aria-controls, aria-labelledby cross-boundary challenges
+- [Google HowTo Components: Radio Group](https://googlechromelabs.github.io/howto-components/howto-radio-group/) -- Reference implementation of roving tabindex and group form ownership
+- [Kitty Giraudel: Accessible Toggle](https://kittygiraudel.com/2021/04/05/an-accessible-toggle/) -- prefers-reduced-motion pattern for switch animation
+- [Benny Powers: Form-Associated Custom Elements](https://bennypowers.dev/posts/form-associated-custom-elements/) -- ElementInternals patterns, form lifecycle
 
-**Browser Vendors:**
-- [Chrome Developers: Top Layer](https://developer.chrome.com/blog/what-is-the-top-layer) - Popover positioning
-- [Chrome Blog: Web UI 2025](https://developer.chrome.com/blog/new-in-web-ui-io-2025-recap) - CSS Anchor + Popover updates
-- [WebKit ElementInternals](https://webkit.org/blog/13711/elementinternals-and-form-associated-custom-elements/) - Safari implementation
-
-**Library Documentation:**
-- [Floating UI - Getting Started](https://floating-ui.com/docs/getting-started) - Positioning library
-- [Floating UI - Platform (Shadow DOM)](https://floating-ui.com/docs/platform) - Shadow DOM support
-- [TanStack Virtual](https://tanstack.com/virtual/latest) - Virtual scrolling
-- [Lit Task Controller](https://lit.dev/docs/data/task/) - Async data pattern
-- [Lit Reactive Controllers](https://lit.dev/docs/composition/controllers/) - Controller architecture
-
-**Browser Support:**
-- [CanIUse: CSS Anchor Positioning](https://caniuse.com/css-anchor-positioning) - 76.17%
-- [CanIUse: Popover API](https://caniuse.com/mdn-api_htmlelement_popover) - 89.66%
-
-### Secondary (MEDIUM-HIGH confidence)
-
-**Expert Articles:**
-- [Sarah Higley: aria-activedescendant is not focus](https://sarahmhigley.com/writing/activedescendant/) - Mobile a11y concerns
-- [OddBird: Anchor Positioning Updates](https://www.oddbird.net/2025/10/13/anchor-position-area-update/) - CSS Anchor evolution
-- [HTMHell: Top Layer Troubles](https://www.htmhell.dev/adventcalendar/2025/1/) - Popover + Dialog interactions
-- [Hidde de Vries: Positioning Anchored Popovers](https://hidde.blog/positioning-anchored-popovers/) - CSS Anchor patterns
-- [Frontend Masters: Popover API Guide](https://frontendmasters.com/blog/menus-toasts-and-more/) - Modern popover patterns
-- [Shadow DOM Events](https://javascript.info/shadow-dom-events) - Event retargeting
-- [Lamplightdev: Click Outside Web Component](https://lamplightdev.com/blog/2021/04/10/how-to-detect-clicks-outside-of-a-web-component/) - composedPath pattern
-- [Zell Liew: Element Focus vs aria-activedescendant](https://zellwk.com/blog/element-focus-vs-aria-activedescendant/) - VoiceOver bug
-- [CSS-Tricks: Custom Form Controls with ElementInternals](https://css-tricks.com/creating-custom-form-controls-with-elementinternals/) - Form integration
-
-**UI Library Documentation:**
-- [shadcn/ui Select](https://ui.shadcn.com/docs/components/select) - React implementation
-- [shadcn/ui Combobox](https://ui.shadcn.com/docs/components/combobox) - Search patterns
-- [Radix UI Select Primitive](https://www.radix-ui.com/primitives/docs/components/select) - Accessibility approach
-- [Headless UI Listbox](https://headlessui.com/react/listbox) - Keyboard navigation
-- [Headless UI Combobox](https://headlessui.com/react/combobox) - Filtering patterns
-- [MUI Autocomplete](https://mui.com/material-ui/react-autocomplete/) - Feature completeness
-- [Ariakit Select](https://ariakit.org/components/select) - ARIA implementation
-- [Ariakit Combobox](https://ariakit.org/reference/combobox) - Component composition
-
-**UX Research:**
-- [Baymard: Drop-Down Usability](https://baymard.com/blog/drop-down-usability) - Pre-selection pitfalls
-- [Nielsen Norman Group: Dropdown Guidelines](https://www.nngroup.com/articles/drop-down-menus/) - Interaction patterns
-- [24 Accessibility: Select Testing Research](https://www.24a11y.com/2019/select-your-poison-part-2/) - Screen reader testing
-- [Orange A11y: Listbox Keyboard Navigation](https://a11y-guidelines.orange.com/en/articles/listbox-and-keyboard-navigation/) - Keyboard patterns
-
-### Tertiary (MEDIUM confidence - community issues, requires validation)
-
-**Community Discussions:**
-- [Shoelace Multi-select FormData Discussion #1799](https://github.com/shoelace-style/shoelace/discussions/1799) - FormData patterns
-- [react-select iOS Issue #904](https://github.com/JedWatson/react-select/issues/904) - Mobile double UI
-- [Fluent UI Mobile Combobox #15779](https://github.com/microsoft/fluentui/issues/15779) - Opening behavior
-- [shadcn/ui Discussion #1391](https://github.com/shadcn-ui/ui/issues/1391) - Loading states
-- [Headless UI Combobox Async Discussion #2788](https://github.com/tailwindlabs/headlessui/discussions/2788) - Async patterns
-- [Radix UI Combobox Issue #1342](https://github.com/radix-ui/primitives/issues/1342) - Feature request
-- [W3C Web Components CG 2023](https://w3c.github.io/webcomponents-cg/2023.html) - Cross-root ARIA
-
-**Performance/Virtual Scrolling:**
-- [Cory Rylan: High Performance Tables with Lit and Virtual Scrolling](https://coryrylan.com/blog/high-performance-html-tables-with-lit-and-virtual-scrolling) - TanStack integration
-- [Syncfusion Blazor ComboBox Virtualization](https://blazor.syncfusion.com/documentation/combobox/virtualization) - Patterns
-- [Telerik Blazor ComboBox Virtualization](https://www.telerik.com/blazor-ui/documentation/components/combobox/virtualization) - Performance
+### Implementation References (MEDIUM-HIGH confidence)
+- [MDN: Using CSS Transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Transitions/Using) -- GPU-composited animation techniques
+- [Modern CSS Solutions: Pure CSS Custom Styled Radio Buttons](https://moderncss.dev/pure-css-custom-styled-radio-buttons/) -- Scale transform technique for radio dot
+- [Go Make Things: Creating a Toggle Switch with CSS](https://gomakethings.com/creating-a-toggle-switch-with-just-css/) -- translateX pattern for switch thumb
+- [Fluent UI: ElementInternals Radio/RadioGroup PR](https://github.com/microsoft/fluentui/pull/31783) -- RadioGroup with ElementInternals pattern
+- [Noah Liebman: Radio Button Web Component](https://noahliebman.net/2023/12/radio-button-with-host-has/) -- Documents Shadow DOM radio pitfall
 
 ---
-*Research completed: 2026-01-26*
-*Ready for roadmap: yes*
+**Research completed:** 2026-01-26
+**Ready for roadmap:** Yes
+**Dependencies resolved:** Yes (zero new dependencies required)
+**Critical risks identified:** Yes (5 critical pitfalls with prevention strategies)
+**Phase suggestions:** 3 phases (Switch → Checkbox/CheckboxGroup → Radio/RadioGroup)
