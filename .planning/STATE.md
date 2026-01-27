@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 ## Current Position
 
 Phase: 36 - Async Loading (in progress)
-Plan: 4 of 6 (Plans 02, 03, 04 complete, plan 05/06 remaining)
+Plan: 5 of 6 (Plans 01-05 complete, plan 06 remaining)
 Status: In progress
-Last activity: 2026-01-27 - Completed 36-04-PLAN.md
+Last activity: 2026-01-27 - Completed 36-05-PLAN.md
 
 Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 SHIPPED | v4.0 SHIPPED | v4.1 [######.] 6/7 phases
 
@@ -44,8 +44,8 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHI
 - Total execution time: 30 min
 
 **v4.1 Velocity (in progress):**
-- Plans completed: 22
-- Total execution time: 90 min
+- Plans completed: 23
+- Total execution time: 94 min
 
 ## Accumulated Context
 
@@ -109,6 +109,9 @@ v3.0, v3.1, v4.0 decisions validated and archived.
 | Virtual scrolling auto-enabled for async modes | Promise options and async search always use virtualization | 36-04 |
 | VirtualizerController recreated on count change | Simpler than partial options update | 36-04 |
 | scrollToIndex with align:auto behavior:auto | Smooth keyboard navigation scrolling | 36-04 |
+| IntersectionObserver rootMargin for 80% scroll trigger | 0px 0px 20% 0px triggers when 20% from bottom | 36-05 |
+| Sentinel element for infinite scroll detection | Reliable intersection observation pattern | 36-05 |
+| Observer re-established in updated() | Handle DOM changes after new options load | 36-05 |
 
 ### Pending Todos
 
@@ -128,16 +131,17 @@ None.
 - Case-insensitive contains matching for searchable [APPLIED in 35-01]
 - Async search needs AbortController to prevent race conditions [APPLIED in 36-03]
 - @tanstack/lit-virtual VirtualizerController for efficient large list rendering [APPLIED in 36-04]
+- IntersectionObserver for infinite scroll pagination [APPLIED in 36-05]
 
 ## Session Continuity
 
 Last session: 2026-01-27
-Stopped at: Completed 36-04-PLAN.md
+Stopped at: Completed 36-05-PLAN.md
 Resume file: None
 
 ## Next Steps
 
-Phase 36 Async Loading in progress. Plans 01, 02, 03, 04 complete.
+Phase 36 Async Loading in progress. Plans 01-05 complete.
 
 **Phase 36-01 Deliverables:**
 - @lit/task and @tanstack/lit-virtual dependencies added
@@ -160,8 +164,13 @@ Phase 36 Async Loading in progress. Plans 01, 02, 03, 04 complete.
 - scrollToIndex for keyboard navigation in virtualized mode
 - Auto-enabled for async modes (Promise options, async search)
 
+**Phase 36-05 Deliverables:**
+- loadMore callback prop for infinite scroll pagination
+- IntersectionObserver with 80% scroll threshold
+- Skeleton loading indicators during pagination fetch
+- Observer cleanup on close and disconnect
+
 **Remaining in Phase 36:**
-- Plan 05: Polling/refresh patterns
 - Plan 06: Human verification
 
 **Remaining phases in v4.1:**
