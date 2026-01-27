@@ -43,6 +43,9 @@ import { TailwindElement, tailwindBaseStyles } from '@lit-ui/core';
 // Import Floating UI for dropdown positioning
 import { computePosition, flip, shift, offset, size } from '@floating-ui/dom';
 // Import virtual scrolling for large option lists
+// Import Task for async state management
+import { Task } from '@lit/task';
+
 import { VirtualizerController } from '@tanstack/lit-virtual';
 import { Ref, createRef, ref } from 'lit/directives/ref.js';
 import { Option } from './option.js';
@@ -419,6 +422,35 @@ export class Select extends TailwindElement {
   private _searchAbortController?: AbortController;
 
   /**
+   * Reference to the listbox scroll container for virtual scrolling.
+   */
+  private _listboxRef: Ref<HTMLDivElement> = createRef();
+
+  /**
+   * VirtualizerController for rendering large option lists efficiently.
+   * Only initialized in async mode where virtual scrolling is always enabled.
+   */
+  private _virtualizer?: VirtualizerController<HTMLDivElement, Element>;
+
+  /**
+   * Whether virtualization is currently active.
+   * Virtual scrolling is always enabled for async modes (Promise options, async search).
+   */
+  private get _isVirtualized(): boolean {
+    return this._isAsyncMode || this._isAsyncSearchMode;
+  }
+
+  /**
+   * Standard option height in pixels for virtualizer estimation.
+   */
+  private static readonly OPTION_HEIGHT = 36;
+
+  /**
+   * Number of extra items to render outside visible area.
+   */
+  private static readonly VIRTUALIZER_OVERSCAN = 5;
+
+  /**
    * X-circle icon SVG for clear button.
    */
   private xCircleIcon = html`
@@ -433,6 +465,15 @@ export class Select extends TailwindElement {
     if (!isServer) {
       this.internals = this.attachInternals();
     }
+  }
+
+  /**
+   * Check if component is in async options mode (Promise-based options).
+   * Stub for Plan 36-02 - async options loading.
+   */
+  private get _isAsyncMode(): boolean {
+    // Will be implemented by Plan 36-02
+    return false;
   }
 
   /**
@@ -1136,6 +1177,31 @@ export class Select extends TailwindElement {
   }
 
   /**
+   * Initialize or update the virtualizer based on current options count.
+   * Called when options change or async mode becomes active.
+   */
+  private updateVirtualizer(): void {
+    if (!this._isVirtualized) {
+      this._virtualizer = undefined;
+      return;
+    }
+
+    const scrollElement = this._listboxRef.value;
+    if (!scrollElement) return;
+
+    const optionCount = this.effectiveOptions.length;
+
+    // Always recreate virtualizer when count changes to avoid partial options issue
+    // VirtualizerController manages its own lifecycle efficiently
+    this._virtualizer = new VirtualizerController(this, {
+      getScrollElement: () => this._listboxRef.value ?? null,
+      count: optionCount,
+      estimateSize: () => Select.OPTION_HEIGHT,
+      overscan: Select.VIRTUALIZER_OVERSCAN,
+    });
+  }
+
+  /**
    * Apply a filter query and update state.
    * Auto-opens dropdown if query is not empty.
    * Resets activeIndex to first filtered option or -1 if no matches.
@@ -1217,6 +1283,9 @@ export class Select extends TailwindElement {
       // Disconnect resize observer
       this.resizeObserver?.disconnect();
       this.resizeObserver = null;
+
+      // Clean up virtualizer
+      this._virtualizer = undefined;
     }
   }
 
@@ -1227,6 +1296,11 @@ export class Select extends TailwindElement {
       if (tagContainer && this.resizeObserver) {
         this.resizeObserver.observe(tagContainer);
       }
+    }
+
+    // Initialize or update virtualizer when options change or dropdown opens
+    if (this._isVirtualized && this.open) {
+      this.updateVirtualizer();
     }
   }
 
