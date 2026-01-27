@@ -473,6 +473,10 @@
   --ui-select-checkbox-border: var(--color-border, var(--ui-color-border));
   --ui-select-checkbox-bg-checked: var(--color-primary, var(--ui-color-primary));
   --ui-select-checkbox-check: white;
+
+  /* Combobox highlight */
+  --ui-select-highlight-weight: 600;
+  --ui-select-highlight-text: inherit;
 }
 
 /* ==========================================================================

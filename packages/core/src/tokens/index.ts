@@ -223,6 +223,10 @@ export const tokens = {
     checkboxBorder: 'var(--ui-select-checkbox-border)',
     checkboxBgChecked: 'var(--ui-select-checkbox-bg-checked)',
     checkboxCheck: 'var(--ui-select-checkbox-check)',
+
+    // Combobox highlight
+    highlightWeight: 'var(--ui-select-highlight-weight)',
+    highlightText: 'var(--ui-select-highlight-text)',
   },
 } as const;
 
