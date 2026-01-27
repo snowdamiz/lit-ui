@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 
 ## Current Position
 
-Phase: 37 - CLI and Documentation (in progress)
-Plan: 3 of 4
-Status: In progress
-Last activity: 2026-01-27 - Completed 37-03-PLAN.md
+Phase: 37 - CLI and Documentation (complete)
+Plan: 4 of 4
+Status: Phase complete
+Last activity: 2026-01-27 - Completed 37-04-PLAN.md
 
-Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 SHIPPED | v4.0 SHIPPED | v4.1 [######.] 6/7 phases
+Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 SHIPPED | v4.0 SHIPPED | v4.1 [#######] 7/7 phases
 
 ## Performance Metrics
 
@@ -139,16 +139,17 @@ None.
 ## Session Continuity
 
 Last session: 2026-01-27
-Stopped at: Completed 37-03-PLAN.md
+Stopped at: Completed 37-04-PLAN.md
 Resume file: None
 
 ## Next Steps
 
-Phase 37 Plan 03 complete. Select added to CLI registry and templates.
+Phase 37 complete. All 4 plans executed.
 
 **Phase 37 Progress:**
-- Plan 01: CLI tooling documentation (complete)
+- Plan 01: CLI NPM mode and list update (complete)
 - Plan 02: Select async documentation (complete)
 - Plan 03: CLI registry select entry (complete)
+- Plan 04: Select accessibility documentation (complete)
 
-**Remaining:** Plan 04 (accessibility docs) pending.
+**v4.1 Status:** All 7 phases complete (31-37). v4.1 ready for milestone audit.
