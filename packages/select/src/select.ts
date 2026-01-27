@@ -3,6 +3,7 @@
  *
  * Features (Phase 32+):
  * - Single select with dropdown
+ * - Multi-select with checkbox indicators (Phase 34)
  * - Keyboard navigation
  * - Form participation via ElementInternals
  * - SSR compatible
@@ -12,6 +13,14 @@
  * ```html
  * <lui-select placeholder="Select an option">
  *   <lui-option value="1">Option 1</lui-option>
+ * </lui-select>
+ * ```
+ *
+ * @example Multi-select
+ * ```html
+ * <lui-select multiple placeholder="Select options">
+ *   <lui-option value="1">Option 1</lui-option>
+ *   <lui-option value="2">Option 2</lui-option>
  * </lui-select>
  * ```
  *
@@ -95,10 +104,33 @@ export class Select extends TailwindElement {
 
   /**
    * The current value of the select.
-   * @default ''
+   * Returns string in single-select mode, string[] in multi-select mode.
    */
   @property({ type: String })
-  value = '';
+  get value(): string | string[] {
+    if (this.multiple) {
+      return Array.from(this.selectedValues);
+    }
+    return this._value;
+  }
+
+  set value(val: string | string[]) {
+    if (this.multiple && Array.isArray(val)) {
+      this.selectedValues = new Set(val);
+      this.updateFormValue();
+      this.requestUpdate();
+    } else if (!this.multiple && typeof val === 'string') {
+      const oldValue = this._value;
+      this._value = val;
+      this.requestUpdate('value', oldValue);
+      this.updateFormValue();
+    } else if (typeof val === 'string') {
+      // Setting string value on multiple - clear and set single
+      this.selectedValues = new Set([val]);
+      this.updateFormValue();
+      this.requestUpdate();
+    }
+  }
 
   /**
    * Whether the select is disabled.
@@ -120,6 +152,22 @@ export class Select extends TailwindElement {
    */
   @property({ type: Boolean })
   clearable = false;
+
+  /**
+   * Whether multi-select mode is enabled.
+   * In multi-select mode, users can select multiple options.
+   * @default false
+   */
+  @property({ type: Boolean, reflect: true })
+  multiple = false;
+
+  /**
+   * Maximum number of selections allowed in multi-select mode.
+   * When reached, additional options cannot be selected.
+   * @default undefined (no limit)
+   */
+  @property({ type: Number })
+  maxSelections?: number;
 
   /**
    * Label text displayed above the select.
@@ -165,6 +213,17 @@ export class Select extends TailwindElement {
    */
   @state()
   private showError = false;
+
+  /**
+   * Set of selected values for multi-select mode.
+   */
+  @state()
+  private selectedValues: Set<string> = new Set();
+
+  /**
+   * Internal storage for single-select value.
+   */
+  private _value = '';
 
   /**
    * Reference to the trigger element.
@@ -227,7 +286,11 @@ export class Select extends TailwindElement {
   private validate(): boolean {
     if (!this.internals) return true;
 
-    if (this.required && !this.value) {
+    const hasValue = this.multiple
+      ? this.selectedValues.size > 0
+      : !!this._value;
+
+    if (this.required && !hasValue) {
       this.internals.setValidity(
         { valueMissing: true },
         'Please select an option',
@@ -242,6 +305,66 @@ export class Select extends TailwindElement {
   }
 
   /**
+   * Update the form value based on current selection(s).
+   * Uses FormData.append() for multi-select to allow getAll().
+   */
+  private updateFormValue(): void {
+    if (!this.internals) return;
+
+    if (this.multiple) {
+      const formData = new FormData();
+      for (const val of this.selectedValues) {
+        formData.append(this.name, val);
+      }
+      this.internals.setFormValue(formData);
+    } else {
+      this.internals.setFormValue(this._value);
+    }
+  }
+
+  /**
+   * Toggle selection of an option in multi-select mode.
+   * @param index The index of the option to toggle
+   */
+  private toggleSelection(index: number): void {
+    const opts = this.effectiveOptions;
+    const option = opts[index];
+    if (!option || option.disabled) return;
+
+    const value = option.value;
+
+    if (this.selectedValues.has(value)) {
+      // Remove from selection
+      this.selectedValues.delete(value);
+    } else {
+      // Check maxSelections limit
+      if (
+        this.maxSelections !== undefined &&
+        this.selectedValues.size >= this.maxSelections
+      ) {
+        return; // At limit, don't add
+      }
+      // Add to selection
+      this.selectedValues.add(value);
+    }
+
+    // Sync slotted option states
+    this.syncSlottedOptionStates();
+
+    this.updateFormValue();
+    this.requestUpdate();
+
+    // Dispatch change event
+    this.dispatchEvent(
+      new CustomEvent('change', {
+        detail: { value: Array.from(this.selectedValues) },
+        bubbles: true,
+        composed: true,
+      })
+    );
+  }
+
+  /**
    * Get the current validation error message.
    */
   private get errorMessage(): string {
@@ -252,11 +375,17 @@ export class Select extends TailwindElement {
    * Form lifecycle callback: reset the select to initial state.
    */
   formResetCallback(): void {
-    this.value = '';
+    if (this.multiple) {
+      this.selectedValues.clear();
+    } else {
+      this._value = '';
+    }
     this.touched = false;
     this.showError = false;
+    this.syncSlottedOptionStates();
     this.internals?.setFormValue('');
     this.internals?.setValidity({});
+    this.requestUpdate();
   }
 
   /**
@@ -282,7 +411,11 @@ export class Select extends TailwindElement {
     e.stopPropagation(); // Don't open dropdown
     e.preventDefault();
 
-    this.value = '';
+    if (this.multiple) {
+      this.selectedValues.clear();
+    } else {
+      this._value = '';
+    }
 
     // Reset selected state on slotted options
     if (this.slottedOptions.length > 0) {
@@ -292,7 +425,7 @@ export class Select extends TailwindElement {
     }
 
     // Update form value
-    this.internals?.setFormValue('');
+    this.updateFormValue();
 
     // Validate after clearing
     if (this.touched) {
@@ -309,7 +442,7 @@ export class Select extends TailwindElement {
     );
     this.dispatchEvent(
       new CustomEvent('change', {
-        detail: { value: '' },
+        detail: { value: this.multiple ? [] : '' },
         bubbles: true,
         composed: true,
       })
@@ -317,13 +450,17 @@ export class Select extends TailwindElement {
 
     // Focus trigger after clearing
     this.triggerEl?.focus();
+    this.requestUpdate();
   }
 
   /**
    * Render the clear button if clearable and value is set.
    */
   private renderClearButton() {
-    if (!this.clearable || !this.value || this.disabled) return nothing;
+    const hasValue = this.multiple
+      ? this.selectedValues.size > 0
+      : !!this._value;
+    if (!this.clearable || !hasValue || this.disabled) return nothing;
 
     return html`
       <button
@@ -398,10 +535,14 @@ export class Select extends TailwindElement {
 
   /**
    * Sync selected state to slotted option elements.
+   * Also sets multiselect attribute for checkbox display.
    */
   private syncSlottedOptionStates(): void {
     for (const opt of this.slottedOptions) {
-      opt.selected = opt.value === this.value;
+      opt.multiselect = this.multiple;
+      opt.selected = this.multiple
+        ? this.selectedValues.has(opt.value)
+        : opt.value === this._value;
     }
   }
 
@@ -448,8 +589,10 @@ export class Select extends TailwindElement {
     if (!isServer) {
       document.addEventListener('click', this.handleDocumentClick);
       // Sync initial value to form
-      if (this.value) {
-        this.internals?.setFormValue(this.value);
+      if (this.multiple && this.selectedValues.size > 0) {
+        this.updateFormValue();
+      } else if (!this.multiple && this._value) {
+        this.updateFormValue();
       }
 
       // Observe for dynamic option changes inside groups
@@ -630,6 +773,40 @@ export class Select extends TailwindElement {
         display: inline-block;
       }
 
+      /* Checkbox indicator for multi-select mode */
+      .checkbox-indicator {
+        width: 1em;
+        height: 1em;
+        flex-shrink: 0;
+        border: 2px solid var(--ui-select-checkbox-border, var(--color-border));
+        border-radius: var(--radius-sm, 0.25rem);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 0.5rem;
+        background-color: transparent;
+        transition:
+          background-color 150ms,
+          border-color 150ms;
+      }
+
+      .checkbox-indicator.checked {
+        background-color: var(
+          --ui-select-checkbox-bg-checked,
+          var(--color-primary)
+        );
+        border-color: var(
+          --ui-select-checkbox-bg-checked,
+          var(--color-primary)
+        );
+      }
+
+      .checkbox-indicator svg {
+        width: 0.75em;
+        height: 0.75em;
+        color: var(--ui-select-checkbox-check, white);
+      }
+
       /* Slotted option active state */
       ::slotted([data-active='true']) {
         background-color: var(--ui-select-option-bg-active);
@@ -798,7 +975,13 @@ export class Select extends TailwindElement {
 
     // Set active to selected option or first enabled
     const opts = this.effectiveOptions;
-    const selectedIdx = opts.findIndex((o) => o.value === this.value);
+    let selectedIdx = -1;
+    if (this.multiple) {
+      // In multi-select, focus first selected or first enabled
+      selectedIdx = opts.findIndex((o) => this.selectedValues.has(o.value));
+    } else {
+      selectedIdx = opts.findIndex((o) => o.value === this._value);
+    }
     this.activeIndex =
       selectedIdx >= 0 ? selectedIdx : this.findFirstEnabledIndex();
 
@@ -883,9 +1066,14 @@ export class Select extends TailwindElement {
         case 'Delete':
         case 'Backspace':
           // Clear selection via keyboard if clearable is enabled
-          if (this.clearable && this.value) {
-            e.preventDefault();
-            this.handleClear(e);
+          {
+            const hasValue = this.multiple
+              ? this.selectedValues.size > 0
+              : !!this._value;
+            if (this.clearable && hasValue) {
+              e.preventDefault();
+              this.handleClear(e);
+            }
           }
           break;
         default:
@@ -918,9 +1106,19 @@ export class Select extends TailwindElement {
         this.focusLastEnabledOption();
         break;
       case 'Enter':
+        e.preventDefault();
+        if (this.multiple) {
+          // Multi-select: Enter closes dropdown (W3C APG pattern)
+          this.closeDropdown();
+        } else if (this.activeIndex >= 0) {
+          // Single-select: Enter selects and closes
+          this.selectOption(this.activeIndex);
+        }
+        break;
       case ' ':
         e.preventDefault();
         if (this.activeIndex >= 0) {
+          // Space always toggles/selects current option
           this.selectOption(this.activeIndex);
         }
         break;
@@ -929,8 +1127,8 @@ export class Select extends TailwindElement {
         this.closeDropdown();
         break;
       case 'Tab':
-        // Select current and close on Tab (don't prevent default - let Tab proceed)
-        if (this.activeIndex >= 0) {
+        // Tab closes dropdown; in single-select also selects current
+        if (!this.multiple && this.activeIndex >= 0) {
           this.selectOption(this.activeIndex);
         } else {
           this.closeDropdown();
@@ -1102,16 +1300,25 @@ export class Select extends TailwindElement {
 
   /**
    * Select an option by index.
+   * In multi-select mode, toggles selection without closing.
+   * In single-select mode, sets value and closes dropdown.
    */
   private selectOption(index: number): void {
     const opts = this.effectiveOptions;
     const option = opts[index];
     if (!option || option.disabled) return;
 
-    this.value = option.value;
+    if (this.multiple) {
+      // Multi-select: toggle and keep dropdown open
+      this.toggleSelection(index);
+      return;
+    }
+
+    // Single-select: set value and close
+    this._value = option.value;
 
     // Update form value
-    this.internals?.setFormValue(this.value);
+    this.updateFormValue();
 
     // Sync slotted option states
     this.syncSlottedOptionStates();
@@ -1127,7 +1334,7 @@ export class Select extends TailwindElement {
     // Dispatch change event
     this.dispatchEvent(
       new CustomEvent('change', {
-        detail: { value: this.value },
+        detail: { value: this._value },
         bubbles: true,
         composed: true,
       })
@@ -1143,11 +1350,25 @@ export class Select extends TailwindElement {
   }
 
   /**
-   * Get the display label for the currently selected value.
+   * Get the display label for the currently selected value(s).
+   * In multi-select mode, returns comma-separated labels or count.
    */
   private getSelectedLabel(): string {
     const opts = this.effectiveOptions;
-    const selected = opts.find((o) => o.value === this.value);
+
+    if (this.multiple) {
+      if (this.selectedValues.size === 0) return '';
+      const selectedLabels = opts
+        .filter((o) => this.selectedValues.has(o.value))
+        .map((o) => o.label || o.value);
+      // Show up to 3 labels, then "N selected"
+      if (selectedLabels.length <= 3) {
+        return selectedLabels.join(', ');
+      }
+      return `${selectedLabels.length} selected`;
+    }
+
+    const selected = opts.find((o) => o.value === this._value);
     return selected?.label || selected?.value || '';
   }
 
@@ -1171,11 +1392,56 @@ export class Select extends TailwindElement {
   }
 
   /**
+   * Render the selection indicator (checkbox for multi, checkmark for single).
+   */
+  private renderSelectionIndicator(isSelected: boolean) {
+    if (this.multiple) {
+      return html`
+        <span class="checkbox-indicator ${isSelected ? 'checked' : ''}">
+          ${isSelected
+            ? html`
+                <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                  <path
+                    d="M3 8l4 4 6-7"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    fill="none"
+                  />
+                </svg>
+              `
+            : nothing}
+        </span>
+      `;
+    }
+    // Single-select checkmark
+    return html`
+      <svg
+        class="check-icon"
+        viewBox="0 0 16 16"
+        fill="none"
+        stroke="currentColor"
+        aria-hidden="true"
+      >
+        <path
+          d="M3 8l4 4 6-7"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+    `;
+  }
+
+  /**
    * Render an individual option.
    */
   private renderOption(option: SelectOption, index: number) {
     const isActive = index === this.activeIndex;
-    const isSelected = option.value === this.value;
+    const isSelected = this.multiple
+      ? this.selectedValues.has(option.value)
+      : option.value === this._value;
     const classes = ['option'];
     if (isActive) classes.push('option-active');
     if (isSelected) classes.push('option-selected');
@@ -1190,20 +1456,7 @@ export class Select extends TailwindElement {
         class=${classes.join(' ')}
         @click=${(e: MouseEvent) => this.handleOptionClick(e, index)}
       >
-        <svg
-          class="check-icon"
-          viewBox="0 0 16 16"
-          fill="none"
-          stroke="currentColor"
-          aria-hidden="true"
-        >
-          <path
-            d="M3 8l4 4 6-7"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          />
-        </svg>
+        ${this.renderSelectionIndicator(isSelected)}
         <span>${option.label || option.value}</span>
       </div>
     `;
@@ -1273,6 +1526,7 @@ export class Select extends TailwindElement {
           class="listbox"
           role="listbox"
           aria-labelledby=${this.selectId}
+          aria-multiselectable=${this.multiple ? 'true' : nothing}
           ?hidden=${!this.open}
         >
           ${this.options.length > 0
