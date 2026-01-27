@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-26)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** v4.1 Select Component - COMPLETE
+**Current focus:** v4.1 Select Component - Phase 35 next
 
 ## Current Position
 
-Phase: 34 - Multi-Select (COMPLETE)
+Phase: 34 - Multi-Select COMPLETE
 Plan: 04 of 4 complete
 Status: Phase complete
 Last activity: 2026-01-27 - Completed 34-04-PLAN.md (Final Verification)
 
-Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 SHIPPED | v4.0 SHIPPED | v4.1 [#######.] 7/7 phases
+Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 SHIPPED | v4.0 SHIPPED | v4.1 [####...] 4/7 phases
 
 ## Performance Metrics
 
@@ -130,11 +130,7 @@ Phase 34 Multi-Select COMPLETE. v4.1 Select Component milestone complete.
 - Option groups support in multi-select
 - Human-verified complete functionality
 
-**v4.1 Milestone Complete:**
-All 7 phases of v4.1 Select Component shipped:
-- Phase 31: Select Design Tokens
-- Phase 32: Select Core Implementation
-- Phase 33: Select Enhancements
-- Phase 34: Multi-Select
-
-Ready for next milestone (v4.2 or combobox phase).
+**Remaining phases in v4.1:**
+- Phase 35: Combobox
+- Phase 36: Async Loading
+- Phase 37: CLI and Documentation

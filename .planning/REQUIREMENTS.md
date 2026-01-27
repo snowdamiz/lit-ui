@@ -21,19 +21,19 @@ Requirements for Select component with single-select, multi-select, combobox, an
 - [x] **SELECT-10**: Select shows focus ring on keyboard focus
 - [x] **SELECT-11**: Select shows error visual state when invalid
 - [x] **SELECT-12**: Select supports size variants (sm, default, lg)
-- [ ] **SELECT-13**: Select supports option groups with headers (lui-option-group)
-- [ ] **SELECT-14**: Option supports custom content via slots (icons, descriptions)
-- [ ] **SELECT-15**: Select supports clearable prop (X button to reset value)
+- [x] **SELECT-13**: Select supports option groups with headers (lui-option-group)
+- [x] **SELECT-14**: Option supports custom content via slots (icons, descriptions)
+- [x] **SELECT-15**: Select supports clearable prop (X button to reset value)
 
 ### Multi-Select
 
-- [ ] **MULTI-01**: Select supports multiple prop for multi-selection
-- [ ] **MULTI-02**: Multi-select shows checkbox indicators on options
-- [ ] **MULTI-03**: Multi-select displays selected items as tags/chips
-- [ ] **MULTI-04**: Tags have X button to remove individual selections
-- [ ] **MULTI-05**: Multi-select submits array values via FormData (multiple append)
-- [ ] **MULTI-06**: Multi-select supports tag overflow display ("+N more")
-- [ ] **MULTI-07**: Multi-select supports select all / deselect all actions
+- [x] **MULTI-01**: Select supports multiple prop for multi-selection
+- [x] **MULTI-02**: Multi-select shows checkbox indicators on options
+- [x] **MULTI-03**: Multi-select displays selected items as tags/chips
+- [x] **MULTI-04**: Tags have X button to remove individual selections
+- [x] **MULTI-05**: Multi-select submits array values via FormData (multiple append)
+- [x] **MULTI-06**: Multi-select supports tag overflow display ("+N more")
+- [x] **MULTI-07**: Multi-select supports select all / deselect all actions
 
 ### Combobox
 
@@ -68,7 +68,7 @@ Requirements for Select component with single-select, multi-select, combobox, an
 - [x] **A11Y-02**: Select uses aria-controls to reference listbox (not aria-owns)
 - [x] **A11Y-03**: Select manages focus with aria-activedescendant
 - [x] **A11Y-04**: Options have role="option" with aria-selected state
-- [ ] **A11Y-05**: Option groups use role="group" with aria-labelledby
+- [x] **A11Y-05**: Option groups use role="group" with aria-labelledby
 - [ ] **A11Y-06**: Keyboard navigation follows W3C APG combobox pattern
 
 ## Future Requirements
@@ -119,17 +119,17 @@ Deferred to later milestones.
 | A11Y-02 | Phase 32 | Complete |
 | A11Y-03 | Phase 32 | Complete |
 | A11Y-04 | Phase 32 | Complete |
-| SELECT-13 | Phase 33 | Pending |
-| SELECT-14 | Phase 33 | Pending |
-| SELECT-15 | Phase 33 | Pending |
-| A11Y-05 | Phase 33 | Pending |
-| MULTI-01 | Phase 34 | Pending |
-| MULTI-02 | Phase 34 | Pending |
-| MULTI-03 | Phase 34 | Pending |
-| MULTI-04 | Phase 34 | Pending |
-| MULTI-05 | Phase 34 | Pending |
-| MULTI-06 | Phase 34 | Pending |
-| MULTI-07 | Phase 34 | Pending |
+| SELECT-13 | Phase 33 | Complete |
+| SELECT-14 | Phase 33 | Complete |
+| SELECT-15 | Phase 33 | Complete |
+| A11Y-05 | Phase 33 | Complete |
+| MULTI-01 | Phase 34 | Complete |
+| MULTI-02 | Phase 34 | Complete |
+| MULTI-03 | Phase 34 | Complete |
+| MULTI-04 | Phase 34 | Complete |
+| MULTI-05 | Phase 34 | Complete |
+| MULTI-06 | Phase 34 | Complete |
+| MULTI-07 | Phase 34 | Complete |
 | COMBO-01 | Phase 35 | Pending |
 | COMBO-02 | Phase 35 | Pending |
 | COMBO-03 | Phase 35 | Pending |
@@ -154,4 +154,4 @@ Deferred to later milestones.
 
 ---
 *Requirements defined: 2026-01-26*
-*Last updated: 2026-01-26 (Phase 32 complete)*
+*Last updated: 2026-01-27 (Phase 34 complete)*
