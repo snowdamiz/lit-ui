@@ -208,7 +208,13 @@ Plans:
   1. Running `npx lit-ui add checkbox`, `npx lit-ui add radio`, and `npx lit-ui add switch` installs the respective component with correct dependencies
   2. Docs site has dedicated pages for Checkbox, Radio, and Switch, each with interactive examples covering variants, states, groups, and form integration
   3. Docs navigation includes all three new component pages in the correct section
-**Plans**: TBD
+**Plans**: 5 plans
+Plans:
+- [ ] 41-01-PLAN.md — CLI registry, templates, NPM mapping, list categories
+- [ ] 41-02-PLAN.md — Docs infrastructure (deps, JSX types, nav, routes, PrevNextNav)
+- [ ] 41-03-PLAN.md — CheckboxPage.tsx documentation
+- [ ] 41-04-PLAN.md — RadioPage.tsx documentation
+- [ ] 41-05-PLAN.md — SwitchPage.tsx documentation
 
 ## Progress
 
