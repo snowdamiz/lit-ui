@@ -527,6 +527,49 @@
   /* Error state */
   --ui-switch-border-error: var(--color-destructive, var(--ui-color-destructive));
   --ui-switch-text-error: var(--color-destructive, var(--ui-color-destructive));
+
+  /* -------------------------------------------------------------------------
+   * Checkbox Component
+   * ------------------------------------------------------------------------- */
+
+  /* Box dimensions per size */
+  --ui-checkbox-size-sm: 1rem;
+  --ui-checkbox-size-md: 1.25rem;
+  --ui-checkbox-size-lg: 1.5rem;
+
+  /* Layout */
+  --ui-checkbox-radius: 0.25rem;
+  --ui-checkbox-label-gap: 0.5rem;
+  --ui-checkbox-transition: 150ms;
+  --ui-checkbox-border-width: 2px;
+
+  /* Label typography (matches switch/input pattern) */
+  --ui-checkbox-font-size-sm: 0.875rem;
+  --ui-checkbox-font-size-md: 1rem;
+  --ui-checkbox-font-size-lg: 1.125rem;
+
+  /* Default state (unchecked) */
+  --ui-checkbox-bg: var(--color-background, white);
+  --ui-checkbox-border: var(--color-border, var(--ui-color-border));
+
+  /* Checked state */
+  --ui-checkbox-bg-checked: var(--color-primary, var(--ui-color-primary));
+  --ui-checkbox-border-checked: var(--color-primary, var(--ui-color-primary));
+  --ui-checkbox-check-color: white;
+
+  /* Indeterminate state (same visual weight as checked) */
+  --ui-checkbox-bg-indeterminate: var(--color-primary, var(--ui-color-primary));
+  --ui-checkbox-border-indeterminate: var(--color-primary, var(--ui-color-primary));
+
+  /* Focus state */
+  --ui-checkbox-ring: var(--color-ring, var(--ui-color-ring));
+
+  /* Error state */
+  --ui-checkbox-border-error: var(--color-destructive, var(--ui-color-destructive));
+  --ui-checkbox-text-error: var(--color-destructive, var(--ui-color-destructive));
+
+  /* Group tokens */
+  --ui-checkbox-group-gap: 0.5rem;
 }
 
 /* ==========================================================================
