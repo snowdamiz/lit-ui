@@ -5,7 +5,7 @@
 See: .planning/PROJECT.md (updated 2026-01-26)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** v4.1 Select Component - Phase 37 CLI and Documentation
+**Current focus:** v4.1 Select Component — MILESTONE COMPLETE
 
 ## Current Position
 
@@ -43,9 +43,9 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHI
 - Plans completed: 11
 - Total execution time: 30 min
 
-**v4.1 Velocity (in progress):**
-- Plans completed: 26
-- Total execution time: 137 min
+**v4.1 Velocity (complete):**
+- Plans completed: 28
+- Total execution time: 141 min
 
 ## Accumulated Context
 

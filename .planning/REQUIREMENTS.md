@@ -37,30 +37,30 @@ Requirements for Select component with single-select, multi-select, combobox, an
 
 ### Combobox
 
-- [ ] **COMBO-01**: Select supports searchable prop for text input filtering
-- [ ] **COMBO-02**: Combobox filters options as user types
-- [ ] **COMBO-03**: Combobox shows empty state when no options match
-- [ ] **COMBO-04**: Combobox highlights matching text in option labels
-- [ ] **COMBO-05**: Combobox supports custom filter function prop
-- [ ] **COMBO-06**: Combobox supports creatable prop (add new option if not found)
+- [x] **COMBO-01**: Select supports searchable prop for text input filtering
+- [x] **COMBO-02**: Combobox filters options as user types
+- [x] **COMBO-03**: Combobox shows empty state when no options match
+- [x] **COMBO-04**: Combobox highlights matching text in option labels
+- [x] **COMBO-05**: Combobox supports custom filter function prop
+- [x] **COMBO-06**: Combobox supports creatable prop (add new option if not found)
 
 ### Async Loading
 
-- [ ] **ASYNC-01**: Select supports options prop accepting Promise
-- [ ] **ASYNC-02**: Select shows loading spinner while options load
-- [ ] **ASYNC-03**: Select shows error state with retry button on load failure
-- [ ] **ASYNC-04**: Combobox supports async search (debounced API calls)
-- [ ] **ASYNC-05**: Select supports infinite scroll for paginated options
-- [ ] **ASYNC-06**: Select supports virtual scrolling for 100+ options
+- [x] **ASYNC-01**: Select supports options prop accepting Promise
+- [x] **ASYNC-02**: Select shows loading spinner while options load
+- [x] **ASYNC-03**: Select shows error state with retry button on load failure
+- [x] **ASYNC-04**: Combobox supports async search (debounced API calls)
+- [x] **ASYNC-05**: Select supports infinite scroll for paginated options
+- [x] **ASYNC-06**: Select supports virtual scrolling for 100+ options
 
 ### Infrastructure
 
 - [x] **INFRA-01**: CSS tokens for select added to @lit-ui/core (--ui-select-*)
 - [x] **INFRA-02**: @lit-ui/select package created with SSR support
 - [x] **INFRA-03**: @floating-ui/dom added as dependency for positioning
-- [ ] **INFRA-04**: @tanstack/lit-virtual added as dependency for virtual scrolling
-- [ ] **INFRA-05**: CLI templates updated for select component
-- [ ] **INFRA-06**: Docs page created for Select component
+- [x] **INFRA-04**: @tanstack/lit-virtual added as dependency for virtual scrolling
+- [x] **INFRA-05**: CLI templates updated for select component
+- [x] **INFRA-06**: Docs page created for Select component
 
 ### Accessibility
 
@@ -69,7 +69,7 @@ Requirements for Select component with single-select, multi-select, combobox, an
 - [x] **A11Y-03**: Select manages focus with aria-activedescendant
 - [x] **A11Y-04**: Options have role="option" with aria-selected state
 - [x] **A11Y-05**: Option groups use role="group" with aria-labelledby
-- [ ] **A11Y-06**: Keyboard navigation follows W3C APG combobox pattern
+- [x] **A11Y-06**: Keyboard navigation follows W3C APG combobox pattern
 
 ## Future Requirements
 
@@ -130,22 +130,22 @@ Deferred to later milestones.
 | MULTI-05 | Phase 34 | Complete |
 | MULTI-06 | Phase 34 | Complete |
 | MULTI-07 | Phase 34 | Complete |
-| COMBO-01 | Phase 35 | Pending |
-| COMBO-02 | Phase 35 | Pending |
-| COMBO-03 | Phase 35 | Pending |
-| COMBO-04 | Phase 35 | Pending |
-| COMBO-05 | Phase 35 | Pending |
-| COMBO-06 | Phase 35 | Pending |
-| A11Y-06 | Phase 35 | Pending |
-| ASYNC-01 | Phase 36 | Pending |
-| ASYNC-02 | Phase 36 | Pending |
-| ASYNC-03 | Phase 36 | Pending |
-| ASYNC-04 | Phase 36 | Pending |
-| ASYNC-05 | Phase 36 | Pending |
-| ASYNC-06 | Phase 36 | Pending |
-| INFRA-04 | Phase 36 | Pending |
-| INFRA-05 | Phase 37 | Pending |
-| INFRA-06 | Phase 37 | Pending |
+| COMBO-01 | Phase 35 | Complete |
+| COMBO-02 | Phase 35 | Complete |
+| COMBO-03 | Phase 35 | Complete |
+| COMBO-04 | Phase 35 | Complete |
+| COMBO-05 | Phase 35 | Complete |
+| COMBO-06 | Phase 35 | Complete |
+| A11Y-06 | Phase 35 | Complete |
+| ASYNC-01 | Phase 36 | Complete |
+| ASYNC-02 | Phase 36 | Complete |
+| ASYNC-03 | Phase 36 | Complete |
+| ASYNC-04 | Phase 36 | Complete |
+| ASYNC-05 | Phase 36 | Complete |
+| ASYNC-06 | Phase 36 | Complete |
+| INFRA-04 | Phase 36 | Complete |
+| INFRA-05 | Phase 37 | Complete |
+| INFRA-06 | Phase 37 | Complete |
 
 **Coverage:**
 - v4.1 requirements: 46 total
@@ -154,4 +154,4 @@ Deferred to later milestones.
 
 ---
 *Requirements defined: 2026-01-26*
-*Last updated: 2026-01-27 (Phase 34 complete)*
+*Last updated: 2026-01-27 (v4.1 milestone complete — all 46 requirements fulfilled)*

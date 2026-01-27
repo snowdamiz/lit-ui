@@ -8,7 +8,7 @@
 - **v3.0 Theme Customization** — Phases 21-24 (shipped 2026-01-25) → [archive](milestones/v3.0-ROADMAP.md)
 - **v3.1 Docs Dark Mode** — Phase 25 (shipped 2026-01-25)
 - **v4.0 Form Inputs** — Phases 26-30 (shipped 2026-01-26)
-- **v4.1 Select Component** — Phases 31-37 (current)
+- **v4.1 Select Component** — Phases 31-37 (shipped 2026-01-27)
 
 ## Phases
 
@@ -293,10 +293,10 @@ Plans:
 **Plans:** 4 plans
 
 Plans:
-- [ ] 37-01-PLAN.md — CLI NPM mode and list command integration
-- [ ] 37-02-PLAN.md — Async & Performance documentation section
-- [ ] 37-03-PLAN.md — CLI registry and template gap closure
-- [ ] 37-04-PLAN.md — Accessibility documentation section
+- [x] 37-01-PLAN.md — CLI NPM mode and list command integration
+- [x] 37-02-PLAN.md — Async & Performance documentation section
+- [x] 37-03-PLAN.md — CLI registry and template gap closure
+- [x] 37-04-PLAN.md — Accessibility documentation section
 
 **Success Criteria:**
 
@@ -356,8 +356,8 @@ Plans:
 | 34. Multi-Select | v4.1 | 4/4 | Complete | 2026-01-27 |
 | 35. Combobox | v4.1 | 4/4 | Complete | 2026-01-27 |
 | 36. Async Loading | v4.1 | 6/6 | Complete | 2026-01-27 |
-| 37. CLI and Documentation | v4.1 | 0/? | Not started | - |
+| 37. CLI and Documentation | v4.1 | 4/4 | Complete | 2026-01-27 |
 
 ---
 *Roadmap created: 2026-01-24*
-*Last updated: 2026-01-27 (Phase 36 complete)*
+*Last updated: 2026-01-27 (Phase 37 complete — v4.1 milestone complete)*
