@@ -2602,9 +2602,13 @@ export class Select extends TailwindElement {
             ? optionsToRender.map((filterMatch, index) =>
                 this.renderOption(filterMatch, index)
               )
-            : this.searchable && this.filterQuery && this.options.length > 0
+            : this.searchable && this.filterQuery
               ? this.renderEmptyState()
-              : html`<slot @slotchange=${this.handleSlotChange}></slot>`}
+              : nothing}
+          <!-- Always render slot to keep it in DOM, hide when rendering programmatic options -->
+          <div style=${optionsToRender.length > 0 || (this.searchable && this.filterQuery) ? 'display:none' : ''}>
+            <slot @slotchange=${this.handleSlotChange}></slot>
+          </div>
           ${this.renderCreateOption()}
         </div>
 
