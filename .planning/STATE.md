@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 ## Current Position
 
 Phase: 41 of 41 (CLI and Documentation)
-Plan: 02 of 5 in current phase
+Plan: 01 of 5 in current phase
 Status: In progress
-Last activity: 2026-01-27 — Completed 41-02-PLAN.md (Docs Infrastructure Setup)
+Last activity: 2026-01-27 — Completed 41-01-PLAN.md (CLI Registry and Templates)
 
 Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 SHIPPED | v4.0 SHIPPED | v4.1 SHIPPED | v4.2 [########..] 3/4
 
@@ -28,9 +28,9 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 | v2.0 SHIPPED | v3.0 SHIPPED | 
 - v4.1: 28 plans in 141 min
 
 **v4.2 Velocity:**
-- Total plans completed: 9
+- Total plans completed: 10
 - Average duration: 2min
-- Total execution time: 15min
+- Total execution time: 22min
 
 ## Accumulated Context
 
@@ -50,6 +50,7 @@ Recent decisions affecting current work:
 - [40-01]: Radio tokens omit radius/bg-checked/indeterminate; add dot-size tokens unique to radio
 - [40-02]: Radio dispatches ui-radio-change without self-toggling; inner tabindex=-1 (group manages host tabindex)
 - [40-03]: RadioGroup is form-associated with roving tabindex; arrow keys move focus+selection; ui-radio-change internal, ui-change consumer-facing
+- [41-01]: Inline dispatchCustomEvent in copy-source templates (base file doesn't export it); per-file template lookup for multi-file components
 
 ### Pending Todos
 
@@ -63,5 +64,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-01-27
-Stopped at: Completed 41-02-PLAN.md
+Stopped at: Completed 41-01-PLAN.md
 Resume file: None
