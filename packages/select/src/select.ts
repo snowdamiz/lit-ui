@@ -551,6 +551,8 @@ export class Select extends TailwindElement {
         signal.throwIfAborted();
         this._loadedAsyncOptions = resolved;
         this._asyncLoading = false;
+        // Reset hasMore when options reload
+        this._hasMore = true;
         // Schedule virtualizer update after render
         this.updateComplete.then(() => {
           if (this._isVirtualized && this.open) {
@@ -643,6 +645,8 @@ export class Select extends TailwindElement {
         // Update results only if not aborted
         this._searchResults = results;
         this._searchLoading = false;
+        // Reset hasMore for new search
+        this._hasMore = true;
 
         // Reset active index to first enabled result
         if (results.length > 0) {
@@ -1463,6 +1467,94 @@ export class Select extends TailwindElement {
   }
 
   /**
+   * Set up IntersectionObserver for infinite scroll.
+   * Triggers loadMore when sentinel enters 80% threshold.
+   */
+  private setupLoadMoreObserver(): void {
+    if (this._loadMoreObserver || !this.loadMore) return;
+
+    const scrollContainer = this._listboxRef.value;
+    if (!scrollContainer) return;
+
+    this._loadMoreObserver = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries;
+        if (
+          entry.isIntersecting &&
+          this._hasMore &&
+          !this._loadingMore &&
+          !this._asyncLoading &&
+          !this._searchLoading
+        ) {
+          this.handleLoadMore();
+        }
+      },
+      {
+        root: scrollContainer,
+        // Trigger when sentinel is 20% from the bottom (80% scroll)
+        rootMargin: '0px 0px 20% 0px',
+        threshold: 0,
+      }
+    );
+
+    // Observe sentinel element
+    const sentinel = this._sentinelRef.value;
+    if (sentinel) {
+      this._loadMoreObserver.observe(sentinel);
+    }
+  }
+
+  /**
+   * Handle load more trigger.
+   * Calls loadMore callback and appends results.
+   */
+  private async handleLoadMore(): Promise<void> {
+    if (!this.loadMore || this._loadingMore || !this._hasMore) return;
+
+    this._loadingMore = true;
+    this.requestUpdate();
+
+    try {
+      const moreOptions = await this.loadMore();
+
+      if (moreOptions.length === 0) {
+        // No more data
+        this._hasMore = false;
+      } else {
+        // Append to existing options
+        if (this._searchResults !== null) {
+          this._searchResults = [...this._searchResults, ...moreOptions];
+        } else if (this._loadedAsyncOptions !== null) {
+          this._loadedAsyncOptions = [...this._loadedAsyncOptions, ...moreOptions];
+        }
+
+        // Update virtualizer with new count
+        this.updateComplete.then(() => {
+          if (this._isVirtualized) {
+            this.updateVirtualizer();
+          }
+        });
+      }
+    } catch (err) {
+      console.error('Failed to load more options:', err);
+      // Don't set error state for load-more failures - user can scroll again to retry
+    } finally {
+      this._loadingMore = false;
+      this.requestUpdate();
+    }
+  }
+
+  /**
+   * Clean up the load more IntersectionObserver.
+   */
+  private cleanupLoadMoreObserver(): void {
+    if (this._loadMoreObserver) {
+      this._loadMoreObserver.disconnect();
+      this._loadMoreObserver = undefined;
+    }
+  }
+
+  /**
    * Apply a filter query and update state.
    * Auto-opens dropdown if query is not empty.
    * Resets activeIndex to first filtered option or -1 if no matches.
@@ -1547,6 +1639,9 @@ export class Select extends TailwindElement {
 
       // Clean up virtualizer
       this._virtualizer = undefined;
+
+      // Clean up load more observer
+      this.cleanupLoadMoreObserver();
 
       // Clear search debounce timeout
       if (this._searchDebounceTimeout) {
@@ -2178,6 +2273,10 @@ export class Select extends TailwindElement {
       if (this._isVirtualized) {
         this.updateVirtualizer();
       }
+      // Set up infinite scroll observer
+      if (this._isInfiniteScrollEnabled) {
+        this.setupLoadMoreObserver();
+      }
     });
   }
 
@@ -2202,6 +2301,10 @@ export class Select extends TailwindElement {
       this._searchLoading = false;
       this._searchError = null;
     }
+
+    // Clean up infinite scroll
+    this.cleanupLoadMoreObserver();
+    this._loadingMore = false;
 
     // Clear active state on slotted options
     if (this.isSlottedMode) {
