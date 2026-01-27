@@ -188,10 +188,10 @@ Plans:
 **Plans:** 4 plans
 
 Plans:
-- [ ] 33-01-PLAN.md — Slot-based options with custom content
-- [ ] 33-02-PLAN.md — Option groups component
-- [ ] 33-03-PLAN.md — Clearable select
-- [ ] 33-04-PLAN.md — Final verification checkpoint
+- [x] 33-01-PLAN.md — Slot-based options with custom content
+- [x] 33-02-PLAN.md — Option groups component
+- [x] 33-03-PLAN.md — Clearable select
+- [x] 33-04-PLAN.md — Final verification checkpoint
 
 **Success Criteria:**
 
@@ -326,7 +326,7 @@ Plans:
 | 30. CLI and Documentation | v4.0 | 3/3 | Complete | 2026-01-26 |
 | 31. Select Infrastructure | v4.1 | 2/2 | Complete | 2026-01-26 |
 | 32. Core Single Select | v4.1 | 4/4 | Complete | 2026-01-26 |
-| 33. Select Enhancements | v4.1 | 0/? | Not started | - |
+| 33. Select Enhancements | v4.1 | 4/4 | Complete | 2026-01-26 |
 | 34. Multi-Select | v4.1 | 0/? | Not started | - |
 | 35. Combobox | v4.1 | 0/? | Not started | - |
 | 36. Async Loading | v4.1 | 0/? | Not started | - |
@@ -334,4 +334,4 @@ Plans:
 
 ---
 *Roadmap created: 2026-01-24*
-*Last updated: 2026-01-26 (Phase 32 complete)*
+*Last updated: 2026-01-26 (Phase 33 complete)*
