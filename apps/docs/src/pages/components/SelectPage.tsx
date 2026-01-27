@@ -1166,6 +1166,190 @@ export function SelectPage() {
           </div>
         </section>
 
+        {/* Accessibility */}
+        <section className="mb-14 animate-fade-in-up opacity-0 stagger-3">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+              </svg>
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Accessibility</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400">ARIA roles, states, and screen reader behavior</p>
+            </div>
+            <div className="flex-1 h-px bg-gradient-to-r from-gray-200 dark:from-gray-700 to-transparent" />
+          </div>
+
+          {/* ARIA Roles */}
+          <div className="mb-8">
+            <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-3">ARIA Roles</h3>
+            <p className="text-gray-500 dark:text-gray-400 mb-4 text-sm">
+              The select component assigns semantic roles to each element so assistive technologies can convey structure and purpose.
+            </p>
+            <div className="overflow-hidden rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
+                    <th className="px-4 py-3 text-left font-semibold text-gray-900 dark:text-gray-100">Element</th>
+                    <th className="px-4 py-3 text-left font-semibold text-gray-900 dark:text-gray-100">Role</th>
+                    <th className="px-4 py-3 text-left font-semibold text-gray-900 dark:text-gray-100">Purpose</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                  <tr className="hover:bg-gray-50/50 dark:hover:bg-gray-800/50 transition-colors">
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">Trigger (button or input)</td>
+                    <td className="px-4 py-3"><code className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-xs font-mono text-gray-800 dark:text-gray-200">combobox</code></td>
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">Identifies the element as a composite widget that combines an input with a popup list</td>
+                  </tr>
+                  <tr className="hover:bg-gray-50/50 dark:hover:bg-gray-800/50 transition-colors">
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">Dropdown container</td>
+                    <td className="px-4 py-3"><code className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-xs font-mono text-gray-800 dark:text-gray-200">listbox</code></td>
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">Identifies the popup as a list of selectable options</td>
+                  </tr>
+                  <tr className="hover:bg-gray-50/50 dark:hover:bg-gray-800/50 transition-colors">
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">Each option item</td>
+                    <td className="px-4 py-3"><code className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-xs font-mono text-gray-800 dark:text-gray-200">option</code></td>
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">Identifies each selectable item within the listbox</td>
+                  </tr>
+                  <tr className="hover:bg-gray-50/50 dark:hover:bg-gray-800/50 transition-colors">
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">Option group (<code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">lui-option-group</code>)</td>
+                    <td className="px-4 py-3"><code className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-xs font-mono text-gray-800 dark:text-gray-200">group</code></td>
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">Groups related options with a visible label for screen readers</td>
+                  </tr>
+                  <tr className="hover:bg-gray-50/50 dark:hover:bg-gray-800/50 transition-colors">
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">Live announcements region</td>
+                    <td className="px-4 py-3"><code className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-xs font-mono text-gray-800 dark:text-gray-200">status</code></td>
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">Politely announces option changes during keyboard navigation via <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">aria-live="polite"</code></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* ARIA States & Properties */}
+          <div className="mb-8">
+            <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-3">ARIA States & Properties</h3>
+            <p className="text-gray-500 dark:text-gray-400 mb-4 text-sm">
+              Dynamic ARIA attributes communicate the current state of the select to assistive technologies.
+            </p>
+            <div className="overflow-hidden rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
+                    <th className="px-4 py-3 text-left font-semibold text-gray-900 dark:text-gray-100">Property</th>
+                    <th className="px-4 py-3 text-left font-semibold text-gray-900 dark:text-gray-100">Element</th>
+                    <th className="px-4 py-3 text-left font-semibold text-gray-900 dark:text-gray-100">Description</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                  <tr className="hover:bg-gray-50/50 dark:hover:bg-gray-800/50 transition-colors">
+                    <td className="px-4 py-3"><code className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-xs font-mono text-gray-800 dark:text-gray-200">aria-expanded</code></td>
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">Trigger</td>
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">Set to <code className="text-xs font-mono">true</code> when the dropdown is open, <code className="text-xs font-mono">false</code> when closed</td>
+                  </tr>
+                  <tr className="hover:bg-gray-50/50 dark:hover:bg-gray-800/50 transition-colors">
+                    <td className="px-4 py-3"><code className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-xs font-mono text-gray-800 dark:text-gray-200">aria-haspopup</code></td>
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">Trigger</td>
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">Set to <code className="text-xs font-mono">"listbox"</code> to indicate the type of popup</td>
+                  </tr>
+                  <tr className="hover:bg-gray-50/50 dark:hover:bg-gray-800/50 transition-colors">
+                    <td className="px-4 py-3"><code className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-xs font-mono text-gray-800 dark:text-gray-200">aria-controls</code></td>
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">Trigger</td>
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">Points to the listbox element ID, establishing the relationship between trigger and dropdown</td>
+                  </tr>
+                  <tr className="hover:bg-gray-50/50 dark:hover:bg-gray-800/50 transition-colors">
+                    <td className="px-4 py-3"><code className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-xs font-mono text-gray-800 dark:text-gray-200">aria-activedescendant</code></td>
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">Trigger</td>
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">Points to the currently focused option ID, enabling virtual focus without moving DOM focus</td>
+                  </tr>
+                  <tr className="hover:bg-gray-50/50 dark:hover:bg-gray-800/50 transition-colors">
+                    <td className="px-4 py-3"><code className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-xs font-mono text-gray-800 dark:text-gray-200">aria-selected</code></td>
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">Option</td>
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">Set to <code className="text-xs font-mono">true</code> on the currently selected option(s)</td>
+                  </tr>
+                  <tr className="hover:bg-gray-50/50 dark:hover:bg-gray-800/50 transition-colors">
+                    <td className="px-4 py-3"><code className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-xs font-mono text-gray-800 dark:text-gray-200">aria-disabled</code></td>
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">Trigger / Option</td>
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">Indicates that the element is not interactive</td>
+                  </tr>
+                  <tr className="hover:bg-gray-50/50 dark:hover:bg-gray-800/50 transition-colors">
+                    <td className="px-4 py-3"><code className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-xs font-mono text-gray-800 dark:text-gray-200">aria-multiselectable</code></td>
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">Listbox</td>
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">Present in multi-select mode, allows selecting more than one option</td>
+                  </tr>
+                  <tr className="hover:bg-gray-50/50 dark:hover:bg-gray-800/50 transition-colors">
+                    <td className="px-4 py-3"><code className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-xs font-mono text-gray-800 dark:text-gray-200">aria-autocomplete</code></td>
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">Trigger (searchable)</td>
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">Set to <code className="text-xs font-mono">"list"</code> in searchable mode, indicating that typing filters a list of suggestions</td>
+                  </tr>
+                  <tr className="hover:bg-gray-50/50 dark:hover:bg-gray-800/50 transition-colors">
+                    <td className="px-4 py-3"><code className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-xs font-mono text-gray-800 dark:text-gray-200">aria-invalid</code></td>
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">Trigger</td>
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">Set to <code className="text-xs font-mono">true</code> when validation fails (e.g., required field with no selection)</td>
+                  </tr>
+                  <tr className="hover:bg-gray-50/50 dark:hover:bg-gray-800/50 transition-colors">
+                    <td className="px-4 py-3"><code className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-xs font-mono text-gray-800 dark:text-gray-200">aria-labelledby</code></td>
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">Listbox</td>
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">Points to the label element, providing an accessible name for the listbox</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Screen Reader Behavior */}
+          <div className="mb-8">
+            <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-3">Screen Reader Behavior</h3>
+            <div className="group relative rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-5 card-elevated">
+              <div className="pointer-events-none absolute inset-0 rounded-xl bg-gradient-to-br from-gray-50 dark:from-gray-800 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+              <div className="relative flex items-start gap-4">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400">
+                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z" />
+                  </svg>
+                </div>
+                <div className="space-y-3">
+                  <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                    <strong className="text-gray-900 dark:text-gray-100">Option announcements:</strong> When the dropdown opens, the screen reader announces the focused option and its position (e.g., "Option 1, 1 of 5"). The ARIA live region (<code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">role="status"</code> with <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">aria-live="polite"</code>) announces the active option as it changes during keyboard navigation.
+                  </p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                    <strong className="text-gray-900 dark:text-gray-100">Searchable mode:</strong> The <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">aria-autocomplete="list"</code> attribute tells screen readers that typing filters a list of suggestions, so users know to expect dynamic content updates as they type.
+                  </p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                    <strong className="text-gray-900 dark:text-gray-100">Error states:</strong> Validation errors use <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">role="alert"</code> for immediate announcement. The empty state message ("No results found") uses <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">role="status"</code> with <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">aria-live="polite"</code> for non-intrusive notification.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* W3C APG Compliance */}
+          <div>
+            <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-3">W3C APG Compliance</h3>
+            <div className="group relative rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-5 card-elevated">
+              <div className="pointer-events-none absolute inset-0 rounded-xl bg-gradient-to-br from-gray-50 dark:from-gray-800 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+              <div className="relative flex items-start gap-4">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400">
+                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
+                  </svg>
+                </div>
+                <div className="space-y-2">
+                  <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                    This component follows the{' '}
+                    <a href="https://www.w3.org/WAI/ARIA/apg/patterns/combobox/" target="_blank" rel="noopener noreferrer" className="text-gray-900 dark:text-gray-100 underline decoration-gray-300 dark:decoration-gray-600 underline-offset-2 hover:decoration-gray-500 dark:hover:decoration-gray-400 transition-colors">
+                      W3C ARIA Authoring Practices Guide (APG) combobox pattern
+                    </a>.
+                    Focus management keeps DOM focus on the trigger element (button or input) and uses <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">aria-activedescendant</code> to
+                    convey virtual focus to the currently highlighted option. This is the recommended approach over moving real DOM focus between options, as it provides a smoother experience for screen reader users.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Navigation */}
         <div className="divider-fade mb-8" />
         <PrevNextNav
