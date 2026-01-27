@@ -11,6 +11,7 @@ export const componentToPackage: Record<string, string> = {
   dialog: '@lit-ui/dialog',
   input: '@lit-ui/input',
   textarea: '@lit-ui/textarea',
+  select: '@lit-ui/select',
 };
 
 /**
