@@ -9,28 +9,28 @@ Requirements for Checkbox, Radio, and Switch components. Each maps to roadmap ph
 
 ### Checkbox
 
-- [ ] **CHKB-01**: User can toggle a checkbox between checked and unchecked states
-- [ ] **CHKB-02**: Checkbox supports indeterminate (tri-state) visual and ARIA (`aria-checked="mixed"`)
-- [ ] **CHKB-03**: Checkbox participates in forms via ElementInternals (`name`, `value`, `setFormValue`)
-- [ ] **CHKB-04**: Checkbox supports `required` validation with `setValidity`
-- [ ] **CHKB-05**: Checkbox supports `disabled` state with `aria-disabled`
-- [ ] **CHKB-06**: Checkbox renders label text via `label` property or default slot
-- [ ] **CHKB-07**: Checkbox has size variants (sm/md/lg) matching existing components
-- [ ] **CHKB-08**: Checkbox has animated SVG checkmark draw-in transition
-- [ ] **CHKB-09**: Checkbox has CSS design tokens (`--ui-checkbox-*`) for full theming
-- [ ] **CHKB-10**: Checkbox supports dark mode via token system
-- [ ] **CHKB-11**: Checkbox is SSR-compatible with `isServer` guards
-- [ ] **CHKB-12**: Checkbox toggles on Space key (not Enter, per WAI-ARIA)
-- [ ] **CHKB-13**: Checkbox respects `prefers-reduced-motion` for animations
-- [ ] **CHKB-14**: Checkbox supports form reset via `formResetCallback`
+- [x] **CHKB-01**: User can toggle a checkbox between checked and unchecked states
+- [x] **CHKB-02**: Checkbox supports indeterminate (tri-state) visual and ARIA (`aria-checked="mixed"`)
+- [x] **CHKB-03**: Checkbox participates in forms via ElementInternals (`name`, `value`, `setFormValue`)
+- [x] **CHKB-04**: Checkbox supports `required` validation with `setValidity`
+- [x] **CHKB-05**: Checkbox supports `disabled` state with `aria-disabled`
+- [x] **CHKB-06**: Checkbox renders label text via `label` property or default slot
+- [x] **CHKB-07**: Checkbox has size variants (sm/md/lg) matching existing components
+- [x] **CHKB-08**: Checkbox has animated SVG checkmark draw-in transition
+- [x] **CHKB-09**: Checkbox has CSS design tokens (`--ui-checkbox-*`) for full theming
+- [x] **CHKB-10**: Checkbox supports dark mode via token system
+- [x] **CHKB-11**: Checkbox is SSR-compatible with `isServer` guards
+- [x] **CHKB-12**: Checkbox toggles on Space key (not Enter, per WAI-ARIA)
+- [x] **CHKB-13**: Checkbox respects `prefers-reduced-motion` for animations
+- [x] **CHKB-14**: Checkbox supports form reset via `formResetCallback`
 
 ### Checkbox Group
 
-- [ ] **CGRP-01**: CheckboxGroup renders with `role="group"` and `aria-labelledby`
-- [ ] **CGRP-02**: CheckboxGroup displays label text
-- [ ] **CGRP-03**: CheckboxGroup propagates `disabled` state to all children
-- [ ] **CGRP-04**: CheckboxGroup supports select all / deselect all with indeterminate parent checkbox
-- [ ] **CGRP-05**: CheckboxGroup displays error state with validation message
+- [x] **CGRP-01**: CheckboxGroup renders with `role="group"` and `aria-labelledby`
+- [x] **CGRP-02**: CheckboxGroup displays label text
+- [x] **CGRP-03**: CheckboxGroup propagates `disabled` state to all children
+- [x] **CGRP-04**: CheckboxGroup supports select all / deselect all with indeterminate parent checkbox
+- [x] **CGRP-05**: CheckboxGroup displays error state with validation message
 
 ### Radio
 
@@ -138,25 +138,25 @@ Deferred to later milestones.
 | SWCH-12 | Phase 38 | Complete |
 | SWCH-13 | Phase 38 | Complete |
 | SWCH-14 | Phase 38 | Complete |
-| CHKB-01 | Phase 39 | Pending |
-| CHKB-02 | Phase 39 | Pending |
-| CHKB-03 | Phase 39 | Pending |
-| CHKB-04 | Phase 39 | Pending |
-| CHKB-05 | Phase 39 | Pending |
-| CHKB-06 | Phase 39 | Pending |
-| CHKB-07 | Phase 39 | Pending |
-| CHKB-08 | Phase 39 | Pending |
-| CHKB-09 | Phase 39 | Pending |
-| CHKB-10 | Phase 39 | Pending |
-| CHKB-11 | Phase 39 | Pending |
-| CHKB-12 | Phase 39 | Pending |
-| CHKB-13 | Phase 39 | Pending |
-| CHKB-14 | Phase 39 | Pending |
-| CGRP-01 | Phase 39 | Pending |
-| CGRP-02 | Phase 39 | Pending |
-| CGRP-03 | Phase 39 | Pending |
-| CGRP-04 | Phase 39 | Pending |
-| CGRP-05 | Phase 39 | Pending |
+| CHKB-01 | Phase 39 | Complete |
+| CHKB-02 | Phase 39 | Complete |
+| CHKB-03 | Phase 39 | Complete |
+| CHKB-04 | Phase 39 | Complete |
+| CHKB-05 | Phase 39 | Complete |
+| CHKB-06 | Phase 39 | Complete |
+| CHKB-07 | Phase 39 | Complete |
+| CHKB-08 | Phase 39 | Complete |
+| CHKB-09 | Phase 39 | Complete |
+| CHKB-10 | Phase 39 | Complete |
+| CHKB-11 | Phase 39 | Complete |
+| CHKB-12 | Phase 39 | Complete |
+| CHKB-13 | Phase 39 | Complete |
+| CHKB-14 | Phase 39 | Complete |
+| CGRP-01 | Phase 39 | Complete |
+| CGRP-02 | Phase 39 | Complete |
+| CGRP-03 | Phase 39 | Complete |
+| CGRP-04 | Phase 39 | Complete |
+| CGRP-05 | Phase 39 | Complete |
 | RDIO-01 | Phase 40 | Pending |
 | RDIO-02 | Phase 40 | Pending |
 | RDIO-03 | Phase 40 | Pending |
@@ -186,4 +186,4 @@ Deferred to later milestones.
 
 ---
 *Requirements defined: 2026-01-26*
-*Last updated: 2026-01-27 — Phase 38 SWCH requirements complete*
+*Last updated: 2026-01-27 — Phase 39 CHKB/CGRP requirements complete*

@@ -149,7 +149,7 @@ Full details: [milestones/v4.1-ROADMAP.md](milestones/v4.1-ROADMAP.md)
 **Milestone Goal:** Add Checkbox, Radio, and Switch toggle components with group containers, completing the core form primitive toolkit. Zero new dependencies -- all capabilities exist in current stack.
 
 - [x] **Phase 38: Switch Component** - Standalone toggle proving form participation and animation patterns
-- [ ] **Phase 39: Checkbox + CheckboxGroup** - Checked/indeterminate states with group communication
+- [x] **Phase 39: Checkbox + CheckboxGroup** - Checked/indeterminate states with group communication
 - [ ] **Phase 40: Radio + RadioGroup** - Mutual exclusion with roving tabindex and group form ownership
 - [ ] **Phase 41: CLI and Documentation** - Registry entries and docs pages for all three controls
 
@@ -178,11 +178,11 @@ Plans:
   3. Each checkbox inside a `<form>` submits independently with its name/value, supports `required` validation, and resets correctly
   4. A CheckboxGroup with `disabled` greys out all child checkboxes; a select-all parent checkbox reflects indeterminate when some children are checked
   5. CheckboxGroup displays a validation error message when group-level validation fails (e.g., required group with nothing checked)
-**Plans**: 3 plans
+**Plans**: 3 plans (complete)
 Plans:
-- [ ] 39-01-PLAN.md — Package scaffolding + CSS design tokens
-- [ ] 39-02-PLAN.md — Checkbox component implementation + build
-- [ ] 39-03-PLAN.md — CheckboxGroup component implementation + build
+- [x] 39-01-PLAN.md — Package scaffolding + CSS design tokens
+- [x] 39-02-PLAN.md — Checkbox component implementation + build
+- [x] 39-03-PLAN.md — CheckboxGroup component implementation + build
 
 ### Phase 40: Radio + RadioGroup
 **Goal**: Users can select one option from a radio group with arrow key navigation, mutual exclusion enforced by the group, and the group submitting the selected value to forms
@@ -258,10 +258,10 @@ Plans:
 | 36. Async Loading | v4.1 | 6/6 | Complete | 2026-01-27 |
 | 37. CLI and Documentation | v4.1 | 4/4 | Complete | 2026-01-27 |
 | 38. Switch Component | v4.2 | 2/2 | Complete | 2026-01-27 |
-| 39. Checkbox + CheckboxGroup | v4.2 | 0/3 | Planned | - |
+| 39. Checkbox + CheckboxGroup | v4.2 | 3/3 | Complete | 2026-01-27 |
 | 40. Radio + RadioGroup | v4.2 | 0/? | Not started | - |
 | 41. CLI and Documentation | v4.2 | 0/? | Not started | - |
 
 ---
 *Roadmap created: 2026-01-24*
-*Last updated: 2026-01-27 (Phase 38 complete)*
+*Last updated: 2026-01-27 (Phase 39 complete)*
