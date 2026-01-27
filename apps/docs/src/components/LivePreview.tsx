@@ -7,9 +7,12 @@
 
 // Side-effect import to register the custom elements from built library
 import '@lit-ui/button';
+import '@lit-ui/checkbox';
 import '@lit-ui/input';
-import '@lit-ui/textarea';
+import '@lit-ui/radio';
 import '@lit-ui/select';
+import '@lit-ui/switch';
+import '@lit-ui/textarea';
 
 // TypeScript JSX declaration for lui-button and lui-input
 declare global {
@@ -103,6 +106,62 @@ declare global {
       'lui-option-group': React.DetailedHTMLProps<
         React.HTMLAttributes<HTMLElement> & {
           label?: string;
+        },
+        HTMLElement
+      >;
+      'lui-checkbox': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement> & {
+          checked?: boolean;
+          disabled?: boolean;
+          required?: boolean;
+          indeterminate?: boolean;
+          name?: string;
+          value?: string;
+          label?: string;
+          size?: 'sm' | 'md' | 'lg';
+        },
+        HTMLElement
+      >;
+      'lui-checkbox-group': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement> & {
+          label?: string;
+          disabled?: boolean;
+          required?: boolean;
+          error?: string;
+          'select-all'?: boolean;
+        },
+        HTMLElement
+      >;
+      'lui-radio': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement> & {
+          value?: string;
+          checked?: boolean;
+          disabled?: boolean;
+          label?: string;
+          size?: 'sm' | 'md' | 'lg';
+        },
+        HTMLElement
+      >;
+      'lui-radio-group': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement> & {
+          name?: string;
+          value?: string;
+          required?: boolean;
+          disabled?: boolean;
+          label?: string;
+          error?: string;
+        },
+        HTMLElement
+      >;
+      'lui-switch': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement> & {
+          checked?: boolean;
+          disabled?: boolean;
+          required?: boolean;
+          name?: string;
+          value?: string;
+          label?: string;
+          size?: 'sm' | 'md' | 'lg';
         },
         HTMLElement
       >;
