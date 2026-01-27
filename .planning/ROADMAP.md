@@ -262,11 +262,19 @@ Plans:
 
 **Requirements:** ASYNC-01, ASYNC-02, ASYNC-03, ASYNC-04, ASYNC-05, ASYNC-06, INFRA-04
 
-**Plans:** TBD
+**Plans:** 6 plans
+
+Plans:
+- [ ] 36-01-PLAN.md — Add dependencies and skeleton loading placeholders
+- [ ] 36-02-PLAN.md — Promise-based options with loading/error states
+- [ ] 36-03-PLAN.md — Async search with debounce and AbortController
+- [ ] 36-04-PLAN.md — Virtual scrolling integration
+- [ ] 36-05-PLAN.md — Infinite scroll pagination
+- [ ] 36-06-PLAN.md — Human verification checkpoint
 
 **Success Criteria:**
 
-1. Developer provides Promise for options prop and select shows loading spinner until resolved
+1. Developer provides Promise for options prop and select shows loading skeleton until resolved
 2. User sees error state with retry button when async options fail to load; clicking retry re-fetches
 3. User types in async combobox and API is called after debounce period; results replace options
 4. User scrolls to bottom of long option list and next page of options loads automatically (infinite scroll)
