@@ -56,20 +56,20 @@ Requirements for Checkbox, Radio, and Switch components. Each maps to roadmap ph
 
 ### Switch
 
-- [ ] **SWCH-01**: User can toggle a switch between on and off states
-- [ ] **SWCH-02**: Switch renders as track + thumb visual with animated slide transition
-- [ ] **SWCH-03**: Switch participates in forms via ElementInternals (`name`, `value`, `setFormValue`)
-- [ ] **SWCH-04**: Switch supports `required` validation with `setValidity`
-- [ ] **SWCH-05**: Switch supports `disabled` state with `aria-disabled`
-- [ ] **SWCH-06**: Switch renders label text via `label` property or default slot
-- [ ] **SWCH-07**: Switch has size variants (sm/md/lg)
-- [ ] **SWCH-08**: Switch uses `role="switch"` with `aria-checked` (not checkbox role)
-- [ ] **SWCH-09**: Switch toggles on Space key (and Enter key, per WAI-ARIA switch pattern)
-- [ ] **SWCH-10**: Switch has CSS design tokens (`--ui-switch-*`) for full theming
-- [ ] **SWCH-11**: Switch supports dark mode via token system
-- [ ] **SWCH-12**: Switch is SSR-compatible with `isServer` guards
-- [ ] **SWCH-13**: Switch respects `prefers-reduced-motion` for animations
-- [ ] **SWCH-14**: Switch supports form reset via `formResetCallback`
+- [x] **SWCH-01**: User can toggle a switch between on and off states
+- [x] **SWCH-02**: Switch renders as track + thumb visual with animated slide transition
+- [x] **SWCH-03**: Switch participates in forms via ElementInternals (`name`, `value`, `setFormValue`)
+- [x] **SWCH-04**: Switch supports `required` validation with `setValidity`
+- [x] **SWCH-05**: Switch supports `disabled` state with `aria-disabled`
+- [x] **SWCH-06**: Switch renders label text via `label` property or default slot
+- [x] **SWCH-07**: Switch has size variants (sm/md/lg)
+- [x] **SWCH-08**: Switch uses `role="switch"` with `aria-checked` (not checkbox role)
+- [x] **SWCH-09**: Switch toggles on Space key (and Enter key, per WAI-ARIA switch pattern)
+- [x] **SWCH-10**: Switch has CSS design tokens (`--ui-switch-*`) for full theming
+- [x] **SWCH-11**: Switch supports dark mode via token system
+- [x] **SWCH-12**: Switch is SSR-compatible with `isServer` guards
+- [x] **SWCH-13**: Switch respects `prefers-reduced-motion` for animations
+- [x] **SWCH-14**: Switch supports form reset via `formResetCallback`
 
 ### CLI and Documentation
 
@@ -124,20 +124,20 @@ Deferred to later milestones.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SWCH-01 | Phase 38 | Pending |
-| SWCH-02 | Phase 38 | Pending |
-| SWCH-03 | Phase 38 | Pending |
-| SWCH-04 | Phase 38 | Pending |
-| SWCH-05 | Phase 38 | Pending |
-| SWCH-06 | Phase 38 | Pending |
-| SWCH-07 | Phase 38 | Pending |
-| SWCH-08 | Phase 38 | Pending |
-| SWCH-09 | Phase 38 | Pending |
-| SWCH-10 | Phase 38 | Pending |
-| SWCH-11 | Phase 38 | Pending |
-| SWCH-12 | Phase 38 | Pending |
-| SWCH-13 | Phase 38 | Pending |
-| SWCH-14 | Phase 38 | Pending |
+| SWCH-01 | Phase 38 | Complete |
+| SWCH-02 | Phase 38 | Complete |
+| SWCH-03 | Phase 38 | Complete |
+| SWCH-04 | Phase 38 | Complete |
+| SWCH-05 | Phase 38 | Complete |
+| SWCH-06 | Phase 38 | Complete |
+| SWCH-07 | Phase 38 | Complete |
+| SWCH-08 | Phase 38 | Complete |
+| SWCH-09 | Phase 38 | Complete |
+| SWCH-10 | Phase 38 | Complete |
+| SWCH-11 | Phase 38 | Complete |
+| SWCH-12 | Phase 38 | Complete |
+| SWCH-13 | Phase 38 | Complete |
+| SWCH-14 | Phase 38 | Complete |
 | CHKB-01 | Phase 39 | Pending |
 | CHKB-02 | Phase 39 | Pending |
 | CHKB-03 | Phase 39 | Pending |
@@ -186,4 +186,4 @@ Deferred to later milestones.
 
 ---
 *Requirements defined: 2026-01-26*
-*Last updated: 2026-01-26 after roadmap phase mapping*
+*Last updated: 2026-01-27 — Phase 38 SWCH requirements complete*

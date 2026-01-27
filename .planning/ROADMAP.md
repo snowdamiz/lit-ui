@@ -148,7 +148,7 @@ Full details: [milestones/v4.1-ROADMAP.md](milestones/v4.1-ROADMAP.md)
 
 **Milestone Goal:** Add Checkbox, Radio, and Switch toggle components with group containers, completing the core form primitive toolkit. Zero new dependencies -- all capabilities exist in current stack.
 
-- [ ] **Phase 38: Switch Component** - Standalone toggle proving form participation and animation patterns
+- [x] **Phase 38: Switch Component** - Standalone toggle proving form participation and animation patterns
 - [ ] **Phase 39: Checkbox + CheckboxGroup** - Checked/indeterminate states with group communication
 - [ ] **Phase 40: Radio + RadioGroup** - Mutual exclusion with roving tabindex and group form ownership
 - [ ] **Phase 41: CLI and Documentation** - Registry entries and docs pages for all three controls
@@ -163,10 +163,10 @@ Full details: [milestones/v4.1-ROADMAP.md](milestones/v4.1-ROADMAP.md)
   3. A switch with `required` prevents form submission when unchecked, showing validation feedback
   4. Switch renders correctly at sm/md/lg sizes, in light and dark mode, and with `disabled` state visually distinct and non-interactive
   5. Screen readers announce the switch with `role="switch"` and current on/off state; animations respect `prefers-reduced-motion`
-**Plans**: 2 plans
+**Plans**: 2 plans (complete)
 Plans:
-- [ ] 38-01-PLAN.md — Package scaffolding + CSS design tokens
-- [ ] 38-02-PLAN.md — Switch component implementation + build
+- [x] 38-01-PLAN.md — Package scaffolding + CSS design tokens
+- [x] 38-02-PLAN.md — Switch component implementation + build
 
 ### Phase 39: Checkbox + CheckboxGroup
 **Goal**: Users can check/uncheck individual checkboxes (including indeterminate tri-state) and use groups with disabled propagation, select-all coordination, and group validation
@@ -253,11 +253,11 @@ Plans:
 | 35. Combobox | v4.1 | 4/4 | Complete | 2026-01-27 |
 | 36. Async Loading | v4.1 | 6/6 | Complete | 2026-01-27 |
 | 37. CLI and Documentation | v4.1 | 4/4 | Complete | 2026-01-27 |
-| 38. Switch Component | v4.2 | 0/? | Not started | - |
+| 38. Switch Component | v4.2 | 2/2 | Complete | 2026-01-27 |
 | 39. Checkbox + CheckboxGroup | v4.2 | 0/? | Not started | - |
 | 40. Radio + RadioGroup | v4.2 | 0/? | Not started | - |
 | 41. CLI and Documentation | v4.2 | 0/? | Not started | - |
 
 ---
 *Roadmap created: 2026-01-24*
-*Last updated: 2026-01-26 (v4.2 milestone roadmapped)*
+*Last updated: 2026-01-27 (Phase 38 complete)*
