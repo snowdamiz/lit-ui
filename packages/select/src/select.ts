@@ -178,6 +178,14 @@ export class Select extends TailwindElement {
   showSelectAll = false;
 
   /**
+   * Whether searchable mode is enabled.
+   * In searchable mode, the trigger becomes a text input for filtering options.
+   * @default false
+   */
+  @property({ type: Boolean })
+  searchable = false;
+
+  /**
    * Label text displayed above the select.
    * @default ''
    */
@@ -234,6 +242,12 @@ export class Select extends TailwindElement {
    */
   @state()
   private visibleTagCount: number = Infinity;
+
+  /**
+   * Current filter query for searchable mode.
+   */
+  @state()
+  private filterQuery = '';
 
   /**
    * Internal storage for single-select value.
@@ -826,6 +840,56 @@ export class Select extends TailwindElement {
    */
   private get isSlottedMode(): boolean {
     return this.options.length === 0 && this.slottedOptions.length > 0;
+  }
+
+  /**
+   * Get filtered options based on filterQuery.
+   * Returns all options if not searchable or filter is empty.
+   * Uses case-insensitive contains matching on label (or value if no label).
+   */
+  private get filteredOptions(): SelectOption[] {
+    const options = this.effectiveOptions;
+
+    // Return all options if not searchable or filter is empty
+    if (!this.searchable || !this.filterQuery) {
+      return options;
+    }
+
+    const lowerQuery = this.filterQuery.toLowerCase();
+
+    return options.filter((option) => {
+      const searchText = (option.label || option.value).toLowerCase();
+      return searchText.includes(lowerQuery);
+    });
+  }
+
+  /**
+   * Apply a filter query and update state.
+   * Auto-opens dropdown if query is not empty.
+   * Resets activeIndex to first filtered option or -1 if no matches.
+   */
+  private applyFilter(query: string): void {
+    this.filterQuery = query;
+
+    // Auto-open dropdown when typing starts
+    if (!this.open && query) {
+      this.open = true;
+      this.requestUpdate();
+      this.updateComplete.then(() => {
+        this.positionDropdown(this.triggerEl, this.listboxEl);
+      });
+    }
+
+    // Reset active index based on filtered results
+    const filtered = this.filteredOptions;
+    if (filtered.length > 0) {
+      this.activeIndex = filtered.findIndex((o) => !o.disabled);
+      if (this.activeIndex < 0) this.activeIndex = 0;
+    } else {
+      this.activeIndex = -1;
+    }
+
+    this.requestUpdate();
   }
 
   override connectedCallback(): void {
@@ -1570,10 +1634,17 @@ export class Select extends TailwindElement {
   }
 
   /**
+   * Get the options list for navigation (filtered if searchable, all otherwise).
+   */
+  private get navigationOptions(): SelectOption[] {
+    return this.searchable ? this.filteredOptions : this.effectiveOptions;
+  }
+
+  /**
    * Focus the first enabled option.
    */
   private focusFirstEnabledOption(): void {
-    const opts = this.effectiveOptions;
+    const opts = this.navigationOptions;
     const index = opts.findIndex((o) => !o.disabled);
     if (index >= 0) {
       this.setActiveIndex(index);
@@ -1584,7 +1655,7 @@ export class Select extends TailwindElement {
    * Focus the last enabled option.
    */
   private focusLastEnabledOption(): void {
-    const opts = this.effectiveOptions;
+    const opts = this.navigationOptions;
     for (let i = opts.length - 1; i >= 0; i--) {
       if (!opts[i].disabled) {
         this.setActiveIndex(i);
@@ -1597,7 +1668,7 @@ export class Select extends TailwindElement {
    * Focus the next enabled option (wraps to first).
    */
   private focusNextEnabledOption(): void {
-    const opts = this.effectiveOptions;
+    const opts = this.navigationOptions;
     for (let i = this.activeIndex + 1; i < opts.length; i++) {
       if (!opts[i].disabled) {
         this.setActiveIndex(i);
@@ -1612,7 +1683,7 @@ export class Select extends TailwindElement {
    * Focus the previous enabled option (wraps to last).
    */
   private focusPreviousEnabledOption(): void {
-    const opts = this.effectiveOptions;
+    const opts = this.navigationOptions;
     for (let i = this.activeIndex - 1; i >= 0; i--) {
       if (!opts[i].disabled) {
         this.setActiveIndex(i);
@@ -1648,17 +1719,24 @@ export class Select extends TailwindElement {
 
   /**
    * Select an option by index.
+   * In searchable mode, index refers to the filtered options list.
    * In multi-select mode, toggles selection without closing.
    * In single-select mode, sets value and closes dropdown.
    */
   private selectOption(index: number): void {
-    const opts = this.effectiveOptions;
+    // In searchable mode, get option from filtered list
+    const opts = this.searchable ? this.filteredOptions : this.effectiveOptions;
     const option = opts[index];
     if (!option || option.disabled) return;
 
     if (this.multiple) {
-      // Multi-select: toggle and keep dropdown open
-      this.toggleSelection(index);
+      // Multi-select: find original index and toggle
+      const originalIndex = this.effectiveOptions.findIndex(
+        (o) => o.value === option.value
+      );
+      if (originalIndex >= 0) {
+        this.toggleSelection(originalIndex);
+      }
       return;
     }
 
@@ -1724,7 +1802,7 @@ export class Select extends TailwindElement {
    * Get the label of the currently active option for ARIA live region.
    */
   private getActiveOptionLabel(): string {
-    const opts = this.effectiveOptions;
+    const opts = this.searchable ? this.filteredOptions : this.effectiveOptions;
     if (this.activeIndex < 0 || this.activeIndex >= opts.length) {
       return '';
     }
@@ -1733,10 +1811,11 @@ export class Select extends TailwindElement {
   }
 
   /**
-   * Get the count of enabled options.
+   * Get the count of enabled options (uses filtered list in searchable mode).
    */
   private getEnabledOptionsCount(): number {
-    return this.effectiveOptions.filter((o) => !o.disabled).length;
+    const opts = this.searchable ? this.filteredOptions : this.effectiveOptions;
+    return opts.filter((o) => !o.disabled).length;
   }
 
   /**
