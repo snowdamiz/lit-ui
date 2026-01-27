@@ -622,12 +622,12 @@ export class Select extends TailwindElement {
         width: 1em;
         height: 1em;
         margin-right: 0.5rem;
-        visibility: hidden;
+        display: none;
+        color: var(--ui-select-option-check);
       }
 
       .option-selected .check-icon {
-        visibility: visible;
-        color: var(--ui-select-option-check);
+        display: inline-block;
       }
 
       /* Slotted option active state */
@@ -783,7 +783,8 @@ export class Select extends TailwindElement {
     Object.assign(dropdown.style, {
       left: `${x}px`,
       top: `${y}px`,
-      width: `${triggerWidth}px`,
+      minWidth: `${triggerWidth}px`,
+      width: 'auto',
     });
   }
 

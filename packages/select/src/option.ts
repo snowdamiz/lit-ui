@@ -100,11 +100,11 @@ export class Option extends TailwindElement {
         height: 1em;
         flex-shrink: 0;
         color: var(--ui-select-option-check);
-        visibility: hidden;
+        display: none;
       }
 
       .option-selected .check-icon {
-        visibility: visible;
+        display: block;
       }
 
       .slot-start,
