@@ -37,11 +37,14 @@
  * ```
  */
 
-import { html, css, isServer, nothing } from 'lit';
+import { html, css, isServer, nothing, TemplateResult } from 'lit';
 import { property, state, query } from 'lit/decorators.js';
 import { TailwindElement, tailwindBaseStyles } from '@lit-ui/core';
 // Import Floating UI for dropdown positioning
 import { computePosition, flip, shift, offset, size } from '@floating-ui/dom';
+// Import virtual scrolling for large option lists
+import { VirtualizerController } from '@tanstack/lit-virtual';
+import { Ref, createRef, ref } from 'lit/directives/ref.js';
 import { Option } from './option.js';
 
 /**
@@ -54,6 +57,15 @@ export type SelectSize = 'sm' | 'md' | 'lg';
  * Returns true if the option should be included in filtered results.
  */
 export type FilterFunction = (option: SelectOption, query: string) => boolean;
+
+/**
+ * Async search function signature.
+ * Called with search query and AbortSignal for cancellation.
+ */
+export type AsyncSearchFunction = (
+  query: string,
+  signal: AbortSignal
+) => Promise<SelectOption[]>;
 
 /**
  * Option data interface for programmatic options
@@ -223,6 +235,38 @@ export class Select extends TailwindElement {
   creatable = false;
 
   /**
+   * Debounce delay in milliseconds for async search.
+   * Only applies when asyncSearch is provided.
+   * @default 300
+   */
+  @property({ type: Number })
+  debounceDelay = 300;
+
+  /**
+   * Minimum characters before triggering async search.
+   * Below this threshold, shows default/empty options.
+   * @default 0
+   */
+  @property({ type: Number })
+  minSearchLength = 0;
+
+  /**
+   * Async search function. Called with search query and returns Promise of options.
+   * When provided, enables async search mode for searchable selects.
+   * The AbortSignal should be used to cancel in-flight requests.
+   *
+   * @example
+   * ```typescript
+   * asyncSearch={(query, signal) =>
+   *   fetch(`/api/search?q=${query}`, { signal })
+   *     .then(res => res.json())
+   * }
+   * ```
+   */
+  @property({ attribute: false })
+  asyncSearch?: AsyncSearchFunction;
+
+  /**
    * Message displayed when no options match the filter query.
    * @default 'No results found'
    */
@@ -300,6 +344,24 @@ export class Select extends TailwindElement {
   private createOptionActive = false;
 
   /**
+   * Whether async search is currently loading.
+   */
+  @state()
+  private _searchLoading = false;
+
+  /**
+   * Error from async search.
+   */
+  @state()
+  private _searchError: Error | null = null;
+
+  /**
+   * Options loaded from async search.
+   */
+  @state()
+  private _searchResults: SelectOption[] | null = null;
+
+  /**
    * Internal storage for single-select value.
    */
   private _value = '';
@@ -347,6 +409,16 @@ export class Select extends TailwindElement {
   private resizeObserver: ResizeObserver | null = null;
 
   /**
+   * Timeout handle for search debounce.
+   */
+  private _searchDebounceTimeout?: ReturnType<typeof setTimeout>;
+
+  /**
+   * AbortController for cancelling in-flight search requests.
+   */
+  private _searchAbortController?: AbortController;
+
+  /**
    * X-circle icon SVG for clear button.
    */
   private xCircleIcon = html`
@@ -361,6 +433,13 @@ export class Select extends TailwindElement {
     if (!isServer) {
       this.internals = this.attachInternals();
     }
+  }
+
+  /**
+   * Check if component is in async search mode.
+   */
+  private get _isAsyncSearchMode(): boolean {
+    return this.searchable && !!this.asyncSearch;
   }
 
   /**
