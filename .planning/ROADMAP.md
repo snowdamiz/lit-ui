@@ -163,7 +163,10 @@ Full details: [milestones/v4.1-ROADMAP.md](milestones/v4.1-ROADMAP.md)
   3. A switch with `required` prevents form submission when unchecked, showing validation feedback
   4. Switch renders correctly at sm/md/lg sizes, in light and dark mode, and with `disabled` state visually distinct and non-interactive
   5. Screen readers announce the switch with `role="switch"` and current on/off state; animations respect `prefers-reduced-motion`
-**Plans**: TBD
+**Plans**: 2 plans
+Plans:
+- [ ] 38-01-PLAN.md — Package scaffolding + CSS design tokens
+- [ ] 38-02-PLAN.md — Switch component implementation + build
 
 ### Phase 39: Checkbox + CheckboxGroup
 **Goal**: Users can check/uncheck individual checkboxes (including indeterminate tri-state) and use groups with disabled propagation, select-all coordination, and group validation
