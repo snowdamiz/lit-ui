@@ -50,6 +50,12 @@ import { Option } from './option.js';
 export type SelectSize = 'sm' | 'md' | 'lg';
 
 /**
+ * Custom filter function signature.
+ * Returns true if the option should be included in filtered results.
+ */
+export type FilterFunction = (option: SelectOption, query: string) => boolean;
+
+/**
  * Option data interface for programmatic options
  */
 export interface SelectOption {
@@ -184,6 +190,16 @@ export class Select extends TailwindElement {
    */
   @property({ type: Boolean })
   searchable = false;
+
+  /**
+   * Custom filter function for filtering options.
+   * If provided, overrides the default case-insensitive contains matching.
+   * @example
+   * // Filter by value instead of label
+   * customFilter={(opt, q) => opt.value.toLowerCase().includes(q.toLowerCase())}
+   */
+  @property({ attribute: false })
+  customFilter?: FilterFunction;
 
   /**
    * Label text displayed above the select.
@@ -876,7 +892,7 @@ export class Select extends TailwindElement {
   /**
    * Get filtered options based on filterQuery.
    * Returns all options if not searchable or filter is empty.
-   * Uses case-insensitive contains matching on label (or value if no label).
+   * Uses customFilter if provided, otherwise case-insensitive contains matching.
    */
   private get filteredOptions(): SelectOption[] {
     const options = this.effectiveOptions;
@@ -886,6 +902,12 @@ export class Select extends TailwindElement {
       return options;
     }
 
+    // Use custom filter if provided
+    if (this.customFilter) {
+      return options.filter((option) => this.customFilter!(option, this.filterQuery));
+    }
+
+    // Default: case-insensitive contains matching on label
     const lowerQuery = this.filterQuery.toLowerCase();
 
     return options.filter((option) => {
