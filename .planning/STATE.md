@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 ## Current Position
 
 Phase: 36 - Async Loading (in progress)
-Plan: 1 of 6
+Plan: 3 of 6 (Plans 02, 03, 04 executing in parallel)
 Status: In progress
-Last activity: 2026-01-27 - Completed 36-01-PLAN.md
+Last activity: 2026-01-27 - Completed 36-03-PLAN.md
 
 Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHIPPED | v3.1 SHIPPED | v4.0 SHIPPED | v4.1 [######.] 6/7 phases
 
@@ -44,8 +44,8 @@ Progress: v1.0 SHIPPED | v1.1 [########..] 8/12 phases | v2.0 SHIPPED | v3.0 SHI
 - Total execution time: 30 min
 
 **v4.1 Velocity (in progress):**
-- Plans completed: 19
-- Total execution time: 60 min
+- Plans completed: 20
+- Total execution time: 66 min
 
 ## Accumulated Context
 
@@ -100,6 +100,9 @@ v3.0, v3.1, v4.0 decisions validated and archived.
 | Skeleton text widths vary for natural appearance | 70%, 55%, 80%, 60% rotation avoids repetitive look | 36-01 |
 | Checkbox indicator in multi-select skeleton | Visual consistency with real options | 36-01 |
 | Dark mode via :host-context(.dark) | Standard pattern for dark mode skeleton colors | 36-01 |
+| AbortController cancels previous search requests | Prevents race conditions in async search | 36-03 |
+| Server-filtered results bypass local filtering | No highlighting needed for server-side filtered results | 36-03 |
+| Search state cleared on dropdown close | Clean state for next open | 36-03 |
 
 ### Pending Todos
 
@@ -111,37 +114,37 @@ None.
 - 30 CLI tests need update for CSS variable naming change (--lui-* -> --ui-*)
 - Tracked in v3.0-MILESTONE-AUDIT.md (archived)
 
-**Research findings to apply:**
-- Async search needs AbortController to prevent race conditions
-
 **Applied from research:**
 - ARIA 1.2 combobox pattern (not 1.1) - use aria-controls, not aria-owns [APPLIED in 32-01]
 - Shadow DOM click-outside requires event.composedPath() [APPLIED in 32-01]
 - iOS VoiceOver has limited aria-activedescendant support [MITIGATED in 32-02 with ARIA live region]
 - Multi-select FormData uses formData.append() for each value [APPLIED in 34-01]
 - Case-insensitive contains matching for searchable [APPLIED in 35-01]
+- Async search needs AbortController to prevent race conditions [APPLIED in 36-03]
 
 ## Session Continuity
 
 Last session: 2026-01-27
-Stopped at: Completed 36-01-PLAN.md
+Stopped at: Completed 36-03-PLAN.md
 Resume file: None
 
 ## Next Steps
 
-Phase 36 Async Loading in progress. Plan 01 complete.
+Phase 36 Async Loading in progress. Plans 01, 03 complete. Plans 02, 04 in parallel execution.
 
 **Phase 36-01 Deliverables:**
 - @lit/task and @tanstack/lit-virtual dependencies added
 - Skeleton loading CSS with pulse animation
 - renderSkeletonOptions method for async loading UI
 
-**Next: Plan 02** - Async options loading with Task controller
+**Phase 36-03 Deliverables:**
+- asyncSearch prop with debounce and AbortController
+- debounceDelay (default 300ms) and minSearchLength (default 0) configuration
+- Search loading skeleton and error state with retry
 
 **Remaining in Phase 36:**
-- Plan 02: Async options loading
-- Plan 03: Async search
-- Plan 04: Load more / infinite scroll
+- Plan 02: Async options loading (in progress)
+- Plan 04: Load more / infinite scroll (in progress)
 - Plan 05: Virtual scrolling
 - Plan 06: Human verification
 
