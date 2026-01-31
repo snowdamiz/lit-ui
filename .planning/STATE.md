@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-30)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** Phase 44 Date Picker Core — plan 03 complete
+**Current focus:** Phase 44 Date Picker Core — plan 04 complete
 
 ## Current Position
 
 Phase: 3 of 9 (Date Picker Core)
-Plan: 3 of 5 in current phase (3 execution complete)
+Plan: 4 of 5 in current phase (4 execution complete)
 Status: In progress
-Last activity: 2026-01-31 — Completed 44-03-PLAN.md
+Last activity: 2026-01-31 — Completed 44-04-PLAN.md
 
-Progress: [███████████████████░] 95% (19/20 plans)
+Progress: [████████████████████] 96% (20/21 plans)
 
 ## Performance Metrics
 
@@ -31,7 +31,7 @@ Progress: [███████████████████░] 95% (19
 | 43    | 8     | 8     | 1.9 min |
 
 **Recent Trend:**
-- Last 3 plans: 2 min (44-03), 5 min (44-02), 2 min (44-01)
+- Last 3 plans: 3 min (44-04), 2 min (44-03), 5 min (44-02)
 - Trend: Consistent execution pace
 
 *Updated after each plan completion*
@@ -107,6 +107,10 @@ Recent decisions affecting current work:
 - **Phase 44-02**: Calendar popup composed directly (not slotted); Escape checks defaultPrevented for view drilling
 - **Phase 44-03**: Popup uses Floating UI fixed strategy with offset(4), flip to top-start, shift with 8px padding
 - **Phase 44-03**: Click-outside uses composedPath().includes(this) for Shadow DOM compatibility
+- **Phase 44-04**: Focus trap uses Tab preventDefault + refocus calendar (no sentinel elements)
+- **Phase 44-04**: closePopup() handles all focus restoration via requestAnimationFrame
+- **Phase 44-04**: handleInputBlur syncs both internalError (display) and ElementInternals validity (form)
+- **Phase 44-04**: badInput validity flag used for unparseable date text
 
 ### Pending Todos
 
@@ -122,6 +126,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-31 (44-03 complete)
-Stopped at: Completed 44-03-PLAN.md (Popup positioning and click-outside)
+Last session: 2026-01-31 (44-04 complete)
+Stopped at: Completed 44-04-PLAN.md (Focus management and validation)
 Resume file: None
