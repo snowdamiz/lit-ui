@@ -18,7 +18,7 @@ import {
   intlFirstDayToDateFns,
   isSameMonth,
 } from './date-utils.js';
-import { getFirstDayOfWeek, getWeekdayNames } from './intl-utils.js';
+import { getFirstDayOfWeek, getWeekdayNames, getMonthNames } from './intl-utils.js';
 
 /**
  * Format a date as a full accessible label for screen readers.
@@ -99,6 +99,41 @@ export class Calendar extends TailwindElement {
         height: 1rem;
       }
 
+      .month-year-selectors {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+      }
+
+      .month-select,
+      .year-select {
+        padding: 0.25rem 0.5rem;
+        border: 1px solid var(--ui-calendar-border, #e5e7eb);
+        border-radius: var(--ui-calendar-radius, 0.375rem);
+        background: var(--ui-calendar-bg, white);
+        font-size: 0.875rem;
+        cursor: pointer;
+        color: inherit;
+      }
+
+      .month-select:focus-visible,
+      .year-select:focus-visible {
+        outline: 2px solid var(--ui-calendar-focus-ring, var(--color-ring, #3b82f6));
+        outline-offset: 2px;
+      }
+
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border-width: 0;
+      }
+
       .calendar-weekdays {
         display: grid;
         grid-template-columns: repeat(7, 1fr);
@@ -164,6 +199,29 @@ export class Calendar extends TailwindElement {
   private currentMonth = new Date();
 
   /**
+   * Tracks the selected month index in the dropdown (0-11).
+   */
+  @state()
+  private selectedMonth: number = getMonth(new Date());
+
+  /**
+   * Tracks the selected year in the dropdown.
+   */
+  @state()
+  private selectedYear: number = getYear(new Date());
+
+  /**
+   * Sync dropdown state when currentMonth changes.
+   */
+  protected override updated(changedProperties: PropertyValues): void {
+    super.updated(changedProperties);
+    if (changedProperties.has('currentMonth' as keyof this)) {
+      this.selectedMonth = getMonth(this.currentMonth);
+      this.selectedYear = getYear(this.currentMonth);
+    }
+  }
+
+  /**
    * Resolved locale, falling back to navigator.language or 'en-US'.
    */
   private get effectiveLocale(): string {
@@ -210,6 +268,41 @@ export class Calendar extends TailwindElement {
     });
   }
 
+  /**
+   * Handle month dropdown selection change.
+   */
+  private handleMonthSelect(e: Event): void {
+    const month = parseInt((e.target as HTMLSelectElement).value, 10);
+    const newDate = new Date(this.currentMonth);
+    newDate.setMonth(month);
+    this.currentMonth = newDate;
+    this.emitMonthChange();
+  }
+
+  /**
+   * Handle year dropdown selection change.
+   */
+  private handleYearSelect(e: Event): void {
+    const year = parseInt((e.target as HTMLSelectElement).value, 10);
+    const newDate = new Date(this.currentMonth);
+    newDate.setFullYear(year);
+    this.currentMonth = newDate;
+    this.emitMonthChange();
+  }
+
+  /**
+   * Generate a range of years for the year dropdown.
+   * Returns 150 years: current year - 100 through current year + 50.
+   */
+  private getYearRange(): number[] {
+    const currentYear = getYear(new Date());
+    const years: number[] = [];
+    for (let y = currentYear - 100; y <= currentYear + 50; y++) {
+      years.push(y);
+    }
+    return years;
+  }
+
   protected override render() {
     const weekdays = getWeekdayNames(this.effectiveLocale, this.firstDayOfWeek);
     const days = getCalendarDays(this.currentMonth, this.weekStartsOn);
@@ -227,7 +320,35 @@ export class Calendar extends TailwindElement {
               <path d="M15 18l-6-6 6-6" />
             </svg>
           </button>
-          <h2 id="month-heading">${monthLabel}</h2>
+          <div class="month-year-selectors">
+            <h2 id="month-heading" class="sr-only" aria-live="polite">${monthLabel}</h2>
+            <select
+              class="month-select"
+              aria-label="Select month"
+              @change="${this.handleMonthSelect}"
+            >
+              ${getMonthNames(this.effectiveLocale).map(
+                (name, i) => html`
+                  <option value="${i}" ?selected="${i === this.selectedMonth}">
+                    ${name}
+                  </option>
+                `
+              )}
+            </select>
+            <select
+              class="year-select"
+              aria-label="Select year"
+              @change="${this.handleYearSelect}"
+            >
+              ${this.getYearRange().map(
+                (year) => html`
+                  <option value="${year}" ?selected="${year === this.selectedYear}">
+                    ${year}
+                  </option>
+                `
+              )}
+            </select>
+          </div>
           <button
             class="nav-button"
             @click="${this.navigateNextMonth}"
