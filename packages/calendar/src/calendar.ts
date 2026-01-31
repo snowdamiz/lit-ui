@@ -111,10 +111,12 @@ export class Calendar extends TailwindElement {
     css`
       :host {
         display: block;
+        container-type: inline-size;
       }
 
       .calendar {
-        width: var(--ui-calendar-width, 320px);
+        width: var(--ui-calendar-width, 100%);
+        max-width: 380px;
       }
 
       .calendar-header {
@@ -515,6 +517,64 @@ export class Calendar extends TailwindElement {
 
       :host-context(.dark) .date-button-wrapper:hover {
         background-color: var(--ui-calendar-hover-bg, #1f2937);
+      }
+
+      /* Container query: compact (<280px) */
+      @container (max-width: 279px) {
+        .calendar {
+          --ui-calendar-day-size: 1.75rem;
+        }
+        .calendar-header h2,
+        .view-heading {
+          font-size: 0.75rem;
+        }
+        .weekday-header {
+          font-size: 0.625rem;
+          padding: 0.25rem 0;
+        }
+        .date-button, .date-button-wrapper {
+          font-size: 0.75rem;
+        }
+        .nav-button {
+          width: 1.5rem;
+          height: 1.5rem;
+        }
+        .nav-button svg {
+          width: 0.75rem;
+          height: 0.75rem;
+        }
+        .year-cell, .decade-cell {
+          padding: 0.5rem 0.25rem;
+          font-size: 0.75rem;
+        }
+        .week-number {
+          font-size: 0.625rem;
+          width: 1.5rem;
+        }
+        .help-button {
+          font-size: 0.625rem;
+        }
+      }
+
+      /* Container query: spacious (>380px) */
+      @container (min-width: 381px) {
+        .calendar {
+          --ui-calendar-day-size: 3rem;
+        }
+        .date-button, .date-button-wrapper {
+          font-size: 1rem;
+        }
+        .weekday-header {
+          font-size: 0.875rem;
+        }
+        .calendar-header h2,
+        .view-heading {
+          font-size: 1rem;
+        }
+        .year-cell, .decade-cell {
+          padding: 1rem 0.75rem;
+          font-size: 1rem;
+        }
       }
     `,
   ];
