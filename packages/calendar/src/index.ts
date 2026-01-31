@@ -5,6 +5,8 @@ import { isServer } from 'lit';
 // Export component classes and types
 export { Calendar } from './calendar.js';
 export { CalendarMulti } from './calendar-multi.js';
+export { GestureHandler } from './gesture-handler.js';
+export { AnimationController } from './animation-controller.js';
 export type { DateConstraints, DayCellState } from './calendar.js';
 
 // Export keyboard navigation manager
@@ -40,6 +42,7 @@ export type { WeekInfo } from './date-utils.js';
 export {
   getFirstDayOfWeek,
   getWeekdayNames,
+  getWeekdayLongNames,
   getMonthNames,
 } from './intl-utils.js';
 
