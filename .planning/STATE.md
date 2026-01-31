@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-30)
 ## Current Position
 
 Phase: 5 of 9 (Date Range Picker Core)
-Plan: 3 of 5 in current phase (3 executions complete)
+Plan: 4 of 5 in current phase (4 executions complete)
 Status: In progress
-Last activity: 2026-01-31 — Completed 46-03-PLAN.md
+Last activity: 2026-01-31 — Completed 46-04-PLAN.md
 
-Progress: [███████████████████░░░░░░░░░░░░░] 60% (3/5 plans in phase 46)
+Progress: [█████████████████████████░░░░░░░] 80% (4/5 plans in phase 46)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 35
+- Total plans completed: 36
 - Average duration: 2.1 min
-- Total execution time: 1.27 hours
+- Total execution time: 1.30 hours
 
 **By Phase:**
 
@@ -31,7 +31,7 @@ Progress: [███████████████████░░░░
 | 43    | 8     | 8     | 1.9 min |
 
 **Recent Trend:**
-- Last 3 plans: 3 min (46-03), 2 min (46-02), 3 min (46-01)
+- Last 3 plans: 2 min (46-04), 3 min (46-03), 2 min (46-02)
 - Trend: Consistent execution pace
 
 *Updated after each plan completion*
@@ -135,6 +135,9 @@ Recent decisions affecting current work:
 - **Phase 46-03**: displayValue getter uses Intl.DateTimeFormat with short month format for range display
 - **Phase 46-03**: Popup wraps dual-calendar layout via renderCalendarContent() extraction
 - **Phase 46-03**: formResetCallback closes popup for clean form reset behavior
+- **Phase 46-04**: validate() checks required (valueMissing) before duration (customError), matching date-picker pattern
+- **Phase 46-04**: Popup auto-closes on valid complete range selection
+- **Phase 46-04**: Input clear button visible when startDate set; footer clear only on complete range
 
 ### Pending Todos
 
@@ -150,6 +153,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-31 (46-03 complete)
-Stopped at: Completed 46-03-PLAN.md (Input field, popup, Floating UI, click-outside, focus trap)
+Last session: 2026-01-31 (46-04 complete)
+Stopped at: Completed 46-04-PLAN.md (Form integration, validation, clear button, popup footer)
 Resume file: None
