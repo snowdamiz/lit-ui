@@ -674,6 +674,7 @@ export class DateRangePicker extends TailwindElement {
     this.hoveredDate = '';
     this.internalError = '';
     this.rangeState = 'idle';
+    this.isOpen = false;
     this.internals?.setFormValue(null);
     this.internals?.setValidity({});
   }
