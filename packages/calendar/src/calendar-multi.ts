@@ -32,6 +32,7 @@ export class CalendarMulti extends TailwindElement {
     css`
       :host {
         display: block;
+        container-type: inline-size;
       }
 
       .multi-header {
@@ -50,11 +51,12 @@ export class CalendarMulti extends TailwindElement {
       .multi-wrapper {
         display: flex;
         gap: 1rem;
+        flex-wrap: wrap;
       }
 
       .multi-wrapper > * {
-        min-width: 280px;
-        flex: 1;
+        min-width: 240px;
+        flex: 1 1 280px;
       }
 
       .nav-button {
@@ -87,6 +89,20 @@ export class CalendarMulti extends TailwindElement {
       /* Dark mode */
       :host-context(.dark) .nav-button:hover {
         background-color: var(--ui-calendar-hover-bg, #1f2937);
+      }
+
+      /* Container query: vertical stacking for narrow containers */
+      @container (max-width: 599px) {
+        .multi-wrapper {
+          flex-direction: column;
+        }
+      }
+
+      /* Container query: wider gap for spacious containers */
+      @container (min-width: 800px) {
+        .multi-wrapper {
+          gap: 1.5rem;
+        }
       }
     `,
   ];
