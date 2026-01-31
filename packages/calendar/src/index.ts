@@ -5,7 +5,7 @@ import { isServer } from 'lit';
 // Export component classes and types
 export { Calendar } from './calendar.js';
 export { CalendarMulti } from './calendar-multi.js';
-export type { CalendarView } from './calendar.js';
+export type { CalendarView, DayCellState } from './calendar.js';
 
 // Export utility functions for public API
 export {
@@ -14,8 +14,17 @@ export {
   parseDate,
   isSameDayCompare,
   isDateToday,
+  getISOWeekNumber,
+  getWeekRange,
+  getMonthWeeks,
 } from './date-utils.js';
+export type { WeekInfo } from './date-utils.js';
 export { getWeekdayNames, getMonthName, getMonthYearLabel } from './intl-utils.js';
+
+// Export utility classes for advanced usage
+export { GestureHandler } from './gesture-handler.js';
+export type { SwipeResult } from './gesture-handler.js';
+export { AnimationController } from './animation-controller.js';
 
 // Re-export TailwindElement and isServer for convenience
 export { TailwindElement, isServer } from '@lit-ui/core';
