@@ -4,8 +4,9 @@
  */
 
 import type { DatePicker } from './date-picker.js';
+import type { DatePreset } from './preset-types.js';
 
-// Attributes for lui-date-picker
+// Attributes for lui-date-picker (HTML attributes, reflected)
 interface LuiDatePickerAttributes {
   value?: string;
   name?: string;
@@ -18,6 +19,13 @@ interface LuiDatePickerAttributes {
   error?: string;
   required?: boolean;
   disabled?: boolean;
+  inline?: boolean;
+}
+
+// JS-only properties (not reflected as attributes)
+interface LuiDatePickerProperties {
+  presets?: DatePreset[] | boolean;
+  format?: Intl.DateTimeFormatOptions | null;
 }
 
 // Event handler types
@@ -30,7 +38,7 @@ declare global {
   namespace JSX {
     interface IntrinsicElements {
       'lui-date-picker': React.DetailedHTMLProps<
-        React.HTMLAttributes<DatePicker> & LuiDatePickerAttributes & LuiDatePickerEvents,
+        React.HTMLAttributes<DatePicker> & LuiDatePickerAttributes & LuiDatePickerProperties & LuiDatePickerEvents,
         DatePicker
       >;
     }
@@ -40,14 +48,14 @@ declare global {
 // Vue support
 declare module 'vue' {
   export interface GlobalComponents {
-    'lui-date-picker': import('vue').DefineComponent<LuiDatePickerAttributes>;
+    'lui-date-picker': import('vue').DefineComponent<LuiDatePickerAttributes & LuiDatePickerProperties>;
   }
 }
 
 // Svelte support
 declare namespace svelteHTML {
   interface IntrinsicElements {
-    'lui-date-picker': LuiDatePickerAttributes & {
+    'lui-date-picker': LuiDatePickerAttributes & LuiDatePickerProperties & {
       'on:change'?: (e: CustomEvent<{ date: Date | null; isoString: string }>) => void;
     };
   }

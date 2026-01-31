@@ -12,6 +12,13 @@ export {
   getPlaceholderText,
 } from './date-input-parser.js';
 
+// Export natural language parsing
+export { parseNaturalLanguage } from './natural-language.js';
+
+// Export preset types and defaults
+export type { DatePreset } from './preset-types.js';
+export { DEFAULT_PRESETS } from './preset-types.js';
+
 // Re-export TailwindElement and isServer for convenience
 export { TailwindElement, isServer } from '@lit-ui/core';
 
