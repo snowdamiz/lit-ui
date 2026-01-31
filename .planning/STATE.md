@@ -10,28 +10,28 @@ See: .planning/PROJECT.md (updated 2026-01-30)
 ## Current Position
 
 Phase: 1 of 9 (Calendar Display Foundation)
-Plan: 8 of 10 in current phase (8 execution complete, 2 gap closure planned)
-Status: Gap closure plans created and verified
-Last activity: 2026-01-31 — Created gap closure plans for roving tabindex and screen reader announcements
+Plan: 9 of 10 in current phase (9 execution complete, 1 gap closure remaining)
+Status: In progress
+Last activity: 2026-01-31 — Completed 42-09-PLAN.md (imperative roving tabindex)
 
-Progress: [████████░░] 80%
+Progress: [█████████░] 90%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 8
-- Average duration: 2.9 min
-- Total execution time: 0.38 hours
+- Total plans completed: 9
+- Average duration: 2.8 min
+- Total execution time: 0.42 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 42    | 8     | 8     | 2.9 min |
+| 42    | 9     | 9     | 2.8 min |
 
 **Recent Trend:**
-- Last 3 plans: 2 min (42-06), 2 min (42-07), 4 min (42-08)
-- Trend: Phase 42 complete
+- Last 3 plans: 2 min (42-07), 4 min (42-08), 2 min (42-09)
+- Trend: Consistent execution pace
 
 *Updated after each plan completion*
 
@@ -69,6 +69,9 @@ Recent decisions affecting current work:
 - **Phase 42-08**: Use :host-context(.dark) selectors for dark mode support (follows established project pattern)
 - **Phase 42-08**: Define calendar CSS custom properties in core tailwind.css (consistent with other components)
 - **Phase 42-08**: Register all calendar utility files in CLI (date-utils.ts, intl-utils.ts, keyboard-nav.ts)
+- **Phase 42-09**: Remove tabindex from Lit template; manage imperatively via KeyboardNavigationManager in lifecycle
+- **Phase 42-09**: Convert focusedIndex/navigationManager from @state() to private (no re-render on focus change)
+- **Phase 42-09**: Use requestAnimationFrame in firstUpdated/updated for post-render tabindex setup
 
 ### Pending Todos
 
@@ -84,6 +87,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-30 (42-08 execution)
-Stopped at: Completed 42-08-PLAN.md, added dark mode support, SSR verification, build config verification, CLI registration, and documentation
+Last session: 2026-01-31 (42-09 execution)
+Stopped at: Completed 42-09-PLAN.md, imperative roving tabindex via KeyboardNavigationManager
 Resume file: None
