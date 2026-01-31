@@ -95,17 +95,16 @@ export class Calendar extends TailwindElement {
   private selectedDate: string = '';
 
   /**
-   * Internal state tracking the currently focused cell index.
-   * Used for roving tabindex keyboard navigation.
+   * Tracks the currently focused cell index for roving tabindex.
+   * Not reactive (@state) - focus changes must NOT trigger re-renders,
+   * as tabindex is managed imperatively by KeyboardNavigationManager.
    */
-  @state()
   private focusedIndex: number = 0;
 
   /**
    * Keyboard navigation manager for roving tabindex.
-   * Initialized when grid cells are available.
+   * Not reactive - managed imperatively, no re-render needed.
    */
-  @state()
   private navigationManager: KeyboardNavigationManager | null = null;
 
   /**
