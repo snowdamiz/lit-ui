@@ -6,7 +6,7 @@
  */
 
 import { html, css, nothing, isServer, type PropertyValues, type CSSResultGroup } from 'lit';
-import { property, state } from 'lit/decorators.js';
+import { property, state, query } from 'lit/decorators.js';
 import { TailwindElement, tailwindBaseStyles, dispatchCustomEvent } from '@lit-ui/core';
 import {
   addMonths,
@@ -202,6 +202,60 @@ export class Calendar extends TailwindElement {
         outline: 2px solid var(--ui-calendar-focus-ring, var(--color-ring, #3b82f6));
         outline-offset: 2px;
       }
+
+      .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border-width: 0;
+      }
+
+      .help-button {
+        font-size: 0.75rem;
+        color: var(--ui-calendar-weekday-color, #6b7280);
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0.25rem;
+        text-decoration: underline;
+      }
+
+      .help-dialog {
+        padding: 1rem;
+        border-radius: 0.5rem;
+        border: 1px solid var(--ui-calendar-border, #e5e7eb);
+        max-width: 320px;
+      }
+
+      .help-dialog::backdrop {
+        background: rgba(0, 0, 0, 0.3);
+      }
+
+      .shortcut-list {
+        list-style: none;
+        padding: 0;
+        margin: 0.5rem 0;
+        font-size: 0.875rem;
+      }
+
+      .shortcut-list li {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.25rem 0;
+      }
+
+      .shortcut-list kbd {
+        font-family: monospace;
+        background: var(--ui-calendar-hover-bg, #f3f4f6);
+        padding: 0.125rem 0.375rem;
+        border-radius: 0.25rem;
+        font-size: 0.75rem;
+      }
     `,
   ];
 
@@ -241,6 +295,24 @@ export class Calendar extends TailwindElement {
    */
   @state()
   private selectedYear: number = getYear(new Date());
+
+  /**
+   * Text for the dedicated aria-live announcement region.
+   */
+  @state()
+  private liveAnnouncement = '';
+
+  /**
+   * Whether the keyboard shortcuts help dialog is open.
+   */
+  @state()
+  private showHelp = false;
+
+  /**
+   * Reference to the native dialog element for help shortcuts.
+   */
+  @query('.help-dialog')
+  private helpDialog!: HTMLDialogElement;
 
   /**
    * Sync dropdown state and value property when reactive properties change.
@@ -283,6 +355,7 @@ export class Calendar extends TailwindElement {
   private navigatePrevMonth(): void {
     this.currentMonth = subMonths(this.currentMonth, 1);
     this.emitMonthChange();
+    this.announceMonthChange();
   }
 
   /**
@@ -291,6 +364,7 @@ export class Calendar extends TailwindElement {
   private navigateNextMonth(): void {
     this.currentMonth = addMonths(this.currentMonth, 1);
     this.emitMonthChange();
+    this.announceMonthChange();
   }
 
   /**
@@ -301,6 +375,35 @@ export class Calendar extends TailwindElement {
       year: getYear(this.currentMonth),
       month: getMonth(this.currentMonth),
     });
+  }
+
+  /**
+   * Announce the current month to screen readers via the aria-live region.
+   */
+  private announceMonthChange(): void {
+    this.liveAnnouncement = 'Now showing ' + getMonthYearLabel(this.currentMonth, this.effectiveLocale);
+  }
+
+  /**
+   * Open the keyboard shortcuts help dialog.
+   */
+  private openHelpDialog(): void {
+    this.showHelp = true;
+    if (!isServer) {
+      this.updateComplete.then(() => {
+        this.helpDialog?.showModal();
+      });
+    }
+  }
+
+  /**
+   * Close the keyboard shortcuts help dialog.
+   */
+  private closeHelpDialog(): void {
+    this.showHelp = false;
+    if (!isServer) {
+      this.helpDialog?.close();
+    }
   }
 
   /**
@@ -316,6 +419,7 @@ export class Calendar extends TailwindElement {
       date: date,
       isoString: format(date, 'yyyy-MM-dd'),
     });
+    this.liveAnnouncement = 'Selected ' + formatDateLabel(date, this.effectiveLocale);
   }
 
   /**
@@ -327,6 +431,7 @@ export class Calendar extends TailwindElement {
     newDate.setMonth(month);
     this.currentMonth = newDate;
     this.emitMonthChange();
+    this.announceMonthChange();
   }
 
   /**
@@ -338,6 +443,7 @@ export class Calendar extends TailwindElement {
     newDate.setFullYear(year);
     this.currentMonth = newDate;
     this.emitMonthChange();
+    this.announceMonthChange();
   }
 
   /**
@@ -445,6 +551,38 @@ export class Calendar extends TailwindElement {
             `;
           })}
         </div>
+        <div class="visually-hidden" role="status" aria-live="polite" aria-atomic="true">
+          ${this.liveAnnouncement}
+        </div>
+        <div style="text-align: center; padding: 0.25rem;">
+          <button
+            class="help-button"
+            @click="${this.openHelpDialog}"
+            aria-label="Keyboard shortcuts"
+          >
+            ? Keyboard shortcuts
+          </button>
+        </div>
+        <dialog class="help-dialog" @close="${() => this.showHelp = false}">
+          <h3 style="margin: 0 0 0.5rem; font-size: 1rem; font-weight: 600;">Keyboard Shortcuts</h3>
+          <ul class="shortcut-list">
+            <li><span>Previous day</span> <kbd>&#8592;</kbd></li>
+            <li><span>Next day</span> <kbd>&#8594;</kbd></li>
+            <li><span>Previous week</span> <kbd>&#8593;</kbd></li>
+            <li><span>Next week</span> <kbd>&#8595;</kbd></li>
+            <li><span>Previous month</span> <kbd>PageUp</kbd></li>
+            <li><span>Next month</span> <kbd>PageDown</kbd></li>
+            <li><span>Start of month</span> <kbd>Home</kbd></li>
+            <li><span>End of month</span> <kbd>End</kbd></li>
+            <li><span>Select date</span> <kbd>Enter</kbd></li>
+          </ul>
+          <button
+            @click="${this.closeHelpDialog}"
+            style="margin-top: 0.5rem; padding: 0.375rem 0.75rem; border: 1px solid var(--ui-calendar-border, #e5e7eb); border-radius: 0.25rem; background: none; cursor: pointer;"
+          >
+            Close
+          </button>
+        </dialog>
       </div>
     `;
   }
