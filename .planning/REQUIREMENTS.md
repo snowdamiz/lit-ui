@@ -60,14 +60,14 @@ Requirements for v4.3 milestone - complete date/time input capabilities. Each ma
 - [x] **DP-17**: Calendar popup uses flip/shift middleware to avoid clipping
 - [x] **DP-18**: Popup uses composedPath() for click-outside detection
 - [x] **DP-19**: Component uses date-fns for date manipulation
-- [ ] **DP-20**: Natural language parsing accepts "tomorrow", "next week", "today"
-- [ ] **DP-21**: Quick preset buttons provide one-click common dates
-- [ ] **DP-22**: Preset buttons include Today, Tomorrow, Next Week options
-- [ ] **DP-23**: Inline mode displays always-visible calendar without popup
-- [ ] **DP-24**: Custom format prop accepts Intl.DateTimeFormat options
-- [ ] **DP-25**: Min/max dates show tooltip with constraint reason
-- [ ] **DP-26**: Component respects dark mode via :host-context(.dark)
-- [ ] **DP-27**: Component renders via SSR with Declarative Shadow DOM
+- [x] **DP-20**: Natural language parsing accepts "tomorrow", "next week", "today"
+- [x] **DP-21**: Quick preset buttons provide one-click common dates
+- [x] **DP-22**: Preset buttons include Today, Tomorrow, Next Week options
+- [x] **DP-23**: Inline mode displays always-visible calendar without popup
+- [x] **DP-24**: Custom format prop accepts Intl.DateTimeFormat options
+- [x] **DP-25**: Min/max dates show tooltip with constraint reason
+- [x] **DP-26**: Component respects dark mode via :host-context(.dark)
+- [x] **DP-27**: Component renders via SSR with Declarative Shadow DOM
 
 ### Date Range Picker
 
@@ -218,14 +218,14 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DP-17 | Phase 44 | Complete |
 | DP-18 | Phase 44 | Complete |
 | DP-19 | Phase 44 | Complete |
-| DP-20 | Phase 45 | Pending |
-| DP-21 | Phase 45 | Pending |
-| DP-22 | Phase 45 | Pending |
-| DP-23 | Phase 45 | Pending |
-| DP-24 | Phase 45 | Pending |
-| DP-25 | Phase 45 | Pending |
-| DP-26 | Phase 45 | Pending |
-| DP-27 | Phase 45 | Pending |
+| DP-20 | Phase 45 | Complete |
+| DP-21 | Phase 45 | Complete |
+| DP-22 | Phase 45 | Complete |
+| DP-23 | Phase 45 | Complete |
+| DP-24 | Phase 45 | Complete |
+| DP-25 | Phase 45 | Complete |
+| DP-26 | Phase 45 | Complete |
+| DP-27 | Phase 45 | Complete |
 | DRP-01 | Phase 46 | Pending |
 | DRP-02 | Phase 46 | Pending |
 | DRP-03 | Phase 46 | Pending |

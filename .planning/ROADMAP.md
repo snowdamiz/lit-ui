@@ -428,11 +428,11 @@ Plans:
 **Plans**: 5 plans in 4 waves
 
 Plans:
-- [ ] 45-01-PLAN.md -- Natural language date parser (TDD) with dictionary-based phrase resolution
-- [ ] 45-02-PLAN.md -- Preset buttons (Today, Tomorrow, Next Week) and custom format prop
-- [ ] 45-03-PLAN.md -- Inline mode with always-visible calendar rendering
-- [ ] 45-04-PLAN.md -- Min/max constraint tooltips on disabled calendar dates
-- [ ] 45-05-PLAN.md -- Dark mode, SSR compatibility, package exports, and JSX types
+- [x] 45-01-PLAN.md -- Natural language date parser (TDD) with dictionary-based phrase resolution
+- [x] 45-02-PLAN.md -- Preset buttons (Today, Tomorrow, Next Week) and custom format prop
+- [x] 45-03-PLAN.md -- Inline mode with always-visible calendar rendering
+- [x] 45-04-PLAN.md -- Min/max constraint tooltips on disabled calendar dates
+- [x] 45-05-PLAN.md -- Dark mode, SSR compatibility, package exports, and JSX types
 
 #### Phase 46: Date Range Picker Core
 **Goal**: Date range picker with start/end selection, two calendars, range highlighting, hover preview, and validation.
@@ -556,7 +556,7 @@ Phases execute in numeric order: 42 → 43 → 44 → 45 → 46 → 47 → 48 �
 | 42. Calendar Display Foundation | v4.3 | 8/8 | Complete | 2026-01-31 |
 | 43. Calendar Display Advanced | v4.3 | 8/8 | Complete | 2026-01-31 |
 | 44. Date Picker Core | v4.3 | 5/5 | Complete | 2026-01-31 |
-| 45. Date Picker Advanced | v4.3 | 0/5 | Not started | - |
+| 45. Date Picker Advanced | v4.3 | 5/5 | Complete | 2026-01-31 |
 | 46. Date Range Picker Core | v4.3 | 0/9 | Not started | - |
 | 47. Date Range Picker Advanced | v4.3 | 0/6 | Not started | - |
 | 48. Time Picker Core | v4.3 | 0/11 | Not started | - |
