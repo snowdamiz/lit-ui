@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-30)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** Phase 44 Date Picker Core — plan 01 complete
+**Current focus:** Phase 44 Date Picker Core — plan 02 complete
 
 ## Current Position
 
 Phase: 3 of 9 (Date Picker Core)
-Plan: 1 of 5 in current phase (1 execution complete)
+Plan: 2 of 5 in current phase (2 execution complete)
 Status: In progress
-Last activity: 2026-01-31 — Completed 44-01-PLAN.md
+Last activity: 2026-01-31 — Completed 44-02-PLAN.md
 
-Progress: [█████████████████░░░] 85% (17/19 plans)
+Progress: [██████████████████░░] 90% (18/19 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 24
-- Average duration: 2.1 min
-- Total execution time: 0.84 hours
+- Total plans completed: 25
+- Average duration: 2.2 min
+- Total execution time: 0.92 hours
 
 **By Phase:**
 
@@ -31,7 +31,7 @@ Progress: [█████████████████░░░] 85% (17
 | 43    | 8     | 8     | 1.9 min |
 
 **Recent Trend:**
-- Last 3 plans: 1 min (43-08), 2 min (43-07), 5 min (43-06)
+- Last 3 plans: 5 min (44-02), 2 min (44-01), 1 min (43-08)
 - Trend: Consistent execution pace
 
 *Updated after each plan completion*
@@ -103,6 +103,8 @@ Recent decisions affecting current work:
 - **Phase 43-08**: JSX types include event handler types for ui-date-select, ui-month-change, ui-week-select
 - **Phase 44-01**: Use Intl.DateTimeFormat for display formatting instead of date-fns format() (zero bundle cost)
 - **Phase 44-01**: en-US/en-CA use MM/dd ordering; all other locales use dd/MM for date input parsing
+- **Phase 44-02**: Popup uses absolute positioning as placeholder; Plan 03 upgrades to Floating UI
+- **Phase 44-02**: Calendar popup composed directly (not slotted); Escape checks defaultPrevented for view drilling
 
 ### Pending Todos
 
@@ -118,6 +120,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-31 (44-01 complete)
-Stopped at: Completed 44-01-PLAN.md (Package scaffolding and date input parser)
+Last session: 2026-01-31 (44-02 complete)
+Stopped at: Completed 44-02-PLAN.md (DatePicker component core)
 Resume file: None
