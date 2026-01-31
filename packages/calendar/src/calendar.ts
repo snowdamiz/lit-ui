@@ -647,7 +647,6 @@ export class Calendar extends TailwindElement {
     const isoDate = formatDate(date);
     const isSelected = this.selectedDate ? isSameDayCompare(date, new Date(this.selectedDate)) : false;
     const isToday = isDateToday(date);
-    const isFocused = index === this.focusedIndex;
     const isDisabled = this.isCellDisabled(date);
 
     // Generate aria-label with disabled reason
@@ -709,6 +708,11 @@ export class Calendar extends TailwindElement {
   /**
    * Handle keyboard navigation on the calendar grid.
    * Implements WAI-ARIA Grid Pattern keyboard interactions.
+   *
+   * Imperative tabindex flow:
+   * 1. navigationManager.moveFocus() updates DOM tabindex directly
+   * 2. this.focusedIndex tracks position (no re-render, not @state)
+   * 3. nextElement.focus() moves visible focus
    */
   private handleKeyDown(event: KeyboardEvent): void {
     const currentIndex = this.focusedIndex;
