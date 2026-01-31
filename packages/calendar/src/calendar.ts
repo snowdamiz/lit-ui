@@ -26,6 +26,7 @@ import {
 } from './date-utils.js';
 import { parseISO } from 'date-fns';
 import { getFirstDayOfWeek, getWeekdayNames, getWeekdayLongNames, getMonthNames } from './intl-utils.js';
+import { KeyboardNavigationManager } from './keyboard-nav.js';
 
 /**
  * Represents the parsed date constraint state for the calendar.
@@ -418,6 +419,132 @@ export class Calendar extends TailwindElement {
   private helpDialog!: HTMLDialogElement;
 
   /**
+   * Keyboard navigation manager for roving tabindex (imperative, not reactive).
+   */
+  private navigationManager: KeyboardNavigationManager | null = null;
+
+  /**
+   * Initialize keyboard navigation manager after first render.
+   */
+  protected override firstUpdated(): void {
+    if (isServer) return;
+    this.navigationManager = new KeyboardNavigationManager(7);
+    requestAnimationFrame(() => this.setupCells());
+  }
+
+  /**
+   * Query current-month date buttons and initialize roving tabindex.
+   * Sets initial focus to today (if visible) or first day of month.
+   */
+  private setupCells(): void {
+    if (!this.navigationManager) return;
+    const buttons = Array.from(
+      this.renderRoot.querySelectorAll('.date-button:not(.outside-month)')
+    ) as HTMLElement[];
+    this.navigationManager.setCells(buttons);
+
+    // Try to focus today, otherwise first cell
+    const todayIndex = buttons.findIndex(
+      (btn) => btn.classList.contains('today')
+    );
+    if (todayIndex >= 0) {
+      this.navigationManager.setFocusedIndex(todayIndex);
+    } else {
+      this.navigationManager.setFocusedIndex(0);
+    }
+  }
+
+  /**
+   * Handle keyboard navigation on the calendar grid.
+   */
+  private handleKeydown(e: KeyboardEvent): void {
+    if (!this.navigationManager) return;
+
+    const keyMap: Record<string, 'left' | 'right' | 'up' | 'down' | 'home' | 'end'> = {
+      ArrowLeft: 'left',
+      ArrowRight: 'right',
+      ArrowUp: 'up',
+      ArrowDown: 'down',
+      Home: 'home',
+      End: 'end',
+    };
+
+    const direction = keyMap[e.key];
+    if (direction) {
+      e.preventDefault();
+      const result = this.navigationManager.moveFocus(direction);
+      if (result === -1) {
+        // Boundary crossing — navigate month
+        if (direction === 'left' || direction === 'up') {
+          this.navigatePrevMonth();
+          this.updateComplete.then(() => {
+            requestAnimationFrame(() => {
+              this.setupCells();
+              // Focus last cell when navigating backward
+              const buttons = Array.from(
+                this.renderRoot.querySelectorAll('.date-button:not(.outside-month)')
+              ) as HTMLElement[];
+              if (buttons.length > 0) {
+                this.navigationManager!.setFocusedIndex(buttons.length - 1);
+                this.navigationManager!.focusCurrent();
+              }
+            });
+          });
+        } else {
+          this.navigateNextMonth();
+          this.updateComplete.then(() => {
+            requestAnimationFrame(() => {
+              this.setupCells();
+              this.navigationManager!.focusCurrent();
+            });
+          });
+        }
+      }
+      return;
+    }
+
+    if (e.key === 'PageUp') {
+      e.preventDefault();
+      const currentIdx = this.navigationManager.getFocusedIndex();
+      this.navigatePrevMonth();
+      this.updateComplete.then(() => {
+        requestAnimationFrame(() => {
+          this.setupCells();
+          this.navigationManager!.setFocusedIndex(currentIdx);
+          this.navigationManager!.focusCurrent();
+        });
+      });
+      return;
+    }
+
+    if (e.key === 'PageDown') {
+      e.preventDefault();
+      const currentIdx = this.navigationManager.getFocusedIndex();
+      this.navigateNextMonth();
+      this.updateComplete.then(() => {
+        requestAnimationFrame(() => {
+          this.setupCells();
+          this.navigationManager!.setFocusedIndex(currentIdx);
+          this.navigationManager!.focusCurrent();
+        });
+      });
+      return;
+    }
+
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      const idx = this.navigationManager.getFocusedIndex();
+      const buttons = Array.from(
+        this.renderRoot.querySelectorAll('.date-button:not(.outside-month)')
+      ) as HTMLElement[];
+      if (buttons[idx]) {
+        buttons[idx].click();
+      }
+      return;
+    }
+  }
+
+  /**
    * Sync dropdown state, value property, and date constraints when reactive properties change.
    */
   protected override updated(changedProperties: PropertyValues): void {
@@ -425,6 +552,9 @@ export class Calendar extends TailwindElement {
     if (changedProperties.has('currentMonth' as keyof this)) {
       this.selectedMonth = getMonth(this.currentMonth);
       this.selectedYear = getYear(this.currentMonth);
+      if (!isServer) {
+        requestAnimationFrame(() => this.setupCells());
+      }
     }
     if (changedProperties.has('value') && this.value) {
       this.selectedDate = parseISO(this.value);
@@ -688,29 +818,41 @@ export class Calendar extends TailwindElement {
           class="calendar-grid"
           role="grid"
           aria-labelledby="month-heading"
+          @keydown="${this.handleKeydown}"
         >
-          ${days.map((day) => {
-            const outsideMonth = !isSameMonth(day, this.currentMonth);
-            const today = isToday(day);
-            const selected = this.selectedDate !== null && isSameDay(day, this.selectedDate);
-            const constraint = this.isDateDisabled(day);
-            const isDisabled = outsideMonth || constraint.disabled;
-            const label = constraint.disabled
-              ? `${formatDateLabel(day, this.effectiveLocale)}, ${constraint.reason}`
-              : formatDateLabel(day, this.effectiveLocale);
-            return html`
-              <button
-                class="date-button ${outsideMonth ? 'outside-month' : ''} ${today ? 'today' : ''}"
-                aria-label="${label}"
-                aria-current="${today ? 'date' : nothing}"
-                aria-selected="${selected ? 'true' : 'false'}"
-                aria-disabled="${isDisabled ? 'true' : 'false'}"
-                @click="${() => this.handleDateSelect(day)}"
-              >
-                ${day.getDate()}
-              </button>
-            `;
-          })}
+          ${(() => {
+            let firstCurrentMonthFound = false;
+            return days.map((day) => {
+              const outsideMonth = !isSameMonth(day, this.currentMonth);
+              const today = isToday(day);
+              const selected = this.selectedDate !== null && isSameDay(day, this.selectedDate);
+              const constraint = this.isDateDisabled(day);
+              const isDisabled = outsideMonth || constraint.disabled;
+              const label = constraint.disabled
+                ? `${formatDateLabel(day, this.effectiveLocale)}, ${constraint.reason}`
+                : formatDateLabel(day, this.effectiveLocale);
+              // Initial tabindex: first current-month cell gets 0, all others -1
+              // After firstUpdated, KeyboardNavigationManager takes over imperatively
+              let initialTabindex = -1;
+              if (!outsideMonth && !firstCurrentMonthFound) {
+                firstCurrentMonthFound = true;
+                initialTabindex = 0;
+              }
+              return html`
+                <button
+                  class="date-button ${outsideMonth ? 'outside-month' : ''} ${today ? 'today' : ''}"
+                  tabindex="${initialTabindex}"
+                  aria-label="${label}"
+                  aria-current="${today ? 'date' : nothing}"
+                  aria-selected="${selected ? 'true' : 'false'}"
+                  aria-disabled="${isDisabled ? 'true' : 'false'}"
+                  @click="${() => this.handleDateSelect(day)}"
+                >
+                  ${day.getDate()}
+                </button>
+              `;
+            });
+          })()}
         </div>
         <div class="visually-hidden" role="status" aria-live="polite" aria-atomic="true">
           ${this.liveAnnouncement}
