@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-30)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** Phase 44 Date Picker Core — plan 02 complete
+**Current focus:** Phase 44 Date Picker Core — plan 03 complete
 
 ## Current Position
 
 Phase: 3 of 9 (Date Picker Core)
-Plan: 2 of 5 in current phase (2 execution complete)
+Plan: 3 of 5 in current phase (3 execution complete)
 Status: In progress
-Last activity: 2026-01-31 — Completed 44-02-PLAN.md
+Last activity: 2026-01-31 — Completed 44-03-PLAN.md
 
-Progress: [██████████████████░░] 90% (18/19 plans)
+Progress: [███████████████████░] 95% (19/20 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 25
+- Total plans completed: 26
 - Average duration: 2.2 min
-- Total execution time: 0.92 hours
+- Total execution time: 0.95 hours
 
 **By Phase:**
 
@@ -31,7 +31,7 @@ Progress: [██████████████████░░] 90% (18
 | 43    | 8     | 8     | 1.9 min |
 
 **Recent Trend:**
-- Last 3 plans: 5 min (44-02), 2 min (44-01), 1 min (43-08)
+- Last 3 plans: 2 min (44-03), 5 min (44-02), 2 min (44-01)
 - Trend: Consistent execution pace
 
 *Updated after each plan completion*
@@ -105,6 +105,8 @@ Recent decisions affecting current work:
 - **Phase 44-01**: en-US/en-CA use MM/dd ordering; all other locales use dd/MM for date input parsing
 - **Phase 44-02**: Popup uses absolute positioning as placeholder; Plan 03 upgrades to Floating UI
 - **Phase 44-02**: Calendar popup composed directly (not slotted); Escape checks defaultPrevented for view drilling
+- **Phase 44-03**: Popup uses Floating UI fixed strategy with offset(4), flip to top-start, shift with 8px padding
+- **Phase 44-03**: Click-outside uses composedPath().includes(this) for Shadow DOM compatibility
 
 ### Pending Todos
 
@@ -120,6 +122,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-31 (44-02 complete)
-Stopped at: Completed 44-02-PLAN.md (DatePicker component core)
+Last session: 2026-01-31 (44-03 complete)
+Stopped at: Completed 44-03-PLAN.md (Popup positioning and click-outside)
 Resume file: None
