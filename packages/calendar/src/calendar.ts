@@ -5,7 +5,7 @@
  * leading/trailing days from adjacent months, and CSS Grid layout.
  */
 
-import { html, css, isServer, type PropertyValues, type CSSResultGroup } from 'lit';
+import { html, css, nothing, isServer, type PropertyValues, type CSSResultGroup } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import { TailwindElement, tailwindBaseStyles, dispatchCustomEvent } from '@lit-ui/core';
 import {
@@ -17,7 +17,11 @@ import {
   getMonthYearLabel,
   intlFirstDayToDateFns,
   isSameMonth,
+  isSameDay,
+  isToday,
+  format,
 } from './date-utils.js';
+import { parseISO } from 'date-fns';
 import { getFirstDayOfWeek, getWeekdayNames, getMonthNames } from './intl-utils.js';
 
 /**
@@ -46,6 +50,8 @@ function formatDateLabel(date: Date, locale: string): string {
  * - SSR-safe with isServer guards
  *
  * @element lui-calendar
+ * @fires ui-date-select - Dispatched when a date is selected, with { date: Date, isoString: string }
+ * @fires ui-month-change - Dispatched when the displayed month changes
  */
 export class Calendar extends TailwindElement {
   static override styles: CSSResultGroup = [
@@ -161,7 +167,7 @@ export class Calendar extends TailwindElement {
         align-items: center;
         justify-content: center;
         border-radius: var(--ui-calendar-radius, 0.375rem);
-        border: none;
+        border: 2px solid transparent;
         background: none;
         cursor: pointer;
         font-size: 0.875rem;
@@ -175,6 +181,26 @@ export class Calendar extends TailwindElement {
 
       .date-button.outside-month {
         opacity: var(--ui-calendar-outside-opacity, 0.4);
+      }
+
+      .date-button.today {
+        border: 2px solid var(--ui-calendar-today-border, var(--color-primary, #3b82f6));
+        font-weight: 600;
+      }
+
+      .date-button[aria-selected="true"] {
+        background-color: var(--ui-calendar-selected-bg, var(--color-primary, #3b82f6));
+        color: var(--ui-calendar-selected-text, white);
+      }
+
+      .date-button[aria-selected="true"]:hover {
+        background-color: var(--ui-calendar-selected-bg, var(--color-primary, #3b82f6));
+        filter: brightness(0.9);
+      }
+
+      .date-button:focus-visible {
+        outline: 2px solid var(--ui-calendar-focus-ring, var(--color-ring, #3b82f6));
+        outline-offset: 2px;
       }
     `,
   ];
@@ -199,6 +225,12 @@ export class Calendar extends TailwindElement {
   private currentMonth = new Date();
 
   /**
+   * The currently selected date.
+   */
+  @state()
+  private selectedDate: Date | null = null;
+
+  /**
    * Tracks the selected month index in the dropdown (0-11).
    */
   @state()
@@ -211,13 +243,16 @@ export class Calendar extends TailwindElement {
   private selectedYear: number = getYear(new Date());
 
   /**
-   * Sync dropdown state when currentMonth changes.
+   * Sync dropdown state and value property when reactive properties change.
    */
   protected override updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
     if (changedProperties.has('currentMonth' as keyof this)) {
       this.selectedMonth = getMonth(this.currentMonth);
       this.selectedYear = getYear(this.currentMonth);
+    }
+    if (changedProperties.has('value') && this.value) {
+      this.selectedDate = parseISO(this.value);
     }
   }
 
@@ -265,6 +300,21 @@ export class Calendar extends TailwindElement {
     dispatchCustomEvent(this, 'ui-month-change', {
       year: getYear(this.currentMonth),
       month: getMonth(this.currentMonth),
+    });
+  }
+
+  /**
+   * Handle date selection via click.
+   * Skips outside-month dates, sets selectedDate, and emits ui-date-select.
+   */
+  private handleDateSelect(date: Date): void {
+    if (!isSameMonth(date, this.currentMonth)) {
+      return;
+    }
+    this.selectedDate = date;
+    dispatchCustomEvent(this, 'ui-date-select', {
+      date: date,
+      isoString: format(date, 'yyyy-MM-dd'),
     });
   }
 
@@ -379,11 +429,16 @@ export class Calendar extends TailwindElement {
         >
           ${days.map((day) => {
             const outsideMonth = !isSameMonth(day, this.currentMonth);
+            const today = isToday(day);
+            const selected = this.selectedDate !== null && isSameDay(day, this.selectedDate);
             return html`
               <button
-                class="date-button ${outsideMonth ? 'outside-month' : ''}"
+                class="date-button ${outsideMonth ? 'outside-month' : ''} ${today ? 'today' : ''}"
                 aria-label="${formatDateLabel(day, this.effectiveLocale)}"
+                aria-current="${today ? 'date' : nothing}"
+                aria-selected="${selected ? 'true' : 'false'}"
                 ?aria-disabled="${outsideMonth}"
+                @click="${() => this.handleDateSelect(day)}"
               >
                 ${day.getDate()}
               </button>
