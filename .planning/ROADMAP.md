@@ -387,14 +387,14 @@ Plans:
 **Plans**: 8 plans in 6 waves
 
 Plans:
-- [ ] 43-01-PLAN.md -- Configurable KeyboardNavigationManager columns
-- [ ] 43-02-PLAN.md -- Gesture handler and animation controller modules
-- [ ] 43-03-PLAN.md -- ISO week number utilities in date-utils
-- [ ] 43-04-PLAN.md -- Decade and century views in Calendar
-- [ ] 43-05-PLAN.md -- Animations, swipe, week numbers, renderDay integration
-- [ ] 43-06-PLAN.md -- display-month/hide-navigation props + multi-month wrapper
-- [ ] 43-07-PLAN.md -- Responsive container query layout
-- [ ] 43-08-PLAN.md -- Package exports, JSX types, element registration
+- [ ] 43-01-PLAN.md — Add setColumns()/getColumns() to KeyboardNavigationManager for runtime column switching
+- [ ] 43-02-PLAN.md — Create GestureHandler (Pointer Events swipe) and AnimationController (slide/fade transitions)
+- [ ] 43-03-PLAN.md — Add ISO week number utilities (getISOWeekNumber, getISOWeekDates, getMonthWeeks)
+- [ ] 43-04-PLAN.md — Add decade (4x3 year grid) and century (4x3 decade grid) views with view drilling
+- [ ] 43-05-PLAN.md — Integrate animations, swipe gestures, week numbers column, and renderDay callback
+- [ ] 43-06-PLAN.md — Add display-month/hide-navigation props and CalendarMulti wrapper component
+- [ ] 43-07-PLAN.md — Add responsive container query layout (compact/standard/spacious breakpoints)
+- [ ] 43-08-PLAN.md — Update package exports, JSX types, and lui-calendar-multi registration
 
 #### Phase 44: Date Picker Core
 **Goal**: Single date picker with input field, calendar popup, positioning, form integration, and validation.
