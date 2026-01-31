@@ -370,6 +370,30 @@ export class Calendar extends TailwindElement {
         font-size: 0.75rem;
       }
 
+      /* Constraint tooltip for disabled dates */
+      .date-button[data-tooltip],
+      .date-button-wrapper[data-tooltip] {
+        position: relative;
+      }
+
+      .date-button[data-tooltip]:hover::after,
+      .date-button-wrapper[data-tooltip]:hover::after {
+        content: attr(data-tooltip);
+        position: absolute;
+        bottom: calc(100% + 4px);
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 0.25rem 0.5rem;
+        background: var(--ui-calendar-tooltip-bg, #1f2937);
+        color: var(--ui-calendar-tooltip-text, #ffffff);
+        font-size: 0.6875rem;
+        line-height: 1.25;
+        border-radius: 0.25rem;
+        white-space: nowrap;
+        z-index: 10;
+        pointer-events: none;
+      }
+
       /* Dark mode via :host-context(.dark) */
       :host-context(.dark) .calendar {
         color: var(--ui-calendar-text, #f9fafb);
@@ -412,6 +436,13 @@ export class Calendar extends TailwindElement {
 
       :host-context(.dark) .shortcut-list kbd {
         background: var(--ui-calendar-hover-bg, #1f2937);
+      }
+
+      /* Dark mode tooltip */
+      :host-context(.dark) .date-button[data-tooltip]:hover::after,
+      :host-context(.dark) .date-button-wrapper[data-tooltip]:hover::after {
+        background: var(--ui-calendar-tooltip-bg, #e5e7eb);
+        color: var(--ui-calendar-tooltip-text, #111827);
       }
 
       .month-grid {
@@ -696,6 +727,14 @@ export class Calendar extends TailwindElement {
    */
   @property({ type: Boolean, attribute: 'show-week-numbers' })
   showWeekNumbers = false;
+
+  /**
+   * Whether to show constraint tooltips on disabled dates.
+   * When true, hovering over a disabled date shows a tooltip
+   * explaining why it's disabled (e.g., "Before minimum date").
+   */
+  @property({ type: Boolean, attribute: 'show-constraint-tooltips' })
+  showConstraintTooltips = false;
 
   /**
    * Callback for custom day cell rendering.
@@ -1048,13 +1087,13 @@ export class Calendar extends TailwindElement {
     const { minDate, maxDate, disabledDates } = this.parsedConstraints;
 
     if (minDate && isBefore(normalized, minDate)) {
-      return { disabled: true, reason: 'before minimum date' };
+      return { disabled: true, reason: 'Before minimum date' };
     }
     if (maxDate && isAfter(normalized, maxDate)) {
-      return { disabled: true, reason: 'after maximum date' };
+      return { disabled: true, reason: 'After maximum date' };
     }
     if (disabledDates.some((d) => isSameDay(d, normalized))) {
-      return { disabled: true, reason: 'unavailable' };
+      return { disabled: true, reason: 'Unavailable' };
     }
     return { disabled: false, reason: '' };
   }
@@ -1426,6 +1465,7 @@ export class Calendar extends TailwindElement {
           aria-current="${todayFlag ? 'date' : nothing}"
           aria-selected="${selected ? 'true' : 'false'}"
           aria-disabled="${isDisabled ? 'true' : 'false'}"
+          data-tooltip="${this.showConstraintTooltips && constraint.disabled && constraint.reason ? constraint.reason : nothing}"
           @click="${() => this.handleDateSelect(day)}"
         >
           ${this.renderDay(dayCellState)}
@@ -1441,6 +1481,7 @@ export class Calendar extends TailwindElement {
         aria-current="${todayFlag ? 'date' : nothing}"
         aria-selected="${selected ? 'true' : 'false'}"
         aria-disabled="${isDisabled ? 'true' : 'false'}"
+        data-tooltip="${this.showConstraintTooltips && constraint.disabled && constraint.reason ? constraint.reason : nothing}"
         @click="${() => this.handleDateSelect(day)}"
       >
         ${day.getDate()}
