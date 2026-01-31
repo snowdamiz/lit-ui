@@ -576,26 +576,19 @@ export class DateRangePicker extends TailwindElement {
 
   /**
    * Validate the current range and emit change event.
-   * Updates internal error state and form value.
+   * Validation runs AFTER auto-swap via normalizeRange() (Pitfall 4).
+   * Updates internal error state, form value, and ElementInternals validity.
+   * Closes the popup on valid complete range.
    */
   validateAndEmit(): void {
-    // Validate duration constraints
-    const validation = validateRangeDuration(
-      this.startDate,
-      this.endDate,
-      this.minDays || undefined,
-      this.maxDays || undefined,
-    );
+    // Update form value first
+    this.updateFormValue();
 
-    if (!validation.valid) {
-      this.internalError = validation.error;
-    } else {
-      this.internalError = '';
-    }
+    // Validate (sets ElementInternals validity + internalError)
+    const isValid = this.validate();
 
-    // Update form value as ISO interval
+    // Build ISO interval for event payload
     const isoInterval = formatISOInterval(this.startDate, this.endDate);
-    this.internals?.setFormValue(isoInterval || null);
 
     // Dispatch change event
     dispatchCustomEvent(this, 'change', {
@@ -603,6 +596,11 @@ export class DateRangePicker extends TailwindElement {
       endDate: this.endDate,
       isoInterval,
     });
+
+    // Close popup on valid complete range
+    if (isValid && this.rangeState === 'complete') {
+      this.closePopup();
+    }
   }
 
   /**
@@ -626,21 +624,26 @@ export class DateRangePicker extends TailwindElement {
 
   /**
    * Reset the range picker to idle state.
-   * Clears all selection and dispatches change with null values.
+   * Clears all selection, updates form value, validates, and dispatches change.
    */
-  handleClear(): void {
+  handleClear(e?: Event): void {
+    e?.stopPropagation();
     this.startDate = '';
     this.endDate = '';
     this.hoveredDate = '';
     this.internalError = '';
     this.rangeState = 'idle';
-    this.internals?.setFormValue(null);
+    this.updateFormValue();
+    this.validate();
 
     dispatchCustomEvent(this, 'change', {
       startDate: '',
       endDate: '',
       isoInterval: '',
     });
+
+    // Focus input after clear for keyboard continuity
+    this.inputEl?.focus();
   }
 
   // ---------------------------------------------------------------------------
@@ -648,22 +651,76 @@ export class DateRangePicker extends TailwindElement {
   // ---------------------------------------------------------------------------
 
   /**
-   * Sync range state when properties change externally.
+   * Sync range state and form value when properties change externally.
    */
   protected override updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
 
-    // If both dates are set externally, ensure state is 'complete'
-    if ((changedProps.has('startDate') || changedProps.has('endDate')) && this.startDate && this.endDate) {
-      if (this.rangeState !== 'complete') {
+    // Sync form value and validity when dates change
+    if (changedProps.has('startDate') || changedProps.has('endDate')) {
+      // If both dates are set externally, ensure state is 'complete'
+      if (this.startDate && this.endDate && this.rangeState !== 'complete') {
         this.rangeState = 'complete';
       }
+      this.updateFormValue();
+      this.validate();
     }
   }
 
   // ---------------------------------------------------------------------------
   // Form integration
   // ---------------------------------------------------------------------------
+
+  /**
+   * Sync the current range value to the form via ElementInternals.
+   * Sets form value as ISO 8601 interval (YYYY-MM-DD/YYYY-MM-DD) or null.
+   */
+  private updateFormValue(): void {
+    const isoInterval = formatISOInterval(this.startDate, this.endDate);
+    this.internals?.setFormValue(isoInterval || null);
+  }
+
+  /**
+   * Validate the current state and set validity on ElementInternals.
+   * Checks required (valueMissing) first, then duration constraints (customError).
+   * Clears validity if all checks pass.
+   *
+   * @returns true if valid, false if invalid
+   */
+  private validate(): boolean {
+    if (!this.internals) return true;
+
+    const anchor = this.inputEl ?? undefined;
+
+    // Check required: both start and end must be set
+    if (this.required && (!this.startDate || !this.endDate)) {
+      const msg = 'Please select a date range';
+      this.internalError = msg;
+      this.internals.setValidity({ valueMissing: true }, msg, anchor);
+      return false;
+    }
+
+    // Check duration constraints (only when we have a complete range)
+    if (this.startDate && this.endDate) {
+      const validation = validateRangeDuration(
+        this.startDate,
+        this.endDate,
+        this.minDays || undefined,
+        this.maxDays || undefined,
+      );
+
+      if (!validation.valid) {
+        this.internalError = validation.error;
+        this.internals.setValidity({ customError: true }, validation.error, anchor);
+        return false;
+      }
+    }
+
+    // All checks passed
+    this.internalError = '';
+    this.internals.setValidity({});
+    return true;
+  }
 
   /**
    * Form lifecycle callback: reset the date range picker to initial state.
@@ -677,6 +734,23 @@ export class DateRangePicker extends TailwindElement {
     this.isOpen = false;
     this.internals?.setFormValue(null);
     this.internals?.setValidity({});
+  }
+
+  /**
+   * Form lifecycle callback: restore state from ISO interval string.
+   * Parses "YYYY-MM-DD/YYYY-MM-DD" back into start and end dates.
+   */
+  formStateRestoreCallback(state: string): void {
+    if (!state || typeof state !== 'string') return;
+
+    const parts = state.split('/');
+    if (parts.length === 2) {
+      this.startDate = parts[0];
+      this.endDate = parts[1];
+      this.rangeState = 'complete';
+      this.updateFormValue();
+      this.validate();
+    }
   }
 
   /**
