@@ -16,7 +16,7 @@
  * ```
  */
 
-import { html, css, isServer } from 'lit';
+import { html, css, nothing, isServer } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import { TailwindElement, tailwindBaseStyles } from '@lit-ui/core';
 
@@ -53,6 +53,13 @@ export class Calendar extends TailwindElement {
   @state()
   private currentMonth: Date = new Date();
 
+  /**
+   * Internal state tracking the currently selected date.
+   * Stores ISO date string and syncs with value property.
+   */
+  @state()
+  private selectedDate: string = '';
+
   constructor() {
     super();
     // Client-only initialization
@@ -60,13 +67,22 @@ export class Calendar extends TailwindElement {
       // Initialize currentMonth to current date
       this.currentMonth = new Date();
 
-      // Parse value prop if provided
+      // Initialize selectedDate from value property
       if (this.value) {
+        this.selectedDate = this.value;
         const parsedDate = new Date(this.value);
         if (!isNaN(parsedDate.getTime())) {
           this.currentMonth = parsedDate;
         }
       }
+    }
+  }
+
+  override connectedCallback(): void {
+    super.connectedCallback();
+    // Initialize selectedDate from value when element connects
+    if (this.value && !this.selectedDate) {
+      this.selectedDate = this.value;
     }
   }
 
@@ -167,7 +183,7 @@ export class Calendar extends TailwindElement {
    */
   private renderDayCell(date: Date) {
     const isoDate = formatDate(date);
-    const isSelected = this.value ? isSameDayCompare(date, new Date(this.value)) : false;
+    const isSelected = this.selectedDate ? isSameDayCompare(date, new Date(this.selectedDate)) : false;
     const isToday = isDateToday(date);
 
     return html`
@@ -177,10 +193,33 @@ export class Calendar extends TailwindElement {
         aria-current=${isToday ? 'date' : nothing}
         tabindex="0"
         data-date="${isoDate}"
+        @click=${() => this.handleDateClick(date)}
       >
         ${date.getDate()}
       </div>
     `;
+  }
+
+  /**
+   * Handle date cell click.
+   * Updates selectedDate state and emits ui-date-select event.
+   */
+  private handleDateClick(date: Date): void {
+    const isoDate = formatDate(date);
+    this.selectedDate = isoDate;
+    this.emitDateSelect(date);
+  }
+
+  /**
+   * Emit ui-date-select event with selected date.
+   */
+  private emitDateSelect(date: Date): void {
+    const isoDate = formatDate(date);
+    this.dispatchEvent(new CustomEvent('ui-date-select', {
+      bubbles: true,
+      composed: true,
+      detail: { date: isoDate }
+    }));
   }
 
   /**
