@@ -1,0 +1,854 @@
+/**
+ * lui-date-picker - Accessible date picker component
+ *
+ * Composes an input field with lui-calendar inside a popup for date selection.
+ * Supports text input parsing, calendar selection, form integration via
+ * ElementInternals, and clear functionality.
+ *
+ * Features:
+ * - Input field with locale-aware placeholder
+ * - Calendar popup with lui-calendar for visual date selection
+ * - Multi-format date parsing on blur (ISO, US, EU formats)
+ * - Clear button to reset value
+ * - Form participation via ElementInternals (ISO 8601 submission)
+ * - SSR compatible via isServer guards
+ * - Dark mode via :host-context(.dark)
+ *
+ * @element lui-date-picker
+ * @fires change - Dispatched when a date is selected or cleared, with { date: Date | null, isoString: string }
+ */
+
+import { html, css, nothing, isServer, svg, type PropertyValues, type CSSResultGroup } from 'lit';
+import { property, state, query } from 'lit/decorators.js';
+import { TailwindElement, tailwindBaseStyles, dispatchCustomEvent } from '@lit-ui/core';
+import { parseDateInput, formatDateForDisplay, getPlaceholderText } from './date-input-parser.js';
+import { parseISO, isBefore, isAfter, startOfDay, format } from 'date-fns';
+
+/**
+ * Date picker component that renders an input field with a calendar popup.
+ *
+ * @example
+ * ```html
+ * <lui-date-picker label="Birthday" name="birthday" required></lui-date-picker>
+ * <lui-date-picker value="2026-01-31" locale="de-DE"></lui-date-picker>
+ * ```
+ */
+export class DatePicker extends TailwindElement {
+  /**
+   * Enable form association for this custom element.
+   */
+  static formAssociated = true;
+
+  /**
+   * ElementInternals for form participation.
+   * Null during SSR since attachInternals() is not available.
+   */
+  private internals: ElementInternals | null = null;
+
+  /**
+   * Unique ID for the input element, used for label association.
+   */
+  private inputId = `lui-date-picker-${Math.random().toString(36).substr(2, 9)}`;
+
+  /**
+   * Reference to the trigger element for focus restoration after popup close.
+   * Used by Plan 04 for focus management.
+   */
+  private triggerElement: HTMLElement | null = null;
+
+  // ---------------------------------------------------------------------------
+  // Query refs
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Reference to the input container element (for popup positioning in Plan 03).
+   */
+  @query('.input-container')
+  inputContainerEl!: HTMLElement;
+
+  /**
+   * Reference to the popup element (for Floating UI positioning in Plan 03).
+   */
+  @query('.popup')
+  popupEl!: HTMLElement;
+
+  /**
+   * Reference to the native input element.
+   */
+  @query('input')
+  inputEl!: HTMLInputElement;
+
+  // ---------------------------------------------------------------------------
+  // Properties (reflected attributes)
+  // ---------------------------------------------------------------------------
+
+  /**
+   * The selected date as ISO 8601 string (YYYY-MM-DD).
+   * This is the canonical form value submitted via ElementInternals.
+   */
+  @property({ type: String, reflect: true })
+  value = '';
+
+  /**
+   * Form field name for form submission.
+   */
+  @property({ type: String })
+  name = '';
+
+  /**
+   * BCP 47 locale tag for localization (e.g., 'en-US', 'de-DE').
+   * Defaults to navigator.language on client, 'en-US' on server.
+   */
+  @property({ type: String })
+  locale = '';
+
+  /**
+   * Custom placeholder text for the input.
+   * Falls back to locale-aware placeholder from getPlaceholderText().
+   */
+  @property({ type: String })
+  placeholder = '';
+
+  /**
+   * Helper text displayed below the input.
+   */
+  @property({ type: String, attribute: 'helper-text' })
+  helperText = '';
+
+  /**
+   * Minimum selectable date as ISO string (YYYY-MM-DD).
+   */
+  @property({ type: String, attribute: 'min-date' })
+  minDate = '';
+
+  /**
+   * Maximum selectable date as ISO string (YYYY-MM-DD).
+   */
+  @property({ type: String, attribute: 'max-date' })
+  maxDate = '';
+
+  /**
+   * Whether a date selection is required for form submission.
+   */
+  @property({ type: Boolean, reflect: true })
+  required = false;
+
+  /**
+   * Whether the date picker is disabled.
+   */
+  @property({ type: Boolean, reflect: true })
+  disabled = false;
+
+  /**
+   * External error message. When set, overrides internal validation errors.
+   */
+  @property({ type: String })
+  error = '';
+
+  /**
+   * Accessible label for the input field.
+   */
+  @property({ type: String })
+  label = '';
+
+  // ---------------------------------------------------------------------------
+  // State (internal reactive)
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Whether the calendar popup is visible.
+   */
+  @state()
+  private open = false;
+
+  /**
+   * Formatted date string for display in the input (e.g., "January 31, 2026").
+   */
+  @state()
+  private displayValue = '';
+
+  /**
+   * Raw text being typed by the user while the input is focused.
+   */
+  @state()
+  private inputValue = '';
+
+  /**
+   * Whether the input is currently focused for typing.
+   */
+  @state()
+  private isEditing = false;
+
+  /**
+   * Whether the input has been blurred at least once (for validation timing).
+   */
+  @state()
+  private touched = false;
+
+  /**
+   * Internal validation error message.
+   */
+  @state()
+  private internalError = '';
+
+  // ---------------------------------------------------------------------------
+  // SVG Icons
+  // ---------------------------------------------------------------------------
+
+  private calendarIcon = svg`
+    <path d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"
+          stroke="currentColor" stroke-width="2" fill="none"
+          stroke-linecap="round" stroke-linejoin="round"/>
+  `;
+
+  private clearIcon = svg`
+    <circle cx="12" cy="12" r="10"
+            stroke="currentColor" stroke-width="2" fill="none"/>
+    <line x1="15" y1="9" x2="9" y2="15"
+          stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="9" y1="9" x2="15" y2="15"
+          stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round"/>
+  `;
+
+  // ---------------------------------------------------------------------------
+  // Styles
+  // ---------------------------------------------------------------------------
+
+  static override styles: CSSResultGroup = [
+    ...tailwindBaseStyles,
+    css`
+      :host {
+        display: inline-block;
+        width: 100%;
+      }
+
+      :host([disabled]) {
+        pointer-events: none;
+      }
+
+      .date-picker-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        position: relative;
+      }
+
+      .date-picker-label {
+        font-weight: 500;
+        font-size: 0.875rem;
+        color: var(--ui-date-picker-text, var(--ui-input-text, inherit));
+      }
+
+      .required-indicator {
+        color: var(--ui-date-picker-error, var(--ui-input-text-error, #ef4444));
+        margin-left: 0.125rem;
+      }
+
+      .input-container {
+        display: flex;
+        align-items: center;
+        border-radius: var(--ui-date-picker-radius, var(--ui-input-radius, 0.375rem));
+        border-width: var(--ui-date-picker-border-width, var(--ui-input-border-width, 1px));
+        border-style: solid;
+        border-color: var(--ui-date-picker-border, var(--ui-input-border, #d1d5db));
+        background-color: var(--ui-date-picker-bg, var(--ui-input-bg, white));
+        transition:
+          border-color 150ms,
+          box-shadow 150ms;
+      }
+
+      .input-container:focus-within {
+        border-color: var(--ui-date-picker-border-focus, var(--ui-input-border-focus, #3b82f6));
+      }
+
+      .input-container.container-error {
+        border-color: var(--ui-date-picker-error, var(--ui-input-border-error, #ef4444));
+      }
+
+      .input-container.container-disabled {
+        background-color: var(--ui-date-picker-bg-disabled, var(--ui-input-bg-disabled, #f3f4f6));
+        border-color: var(--ui-date-picker-border-disabled, var(--ui-input-border-disabled, #e5e7eb));
+        cursor: not-allowed;
+      }
+
+      input {
+        flex: 1;
+        min-width: 0;
+        border: none;
+        background: transparent;
+        color: var(--ui-date-picker-text, var(--ui-input-text, inherit));
+        outline: none;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.875rem;
+      }
+
+      input::placeholder {
+        color: var(--ui-date-picker-placeholder, var(--ui-input-placeholder, #9ca3af));
+      }
+
+      input:disabled {
+        color: var(--ui-date-picker-text-disabled, var(--ui-input-text-disabled, #9ca3af));
+        cursor: not-allowed;
+      }
+
+      .action-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.25rem;
+        margin-right: 0.25rem;
+        border: none;
+        background: transparent;
+        color: var(--color-muted-foreground, #6b7280);
+        cursor: pointer;
+        border-radius: 0.25rem;
+        transition:
+          color 150ms,
+          background-color 150ms;
+      }
+
+      .action-button:hover {
+        color: var(--ui-date-picker-text, var(--ui-input-text, inherit));
+        background-color: var(--color-muted, #f3f4f6);
+      }
+
+      .action-button:focus-visible {
+        outline: 2px solid var(--color-ring, #3b82f6);
+        outline-offset: 1px;
+      }
+
+      .action-icon {
+        width: 1.25em;
+        height: 1.25em;
+      }
+
+      .helper-text {
+        font-size: 0.75rem;
+        color: var(--color-muted-foreground, #6b7280);
+      }
+
+      .error-text {
+        font-size: 0.75rem;
+        color: var(--ui-date-picker-error, var(--ui-input-text-error, #ef4444));
+      }
+
+      .popup {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        z-index: 50;
+        margin-top: 0.25rem;
+        background-color: var(--ui-date-picker-popup-bg, white);
+        border: 1px solid var(--ui-date-picker-popup-border, #e5e7eb);
+        border-radius: 0.5rem;
+        box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+      }
+
+      .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+
+      /* Dark mode */
+      :host-context(.dark) .input-container {
+        border-color: var(--ui-date-picker-border, var(--ui-input-border, #374151));
+        background-color: var(--ui-date-picker-bg, var(--ui-input-bg, #111827));
+      }
+
+      :host-context(.dark) .input-container:focus-within {
+        border-color: var(--ui-date-picker-border-focus, var(--ui-input-border-focus, #3b82f6));
+      }
+
+      :host-context(.dark) input {
+        color: var(--ui-date-picker-text, var(--ui-input-text, #f9fafb));
+      }
+
+      :host-context(.dark) input::placeholder {
+        color: var(--ui-date-picker-placeholder, var(--ui-input-placeholder, #6b7280));
+      }
+
+      :host-context(.dark) .action-button:hover {
+        background-color: var(--color-muted, #1f2937);
+      }
+
+      :host-context(.dark) .popup {
+        background-color: var(--ui-date-picker-popup-bg, #1f2937);
+        border-color: var(--ui-date-picker-popup-border, #374151);
+      }
+
+      :host-context(.dark) .date-picker-label {
+        color: var(--ui-date-picker-text, var(--ui-input-text, #f9fafb));
+      }
+
+      :host-context(.dark) .helper-text {
+        color: var(--color-muted-foreground, #9ca3af);
+      }
+
+      :host-context(.dark) .input-container.container-disabled {
+        background-color: var(--ui-date-picker-bg-disabled, var(--ui-input-bg-disabled, #1f2937));
+        border-color: var(--ui-date-picker-border-disabled, var(--ui-input-border-disabled, #374151));
+      }
+    `,
+  ];
+
+  // ---------------------------------------------------------------------------
+  // Constructor
+  // ---------------------------------------------------------------------------
+
+  constructor() {
+    super();
+    if (!isServer) {
+      this.internals = this.attachInternals();
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Computed getters
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Resolved locale, falling back to navigator.language or 'en-US'.
+   */
+  get effectiveLocale(): string {
+    return this.locale || (isServer ? 'en-US' : navigator.language);
+  }
+
+  /**
+   * Effective placeholder text, using custom or locale-aware default.
+   */
+  get effectivePlaceholder(): string {
+    return this.placeholder || getPlaceholderText(this.effectiveLocale);
+  }
+
+  /**
+   * Whether the component is in an error state.
+   */
+  get hasError(): boolean {
+    return !!(this.error || (this.touched && this.internalError));
+  }
+
+  /**
+   * The current error message to display.
+   */
+  get errorMessage(): string {
+    return this.error || this.internalError;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Lifecycle
+  // ---------------------------------------------------------------------------
+
+  /**
+   * React to property changes: sync displayValue and form value when value changes.
+   */
+  protected override updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
+
+    if (changedProps.has('value')) {
+      if (this.value) {
+        const date = parseISO(this.value);
+        this.displayValue = formatDateForDisplay(date, this.effectiveLocale);
+        this.updateFormValue();
+      } else {
+        this.displayValue = '';
+        this.updateFormValue();
+      }
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Event handlers
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Handle input focus: switch to editing mode.
+   */
+  private handleInputFocus(): void {
+    this.isEditing = true;
+    this.inputValue = this.displayValue;
+  }
+
+  /**
+   * Handle input blur: parse typed text and validate.
+   */
+  private handleInputBlur(): void {
+    this.isEditing = false;
+    this.touched = true;
+
+    const trimmed = this.inputValue.trim();
+
+    if (trimmed) {
+      const parsed = parseDateInput(trimmed, this.effectiveLocale);
+      if (parsed) {
+        const isoString = format(parsed, 'yyyy-MM-dd');
+
+        // Validate against min/max constraints
+        if (this.minDate) {
+          const min = startOfDay(parseISO(this.minDate));
+          if (isBefore(startOfDay(parsed), min)) {
+            this.internalError = `Date must be on or after ${this.minDate}`;
+            return;
+          }
+        }
+        if (this.maxDate) {
+          const max = startOfDay(parseISO(this.maxDate));
+          if (isAfter(startOfDay(parsed), max)) {
+            this.internalError = `Date must be on or before ${this.maxDate}`;
+            return;
+          }
+        }
+
+        this.value = isoString;
+        this.displayValue = formatDateForDisplay(parsed, this.effectiveLocale);
+        this.internalError = '';
+        this.updateFormValue();
+        dispatchCustomEvent(this, 'change', {
+          date: parsed,
+          isoString: this.value,
+        });
+      } else {
+        this.internalError = 'Please enter a valid date';
+      }
+    } else if (this.required) {
+      this.internalError = 'Please select a date';
+    } else {
+      // Empty input, not required: clear everything
+      if (this.value) {
+        this.value = '';
+        this.displayValue = '';
+        this.internalError = '';
+        this.updateFormValue();
+        dispatchCustomEvent(this, 'change', {
+          date: null,
+          isoString: '',
+        });
+      }
+    }
+  }
+
+  /**
+   * Handle text input changes.
+   */
+  private handleInput(e: Event): void {
+    const input = e.target as HTMLInputElement;
+    this.inputValue = input.value;
+    // Clear validation error while user is typing
+    this.internalError = '';
+  }
+
+  /**
+   * Handle keyboard events on the input.
+   */
+  private handleInputKeydown(e: KeyboardEvent): void {
+    if (e.key === 'Enter') {
+      // Blur to trigger parse
+      this.inputEl?.blur();
+    } else if (e.key === 'Escape') {
+      if (this.open) {
+        this.closePopup();
+      } else {
+        this.inputEl?.blur();
+      }
+    } else if (e.key === 'ArrowDown') {
+      if (!this.open) {
+        e.preventDefault();
+        this.openPopup();
+      }
+    }
+  }
+
+  /**
+   * Toggle the calendar popup open/close.
+   */
+  private togglePopup(): void {
+    if (this.open) {
+      this.closePopup();
+    } else {
+      this.openPopup();
+    }
+  }
+
+  /**
+   * Open the calendar popup.
+   */
+  private openPopup(): void {
+    if (this.disabled) return;
+    this.open = true;
+    this.triggerElement = this.inputEl;
+  }
+
+  /**
+   * Close the calendar popup.
+   */
+  private closePopup(): void {
+    this.open = false;
+  }
+
+  /**
+   * Handle date selection from the calendar popup.
+   */
+  private handleCalendarSelect(e: Event): void {
+    const detail = (e as CustomEvent).detail;
+    if (!detail) return;
+
+    const date = detail.date as Date;
+    const isoString = detail.isoString as string;
+
+    this.value = isoString;
+    this.displayValue = formatDateForDisplay(date, this.effectiveLocale);
+    this.internalError = '';
+    this.open = false;
+    this.updateFormValue();
+
+    // Restore focus to input after selection
+    this.triggerElement?.focus();
+    this.triggerElement = null;
+
+    dispatchCustomEvent(this, 'change', {
+      date,
+      isoString: this.value,
+    });
+  }
+
+  /**
+   * Handle clear button click: reset all state.
+   */
+  private handleClear(): void {
+    this.value = '';
+    this.displayValue = '';
+    this.inputValue = '';
+    this.internalError = '';
+    this.updateFormValue();
+    this.inputEl?.focus();
+
+    dispatchCustomEvent(this, 'change', {
+      date: null,
+      isoString: '',
+    });
+  }
+
+  /**
+   * Handle keyboard events on the popup.
+   * Respects calendar's defaultPrevented for Escape key (view drilling).
+   */
+  private handlePopupKeydown(e: KeyboardEvent): void {
+    if (e.key === 'Escape') {
+      // If the calendar already handled Escape (e.g., drilling from year to month view),
+      // don't close the popup
+      if (!e.defaultPrevented) {
+        this.closePopup();
+        this.triggerElement?.focus();
+        this.triggerElement = null;
+      }
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Form integration
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Sync the current value to the form via ElementInternals.
+   */
+  private updateFormValue(): void {
+    this.internals?.setFormValue(this.value || null);
+  }
+
+  /**
+   * Validate the current state and set validity on ElementInternals.
+   */
+  private validate(): boolean {
+    if (!this.internals) return true;
+
+    if (this.required && !this.value) {
+      this.internals.setValidity(
+        { valueMissing: true },
+        'Please select a date',
+        this.inputEl
+      );
+      return false;
+    }
+
+    if (this.value && this.minDate) {
+      const date = startOfDay(parseISO(this.value));
+      const min = startOfDay(parseISO(this.minDate));
+      if (isBefore(date, min)) {
+        this.internals.setValidity(
+          { rangeUnderflow: true },
+          `Date must be on or after ${this.minDate}`,
+          this.inputEl
+        );
+        return false;
+      }
+    }
+
+    if (this.value && this.maxDate) {
+      const date = startOfDay(parseISO(this.value));
+      const max = startOfDay(parseISO(this.maxDate));
+      if (isAfter(date, max)) {
+        this.internals.setValidity(
+          { rangeOverflow: true },
+          `Date must be on or before ${this.maxDate}`,
+          this.inputEl
+        );
+        return false;
+      }
+    }
+
+    this.internals.setValidity({});
+    return true;
+  }
+
+  /**
+   * Form lifecycle callback: reset the date picker to initial state.
+   */
+  formResetCallback(): void {
+    this.value = '';
+    this.displayValue = '';
+    this.inputValue = '';
+    this.internalError = '';
+    this.touched = false;
+    this.open = false;
+    this.internals?.setFormValue(null);
+    this.internals?.setValidity({});
+  }
+
+  /**
+   * Form lifecycle callback: handle disabled state from form.
+   */
+  formDisabledCallback(disabled: boolean): void {
+    this.disabled = disabled;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Render
+  // ---------------------------------------------------------------------------
+
+  override render() {
+    const showInputValue = this.isEditing ? this.inputValue : this.displayValue;
+
+    return html`
+      <div class="date-picker-wrapper">
+        ${this.label
+          ? html`
+              <label
+                for=${this.inputId}
+                class="date-picker-label"
+              >
+                ${this.label}
+                ${this.required
+                  ? html`<span class="required-indicator">*</span>`
+                  : nothing}
+              </label>
+            `
+          : nothing}
+
+        <div
+          class="input-container ${this.hasError ? 'container-error' : ''} ${this.disabled ? 'container-disabled' : ''}"
+        >
+          <input
+            id=${this.inputId}
+            type="text"
+            .value=${showInputValue}
+            placeholder=${this.effectivePlaceholder}
+            ?required=${this.required}
+            ?disabled=${this.disabled}
+            aria-invalid=${this.hasError ? 'true' : nothing}
+            aria-describedby=${this.hasError
+              ? `${this.inputId}-error`
+              : this.helperText
+                ? `${this.inputId}-helper`
+                : nothing}
+            aria-label=${!this.label ? 'Date' : nothing}
+            @focus=${this.handleInputFocus}
+            @blur=${this.handleInputBlur}
+            @input=${this.handleInput}
+            @keydown=${this.handleInputKeydown}
+          />
+
+          ${this.value && !this.disabled
+            ? html`
+                <button
+                  type="button"
+                  class="action-button"
+                  aria-label="Clear date"
+                  @click=${this.handleClear}
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true" class="action-icon">
+                    ${this.clearIcon}
+                  </svg>
+                </button>
+              `
+            : nothing}
+
+          <button
+            type="button"
+            class="action-button"
+            aria-label="Open calendar"
+            ?disabled=${this.disabled}
+            @click=${this.togglePopup}
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true" class="action-icon">
+              ${this.calendarIcon}
+            </svg>
+          </button>
+        </div>
+
+        ${this.helperText && !this.hasError
+          ? html`
+              <span
+                id="${this.inputId}-helper"
+                class="helper-text"
+              >${this.helperText}</span>
+            `
+          : nothing}
+
+        ${this.hasError && this.errorMessage
+          ? html`
+              <span
+                id="${this.inputId}-error"
+                class="error-text"
+                role="alert"
+              >${this.errorMessage}</span>
+            `
+          : nothing}
+
+        ${this.open
+          ? html`
+              <div
+                class="popup"
+                role="dialog"
+                aria-modal="true"
+                aria-label="Choose date"
+                @keydown=${this.handlePopupKeydown}
+              >
+                <lui-calendar
+                  .value=${this.value}
+                  .locale=${this.effectiveLocale}
+                  min-date=${this.minDate || nothing}
+                  max-date=${this.maxDate || nothing}
+                  @change=${this.handleCalendarSelect}
+                ></lui-calendar>
+              </div>
+            `
+          : nothing}
+      </div>
+    `;
+  }
+}
+
+// TypeScript global interface declaration for HTMLElementTagNameMap
+declare global {
+  interface HTMLElementTagNameMap {
+    'lui-date-picker': DatePicker;
+  }
+}
