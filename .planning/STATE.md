@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-30)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** Phase 44 Date Picker Core — COMPLETE
+**Current focus:** Phase 45 Date Picker Advanced — In Progress
 
 ## Current Position
 
-Phase: 3 of 9 (Date Picker Core) - COMPLETE
-Plan: 5 of 5 in current phase (5 execution complete)
-Status: Phase complete
-Last activity: 2026-01-31 — Completed 44-05-PLAN.md
+Phase: 4 of 9 (Date Picker Advanced) - In progress
+Plan: 4 of 5 in current phase (1 execution complete)
+Status: In progress
+Last activity: 2026-01-31 — Completed 45-04-PLAN.md
 
-Progress: [█████████████████████] 100% (21/21 plans)
+Progress: [██████████████████████░░] 92% (22/24 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 27
-- Average duration: 2.2 min
-- Total execution time: 0.98 hours
+- Total plans completed: 28
+- Average duration: 2.1 min
+- Total execution time: 1.01 hours
 
 **By Phase:**
 
@@ -31,7 +31,7 @@ Progress: [█████████████████████] 100%
 | 43    | 8     | 8     | 1.9 min |
 
 **Recent Trend:**
-- Last 3 plans: 2 min (44-05), 3 min (44-04), 2 min (44-03)
+- Last 3 plans: 2 min (45-04), 2 min (44-05), 3 min (44-04)
 - Trend: Consistent execution pace
 
 *Updated after each plan completion*
@@ -112,6 +112,9 @@ Recent decisions affecting current work:
 - **Phase 44-04**: handleInputBlur syncs both internalError (display) and ElementInternals validity (form)
 - **Phase 44-04**: badInput validity flag used for unparseable date text
 - **Phase 44-05**: HTMLElementTagNameMap kept in date-picker.ts (not duplicated in index.ts) to avoid TS duplicate identifier error
+- **Phase 45-04**: Use CSS ::after pseudo-elements with data-tooltip for tooltips (not HTML title attribute, Firefox Shadow DOM bug)
+- **Phase 45-04**: Auto-enable tooltips on date-picker when min/max constraints are set (no extra property needed)
+- **Phase 45-04**: Capitalize constraint reason strings for user-facing tooltip display
 
 ### Pending Todos
 
@@ -127,6 +130,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-31 (44-05 complete, Phase 44 complete)
-Stopped at: Completed 44-05-PLAN.md (Package exports and JSX types)
+Last session: 2026-01-31 (45-04 complete)
+Stopped at: Completed 45-04-PLAN.md (Constraint tooltips)
 Resume file: None
