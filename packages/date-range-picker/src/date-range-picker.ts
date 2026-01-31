@@ -20,6 +20,8 @@
 import { html, css, nothing, isServer, type PropertyValues, type CSSResultGroup } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import { TailwindElement, tailwindBaseStyles, dispatchCustomEvent } from '@lit-ui/core';
+import { addMonths, subMonths, getYear, format } from '@lit-ui/calendar';
+import type { DayCellState } from '@lit-ui/calendar';
 import { normalizeRange, validateRangeDuration, formatISOInterval, isDateInRange, isDateInPreview } from './range-utils.js';
 
 /**
@@ -183,6 +185,77 @@ export class DateRangePicker extends TailwindElement {
     css`
       :host {
         display: block;
+        container-type: inline-size;
+      }
+
+      .range-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.5rem;
+      }
+
+      .range-heading {
+        font-size: 0.875rem;
+        font-weight: 600;
+        margin: 0;
+      }
+
+      .calendars-wrapper {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+
+      .calendars-wrapper > * {
+        min-width: 240px;
+        flex: 1 1 280px;
+      }
+
+      .nav-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 2rem;
+        height: 2rem;
+        border: none;
+        background: none;
+        cursor: pointer;
+        border-radius: var(--ui-calendar-radius, 0.375rem);
+        color: var(--ui-calendar-nav-color, currentColor);
+      }
+
+      .nav-button:hover {
+        background-color: var(--ui-calendar-hover-bg, #f3f4f6);
+      }
+
+      .nav-button:focus-visible {
+        outline: 2px solid var(--ui-calendar-focus-ring, var(--color-ring, #3b82f6));
+        outline-offset: 2px;
+      }
+
+      .nav-button svg {
+        width: 1rem;
+        height: 1rem;
+      }
+
+      /* Dark mode */
+      :host-context(.dark) .nav-button:hover {
+        background-color: var(--ui-calendar-hover-bg, #1f2937);
+      }
+
+      /* Container query: vertical stacking for narrow containers */
+      @container (max-width: 599px) {
+        .calendars-wrapper {
+          flex-direction: column;
+        }
+      }
+
+      /* Container query: wider gap for spacious containers */
+      @container (min-width: 800px) {
+        .calendars-wrapper {
+          gap: 1.5rem;
+        }
       }
     `,
   ];
@@ -367,11 +440,126 @@ export class DateRangePicker extends TailwindElement {
   }
 
   // ---------------------------------------------------------------------------
-  // Render (placeholder for Plan 02)
+  // Range day rendering (inline styles for Shadow DOM compatibility)
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Render callback for calendar day cells with range highlighting.
+   * Uses inline styles because CSS classes defined here cannot reach
+   * inside the calendar's Shadow DOM (Pitfall 1).
+   *
+   * Arrow function to preserve `this` binding when passed to lui-calendar.
+   */
+  renderRangeDay = (state: DayCellState): unknown => {
+    // Placeholder: will be fully implemented in Task 2
+    return html`<span>${state.date.getDate()}</span>`;
+  };
+
+  // ---------------------------------------------------------------------------
+  // Navigation
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Navigate to the previous month.
+   */
+  private navigatePrev(): void {
+    this.currentMonth = subMonths(this.currentMonth, 1);
+  }
+
+  /**
+   * Navigate to the next month.
+   */
+  private navigateNext(): void {
+    this.currentMonth = addMonths(this.currentMonth, 1);
+  }
+
+  /**
+   * Compute the range heading showing the two visible months with en-dash.
+   * Examples: "January \u2013 February 2026" or "December 2025 \u2013 January 2026"
+   */
+  private get rangeHeading(): string {
+    const firstMonth = this.currentMonth;
+    const secondMonth = addMonths(this.currentMonth, 1);
+
+    const firstYear = getYear(firstMonth);
+    const secondYear = getYear(secondMonth);
+
+    const monthFormatter = new Intl.DateTimeFormat(this.effectiveLocale, { month: 'long' });
+    const firstName = monthFormatter.format(firstMonth);
+    const secondName = monthFormatter.format(secondMonth);
+
+    if (firstYear === secondYear) {
+      return `${firstName} \u2013 ${secondName} ${secondYear}`;
+    }
+    return `${firstName} ${firstYear} \u2013 ${secondName} ${secondYear}`;
+  }
+
+  /**
+   * Handle date selection from a child calendar's change event.
+   * Extracts the ISO string and delegates to the state machine.
+   */
+  private handleCalendarSelect(e: Event): void {
+    const detail = (e as CustomEvent).detail;
+    if (!detail?.isoString) return;
+    this.handleDateClick(detail.isoString);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Render
   // ---------------------------------------------------------------------------
 
   override render() {
-    return html`<div class="date-range-picker">Date Range Picker (rendering in Plan 02)</div>`;
+    const leftDisplayMonth = format(this.currentMonth, 'yyyy-MM-dd');
+    const rightDisplayMonth = format(addMonths(this.currentMonth, 1), 'yyyy-MM-dd');
+
+    return html`
+      <div class="date-range-picker">
+        <div class="range-header">
+          <button
+            class="nav-button"
+            @click="${this.navigatePrev}"
+            aria-label="Previous month"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M15 18l-6-6 6-6" />
+            </svg>
+          </button>
+          <h2 class="range-heading">${this.rangeHeading}</h2>
+          <button
+            class="nav-button"
+            @click="${this.navigateNext}"
+            aria-label="Next month"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 18l6-6-6-6" />
+            </svg>
+          </button>
+        </div>
+        <div
+          class="calendars-wrapper"
+          @mouseleave="${this.clearHoverPreview}"
+        >
+          <lui-calendar
+            display-month="${leftDisplayMonth}"
+            hide-navigation
+            .renderDay="${this.renderRangeDay}"
+            .locale="${this.effectiveLocale}"
+            min-date="${this.minDate || nothing}"
+            max-date="${this.maxDate || nothing}"
+            @change="${this.handleCalendarSelect}"
+          ></lui-calendar>
+          <lui-calendar
+            display-month="${rightDisplayMonth}"
+            hide-navigation
+            .renderDay="${this.renderRangeDay}"
+            .locale="${this.effectiveLocale}"
+            min-date="${this.minDate || nothing}"
+            max-date="${this.maxDate || nothing}"
+            @change="${this.handleCalendarSelect}"
+          ></lui-calendar>
+        </div>
+      </div>
+    `;
   }
 }
 
