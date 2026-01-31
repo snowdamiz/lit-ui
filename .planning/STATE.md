@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-30)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** Phase 43 Calendar Display Advanced — in progress
+**Current focus:** Phase 43 Calendar Display Advanced — complete
 
 ## Current Position
 
 Phase: 2 of 9 (Calendar Display Advanced)
 Plan: 8 of 8 in current phase (8 execution complete)
-Status: In progress
-Last activity: 2026-01-31 — Completed 43-07-PLAN.md (container query responsive layout)
+Status: Phase complete
+Last activity: 2026-01-31 — Completed 43-08-PLAN.md (package exports and JSX types)
 
-Progress: [██████████████████░░] 95% (18/19 plans)
+Progress: [████████████████████] 100% (19/19 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 18
+- Total plans completed: 19
 - Average duration: 2.2 min
-- Total execution time: 0.68 hours
+- Total execution time: 0.71 hours
 
 **By Phase:**
 
@@ -31,7 +31,7 @@ Progress: [██████████████████░░] 95% (18
 | 43    | 8     | 8     | 1.9 min |
 
 **Recent Trend:**
-- Last 3 plans: 3 min (43-05), 2 min (43-06), 1 min (43-07)
+- Last 3 plans: 2 min (43-06), 1 min (43-07), 2 min (43-08)
 - Trend: Consistent execution pace
 
 *Updated after each plan completion*
@@ -99,6 +99,8 @@ Recent decisions affecting current work:
 - **Phase 43-07**: Use container queries (not viewport media queries) for component-level responsiveness
 - **Phase 43-07**: Three breakpoints: compact (<280px), standard (280-380px default), spacious (>380px)
 - **Phase 43-07**: CalendarMulti stacks vertically at 600px container width
+- **Phase 43-08**: Export GestureHandler and AnimationController as advanced-usage public API
+- **Phase 43-08**: JSX types include event handler types for ui-date-select, ui-month-change, ui-week-select
 
 ### Pending Todos
 
@@ -114,6 +116,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-31 (phase 43 in progress)
-Stopped at: Completed 43-07-PLAN.md (container query responsive layout)
+Last session: 2026-01-31 (phase 43 complete)
+Stopped at: Completed 43-08-PLAN.md (package exports and JSX types) - Phase 43 complete
 Resume file: None
