@@ -23,6 +23,9 @@ importers:
       '@lit-ui/button':
         specifier: workspace:*
         version: link:../../packages/button
+      '@lit-ui/calendar':
+        specifier: workspace:*
+        version: link:../../packages/calendar
       '@lit-ui/checkbox':
         specifier: workspace:*
         version: link:../../packages/checkbox
