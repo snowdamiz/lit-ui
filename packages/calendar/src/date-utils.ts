@@ -17,6 +17,9 @@ import {
   isToday,
   addMonths,
   subMonths,
+  isWeekend,
+  isBefore,
+  isAfter,
 } from 'date-fns';
 
 /**
@@ -144,4 +147,84 @@ export function addMonthsTo(date: Date, amount: number): Date {
  */
 export function subtractMonths(date: Date, amount: number): Date {
   return subMonths(date, amount);
+}
+
+/**
+ * Date constraints for calendar date validation.
+ */
+export interface DateConstraints {
+  minDate?: Date;
+  maxDate?: Date;
+  disabledDates?: Date[];
+}
+
+/**
+ * Check if a date is disabled based on constraints.
+ *
+ * Evaluates minimum date, maximum date, and specific disabled dates.
+ * Returns true if the date should be disabled for any reason.
+ *
+ * @param date - Date to check
+ * @param constraints - Date constraints (min/max, disabled dates)
+ * @returns True if date is disabled
+ *
+ * @example
+ * ```typescript
+ * isDateDisabled(
+ *   new Date(2026, 0, 1),
+ *   { minDate: new Date(2026, 0, 15) }
+ * ) // true (before min date)
+ *
+ * isDateDisabled(
+ *   new Date(2026, 0, 20),
+ *   { maxDate: new Date(2026, 0, 15) }
+ * ) // true (after max date)
+ *
+ * isDateDisabled(
+ *   new Date(2026, 0, 15),
+ *   { disabledDates: [new Date(2026, 0, 15)] }
+ * ) // true (specifically disabled)
+ * ```
+ */
+export function isDateDisabled(
+  date: Date,
+  constraints: DateConstraints
+): boolean {
+  const { minDate, maxDate, disabledDates } = constraints;
+
+  // Check minimum date
+  if (minDate && isBefore(date, minDate)) {
+    return true;
+  }
+
+  // Check maximum date
+  if (maxDate && isAfter(date, maxDate)) {
+    return true;
+  }
+
+  // Check disabled dates
+  if (disabledDates?.some(d => isSameDay(date, d))) {
+    return true;
+  }
+
+  return false;
+}
+
+/**
+ * Check if a date falls on a weekend.
+ *
+ * Uses date-fns isWeekend which checks for Saturday (6) or Sunday (0).
+ *
+ * @param date - Date to check
+ * @returns True if date is on a weekend
+ *
+ * @example
+ * ```typescript
+ * isWeekendDate(new Date(2026, 0, 4)) // true (Saturday)
+ * isWeekendDate(new Date(2026, 0, 5)) // true (Sunday)
+ * isWeekendDate(new Date(2026, 0, 6)) // false (Monday)
+ * ```
+ */
+export function isWeekendDate(date: Date): boolean {
+  return isWeekend(date);
 }
