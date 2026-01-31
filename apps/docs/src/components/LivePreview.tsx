@@ -13,6 +13,7 @@ import '@lit-ui/radio';
 import '@lit-ui/select';
 import '@lit-ui/switch';
 import '@lit-ui/textarea';
+import '@lit-ui/calendar';
 
 // TypeScript JSX declaration for lui-button and lui-input
 declare global {
@@ -150,6 +151,16 @@ declare global {
           disabled?: boolean;
           label?: string;
           error?: string;
+        },
+        HTMLElement
+      >;
+      'lui-calendar': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement> & {
+          value?: string;
+          locale?: string;
+          'min-date'?: string;
+          'max-date'?: string;
+          'first-day-of-week'?: string | number;
         },
         HTMLElement
       >;

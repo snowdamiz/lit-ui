@@ -116,6 +116,17 @@ function AgentSkillsIcon() {
   )
 }
 
+function CalendarIcon() {
+  return (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="4" width="18" height="18" rx="2" />
+      <path d="M16 2v4" />
+      <path d="M8 2v4" />
+      <path d="M3 10h18" />
+    </svg>
+  )
+}
+
 function CheckboxIcon() {
   return (
     <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -161,6 +172,7 @@ const iconMap: Record<string, () => JSX.Element> = {
   'Migration': MigrationIcon,
   'Agent Skills': AgentSkillsIcon,
   'Button': ButtonIcon,
+  'Calendar': CalendarIcon,
   'Checkbox': CheckboxIcon,
   'Dialog': DialogIcon,
   'Input': InputIcon,
