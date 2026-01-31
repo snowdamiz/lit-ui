@@ -23,6 +23,7 @@ import {
 } from './date-utils.js';
 import { parseISO } from 'date-fns';
 import { getFirstDayOfWeek, getWeekdayNames, getMonthNames } from './intl-utils.js';
+import { KeyboardNavigationManager, type NavigationDirection } from './keyboard-nav.js';
 
 /**
  * Format a date as a full accessible label for screen readers.
@@ -40,6 +41,16 @@ function formatDateLabel(date: Date, locale: string): string {
   }).format(date);
 }
 
+/** Map of keyboard event keys to navigation directions. */
+const KEY_TO_DIRECTION: Record<string, NavigationDirection> = {
+  ArrowLeft: 'left',
+  ArrowRight: 'right',
+  ArrowUp: 'up',
+  ArrowDown: 'down',
+  Home: 'home',
+  End: 'end',
+};
+
 /**
  * Calendar display component that renders a 7-column month grid.
  *
@@ -48,6 +59,7 @@ function formatDateLabel(date: Date, locale: string): string {
  * - Leading/trailing days from adjacent months with reduced opacity
  * - CSS Grid layout with customizable sizing via CSS custom properties
  * - SSR-safe with isServer guards
+ * - Full keyboard navigation (WAI-ARIA APG Grid Pattern)
  *
  * @element lui-calendar
  * @fires ui-date-select - Dispatched when a date is selected, with { date: Date, isoString: string }
@@ -315,6 +327,33 @@ export class Calendar extends TailwindElement {
   private helpDialog!: HTMLDialogElement;
 
   /**
+   * Keyboard navigation manager for roving tabindex.
+   * NOT a Lit reactive property — managed imperatively.
+   */
+  private navigationManager: KeyboardNavigationManager | null = null;
+
+  /**
+   * Current focused cell index. Plain number, NOT @state().
+   * Managed imperatively by KeyboardNavigationManager.
+   */
+  private focusedIndex: number = 0;
+
+  /**
+   * The calendar days array, cached for use in keyboard handler.
+   * Only includes current-month days (not outside-month).
+   */
+  private currentMonthDays: Date[] = [];
+
+  /**
+   * Initialize keyboard navigation after first render.
+   */
+  protected override firstUpdated(): void {
+    if (isServer) return;
+    this.navigationManager = new KeyboardNavigationManager(7);
+    requestAnimationFrame(() => this.setupCells());
+  }
+
+  /**
    * Sync dropdown state and value property when reactive properties change.
    */
   protected override updated(changedProperties: PropertyValues): void {
@@ -322,10 +361,41 @@ export class Calendar extends TailwindElement {
     if (changedProperties.has('currentMonth' as keyof this)) {
       this.selectedMonth = getMonth(this.currentMonth);
       this.selectedYear = getYear(this.currentMonth);
+      // Re-setup cells after month changes (DOM will be updated)
+      if (!isServer) {
+        requestAnimationFrame(() => this.setupCells());
+      }
     }
     if (changedProperties.has('value') && this.value) {
       this.selectedDate = parseISO(this.value);
     }
+  }
+
+  /**
+   * Query current-month date buttons from the DOM and configure
+   * the navigation manager with them.
+   */
+  private setupCells(): void {
+    if (!this.navigationManager) return;
+
+    const buttons = Array.from(
+      this.renderRoot.querySelectorAll('.date-button:not(.outside-month)')
+    ) as HTMLElement[];
+
+    // Cache current-month days for keyboard selection
+    const allDays = getCalendarDays(this.currentMonth, this.weekStartsOn);
+    this.currentMonthDays = allDays.filter((d) => isSameMonth(d, this.currentMonth));
+
+    this.navigationManager.setCells(buttons);
+
+    // Try to focus today if it's in the current month, otherwise first day
+    const todayIndex = this.currentMonthDays.findIndex((d) => isToday(d));
+    if (todayIndex !== -1) {
+      this.focusedIndex = todayIndex;
+    } else {
+      this.focusedIndex = 0;
+    }
+    this.navigationManager.setFocusedIndex(this.focusedIndex);
   }
 
   /**
@@ -423,6 +493,106 @@ export class Calendar extends TailwindElement {
   }
 
   /**
+   * Handle keyboard navigation within the calendar grid.
+   * Implements WAI-ARIA APG Grid Pattern with roving tabindex.
+   */
+  private handleKeydown(e: KeyboardEvent): void {
+    if (!this.navigationManager) return;
+
+    // Arrow keys, Home, End — directional navigation
+    const direction = KEY_TO_DIRECTION[e.key];
+    if (direction) {
+      e.preventDefault();
+      const result = this.navigationManager.moveFocus(direction);
+      if (result === -1) {
+        // Boundary crossed — navigate to adjacent month
+        if (direction === 'left' || direction === 'up') {
+          const savedIndex = this.navigationManager.getFocusedIndex();
+          this.navigatePrevMonth();
+          // After render, focus last cell (or preserve relative row position for up)
+          this.updateComplete.then(() => {
+            requestAnimationFrame(() => {
+              if (!this.navigationManager) return;
+              const cellCount = this.currentMonthDays.length;
+              if (direction === 'left') {
+                this.navigationManager.setFocusedIndex(cellCount - 1);
+              } else {
+                // 'up' — try same column in last row
+                const col = savedIndex % 7;
+                const lastRowStart = Math.floor((cellCount - 1) / 7) * 7;
+                const targetIndex = Math.min(lastRowStart + col, cellCount - 1);
+                this.navigationManager.setFocusedIndex(targetIndex);
+              }
+              this.navigationManager.focusCurrent();
+            });
+          });
+        } else if (direction === 'right' || direction === 'down') {
+          const savedIndex = this.navigationManager.getFocusedIndex();
+          this.navigateNextMonth();
+          this.updateComplete.then(() => {
+            requestAnimationFrame(() => {
+              if (!this.navigationManager) return;
+              if (direction === 'right') {
+                this.navigationManager.setFocusedIndex(0);
+              } else {
+                // 'down' — try same column in first row
+                const col = savedIndex % 7;
+                this.navigationManager.setFocusedIndex(col);
+              }
+              this.navigationManager.focusCurrent();
+            });
+          });
+        }
+      } else {
+        this.focusedIndex = result;
+      }
+      return;
+    }
+
+    // PageUp — previous month
+    if (e.key === 'PageUp') {
+      e.preventDefault();
+      const savedIndex = this.navigationManager.getFocusedIndex();
+      this.navigatePrevMonth();
+      this.updateComplete.then(() => {
+        requestAnimationFrame(() => {
+          if (!this.navigationManager) return;
+          const cellCount = this.currentMonthDays.length;
+          this.navigationManager.setFocusedIndex(Math.min(savedIndex, cellCount - 1));
+          this.navigationManager.focusCurrent();
+        });
+      });
+      return;
+    }
+
+    // PageDown — next month
+    if (e.key === 'PageDown') {
+      e.preventDefault();
+      const savedIndex = this.navigationManager.getFocusedIndex();
+      this.navigateNextMonth();
+      this.updateComplete.then(() => {
+        requestAnimationFrame(() => {
+          if (!this.navigationManager) return;
+          const cellCount = this.currentMonthDays.length;
+          this.navigationManager.setFocusedIndex(Math.min(savedIndex, cellCount - 1));
+          this.navigationManager.focusCurrent();
+        });
+      });
+      return;
+    }
+
+    // Enter or Space — select focused date
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      const focusIdx = this.navigationManager.getFocusedIndex();
+      if (focusIdx >= 0 && focusIdx < this.currentMonthDays.length) {
+        this.handleDateSelect(this.currentMonthDays[focusIdx]);
+      }
+      return;
+    }
+  }
+
+  /**
    * Handle month dropdown selection change.
    */
   private handleMonthSelect(e: Event): void {
@@ -463,6 +633,9 @@ export class Calendar extends TailwindElement {
     const weekdays = getWeekdayNames(this.effectiveLocale, this.firstDayOfWeek);
     const days = getCalendarDays(this.currentMonth, this.weekStartsOn);
     const monthLabel = getMonthYearLabel(this.currentMonth, this.effectiveLocale);
+
+    // Track which current-month button index we're at for initial tabindex
+    let currentMonthButtonIndex = 0;
 
     return html`
       <div class="calendar">
@@ -532,14 +705,28 @@ export class Calendar extends TailwindElement {
           class="calendar-grid"
           role="grid"
           aria-labelledby="month-heading"
+          @keydown="${this.handleKeydown}"
         >
           ${days.map((day) => {
             const outsideMonth = !isSameMonth(day, this.currentMonth);
             const today = isToday(day);
             const selected = this.selectedDate !== null && isSameDay(day, this.selectedDate);
+
+            // Compute initial tabindex for keyboard discoverability.
+            // First current-month button gets tabindex=0, all others get -1.
+            // After firstUpdated(), KeyboardNavigationManager takes over imperatively.
+            let tabindex = -1;
+            if (!outsideMonth) {
+              if (currentMonthButtonIndex === 0) {
+                tabindex = 0;
+              }
+              currentMonthButtonIndex++;
+            }
+
             return html`
               <button
                 class="date-button ${outsideMonth ? 'outside-month' : ''} ${today ? 'today' : ''}"
+                tabindex="${tabindex}"
                 aria-label="${formatDateLabel(day, this.effectiveLocale)}"
                 aria-current="${today ? 'date' : nothing}"
                 aria-selected="${selected ? 'true' : 'false'}"
