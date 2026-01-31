@@ -365,14 +365,14 @@ Plans:
 **Plans**: 8 plans in 4 waves
 
 Plans:
-- [ ] 42-01-PLAN.md — Package setup, date utilities, and calendar grid layout with 7-column structure
-- [ ] 42-02-PLAN.md — Date cell rendering with today indicator and selected date states
-- [ ] 42-03-PLAN.md — Month navigation with previous/next buttons and month/year selectors
-- [ ] 42-04-PLAN.md — Keyboard navigation with roving tabindex (imperative KeyboardNavigationManager)
-- [ ] 42-05-PLAN.md — Screen reader support with aria-live regions and keyboard help dialog
-- [ ] 42-06-PLAN.md — Date constraints (min/max, disabled dates) with accessibility
-- [ ] 42-07-PLAN.md — Internationalization (first day of week, month/day names) via Intl API
-- [ ] 42-08-PLAN.md — Dark mode, SSR, CSS tokens, JSX types, and package exports
+- [x] 42-01-PLAN.md — Package setup, date utilities, and calendar grid layout with 7-column structure
+- [x] 42-02-PLAN.md — Date cell rendering with today indicator and selected date states
+- [x] 42-03-PLAN.md — Month navigation with previous/next buttons and month/year selectors
+- [x] 42-04-PLAN.md — Keyboard navigation with roving tabindex (imperative KeyboardNavigationManager)
+- [x] 42-05-PLAN.md — Screen reader support with aria-live regions and keyboard help dialog
+- [x] 42-06-PLAN.md — Date constraints (min/max, disabled dates) with accessibility
+- [x] 42-07-PLAN.md — Internationalization (first day of week, month/day names) via Intl API
+- [x] 42-08-PLAN.md — Dark mode, SSR, CSS tokens, JSX types, and package exports
 
 #### Phase 43: Calendar Display Advanced
 **Goal**: Advanced calendar features including multiple months, decade/century views, animations, and touch gestures.
@@ -559,7 +559,7 @@ Phases execute in numeric order: 42 → 43 → 44 → 45 → 46 → 47 → 48 �
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
-| 42. Calendar Display Foundation | v4.3 | 10/10 | Complete | 2026-01-31 |
+| 42. Calendar Display Foundation | v4.3 | 8/8 | Complete | 2026-01-31 |
 | 43. Calendar Display Advanced | v4.3 | 8/8 | Complete | 2026-01-31 |
 | 44. Date Picker Core | v4.3 | 0/10 | Not started | - |
 | 45. Date Picker Advanced | v4.3 | 0/6 | Not started | - |
