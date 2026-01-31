@@ -35,6 +35,10 @@ interface LuiCalendarEvents {
   'onmonth-change'?: (e: CustomEvent<{ year: number; month: number }>) => void;
 }
 
+interface LuiCalendarMultiEvents extends LuiCalendarEvents {
+  'onweek-select'?: (e: CustomEvent) => void;
+}
+
 // React JSX support
 declare global {
   namespace JSX {
@@ -44,7 +48,7 @@ declare global {
         Calendar
       >;
       'lui-calendar-multi': React.DetailedHTMLProps<
-        React.HTMLAttributes<CalendarMulti> & LuiCalendarMultiAttributes & LuiCalendarEvents,
+        React.HTMLAttributes<CalendarMulti> & LuiCalendarMultiAttributes & LuiCalendarMultiEvents,
         CalendarMulti
       >;
     }
