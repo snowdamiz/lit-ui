@@ -20,6 +20,16 @@ Developers can use polished, accessible UI components in any framework without l
 - Theme customization: Visual configurator + CLI `--theme` parameter
 - Form components: Input, Textarea, Select (single, multi, combobox, async), Checkbox (with group), Radio (with group), Switch
 
+## Current Milestone: v4.3 Date/Time Components
+
+**Goal:** Add Calendar, Date Picker, Date Range Picker, and Time Picker components for complete date/time input capabilities.
+
+**Target features:**
+- Calendar Display component (standalone grid)
+- Date Picker (input with calendar popup)
+- Date Range Picker (start/end selection)
+- Time Picker (hours/minutes selector)
+
 ## Requirements
 
 ### Validated
@@ -69,7 +79,10 @@ Developers can use polished, accessible UI components in any framework without l
 
 ### Active
 
-(No active requirements — planning next milestone)
+- [ ] Calendar Display component with month grid and navigation — v4.3
+- [ ] Date Picker with calendar popup and form participation — v4.3
+- [ ] Date Range Picker with start/end date selection — v4.3
+- [ ] Time Picker with hours/minutes selection — v4.3
 
 ### Deferred (v4.3+)
 
@@ -170,4 +183,4 @@ Developers can use polished, accessible UI components in any framework without l
 - **v4.2 Form Controls** (2026-01-27): Checkbox, Radio, Switch with group containers, completing form primitives
 
 ---
-*Last updated: 2026-01-27 after v4.2 milestone*
+*Last updated: 2026-01-30 after starting v4.3 milestone*
