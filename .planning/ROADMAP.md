@@ -362,19 +362,17 @@ Plans:
   3. User can navigate the calendar using keyboard (arrow keys, Home/End, Page Up/Down) with roving tabindex
   4. User hears screen reader announcements for month changes and selected dates via aria-live regions
   5. User sees today indicator, selected date highlight, and disabled dates with visual distinctions and proper ARIA
-**Plans**: 10 plans in 4 waves (8 execution + 2 gap closure)
+**Plans**: 8 plans in 4 waves
 
 Plans:
-- [ ] 42-01-PLAN.md — Calendar grid layout with 7-column structure and weekday headers
+- [ ] 42-01-PLAN.md — Package setup, date utilities, and calendar grid layout with 7-column structure
 - [ ] 42-02-PLAN.md — Date cell rendering with today indicator and selected date states
 - [ ] 42-03-PLAN.md — Month navigation with previous/next buttons and month/year selectors
-- [ ] 42-04-PLAN.md — Keyboard navigation with roving tabindex implementation
-- [ ] 42-05-PLAN.md — Screen reader support with aria-live regions for announcements
+- [ ] 42-04-PLAN.md — Keyboard navigation with roving tabindex (imperative KeyboardNavigationManager)
+- [ ] 42-05-PLAN.md — Screen reader support with aria-live regions and keyboard help dialog
 - [ ] 42-06-PLAN.md — Date constraints (min/max, disabled dates) with accessibility
 - [ ] 42-07-PLAN.md — Internationalization (first day of week, month/day names) via Intl API
-- [ ] 42-08-PLAN.md — Dark mode support and SSR compatibility
-- [ ] 42-09-PLAN.md — Fix roving tabindex to use KeyboardNavigationManager.moveFocus() (gap closure)
-- [ ] 42-10-PLAN.md — Add month change screen reader announcements via liveAnnouncement (gap closure)
+- [ ] 42-08-PLAN.md — Dark mode, SSR, CSS tokens, JSX types, and package exports
 
 #### Phase 43: Calendar Display Advanced
 **Goal**: Advanced calendar features including multiple months, decade/century views, animations, and touch gestures.
