@@ -464,6 +464,34 @@ export class DatePicker extends TailwindElement {
   }
 
   // ---------------------------------------------------------------------------
+  // Click-outside detection
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Handle document clicks for closing popup when clicking outside.
+   * Uses composedPath() to work correctly with Shadow DOM boundaries.
+   */
+  private handleDocumentClick = (e: MouseEvent): void => {
+    if (this.open && !e.composedPath().includes(this)) {
+      this.closePopup();
+    }
+  };
+
+  override connectedCallback(): void {
+    super.connectedCallback();
+    if (!isServer) {
+      document.addEventListener('click', this.handleDocumentClick);
+    }
+  }
+
+  override disconnectedCallback(): void {
+    super.disconnectedCallback();
+    if (!isServer) {
+      document.removeEventListener('click', this.handleDocumentClick);
+    }
+  }
+
+  // ---------------------------------------------------------------------------
   // Event handlers
   // ---------------------------------------------------------------------------
 
