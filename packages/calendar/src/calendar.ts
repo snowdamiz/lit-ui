@@ -322,6 +322,11 @@ export class Calendar extends TailwindElement {
         border: var(--ui-calendar-today-border, 2px solid var(--color-brand-500));
       }
 
+      /* Dark mode today indicator */
+      :host-context(.dark) [role='gridcell'][aria-current='date'] {
+        border-color: var(--ui-calendar-today-border-dark, var(--color-brand-400));
+      }
+
       /* Selected date */
       [role='gridcell'][aria-selected='true'] {
         background-color: var(--ui-calendar-selected-bg, var(--color-brand-500));
@@ -330,6 +335,12 @@ export class Calendar extends TailwindElement {
 
       [role='gridcell'][aria-selected='true']:hover {
         opacity: 0.9;
+      }
+
+      /* Dark mode selected date */
+      :host-context(.dark) [role='gridcell'][aria-selected='true'] {
+        background-color: var(--ui-calendar-selected-bg-dark, var(--color-brand-400));
+        color: var(--ui-calendar-selected-text-dark, oklch(0.2 0.01 250));
       }
 
       /* Disabled state */
