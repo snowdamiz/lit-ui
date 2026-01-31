@@ -22,6 +22,7 @@ import { html, css, nothing, isServer, svg, type PropertyValues, type CSSResultG
 import { property, state, query } from 'lit/decorators.js';
 import { TailwindElement, tailwindBaseStyles, dispatchCustomEvent } from '@lit-ui/core';
 import { parseDateInput, formatDateForDisplay, getPlaceholderText } from './date-input-parser.js';
+import { type DatePreset, DEFAULT_PRESETS } from './preset-types.js';
 import { parseISO, isBefore, isAfter, startOfDay, format } from 'date-fns';
 import { computePosition, flip, shift, offset } from '@floating-ui/dom';
 
@@ -151,6 +152,27 @@ export class DatePicker extends TailwindElement {
    */
   @property({ type: String })
   label = '';
+
+  // ---------------------------------------------------------------------------
+  // Properties (JS-only, not reflected)
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Preset buttons for quick date selection.
+   * - `false` (default): no presets shown
+   * - `true`: show default presets (Today, Tomorrow, Next Week)
+   * - `DatePreset[]`: show custom preset buttons
+   */
+  @property({ attribute: false })
+  presets: DatePreset[] | boolean = false;
+
+  /**
+   * Custom Intl.DateTimeFormatOptions for display formatting.
+   * When null (default), uses { year: 'numeric', month: 'long', day: 'numeric' }.
+   * Only affects display — input parsing still accepts any parseable format.
+   */
+  @property({ attribute: false })
+  format: Intl.DateTimeFormatOptions | null = null;
 
   // ---------------------------------------------------------------------------
   // State (internal reactive)
@@ -344,6 +366,41 @@ export class DatePicker extends TailwindElement {
         box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
       }
 
+      .preset-buttons {
+        display: flex;
+        gap: 0.25rem;
+        padding: 0.5rem;
+        border-bottom: 1px solid var(--ui-date-picker-popup-border, #e5e7eb);
+      }
+
+      .preset-button {
+        flex: 1;
+        padding: 0.375rem 0.5rem;
+        font-size: 0.75rem;
+        border: 1px solid var(--ui-date-picker-preset-border, #d1d5db);
+        border-radius: 0.25rem;
+        background: var(--ui-date-picker-preset-bg, #f9fafb);
+        color: var(--ui-date-picker-preset-text, inherit);
+        cursor: pointer;
+        transition: background-color 150ms, border-color 150ms;
+        white-space: nowrap;
+      }
+
+      .preset-button:hover:not(:disabled) {
+        background: var(--ui-date-picker-preset-bg-hover, #e5e7eb);
+        border-color: var(--ui-date-picker-preset-border-hover, #9ca3af);
+      }
+
+      .preset-button:focus-visible {
+        outline: 2px solid var(--color-ring, #3b82f6);
+        outline-offset: 1px;
+      }
+
+      .preset-button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
       .visually-hidden {
         position: absolute;
         width: 1px;
@@ -441,6 +498,15 @@ export class DatePicker extends TailwindElement {
     return this.error || this.internalError;
   }
 
+  /**
+   * Resolved preset array based on the presets property value.
+   */
+  private get effectivePresets(): DatePreset[] {
+    if (this.presets === true) return DEFAULT_PRESETS;
+    if (Array.isArray(this.presets)) return this.presets;
+    return [];
+  }
+
   // ---------------------------------------------------------------------------
   // Lifecycle
   // ---------------------------------------------------------------------------
@@ -454,7 +520,7 @@ export class DatePicker extends TailwindElement {
     if (changedProps.has('value')) {
       if (this.value) {
         const date = parseISO(this.value);
-        this.displayValue = formatDateForDisplay(date, this.effectiveLocale);
+        this.displayValue = formatDateForDisplay(date, this.effectiveLocale, this.format ?? undefined);
         this.updateFormValue();
       } else {
         this.displayValue = '';
@@ -547,7 +613,7 @@ export class DatePicker extends TailwindElement {
         }
 
         this.value = isoString;
-        this.displayValue = formatDateForDisplay(parsed, this.effectiveLocale);
+        this.displayValue = formatDateForDisplay(parsed, this.effectiveLocale, this.format ?? undefined);
         this.internalError = '';
         this.updateFormValue();
         this.validate();
@@ -701,7 +767,7 @@ export class DatePicker extends TailwindElement {
     const isoString = detail.isoString as string;
 
     this.value = isoString;
-    this.displayValue = formatDateForDisplay(date, this.effectiveLocale);
+    this.displayValue = formatDateForDisplay(date, this.effectiveLocale, this.format ?? undefined);
     this.internalError = '';
     this.updateFormValue();
     this.validate();
@@ -829,6 +895,70 @@ export class DatePicker extends TailwindElement {
   }
 
   // ---------------------------------------------------------------------------
+  // Presets
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Check if a preset's resolved date falls outside min/max constraints.
+   */
+  private isPresetDisabled(date: Date): boolean {
+    const day = startOfDay(date);
+    if (this.minDate) {
+      const min = startOfDay(parseISO(this.minDate));
+      if (isBefore(day, min)) return true;
+    }
+    if (this.maxDate) {
+      const max = startOfDay(parseISO(this.maxDate));
+      if (isAfter(day, max)) return true;
+    }
+    return false;
+  }
+
+  /**
+   * Handle click on a preset button: select the date, close popup, dispatch event.
+   */
+  private handlePresetSelect(preset: DatePreset): void {
+    const date = preset.resolve();
+    this.value = format(date, 'yyyy-MM-dd');
+    this.displayValue = formatDateForDisplay(date, this.effectiveLocale, this.format ?? undefined);
+    this.internalError = '';
+    this.updateFormValue();
+    this.validate();
+    this.closePopup();
+
+    dispatchCustomEvent(this, 'change', {
+      date,
+      isoString: this.value,
+    });
+  }
+
+  /**
+   * Render preset buttons above the calendar in the popup.
+   * Returns nothing if no presets are configured.
+   */
+  private renderPresets() {
+    const presets = this.effectivePresets;
+    if (presets.length === 0) return nothing;
+
+    return html`
+      <div class="preset-buttons">
+        ${presets.map((preset) => {
+          const resolved = preset.resolve();
+          const isDisabledPreset = this.isPresetDisabled(resolved);
+          return html`
+            <button
+              type="button"
+              class="preset-button ${isDisabledPreset ? 'preset-disabled' : ''}"
+              ?disabled=${isDisabledPreset}
+              @click=${() => this.handlePresetSelect(preset)}
+            >${preset.label}</button>
+          `;
+        })}
+      </div>
+    `;
+  }
+
+  // ---------------------------------------------------------------------------
   // Render
   // ---------------------------------------------------------------------------
 
@@ -931,6 +1061,7 @@ export class DatePicker extends TailwindElement {
                 aria-label="Choose date"
                 @keydown=${this.handlePopupKeydown}
               >
+                ${this.renderPresets()}
                 <lui-calendar
                   .value=${this.value}
                   .locale=${this.effectiveLocale}
