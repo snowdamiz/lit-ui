@@ -345,6 +345,41 @@ export class DateRangePicker extends TailwindElement {
         color: var(--ui-date-picker-error, var(--ui-input-text-error, #ef4444));
       }
 
+      .popup-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.5rem;
+        border-top: 1px solid var(--ui-date-picker-popup-border, #e5e7eb);
+        margin-top: 0.25rem;
+      }
+
+      .footer-status {
+        font-size: 0.75rem;
+        color: var(--color-muted-foreground, #6b7280);
+      }
+
+      .footer-clear-button {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.75rem;
+        border: 1px solid var(--ui-date-picker-border, var(--ui-input-border, #d1d5db));
+        border-radius: 0.25rem;
+        background: transparent;
+        color: var(--ui-date-picker-text, var(--ui-input-text, inherit));
+        cursor: pointer;
+        transition: background-color 150ms, border-color 150ms;
+      }
+
+      .footer-clear-button:hover {
+        background-color: var(--color-muted, #f3f4f6);
+        border-color: var(--color-muted-foreground, #9ca3af);
+      }
+
+      .footer-clear-button:focus-visible {
+        outline: 2px solid var(--color-ring, #3b82f6);
+        outline-offset: 1px;
+      }
+
       .range-header {
         display: flex;
         align-items: center;
@@ -440,6 +475,24 @@ export class DateRangePicker extends TailwindElement {
         background-color: var(--ui-calendar-hover-bg, #1f2937);
       }
 
+      :host-context(.dark) .popup-footer {
+        border-top-color: var(--ui-date-picker-popup-border, #374151);
+      }
+
+      :host-context(.dark) .footer-status {
+        color: var(--color-muted-foreground, #9ca3af);
+      }
+
+      :host-context(.dark) .footer-clear-button {
+        border-color: var(--ui-date-picker-border, var(--ui-input-border, #4b5563));
+        color: var(--ui-date-picker-text, var(--ui-input-text, #f9fafb));
+      }
+
+      :host-context(.dark) .footer-clear-button:hover {
+        background-color: var(--color-muted, #374151);
+        border-color: var(--color-muted-foreground, #6b7280);
+      }
+
       /* Container query: vertical stacking for narrow containers */
       @container (max-width: 599px) {
         .calendars-wrapper {
@@ -532,6 +585,16 @@ export class DateRangePicker extends TailwindElement {
     return this.placeholder || 'Select date range';
   }
 
+  /**
+   * Status message for the popup footer based on current selection state.
+   */
+  get selectionStatus(): string {
+    if (this.rangeState === 'idle') return 'Click a date to start selecting';
+    if (this.rangeState === 'start-selected') return 'Click another date to complete range';
+    if (this.rangeState === 'complete') return this.displayValue;
+    return '';
+  }
+
   // ---------------------------------------------------------------------------
   // SVG Icons
   // ---------------------------------------------------------------------------
@@ -539,6 +602,17 @@ export class DateRangePicker extends TailwindElement {
   private calendarIcon = svg`
     <path d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"
           stroke="currentColor" stroke-width="2" fill="none"
+          stroke-linecap="round" stroke-linejoin="round"/>
+  `;
+
+  private clearIcon = svg`
+    <circle cx="12" cy="12" r="10"
+            stroke="currentColor" stroke-width="2" fill="none"/>
+    <line x1="15" y1="9" x2="9" y2="15"
+          stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="9" y1="9" x2="15" y2="15"
+          stroke="currentColor" stroke-width="2"
           stroke-linecap="round" stroke-linejoin="round"/>
   `;
 
@@ -1073,6 +1147,18 @@ export class DateRangePicker extends TailwindElement {
           @change="${this.handleCalendarSelect}"
         ></lui-calendar>
       </div>
+      <div class="popup-footer">
+        <span class="footer-status">${this.selectionStatus}</span>
+        ${this.rangeState === 'complete'
+          ? html`
+              <button
+                type="button"
+                class="footer-clear-button"
+                @click=${this.handleClear}
+              >Clear</button>
+            `
+          : nothing}
+      </div>
     `;
   }
 
@@ -1114,6 +1200,21 @@ export class DateRangePicker extends TailwindElement {
             aria-label=${!this.label ? 'Date range' : nothing}
             aria-disabled=${this.disabled ? 'true' : nothing}
           />
+
+          ${this.startDate && !this.disabled
+            ? html`
+                <button
+                  type="button"
+                  class="action-button"
+                  aria-label="Clear date range"
+                  @click=${this.handleClear}
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true" class="action-icon">
+                    ${this.clearIcon}
+                  </svg>
+                </button>
+              `
+            : nothing}
 
           <button
             type="button"
