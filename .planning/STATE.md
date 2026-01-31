@@ -10,28 +10,28 @@ See: .planning/PROJECT.md (updated 2026-01-30)
 ## Current Position
 
 Phase: 2 of 9 (Calendar Display Advanced)
-Plan: 4 of 8 in current phase (4 execution complete)
+Plan: 5 of 8 in current phase (5 execution complete)
 Status: In progress
-Last activity: 2026-01-31 — Completed 43-02-PLAN.md (gesture & animation utilities)
+Last activity: 2026-01-31 — Completed 43-04-PLAN.md (decade & century views)
 
-Progress: [██████████████░░░░░░] 78% (14/18 plans)
+Progress: [███████████████░░░░░] 83% (15/18 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 14
+- Total plans completed: 15
 - Average duration: 2.3 min
-- Total execution time: 0.53 hours
+- Total execution time: 0.58 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 42    | 10    | 10    | 2.6 min |
-| 43    | 4     | 4     | 1.5 min |
+| 43    | 5     | 5     | 1.8 min |
 
 **Recent Trend:**
-- Last 3 plans: 1 min (43-01), 1 min (43-03), 2 min (43-02)
+- Last 3 plans: 1 min (43-03), 2 min (43-02), 3 min (43-04)
 - Trend: Consistent execution pace
 
 *Updated after each plan completion*
@@ -82,6 +82,11 @@ Recent decisions affecting current work:
 - **Phase 43-02**: 50px swipe threshold with 1.5x horizontal ratio to distinguish from scroll
 - **Phase 43-02**: prefers-reduced-motion replaces slide with fade (not remove animation)
 - **Phase 43-02**: isAnimating guard skips animation on rapid navigation (instant update)
+- **Phase 43-04**: CalendarView type uses 'month'|'year'|'decade' with view dispatch in render()
+- **Phase 43-04**: Decade view shows 12 years (1 before + 10 in decade + 1 after) in 4x3 grid
+- **Phase 43-04**: Century view shows 12 decades in 4x3 grid with KeyboardNavigationManager(cells, 4)
+- **Phase 43-04**: Escape key navigates back one view level (decade->year->month)
+- **Phase 43-04**: Heading uses role="button" with tabindex="0" for view drilling
 
 ### Pending Todos
 
@@ -98,5 +103,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-01-31 (phase 43 in progress)
-Stopped at: Completed 43-02-PLAN.md (gesture & animation utilities)
+Stopped at: Completed 43-04-PLAN.md (decade & century views)
 Resume file: None
