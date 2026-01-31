@@ -4,7 +4,7 @@ import { isServer } from 'lit';
 
 // Export component classes and types
 export { Calendar } from './calendar.js';
-export type { DateConstraints } from './calendar.js';
+export type { DateConstraints, DayCellState } from './calendar.js';
 
 // Export keyboard navigation manager
 export { KeyboardNavigationManager } from './keyboard-nav.js';
@@ -29,7 +29,12 @@ export {
   isBefore,
   isAfter,
   startOfDay,
+  getISOWeekNumber,
+  getISOWeekDates,
+  getMonthWeeks,
 } from './date-utils.js';
+
+export type { WeekInfo } from './date-utils.js';
 
 export {
   getFirstDayOfWeek,

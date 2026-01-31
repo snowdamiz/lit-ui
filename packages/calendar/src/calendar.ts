@@ -25,10 +25,14 @@ import {
   isBefore,
   isAfter,
   startOfDay,
+  getISOWeekNumber,
+  getMonthWeeks,
 } from './date-utils.js';
 import { parseISO } from 'date-fns';
 import { getFirstDayOfWeek, getWeekdayNames, getWeekdayLongNames } from './intl-utils.js';
 import { KeyboardNavigationManager } from './keyboard-nav.js';
+import { GestureHandler } from './gesture-handler.js';
+import { AnimationController } from './animation-controller.js';
 
 /**
  * The three view modes for the calendar.
@@ -53,6 +57,21 @@ export interface DateConstraints {
 interface DateDisabledResult {
   disabled: boolean;
   reason: string;
+}
+
+/**
+ * State object passed to the renderDay callback for custom day cell rendering.
+ * Contains all computed state for a single day cell.
+ */
+export interface DayCellState {
+  date: Date;
+  isToday: boolean;
+  isSelected: boolean;
+  isDisabled: boolean;
+  isOutsideMonth: boolean;
+  isInRange: boolean;
+  weekNumber: number;
+  formattedDate: string;
 }
 
 /**
@@ -392,6 +411,111 @@ export class Calendar extends TailwindElement {
       :host-context(.dark) .shortcut-list kbd {
         background: var(--ui-calendar-hover-bg, #1f2937);
       }
+
+      .month-grid {
+        overflow: hidden;
+      }
+
+      .calendar-weekdays-with-weeks {
+        display: grid;
+        grid-template-columns: auto repeat(7, 1fr);
+        gap: var(--ui-calendar-gap, 0.125rem);
+        text-align: center;
+      }
+
+      .calendar-grid-with-weeks {
+        display: grid;
+        grid-template-columns: auto repeat(7, 1fr);
+        gap: var(--ui-calendar-gap, 0.125rem);
+      }
+
+      .week-number {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        color: var(--ui-calendar-weekday-color, #6b7280);
+        cursor: pointer;
+        padding: 0.25rem;
+        border: none;
+        background: none;
+        border-radius: var(--ui-calendar-radius, 0.375rem);
+        width: 2rem;
+      }
+
+      .week-number:hover {
+        background-color: var(--ui-calendar-hover-bg, #f3f4f6);
+      }
+
+      .week-number:focus-visible {
+        outline: 2px solid var(--ui-calendar-focus-ring, var(--color-ring, #3b82f6));
+        outline-offset: 2px;
+      }
+
+      .week-number-header {
+        width: 2rem;
+      }
+
+      .date-button-wrapper {
+        width: var(--ui-calendar-day-size, 2.5rem);
+        height: var(--ui-calendar-day-size, 2.5rem);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--ui-calendar-radius, 0.375rem);
+        border: 2px solid transparent;
+        background: none;
+        cursor: pointer;
+        font-size: 0.875rem;
+        margin: 0 auto;
+        color: inherit;
+      }
+
+      .date-button-wrapper:hover {
+        background-color: var(--ui-calendar-hover-bg, #f3f4f6);
+      }
+
+      .date-button-wrapper.outside-month {
+        opacity: var(--ui-calendar-outside-opacity, 0.4);
+      }
+
+      .date-button-wrapper.today {
+        border: 2px solid var(--ui-calendar-today-border, var(--color-primary, #3b82f6));
+        font-weight: 600;
+      }
+
+      .date-button-wrapper[aria-selected="true"] {
+        background-color: var(--ui-calendar-selected-bg, var(--color-primary, #3b82f6));
+        color: var(--ui-calendar-selected-text, white);
+      }
+
+      .date-button-wrapper[aria-selected="true"]:hover {
+        background-color: var(--ui-calendar-selected-bg, var(--color-primary, #3b82f6));
+        filter: brightness(0.9);
+      }
+
+      .date-button-wrapper:focus-visible {
+        outline: 2px solid var(--ui-calendar-focus-ring, var(--color-ring, #3b82f6));
+        outline-offset: 2px;
+      }
+
+      .date-button-wrapper[aria-disabled="true"] {
+        opacity: var(--ui-calendar-disabled-opacity, 0.5);
+        cursor: not-allowed;
+        pointer-events: none;
+      }
+
+      :host-context(.dark) .week-number {
+        color: var(--ui-calendar-weekday-color, #9ca3af);
+      }
+
+      :host-context(.dark) .week-number:hover {
+        background-color: var(--ui-calendar-hover-bg, #1f2937);
+      }
+
+      :host-context(.dark) .date-button-wrapper:hover {
+        background-color: var(--ui-calendar-hover-bg, #1f2937);
+      }
     `,
   ];
 
@@ -493,12 +617,63 @@ export class Calendar extends TailwindElement {
   private previousView: CalendarView = 'month';
 
   /**
+   * Whether to display ISO week numbers in a column.
+   */
+  @property({ type: Boolean, attribute: 'show-week-numbers' })
+  showWeekNumbers = false;
+
+  /**
+   * Callback for custom day cell rendering.
+   * Receives DayCellState and returns a Lit template result.
+   * When null, default rendering is used.
+   */
+  @property({ attribute: false })
+  renderDay: ((state: DayCellState) => unknown) | null = null;
+
+  /**
+   * GestureHandler for swipe navigation on touch devices.
+   */
+  private gestureHandler: GestureHandler | null = null;
+
+  /**
+   * AnimationController for slide/fade month transitions.
+   */
+  private animationController: AnimationController | null = null;
+
+  /**
+   * Track direction of last navigation for triggering animation after render.
+   */
+  private lastNavigationDirection: 'left' | 'right' | null = null;
+
+  /**
    * Initialize keyboard navigation manager after first render.
    */
   protected override firstUpdated(): void {
     if (isServer) return;
     this.navigationManager = new KeyboardNavigationManager(7);
     requestAnimationFrame(() => this.setupCells());
+
+    // Initialize gesture handler and animation controller on month-grid wrapper
+    this.updateComplete.then(() => {
+      const grid = this.renderRoot.querySelector('.month-grid') as HTMLElement;
+      if (grid) {
+        this.gestureHandler = new GestureHandler(grid, (direction) => {
+          if (direction === 'left') this.navigateNextMonth();
+          else this.navigatePrevMonth();
+        });
+        this.gestureHandler.attach();
+        this.animationController = new AnimationController(grid);
+      }
+    });
+  }
+
+  /**
+   * Clean up gesture handler and animation controller on disconnect.
+   */
+  override disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this.gestureHandler?.detach();
+    this.animationController?.destroy();
   }
 
   /**
@@ -507,8 +682,10 @@ export class Calendar extends TailwindElement {
    */
   private setupCells(): void {
     if (!this.navigationManager) return;
+    // Query both .date-button and .date-button-wrapper (renderDay callback uses wrapper)
+    // Exclude .week-number buttons — they are not part of keyboard navigation
     const buttons = Array.from(
-      this.renderRoot.querySelectorAll('.date-button:not(.outside-month)')
+      this.renderRoot.querySelectorAll('.date-button:not(.outside-month), .date-button-wrapper:not(.outside-month)')
     ) as HTMLElement[];
     this.navigationManager.setCells(buttons);
 
@@ -658,7 +835,7 @@ export class Calendar extends TailwindElement {
               this.setupCells();
               // Focus last cell when navigating backward
               const buttons = Array.from(
-                this.renderRoot.querySelectorAll('.date-button:not(.outside-month)')
+                this.renderRoot.querySelectorAll('.date-button:not(.outside-month), .date-button-wrapper:not(.outside-month)')
               ) as HTMLElement[];
               if (buttons.length > 0) {
                 this.navigationManager!.setFocusedIndex(buttons.length - 1);
@@ -743,6 +920,12 @@ export class Calendar extends TailwindElement {
       if (!isServer && this.currentView === 'month') {
         requestAnimationFrame(() => this.setupCells());
       }
+      // Trigger animation after DOM updates with new content
+      if (!isServer && this.lastNavigationDirection && this.animationController) {
+        const direction = this.lastNavigationDirection;
+        this.lastNavigationDirection = null;
+        this.animationController.transition(direction);
+      }
     }
     if (changedProperties.has('value') && this.value) {
       this.selectedDate = parseISO(this.value);
@@ -822,6 +1005,7 @@ export class Calendar extends TailwindElement {
    * Navigate to the previous month.
    */
   private navigatePrevMonth(): void {
+    this.lastNavigationDirection = 'right';
     this.currentMonth = subMonths(this.currentMonth, 1);
     this.emitMonthChange();
     this.announceMonthChange();
@@ -831,6 +1015,7 @@ export class Calendar extends TailwindElement {
    * Navigate to the next month.
    */
   private navigateNextMonth(): void {
+    this.lastNavigationDirection = 'left';
     this.currentMonth = addMonths(this.currentMonth, 1);
     this.emitMonthChange();
     this.announceMonthChange();
@@ -978,6 +1163,10 @@ export class Calendar extends TailwindElement {
     const weekdayLongNames = getWeekdayLongNames(this.effectiveLocale, this.firstDayOfWeek);
     const days = getCalendarDays(this.currentMonth, this.weekStartsOn);
     const monthLabel = getMonthYearLabel(this.currentMonth, this.effectiveLocale);
+    const weeks = this.showWeekNumbers ? getMonthWeeks(this.currentMonth, this.weekStartsOn) : null;
+
+    const weekdaysClass = this.showWeekNumbers ? 'calendar-weekdays-with-weeks' : 'calendar-weekdays';
+    const gridClass = this.showWeekNumbers ? 'calendar-grid-with-weeks' : 'calendar-grid';
 
     return html`
       <div class="calendar">
@@ -1010,58 +1199,31 @@ export class Calendar extends TailwindElement {
             </svg>
           </button>
         </div>
-        <div class="calendar-weekdays" role="row">
-          ${weekdays.map(
-            (name, i) => html`
-              <div
-                class="weekday-header"
-                role="columnheader"
-                aria-label="${weekdayLongNames[i]}"
-              >
-                ${name}
-              </div>
-            `
-          )}
-        </div>
-        <div
-          class="calendar-grid"
-          role="grid"
-          aria-labelledby="month-heading"
-          @keydown="${this.handleKeydown}"
-        >
-          ${(() => {
-            let firstCurrentMonthFound = false;
-            return days.map((day) => {
-              const outsideMonth = !isSameMonth(day, this.currentMonth);
-              const today = isToday(day);
-              const selected = this.selectedDate !== null && isSameDay(day, this.selectedDate);
-              const constraint = this.isDateDisabled(day);
-              const isDisabled = outsideMonth || constraint.disabled;
-              const label = constraint.disabled
-                ? `${formatDateLabel(day, this.effectiveLocale)}, ${constraint.reason}`
-                : formatDateLabel(day, this.effectiveLocale);
-              // Initial tabindex: first current-month cell gets 0, all others -1
-              // After firstUpdated, KeyboardNavigationManager takes over imperatively
-              let initialTabindex = -1;
-              if (!outsideMonth && !firstCurrentMonthFound) {
-                firstCurrentMonthFound = true;
-                initialTabindex = 0;
-              }
-              return html`
-                <button
-                  class="date-button ${outsideMonth ? 'outside-month' : ''} ${today ? 'today' : ''}"
-                  tabindex="${initialTabindex}"
-                  aria-label="${label}"
-                  aria-current="${today ? 'date' : nothing}"
-                  aria-selected="${selected ? 'true' : 'false'}"
-                  aria-disabled="${isDisabled ? 'true' : 'false'}"
-                  @click="${() => this.handleDateSelect(day)}"
+        <div class="month-grid">
+          <div class="${weekdaysClass}" role="row">
+            ${this.showWeekNumbers ? html`<div class="weekday-header week-number-header" role="columnheader" aria-label="Week number"></div>` : nothing}
+            ${weekdays.map(
+              (name, i) => html`
+                <div
+                  class="weekday-header"
+                  role="columnheader"
+                  aria-label="${weekdayLongNames[i]}"
                 >
-                  ${day.getDate()}
-                </button>
-              `;
-            });
-          })()}
+                  ${name}
+                </div>
+              `
+            )}
+          </div>
+          <div
+            class="${gridClass}"
+            role="grid"
+            aria-labelledby="month-heading"
+            @keydown="${this.handleKeydown}"
+          >
+            ${this.showWeekNumbers && weeks
+              ? this.renderWeeksWithNumbers(weeks)
+              : this.renderFlatDays(days)}
+          </div>
         </div>
         <div class="visually-hidden" role="status" aria-live="polite" aria-atomic="true">
           ${this.liveAnnouncement}
@@ -1099,6 +1261,126 @@ export class Calendar extends TailwindElement {
         </dialog>
       </div>
     `;
+  }
+
+  /**
+   * Render days as a flat grid (no week numbers).
+   */
+  private renderFlatDays(days: Date[]) {
+    const tracker = { found: false };
+    return days.map((day) => this.renderDayCell(day, tracker));
+  }
+
+  /**
+   * Render weeks with week number buttons prepended to each row.
+   */
+  private renderWeeksWithNumbers(weeks: import('./date-utils.js').WeekInfo[]) {
+    const tracker = { found: false };
+    return weeks.map((week) => {
+      const weekNumberButton = html`
+        <button
+          class="week-number"
+          tabindex="-1"
+          aria-label="Week ${week.weekNumber}, select entire week"
+          @click="${() => this.handleWeekSelect(week.days)}"
+        >
+          ${week.weekNumber}
+        </button>
+      `;
+      const dayCells = week.days.map((day) =>
+        this.renderDayCell(day, tracker)
+      );
+      return html`${weekNumberButton}${dayCells}`;
+    });
+  }
+
+  /**
+   * Render a single day cell, supporting the renderDay callback.
+   */
+  private renderDayCell(
+    day: Date,
+    tracker: { found: boolean },
+  ) {
+    const outsideMonth = !isSameMonth(day, this.currentMonth);
+    const todayFlag = isToday(day);
+    const selected = this.selectedDate !== null && isSameDay(day, this.selectedDate);
+    const constraint = this.isDateDisabled(day);
+    const isDisabled = outsideMonth || constraint.disabled;
+    const label = constraint.disabled
+      ? `${formatDateLabel(day, this.effectiveLocale)}, ${constraint.reason}`
+      : formatDateLabel(day, this.effectiveLocale);
+
+    // Initial tabindex: first current-month cell gets 0, all others -1
+    let initialTabindex = -1;
+    if (!outsideMonth && !tracker.found) {
+      tracker.found = true;
+      initialTabindex = 0;
+    }
+
+    // Build DayCellState for renderDay callback
+    if (this.renderDay) {
+      const dayCellState: DayCellState = {
+        date: day,
+        isToday: todayFlag,
+        isSelected: selected,
+        isDisabled,
+        isOutsideMonth: outsideMonth,
+        isInRange: !isDisabled,
+        weekNumber: getISOWeekNumber(day),
+        formattedDate: format(day, 'yyyy-MM-dd'),
+      };
+      return html`
+        <div
+          class="date-button-wrapper ${outsideMonth ? 'outside-month' : ''} ${todayFlag ? 'today' : ''}"
+          tabindex="${initialTabindex}"
+          role="gridcell"
+          aria-label="${label}"
+          aria-current="${todayFlag ? 'date' : nothing}"
+          aria-selected="${selected ? 'true' : 'false'}"
+          aria-disabled="${isDisabled ? 'true' : 'false'}"
+          @click="${() => this.handleDateSelect(day)}"
+        >
+          ${this.renderDay(dayCellState)}
+        </div>
+      `;
+    }
+
+    return html`
+      <button
+        class="date-button ${outsideMonth ? 'outside-month' : ''} ${todayFlag ? 'today' : ''}"
+        tabindex="${initialTabindex}"
+        aria-label="${label}"
+        aria-current="${todayFlag ? 'date' : nothing}"
+        aria-selected="${selected ? 'true' : 'false'}"
+        aria-disabled="${isDisabled ? 'true' : 'false'}"
+        @click="${() => this.handleDateSelect(day)}"
+      >
+        ${day.getDate()}
+      </button>
+    `;
+  }
+
+  /**
+   * Handle week number click — select all current-month, non-disabled days in the week.
+   */
+  private handleWeekSelect(weekDays: Date[]): void {
+    const filteredDays = weekDays.filter((day) => {
+      if (!isSameMonth(day, this.currentMonth)) return false;
+      const { disabled } = this.isDateDisabled(day);
+      return !disabled;
+    });
+
+    // Determine week number from Thursday (ISO 8601)
+    const thursday = weekDays.find((d) => d.getDay() === 4) ?? weekDays[0];
+    const weekNumber = getISOWeekNumber(thursday);
+
+    dispatchCustomEvent(this, 'week-select', {
+      weekNumber,
+      dates: filteredDays,
+      isoStrings: filteredDays.map((d) => format(d, 'yyyy-MM-dd')),
+    });
+
+    this.liveAnnouncement = `Selected week ${weekNumber}`;
   }
 
   /**
