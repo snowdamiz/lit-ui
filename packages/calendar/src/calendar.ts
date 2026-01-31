@@ -643,7 +643,6 @@ export class Calendar extends TailwindElement {
         aria-current=${isToday ? 'date' : nothing}
         aria-disabled=${isDisabled ? 'true' : nothing}
         aria-label=${ariaLabel}
-        tabindex=${isFocused ? '0' : '-1'}
         data-date="${isoDate}"
         class="calendar-cell ${isToday ? 'today' : ''} ${isSelected ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}"
         @click=${isDisabled ? nothing : () => this.handleDateClick(date)}
