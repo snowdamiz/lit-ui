@@ -936,8 +936,10 @@ export class DatePicker extends TailwindElement {
                   .locale=${this.effectiveLocale}
                   min-date=${this.minDate || nothing}
                   max-date=${this.maxDate || nothing}
+                  ?show-constraint-tooltips=${!!(this.minDate || this.maxDate)}
                   @change=${this.handleCalendarSelect}
                 ></lui-calendar>
+                <!-- TODO: Plan 03 (inline mode) will add renderInlineCalendar() — add show-constraint-tooltips there too -->
               </div>
             `
           : nothing}
