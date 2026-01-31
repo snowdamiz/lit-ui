@@ -1,4 +1,5 @@
 import { parse, isValid } from 'date-fns';
+import { parseNaturalLanguage } from './natural-language.js';
 
 /**
  * Format groups for locale-aware date parsing.
@@ -64,6 +65,10 @@ function isUSOrderLocale(locale?: string): boolean {
 export function parseDateInput(input: string, locale?: string): Date | null {
   const trimmed = input.trim();
   if (!trimmed) return null;
+
+  // Try natural language parsing first (e.g. "today", "tomorrow", "next week")
+  const nlResult = parseNaturalLanguage(trimmed);
+  if (nlResult) return nlResult;
 
   const referenceDate = new Date();
   const localeFormats = isUSOrderLocale(locale)
