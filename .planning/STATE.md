@@ -10,27 +10,27 @@ See: .planning/PROJECT.md (updated 2026-01-30)
 ## Current Position
 
 Phase: 1 of 9 (Calendar Display Foundation)
-Plan: 7 of 8 in current phase
+Plan: 6 of 8 in current phase
 Status: In progress
-Last activity: 2026-01-31 — Completed 42-07-PLAN.md (Internationalization - First Day of Week and Locale Support)
+Last activity: 2026-01-31 — Completed 42-06-PLAN.md (Date Constraints with min/max, disabled dates, weekend disabling)
 
-Progress: [███████░] 87%
+Progress: [██████░░] 75%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 7
-- Average duration: 2.7 min
-- Total execution time: 0.32 hours
+- Total plans completed: 6
+- Average duration: 2.8 min
+- Total execution time: 0.28 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 42    | 7     | 8     | 2.7 min |
+| 42    | 6     | 8     | 2.8 min |
 
 **Recent Trend:**
-- Last 3 plans: 3 min (42-03), 1 min (42-07)
+- Last 3 plans: 3 min (42-03), 2 min (42-04), 2 min (42-06)
 - Trend: Steady progress
 
 *Updated after each plan completion*
@@ -55,6 +55,13 @@ Recent decisions affecting current work:
 - **Phase 42-03**: Sync dropdown state (selectedMonth/selectedYear) with currentMonth for consistency
 - **Phase 42-03**: Emit ui-month-change event after all navigation actions (buttons, dropdowns, keyboard)
 - **Phase 42-03**: Use aria-live="polite" on heading for screen reader announcements
+- **Phase 42-04**: Use aria-live="polite" region for date selection announcements
+- **Phase 42-05**: Add keyboard navigation help dialog with shortcuts list
+- **Phase 42-05**: Implement WAI-ARIA Grid Pattern keyboard navigation (arrows, Home, End, PageUp, PageDown)
+- **Phase 42-06**: Use DateConstraints interface for type-safe date validation (minDate, maxDate, disabledDates)
+- **Phase 42-06**: Parse ISO strings to Date objects in updated() lifecycle for reactive constraint updates
+- **Phase 42-06**: Provide human-readable disabled reasons in aria-label (before minimum date, after maximum date, unavailable, weekend)
+- **Phase 42-06**: Use CSS custom property --ui-calendar-disabled-opacity for theming disabled state
 - **Phase 42-07**: Use Intl.Locale.getWeekInfo() for locale-aware first day of week (Chrome 99+, Safari 17+)
 - **Phase 42-07**: Fallback to Sunday (7) for en-US/he-IL, Monday (1) for other locales
 - **Phase 42-07**: Weekday names array starts from locale-specific first day via getFirstDayOfWeek()
@@ -74,6 +81,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-31 (42-07 execution)
-Stopped at: Completed 42-07-PLAN.md, added internationalization with locale-aware first day of week
+Last session: 2026-01-31 (42-06 execution)
+Stopped at: Completed 42-06-PLAN.md, added date constraints with min/max, disabled dates, and weekend disabling
 Resume file: None
