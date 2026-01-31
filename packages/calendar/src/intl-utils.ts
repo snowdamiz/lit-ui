@@ -44,14 +44,14 @@ export function getFirstDayOfWeek(locale: string): number {
 }
 
 /**
- * Get localized weekday names.
+ * Get localized weekday names starting from locale-specific first day.
  *
  * Uses Intl.DateTimeFormat to get weekday abbreviations based on locale.
- * Starts from Sunday (day 1) to Saturday (day 7) for consistency.
+ * Starts from the locale's first day of week (e.g., Sunday for en-US, Monday for en-GB).
  *
  * @param locale - Locale string (e.g., 'en-US', 'en-GB', 'fr-FR')
  * @param style - Weekday style format ('long', 'short', 'narrow')
- * @returns Array of weekday names starting from Sunday
+ * @returns Array of weekday names starting from locale's first day
  *
  * @example
  * ```typescript
@@ -59,22 +59,31 @@ export function getFirstDayOfWeek(locale: string): number {
  * // Returns ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
  *
  * getWeekdayNames('en-GB', 'short')
- * // Returns ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
- * // (Note: order is always Sun-Sat, locale affects first day display)
+ * // Returns ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+ *
+ * getWeekdayNames('fr-FR', 'short')
+ * // Returns ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"]
  * ```
  */
 export function getWeekdayNames(
   locale: string,
   style: 'long' | 'short' | 'narrow' = 'short'
 ): string[] {
+  // Get first day of week for this locale
+  const firstDay = getFirstDayOfWeek(locale);
+
+  // Create formatter
   const formatter = new Intl.DateTimeFormat(locale, { weekday: style });
 
-  // Generate names for Sunday through Saturday
-  // 2023-01-01 was a Sunday, so we use that as our base date
-  return Array.from({ length: 7 }, (_, i) => {
-    const date = new Date(2023, 0, i + 1);
-    return formatter.format(date);
-  });
+  // Generate names starting from firstDay
+  const names: string[] = [];
+  for (let i = 0; i < 7; i++) {
+    // 2023-01-01 was a Sunday (day 1), so we add (firstDay - 1) to adjust
+    const date = new Date(2023, 0, firstDay + i);
+    names.push(formatter.format(date));
+  }
+
+  return names;
 }
 
 /**
