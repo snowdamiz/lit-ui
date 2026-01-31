@@ -1,9 +1,0 @@
-{
-  "extends": "@lit-ui/typescript-config/library.json",
-  "compilerOptions": {
-    "outDir": "./dist",
-    "rootDir": "./src",
-    "baseUrl": "."
-  },
-  "include": ["src"]
-}

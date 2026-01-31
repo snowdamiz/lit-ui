@@ -107,17 +107,67 @@ function DownloadIcon() {
   )
 }
 
+function AgentSkillsIcon() {
+  return (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+      <path d="M18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456z" />
+    </svg>
+  )
+}
+
+function CheckboxIcon() {
+  return (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="3" width="18" height="18" rx="2" />
+      <path d="M9 12l2 2 4-4" />
+    </svg>
+  )
+}
+
+function RadioIcon() {
+  return (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="9" />
+      <circle cx="12" cy="12" r="4" fill="currentColor" stroke="none" />
+    </svg>
+  )
+}
+
+function SelectIcon() {
+  return (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="6" width="18" height="12" rx="2" />
+      <path d="M15 11l2 2 2-2" />
+    </svg>
+  )
+}
+
+function SwitchIcon() {
+  return (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="1" y="7" width="22" height="10" rx="5" />
+      <circle cx="16" cy="12" r="3" />
+    </svg>
+  )
+}
+
 // Map of item titles to their icons
 const iconMap: Record<string, () => JSX.Element> = {
   'Getting Started': BookIcon,
   'Installation': DownloadIcon,
   'Styling': StylingIcon,
-  'Button': ButtonIcon,
-  'Dialog': DialogIcon,
-  'Input': InputIcon,
-  'Textarea': TextareaIcon,
   'SSR Setup': ServerIcon,
   'Migration': MigrationIcon,
+  'Agent Skills': AgentSkillsIcon,
+  'Button': ButtonIcon,
+  'Checkbox': CheckboxIcon,
+  'Dialog': DialogIcon,
+  'Input': InputIcon,
+  'Radio': RadioIcon,
+  'Select': SelectIcon,
+  'Switch': SwitchIcon,
+  'Textarea': TextareaIcon,
   'Theme Configurator': PaletteIcon,
 }
 

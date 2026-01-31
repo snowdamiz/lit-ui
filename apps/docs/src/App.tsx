@@ -9,7 +9,6 @@ import { MigrationGuide } from './pages/MigrationGuide'
 import { AgentSkillsGuide } from './pages/AgentSkillsGuide'
 import { Placeholder } from './pages/Placeholder'
 import { ButtonPage } from './pages/components/ButtonPage'
-import { CalendarPage } from './pages/components/CalendarPage'
 import { CheckboxPage } from './pages/components/CheckboxPage'
 import { DialogPage } from './pages/components/DialogPage'
 import { InputPage } from './pages/components/InputPage'
@@ -45,7 +44,6 @@ export default function App() {
 
             {/* Components */}
             <Route path="components/button" element={<ButtonPage />} />
-            <Route path="components/calendar" element={<CalendarPage />} />
             <Route path="components/checkbox" element={<CheckboxPage />} />
             <Route path="components/dialog" element={<DialogPage />} />
             <Route path="components/input" element={<InputPage />} />

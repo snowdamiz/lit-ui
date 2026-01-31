@@ -365,16 +365,16 @@ Plans:
 **Plans**: 10 plans in 4 waves (8 execution + 2 gap closure)
 
 Plans:
-- [x] 42-01-PLAN.md — Calendar grid layout with 7-column structure and weekday headers
-- [x] 42-02-PLAN.md — Date cell rendering with today indicator and selected date states
-- [x] 42-03-PLAN.md — Month navigation with previous/next buttons and month/year selectors
-- [x] 42-04-PLAN.md — Keyboard navigation with roving tabindex implementation
-- [x] 42-05-PLAN.md — Screen reader support with aria-live regions for announcements
-- [x] 42-06-PLAN.md — Date constraints (min/max, disabled dates) with accessibility
-- [x] 42-07-PLAN.md — Internationalization (first day of week, month/day names) via Intl API
-- [x] 42-08-PLAN.md — Dark mode support and SSR compatibility
-- [x] 42-09-PLAN.md — Fix roving tabindex to use KeyboardNavigationManager.moveFocus() (gap closure)
-- [x] 42-10-PLAN.md — Add month change screen reader announcements via liveAnnouncement (gap closure)
+- [ ] 42-01-PLAN.md — Calendar grid layout with 7-column structure and weekday headers
+- [ ] 42-02-PLAN.md — Date cell rendering with today indicator and selected date states
+- [ ] 42-03-PLAN.md — Month navigation with previous/next buttons and month/year selectors
+- [ ] 42-04-PLAN.md — Keyboard navigation with roving tabindex implementation
+- [ ] 42-05-PLAN.md — Screen reader support with aria-live regions for announcements
+- [ ] 42-06-PLAN.md — Date constraints (min/max, disabled dates) with accessibility
+- [ ] 42-07-PLAN.md — Internationalization (first day of week, month/day names) via Intl API
+- [ ] 42-08-PLAN.md — Dark mode support and SSR compatibility
+- [ ] 42-09-PLAN.md — Fix roving tabindex to use KeyboardNavigationManager.moveFocus() (gap closure)
+- [ ] 42-10-PLAN.md — Add month change screen reader announcements via liveAnnouncement (gap closure)
 
 #### Phase 43: Calendar Display Advanced
 **Goal**: Advanced calendar features including multiple months, decade/century views, animations, and touch gestures.
@@ -389,14 +389,14 @@ Plans:
 **Plans**: 8 plans in 6 waves
 
 Plans:
-- [x] 43-01-PLAN.md -- Configurable KeyboardNavigationManager columns
-- [x] 43-02-PLAN.md -- Gesture handler and animation controller modules
-- [x] 43-03-PLAN.md -- ISO week number utilities in date-utils
-- [x] 43-04-PLAN.md -- Decade and century views in Calendar
-- [x] 43-05-PLAN.md -- Animations, swipe, week numbers, renderDay integration
-- [x] 43-06-PLAN.md -- display-month/hide-navigation props + multi-month wrapper
-- [x] 43-07-PLAN.md -- Responsive container query layout
-- [x] 43-08-PLAN.md -- Package exports, JSX types, element registration
+- [ ] 43-01-PLAN.md -- Configurable KeyboardNavigationManager columns
+- [ ] 43-02-PLAN.md -- Gesture handler and animation controller modules
+- [ ] 43-03-PLAN.md -- ISO week number utilities in date-utils
+- [ ] 43-04-PLAN.md -- Decade and century views in Calendar
+- [ ] 43-05-PLAN.md -- Animations, swipe, week numbers, renderDay integration
+- [ ] 43-06-PLAN.md -- display-month/hide-navigation props + multi-month wrapper
+- [ ] 43-07-PLAN.md -- Responsive container query layout
+- [ ] 43-08-PLAN.md -- Package exports, JSX types, element registration
 
 #### Phase 44: Date Picker Core
 **Goal**: Single date picker with input field, calendar popup, positioning, form integration, and validation.
