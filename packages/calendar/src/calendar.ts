@@ -767,6 +767,7 @@ export class Calendar extends TailwindElement {
     this.currentMonth = subtractMonths(this.currentMonth, 1);
     this.selectedMonth = this.currentMonth.getMonth();
     this.selectedYear = this.currentMonth.getFullYear();
+    this.announceMonthChange();
     this.emitMonthChange();
   }
 
@@ -777,6 +778,7 @@ export class Calendar extends TailwindElement {
     this.currentMonth = addMonthsTo(this.currentMonth, 1);
     this.selectedMonth = this.currentMonth.getMonth();
     this.selectedYear = this.currentMonth.getFullYear();
+    this.announceMonthChange();
     this.emitMonthChange();
   }
 
@@ -788,6 +790,7 @@ export class Calendar extends TailwindElement {
     const month = parseInt((event.target as HTMLSelectElement).value, 10);
     this.selectedMonth = month;
     this.currentMonth = new Date(this.selectedYear, month, 1);
+    this.announceMonthChange();
     this.emitMonthChange();
   }
 
@@ -799,7 +802,20 @@ export class Calendar extends TailwindElement {
     const year = parseInt((event.target as HTMLSelectElement).value, 10);
     this.selectedYear = year;
     this.currentMonth = new Date(year, this.selectedMonth, 1);
+    this.announceMonthChange();
     this.emitMonthChange();
+  }
+
+  /**
+   * Set liveAnnouncement for screen readers when month changes.
+   * Uses Intl.DateTimeFormat for locale-aware month/year formatting.
+   */
+  private announceMonthChange(): void {
+    const formatter = new Intl.DateTimeFormat(this.locale, {
+      year: 'numeric',
+      month: 'long'
+    });
+    this.liveAnnouncement = `Navigated to ${formatter.format(this.currentMonth)}`;
   }
 
   /**
