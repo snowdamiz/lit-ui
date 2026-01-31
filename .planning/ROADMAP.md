@@ -447,11 +447,11 @@ Plans:
 **Plans**: 5 plans in 5 waves
 
 Plans:
-- [ ] 46-01-PLAN.md — Package scaffolding, range utilities (TDD), and range selection state machine
-- [ ] 46-02-PLAN.md — Dual calendar layout with synchronized navigation and range highlighting via renderDay
-- [ ] 46-03-PLAN.md — Input field, Floating UI popup, click-outside, focus trap, and Escape handling
-- [ ] 46-04-PLAN.md — Form integration via ElementInternals, range validation, clear button, error display
-- [ ] 46-05-PLAN.md — Dark mode styles, package exports, custom element registration, and JSX types
+- [x] 46-01-PLAN.md — Package scaffolding, range utilities (TDD), and range selection state machine
+- [x] 46-02-PLAN.md — Dual calendar layout with synchronized navigation and range highlighting via renderDay
+- [x] 46-03-PLAN.md — Input field, Floating UI popup, click-outside, focus trap, and Escape handling
+- [x] 46-04-PLAN.md — Form integration via ElementInternals, range validation, clear button, error display
+- [x] 46-05-PLAN.md — Dark mode styles, package exports, custom element registration, and JSX types
 
 #### Phase 47: Date Range Picker Advanced
 **Goal**: Advanced range picker features including presets, drag selection, duration display, and comparison mode.
@@ -553,7 +553,7 @@ Phases execute in numeric order: 42 → 43 → 44 → 45 → 46 → 47 → 48 �
 | 43. Calendar Display Advanced | v4.3 | 8/8 | Complete | 2026-01-31 |
 | 44. Date Picker Core | v4.3 | 5/5 | Complete | 2026-01-31 |
 | 45. Date Picker Advanced | v4.3 | 5/5 | Complete | 2026-01-31 |
-| 46. Date Range Picker Core | v4.3 | 0/5 | Not started | - |
+| 46. Date Range Picker Core | v4.3 | 5/5 | Complete | 2026-01-31 |
 | 47. Date Range Picker Advanced | v4.3 | 0/6 | Not started | - |
 | 48. Time Picker Core | v4.3 | 0/11 | Not started | - |
 | 49. Time Picker Advanced | v4.3 | 0/8 | Not started | - |

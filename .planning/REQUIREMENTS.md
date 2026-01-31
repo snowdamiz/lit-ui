@@ -71,21 +71,21 @@ Requirements for v4.3 milestone - complete date/time input capabilities. Each ma
 
 ### Date Range Picker
 
-- [ ] **DRP-01**: First click sets range start date
-- [ ] **DRP-02**: Second click sets range end date
-- [ ] **DRP-03**: Selected range highlights with background color
-- [ ] **DRP-04**: Two calendars display side-by-side
-- [ ] **DRP-05**: Calendars synchronize month navigation
-- [ ] **DRP-06**: Hover preview shows potential range from start to hovered date
-- [ ] **DRP-07**: Start date has distinct visual style (e.g., rounded-left)
-- [ ] **DRP-08**: End date has distinct visual style (e.g., rounded-right)
-- [ ] **DRP-09**: Clicking end date before start auto-swaps dates
-- [ ] **DRP-10**: Minimum range duration validates selection (e.g., 3 nights minimum)
-- [ ] **DRP-11**: Maximum range duration validates selection (e.g., 30 day maximum)
-- [ ] **DRP-12**: Start date must be before or equal to end date
-- [ ] **DRP-13**: Clear button resets both start and end dates
-- [ ] **DRP-14**: Component integrates with forms via ElementInternals
-- [ ] **DRP-15**: Form value submits as ISO 8601 range (YYYY-MM-DD/YYYY-MM-DD)
+- [x] **DRP-01**: First click sets range start date
+- [x] **DRP-02**: Second click sets range end date
+- [x] **DRP-03**: Selected range highlights with background color
+- [x] **DRP-04**: Two calendars display side-by-side
+- [x] **DRP-05**: Calendars synchronize month navigation
+- [x] **DRP-06**: Hover preview shows potential range from start to hovered date
+- [x] **DRP-07**: Start date has distinct visual style (e.g., rounded-left)
+- [x] **DRP-08**: End date has distinct visual style (e.g., rounded-right)
+- [x] **DRP-09**: Clicking end date before start auto-swaps dates
+- [x] **DRP-10**: Minimum range duration validates selection (e.g., 3 nights minimum)
+- [x] **DRP-11**: Maximum range duration validates selection (e.g., 30 day maximum)
+- [x] **DRP-12**: Start date must be before or equal to end date
+- [x] **DRP-13**: Clear button resets both start and end dates
+- [x] **DRP-14**: Component integrates with forms via ElementInternals
+- [x] **DRP-15**: Form value submits as ISO 8601 range (YYYY-MM-DD/YYYY-MM-DD)
 - [ ] **DRP-16**: Range presets provide one-click common ranges
 - [ ] **DRP-17**: Preset buttons include Last 7 Days, Last 30 Days, This Month options
 - [ ] **DRP-18**: Mouse drag selection creates range by dragging from start
@@ -226,21 +226,21 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DP-25 | Phase 45 | Complete |
 | DP-26 | Phase 45 | Complete |
 | DP-27 | Phase 45 | Complete |
-| DRP-01 | Phase 46 | Pending |
-| DRP-02 | Phase 46 | Pending |
-| DRP-03 | Phase 46 | Pending |
-| DRP-04 | Phase 46 | Pending |
-| DRP-05 | Phase 46 | Pending |
-| DRP-06 | Phase 46 | Pending |
-| DRP-07 | Phase 46 | Pending |
-| DRP-08 | Phase 46 | Pending |
-| DRP-09 | Phase 46 | Pending |
-| DRP-10 | Phase 46 | Pending |
-| DRP-11 | Phase 46 | Pending |
-| DRP-12 | Phase 46 | Pending |
-| DRP-13 | Phase 46 | Pending |
-| DRP-14 | Phase 46 | Pending |
-| DRP-15 | Phase 46 | Pending |
+| DRP-01 | Phase 46 | Complete |
+| DRP-02 | Phase 46 | Complete |
+| DRP-03 | Phase 46 | Complete |
+| DRP-04 | Phase 46 | Complete |
+| DRP-05 | Phase 46 | Complete |
+| DRP-06 | Phase 46 | Complete |
+| DRP-07 | Phase 46 | Complete |
+| DRP-08 | Phase 46 | Complete |
+| DRP-09 | Phase 46 | Complete |
+| DRP-10 | Phase 46 | Complete |
+| DRP-11 | Phase 46 | Complete |
+| DRP-12 | Phase 46 | Complete |
+| DRP-13 | Phase 46 | Complete |
+| DRP-14 | Phase 46 | Complete |
+| DRP-15 | Phase 46 | Complete |
 | DRP-16 | Phase 47 | Pending |
 | DRP-17 | Phase 47 | Pending |
 | DRP-18 | Phase 47 | Pending |
