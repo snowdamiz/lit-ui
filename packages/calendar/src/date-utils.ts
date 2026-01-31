@@ -15,6 +15,8 @@ import {
   format,
   isSameDay,
   isToday,
+  addMonths,
+  subMonths,
 } from 'date-fns';
 
 /**
@@ -109,4 +111,37 @@ export function isSameDayCompare(date1: Date, date2: Date): boolean {
  */
 export function isDateToday(date: Date): boolean {
   return isToday(date);
+}
+
+/**
+ * Add months to a date.
+ *
+ * @param date - Reference date
+ * @param amount - Number of months to add (can be negative)
+ * @returns New date with months added
+ *
+ * @example
+ * ```typescript
+ * addMonthsTo(new Date(2026, 0, 15), 1) // 2026-02-15
+ * addMonthsTo(new Date(2026, 0, 15), -1) // 2025-12-15
+ * ```
+ */
+export function addMonthsTo(date: Date, amount: number): Date {
+  return addMonths(date, amount);
+}
+
+/**
+ * Subtract months from a date.
+ *
+ * @param date - Reference date
+ * @param amount - Number of months to subtract
+ * @returns New date with months subtracted
+ *
+ * @example
+ * ```typescript
+ * subtractMonths(new Date(2026, 0, 15), 1) // 2025-12-15
+ * ```
+ */
+export function subtractMonths(date: Date, amount: number): Date {
+  return subMonths(date, amount);
 }

@@ -113,8 +113,12 @@ export class Calendar extends TailwindElement {
     super();
     // Client-only initialization
     if (!isServer) {
+      const now = new Date();
+
       // Initialize currentMonth to current date
-      this.currentMonth = new Date();
+      this.currentMonth = now;
+      this.selectedMonth = now.getMonth();
+      this.selectedYear = now.getFullYear();
 
       // Initialize selectedDate from value property
       if (this.value) {
@@ -122,6 +126,8 @@ export class Calendar extends TailwindElement {
         const parsedDate = new Date(this.value);
         if (!isNaN(parsedDate.getTime())) {
           this.currentMonth = parsedDate;
+          this.selectedMonth = parsedDate.getMonth();
+          this.selectedYear = parsedDate.getFullYear();
         }
       }
     }
@@ -132,6 +138,11 @@ export class Calendar extends TailwindElement {
     // Initialize selectedDate from value when element connects
     if (this.value && !this.selectedDate) {
       this.selectedDate = this.value;
+      const parsedDate = new Date(this.value);
+      if (!isNaN(parsedDate.getTime())) {
+        this.selectedMonth = parsedDate.getMonth();
+        this.selectedYear = parsedDate.getFullYear();
+      }
     }
 
     // Initialize keyboard navigation (client-only)
@@ -331,6 +342,71 @@ export class Calendar extends TailwindElement {
         border: none;
         cursor: pointer;
       }
+
+      /* Calendar header with navigation */
+      .calendar-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+        gap: 0.5rem;
+      }
+
+      /* Navigation buttons */
+      .calendar-header button {
+        padding: 0.25rem 0.5rem;
+        border: 1px solid var(--ui-calendar-border, var(--color-border, #e5e7eb));
+        background: var(--ui-calendar-bg, var(--color-background, #ffffff));
+        cursor: pointer;
+        border-radius: var(--ui-calendar-radius, 0.25rem);
+        color: var(--ui-calendar-text, var(--color-text, #111827));
+        transition: background-color 150ms;
+        font-size: 1rem;
+      }
+
+      .calendar-header button:hover {
+        background: var(--ui-calendar-hover-bg, var(--color-muted, #f3f4f6));
+      }
+
+      .calendar-header button:focus {
+        outline: 2px solid var(--ui-calendar-focus, var(--color-brand-500));
+        outline-offset: 2px;
+      }
+
+      /* Month/year label in header */
+      .calendar-header h2 {
+        margin: 0;
+        font-size: 1.125rem;
+        font-weight: 600;
+        text-align: center;
+        flex: 1;
+      }
+
+      /* Dropdown selectors container */
+      .calendar-selectors {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+      }
+
+      /* Dropdown select styles */
+      .calendar-selectors select {
+        padding: 0.25rem 0.5rem;
+        border: 1px solid var(--ui-calendar-border, var(--color-border, #e5e7eb));
+        border-radius: var(--ui-calendar-radius, 0.25rem);
+        background: var(--ui-calendar-bg, var(--color-background, #ffffff));
+        color: var(--ui-calendar-text, var(--color-text, #111827));
+        cursor: pointer;
+        transition: border-color 150ms;
+      }
+
+      .calendar-selectors select:focus {
+        outline: none;
+        border-color: var(--ui-calendar-focus, var(--color-brand-500));
+        box-shadow: 0 0 0 3px var(--ui-calendar-focus-ring, rgba(59, 130, 246, 0.1));
+      }
     `,
   ];
 
@@ -356,6 +432,32 @@ export class Calendar extends TailwindElement {
    */
   private getMonthYearLabel(): string {
     return getMonthYearLabel(this.currentMonth, this.locale);
+  }
+
+  /**
+   * Get localized month names for dropdown.
+   */
+  private getMonthOptions(): string[] {
+    const months: string[] = [];
+    for (let i = 0; i < 12; i++) {
+      const date = new Date(2026, i, 1);
+      const formatter = new Intl.DateTimeFormat(this.locale, { month: 'long' });
+      months.push(formatter.format(date));
+    }
+    return months;
+  }
+
+  /**
+   * Get year options for dropdown.
+   * Returns current year ± 10 years.
+   */
+  private getYearOptions(): number[] {
+    const currentYear = new Date().getFullYear();
+    const years: number[] = [];
+    for (let i = currentYear - 10; i <= currentYear + 10; i++) {
+      years.push(i);
+    }
+    return years;
   }
 
   /**
@@ -476,34 +578,116 @@ export class Calendar extends TailwindElement {
    * Navigate to previous month.
    */
   private handlePreviousMonth(): void {
-    const newMonth = new Date(this.currentMonth);
-    newMonth.setMonth(newMonth.getMonth() - 1);
-    this.currentMonth = newMonth;
-    this.emitMonthChange(newMonth);
+    this.currentMonth = subtractMonths(this.currentMonth, 1);
+    this.selectedMonth = this.currentMonth.getMonth();
+    this.selectedYear = this.currentMonth.getFullYear();
+    this.emitMonthChange();
   }
 
   /**
    * Navigate to next month.
    */
   private handleNextMonth(): void {
-    const newMonth = new Date(this.currentMonth);
-    newMonth.setMonth(newMonth.getMonth() + 1);
-    this.currentMonth = newMonth;
-    this.emitMonthChange(newMonth);
+    this.currentMonth = addMonthsTo(this.currentMonth, 1);
+    this.selectedMonth = this.currentMonth.getMonth();
+    this.selectedYear = this.currentMonth.getFullYear();
+    this.emitMonthChange();
+  }
+
+  /**
+   * Handle month dropdown change.
+   * Updates currentMonth to selected month/year and emits event.
+   */
+  private handleMonthChange(event: Event): void {
+    const month = parseInt((event.target as HTMLSelectElement).value, 10);
+    this.selectedMonth = month;
+    this.currentMonth = new Date(this.selectedYear, month, 1);
+    this.emitMonthChange();
+  }
+
+  /**
+   * Handle year dropdown change.
+   * Updates currentMonth to selected year/month and emits event.
+   */
+  private handleYearChange(event: Event): void {
+    const year = parseInt((event.target as HTMLSelectElement).value, 10);
+    this.selectedYear = year;
+    this.currentMonth = new Date(year, this.selectedMonth, 1);
+    this.emitMonthChange();
   }
 
   /**
    * Emit ui-month-change event when month changes.
    */
-  private emitMonthChange(date: Date): void {
+  private emitMonthChange(): void {
     this.dispatchEvent(new CustomEvent('ui-month-change', {
       bubbles: true,
       composed: true,
       detail: {
-        year: date.getFullYear(),
-        month: date.getMonth()
+        year: this.currentMonth.getFullYear(),
+        month: this.currentMonth.getMonth()
       }
     }));
+  }
+
+  /**
+   * Render the calendar header with navigation buttons.
+   */
+  private renderHeader() {
+    return html`
+      <div class="calendar-header">
+        <button
+          @click=${this.handlePreviousMonth}
+          aria-label="Previous month"
+          type="button"
+        >
+          &lt;
+        </button>
+        <h2 id="calendar-heading" aria-live="polite">
+          ${this.getMonthYearLabel()}
+        </h2>
+        <button
+          @click=${this.handleNextMonth}
+          aria-label="Next month"
+          type="button"
+        >
+          &gt;
+        </button>
+      </div>
+    `;
+  }
+
+  /**
+   * Render the month/year dropdown selectors.
+   */
+  private renderSelectors() {
+    const monthOptions = this.getMonthOptions();
+    const yearOptions = this.getYearOptions();
+
+    return html`
+      <div class="calendar-selectors">
+        <select
+          @change=${this.handleMonthChange}
+          aria-label="Select month"
+        >
+          ${monthOptions.map((name, index) => html`
+            <option value=${index} ?selected=${this.selectedMonth === index}>
+              ${name}
+            </option>
+          `)}
+        </select>
+        <select
+          @change=${this.handleYearChange}
+          aria-label="Select year"
+        >
+          ${yearOptions.map(year => html`
+            <option value=${year} ?selected=${this.selectedYear === year}>
+              ${year}
+            </option>
+          `)}
+        </select>
+      </div>
+    `;
   }
 
   /**
@@ -516,9 +700,8 @@ export class Calendar extends TailwindElement {
         aria-labelledby="calendar-heading"
         @keydown=${this.handleKeyDown}
       >
-        <h2 id="calendar-heading" class="text-lg font-semibold mb-2" aria-live="polite">
-          ${this.getMonthYearLabel()}
-        </h2>
+        ${this.renderHeader()}
+        ${this.renderSelectors()}
 
         <!-- Keyboard help button -->
         <button
