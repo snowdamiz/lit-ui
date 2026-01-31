@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-30)
 ## Current Position
 
 Phase: 4 of 9 (Date Picker Advanced) - In progress
-Plan: 4 of 5 in current phase (1 execution complete)
+Plan: 1 of 5 in current phase (2 executions complete)
 Status: In progress
-Last activity: 2026-01-31 — Completed 45-04-PLAN.md
+Last activity: 2026-01-31 — Completed 45-01-PLAN.md
 
-Progress: [██████████████████████░░] 92% (22/24 plans)
+Progress: [██████████████████████░░] 96% (23/24 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 28
+- Total plans completed: 29
 - Average duration: 2.1 min
-- Total execution time: 1.01 hours
+- Total execution time: 1.05 hours
 
 **By Phase:**
 
@@ -31,7 +31,7 @@ Progress: [██████████████████████░
 | 43    | 8     | 8     | 1.9 min |
 
 **Recent Trend:**
-- Last 3 plans: 2 min (45-04), 2 min (44-05), 3 min (44-04)
+- Last 3 plans: 2 min (45-01), 2 min (45-04), 2 min (44-05)
 - Trend: Consistent execution pace
 
 *Updated after each plan completion*
@@ -115,6 +115,8 @@ Recent decisions affecting current work:
 - **Phase 45-04**: Use CSS ::after pseudo-elements with data-tooltip for tooltips (not HTML title attribute, Firefox Shadow DOM bug)
 - **Phase 45-04**: Auto-enable tooltips on date-picker when min/max constraints are set (no extra property needed)
 - **Phase 45-04**: Capitalize constraint reason strings for user-facing tooltip display
+- **Phase 45-01**: NL resolver functions called at evaluation time (not import) for SSR safety
+- **Phase 45-01**: Natural language parsing runs before format-based parsing in parseDateInput pipeline
 
 ### Pending Todos
 
@@ -130,6 +132,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-31 (45-04 complete)
-Stopped at: Completed 45-04-PLAN.md (Constraint tooltips)
+Last session: 2026-01-31 (45-01 complete)
+Stopped at: Completed 45-01-PLAN.md (Natural language date parser)
 Resume file: None
