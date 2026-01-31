@@ -17,12 +17,14 @@
  * @fires change - Dispatched when a range is selected or cleared, with { startDate, endDate, isoInterval }
  */
 
-import { html, css, nothing, isServer, type PropertyValues, type CSSResultGroup } from 'lit';
-import { property, state } from 'lit/decorators.js';
+import { html, css, nothing, isServer, svg, type PropertyValues, type CSSResultGroup } from 'lit';
+import { property, state, query } from 'lit/decorators.js';
 import { TailwindElement, tailwindBaseStyles, dispatchCustomEvent } from '@lit-ui/core';
 import { addMonths, subMonths, getYear, format } from '@lit-ui/calendar';
 import type { DayCellState } from '@lit-ui/calendar';
 import { normalizeRange, validateRangeDuration, formatISOInterval, isDateInRange, isDateInPreview } from './range-utils.js';
+import { computePosition, flip, shift, offset } from '@floating-ui/dom';
+import { parseISO } from 'date-fns';
 
 /**
  * The three states of the range selection state machine.
@@ -52,6 +54,38 @@ export class DateRangePicker extends TailwindElement {
    * Null during SSR since attachInternals() is not available.
    */
   private internals: ElementInternals | null = null;
+
+  /**
+   * Unique ID for the input element, used for label association.
+   */
+  private inputId = `lui-date-range-picker-${Math.random().toString(36).substr(2, 9)}`;
+
+  /**
+   * Reference to the trigger element for focus restoration after popup close.
+   */
+  private triggerElement: HTMLElement | null = null;
+
+  // ---------------------------------------------------------------------------
+  // Query refs
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Reference to the input container element (for popup positioning).
+   */
+  @query('.input-container')
+  inputContainerEl!: HTMLElement;
+
+  /**
+   * Reference to the popup element (for Floating UI positioning).
+   */
+  @query('.popup')
+  popupEl!: HTMLElement;
+
+  /**
+   * Reference to the native input element.
+   */
+  @query('input')
+  inputEl!: HTMLInputElement;
 
   // ---------------------------------------------------------------------------
   // Properties (reflected attributes)
@@ -184,8 +218,131 @@ export class DateRangePicker extends TailwindElement {
     ...tailwindBaseStyles,
     css`
       :host {
-        display: block;
+        display: inline-block;
+        width: 100%;
         container-type: inline-size;
+      }
+
+      :host([disabled]) {
+        pointer-events: none;
+      }
+
+      .date-range-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        position: relative;
+      }
+
+      .date-range-label {
+        font-weight: 500;
+        font-size: 0.875rem;
+        color: var(--ui-date-picker-text, var(--ui-input-text, inherit));
+      }
+
+      .required-indicator {
+        color: var(--ui-date-picker-error, var(--ui-input-text-error, #ef4444));
+        margin-left: 0.125rem;
+      }
+
+      .input-container {
+        display: flex;
+        align-items: center;
+        border-radius: var(--ui-date-picker-radius, var(--ui-input-radius, 0.375rem));
+        border-width: var(--ui-date-picker-border-width, var(--ui-input-border-width, 1px));
+        border-style: solid;
+        border-color: var(--ui-date-picker-border, var(--ui-input-border, #d1d5db));
+        background-color: var(--ui-date-picker-bg, var(--ui-input-bg, white));
+        transition:
+          border-color 150ms,
+          box-shadow 150ms;
+        cursor: pointer;
+      }
+
+      .input-container:focus-within {
+        border-color: var(--ui-date-picker-border-focus, var(--ui-input-border-focus, #3b82f6));
+      }
+
+      .input-container.container-error {
+        border-color: var(--ui-date-picker-error, var(--ui-input-border-error, #ef4444));
+      }
+
+      .input-container.container-disabled {
+        background-color: var(--ui-date-picker-bg-disabled, var(--ui-input-bg-disabled, #f3f4f6));
+        border-color: var(--ui-date-picker-border-disabled, var(--ui-input-border-disabled, #e5e7eb));
+        cursor: not-allowed;
+      }
+
+      input {
+        flex: 1;
+        min-width: 0;
+        border: none;
+        background: transparent;
+        color: var(--ui-date-picker-text, var(--ui-input-text, inherit));
+        outline: none;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.875rem;
+        cursor: pointer;
+      }
+
+      input::placeholder {
+        color: var(--ui-date-picker-placeholder, var(--ui-input-placeholder, #9ca3af));
+      }
+
+      input:disabled {
+        color: var(--ui-date-picker-text-disabled, var(--ui-input-text-disabled, #9ca3af));
+        cursor: not-allowed;
+      }
+
+      .action-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.25rem;
+        margin-right: 0.25rem;
+        border: none;
+        background: transparent;
+        color: var(--color-muted-foreground, #6b7280);
+        cursor: pointer;
+        border-radius: 0.25rem;
+        transition:
+          color 150ms,
+          background-color 150ms;
+      }
+
+      .action-button:hover {
+        color: var(--ui-date-picker-text, var(--ui-input-text, inherit));
+        background-color: var(--color-muted, #f3f4f6);
+      }
+
+      .action-button:focus-visible {
+        outline: 2px solid var(--color-ring, #3b82f6);
+        outline-offset: 1px;
+      }
+
+      .action-icon {
+        width: 1.25em;
+        height: 1.25em;
+      }
+
+      .popup {
+        position: fixed;
+        z-index: 50;
+        background-color: var(--ui-date-picker-popup-bg, white);
+        border: 1px solid var(--ui-date-picker-popup-border, #e5e7eb);
+        border-radius: 0.5rem;
+        box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        padding: 0.5rem;
+      }
+
+      .helper-text {
+        font-size: 0.75rem;
+        color: var(--color-muted-foreground, #6b7280);
+      }
+
+      .error-text {
+        font-size: 0.75rem;
+        color: var(--ui-date-picker-error, var(--ui-input-text-error, #ef4444));
       }
 
       .range-header {
@@ -240,6 +397,45 @@ export class DateRangePicker extends TailwindElement {
       }
 
       /* Dark mode */
+      :host-context(.dark) .input-container {
+        border-color: var(--ui-date-picker-border, var(--ui-input-border, #374151));
+        background-color: var(--ui-date-picker-bg, var(--ui-input-bg, #111827));
+      }
+
+      :host-context(.dark) .input-container:focus-within {
+        border-color: var(--ui-date-picker-border-focus, var(--ui-input-border-focus, #3b82f6));
+      }
+
+      :host-context(.dark) input {
+        color: var(--ui-date-picker-text, var(--ui-input-text, #f9fafb));
+      }
+
+      :host-context(.dark) input::placeholder {
+        color: var(--ui-date-picker-placeholder, var(--ui-input-placeholder, #6b7280));
+      }
+
+      :host-context(.dark) .action-button:hover {
+        background-color: var(--color-muted, #1f2937);
+      }
+
+      :host-context(.dark) .popup {
+        background-color: var(--ui-date-picker-popup-bg, #1f2937);
+        border-color: var(--ui-date-picker-popup-border, #374151);
+      }
+
+      :host-context(.dark) .date-range-label {
+        color: var(--ui-date-picker-text, var(--ui-input-text, #f9fafb));
+      }
+
+      :host-context(.dark) .helper-text {
+        color: var(--color-muted-foreground, #9ca3af);
+      }
+
+      :host-context(.dark) .input-container.container-disabled {
+        background-color: var(--ui-date-picker-bg-disabled, var(--ui-input-bg-disabled, #1f2937));
+        border-color: var(--ui-date-picker-border-disabled, var(--ui-input-border-disabled, #374151));
+      }
+
       :host-context(.dark) .nav-button:hover {
         background-color: var(--ui-calendar-hover-bg, #1f2937);
       }
@@ -295,6 +491,56 @@ export class DateRangePicker extends TailwindElement {
   get displayError(): string {
     return this.error || this.internalError;
   }
+
+  /**
+   * Formatted display value for the input field.
+   * - Both dates: "Jan 15 – Jan 22, 2026"
+   * - Only start: "Jan 15, 2026 – ..."
+   * - None: empty (shows placeholder)
+   */
+  get displayValue(): string {
+    if (!this.startDate) return '';
+
+    const startDate = parseISO(this.startDate);
+    const locale = this.effectiveLocale;
+
+    if (this.startDate && this.endDate) {
+      const endDate = parseISO(this.endDate);
+      const sameYear = startDate.getFullYear() === endDate.getFullYear();
+
+      if (sameYear) {
+        // "Jan 15 – Jan 22, 2026"
+        const startFmt = new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric' });
+        const endFmt = new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric', year: 'numeric' });
+        return `${startFmt.format(startDate)} \u2013 ${endFmt.format(endDate)}`;
+      }
+
+      // Cross-year: "Dec 28, 2025 – Jan 5, 2026"
+      const fullFmt = new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric', year: 'numeric' });
+      return `${fullFmt.format(startDate)} \u2013 ${fullFmt.format(endDate)}`;
+    }
+
+    // Only start date: "Jan 15, 2026 – ..."
+    const startFmt = new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric', year: 'numeric' });
+    return `${startFmt.format(startDate)} \u2013 ...`;
+  }
+
+  /**
+   * Effective placeholder text for the input.
+   */
+  get effectivePlaceholder(): string {
+    return this.placeholder || 'Select date range';
+  }
+
+  // ---------------------------------------------------------------------------
+  // SVG Icons
+  // ---------------------------------------------------------------------------
+
+  private calendarIcon = svg`
+    <path d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"
+          stroke="currentColor" stroke-width="2" fill="none"
+          stroke-linecap="round" stroke-linejoin="round"/>
+  `;
 
   // ---------------------------------------------------------------------------
   // State machine methods
@@ -568,59 +814,277 @@ export class DateRangePicker extends TailwindElement {
   }
 
   // ---------------------------------------------------------------------------
+  // Popup management
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Open the calendar popup and position it via Floating UI.
+   * Focuses the first calendar after positioning for keyboard accessibility.
+   */
+  async openPopup(): Promise<void> {
+    if (this.disabled) return;
+    this.isOpen = true;
+    this.triggerElement = (this.shadowRoot?.activeElement as HTMLElement) || this.inputEl;
+
+    // Wait for popup to render, then position and focus calendar
+    await this.updateComplete;
+    this.positionPopup();
+    requestAnimationFrame(() => {
+      this.focusCalendar();
+    });
+  }
+
+  /**
+   * Close the calendar popup and restore focus to the trigger element.
+   * Clears hover preview state for clean reopen.
+   */
+  closePopup(): void {
+    this.isOpen = false;
+    this.hoveredDate = '';
+    requestAnimationFrame(() => {
+      this.triggerElement?.focus();
+      this.triggerElement = null;
+    });
+  }
+
+  /**
+   * Toggle the calendar popup open/close.
+   */
+  private togglePopup(): void {
+    if (this.isOpen) {
+      this.closePopup();
+    } else {
+      this.openPopup();
+    }
+  }
+
+  /**
+   * Focus the first lui-calendar element inside the popup.
+   * The calendar manages its own internal keyboard navigation.
+   */
+  private focusCalendar(): void {
+    const calendar = this.shadowRoot?.querySelector('.popup lui-calendar') as HTMLElement | null;
+    calendar?.focus();
+  }
+
+  /**
+   * Position the popup using Floating UI with flip/shift middleware.
+   * Uses fixed strategy to avoid clipping in scrollable containers.
+   */
+  private async positionPopup(): Promise<void> {
+    if (isServer) return;
+    if (!this.inputContainerEl || !this.popupEl) return;
+
+    const { x, y } = await computePosition(this.inputContainerEl, this.popupEl, {
+      placement: 'bottom-start',
+      strategy: 'fixed',
+      middleware: [
+        offset(4),
+        flip({ fallbackPlacements: ['top-start'] }),
+        shift({ padding: 8 }),
+      ],
+    });
+
+    Object.assign(this.popupEl.style, {
+      left: `${x}px`,
+      top: `${y}px`,
+    });
+  }
+
+  // ---------------------------------------------------------------------------
+  // Click-outside detection
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Handle document clicks for closing popup when clicking outside.
+   * Uses composedPath() to work correctly with Shadow DOM boundaries.
+   */
+  private handleDocumentClick = (e: MouseEvent): void => {
+    if (this.isOpen && !e.composedPath().includes(this)) {
+      this.closePopup();
+    }
+  };
+
+  override connectedCallback(): void {
+    super.connectedCallback();
+    if (!isServer) {
+      document.addEventListener('click', this.handleDocumentClick);
+    }
+  }
+
+  override disconnectedCallback(): void {
+    super.disconnectedCallback();
+    if (!isServer) {
+      document.removeEventListener('click', this.handleDocumentClick);
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Keyboard handling
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Handle keyboard events on the popup.
+   * Traps Tab/Shift+Tab within the popup and handles Escape to close.
+   * Respects calendar's defaultPrevented for Escape key (view drilling).
+   */
+  private handlePopupKeydown(e: KeyboardEvent): void {
+    if (e.key === 'Tab') {
+      // Trap focus within the popup — keep focus on the calendar
+      e.preventDefault();
+      this.focusCalendar();
+    } else if (e.key === 'Escape') {
+      // If the calendar already handled Escape (e.g., drilling from year to month view),
+      // don't close the popup
+      if (!e.defaultPrevented) {
+        this.closePopup();
+      }
+    }
+  }
+
+  // ---------------------------------------------------------------------------
   // Render
   // ---------------------------------------------------------------------------
 
-  override render() {
+  /**
+   * Render the dual-calendar popup content (header + calendars).
+   */
+  private renderCalendarContent() {
     const leftDisplayMonth = format(this.currentMonth, 'yyyy-MM-dd');
     const rightDisplayMonth = format(addMonths(this.currentMonth, 1), 'yyyy-MM-dd');
 
     return html`
-      <div class="date-range-picker">
-        <div class="range-header">
-          <button
-            class="nav-button"
-            @click="${this.navigatePrev}"
-            aria-label="Previous month"
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M15 18l-6-6 6-6" />
-            </svg>
-          </button>
-          <h2 class="range-heading">${this.rangeHeading}</h2>
-          <button
-            class="nav-button"
-            @click="${this.navigateNext}"
-            aria-label="Next month"
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M9 18l6-6-6-6" />
-            </svg>
-          </button>
-        </div>
-        <div
-          class="calendars-wrapper"
-          @mouseleave="${this.clearHoverPreview}"
+      <div class="range-header">
+        <button
+          class="nav-button"
+          @click="${this.navigatePrev}"
+          aria-label="Previous month"
         >
-          <lui-calendar
-            display-month="${leftDisplayMonth}"
-            hide-navigation
-            .renderDay="${this.renderRangeDay}"
-            .locale="${this.effectiveLocale}"
-            min-date="${this.minDate || nothing}"
-            max-date="${this.maxDate || nothing}"
-            @change="${this.handleCalendarSelect}"
-          ></lui-calendar>
-          <lui-calendar
-            display-month="${rightDisplayMonth}"
-            hide-navigation
-            .renderDay="${this.renderRangeDay}"
-            .locale="${this.effectiveLocale}"
-            min-date="${this.minDate || nothing}"
-            max-date="${this.maxDate || nothing}"
-            @change="${this.handleCalendarSelect}"
-          ></lui-calendar>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M15 18l-6-6 6-6" />
+          </svg>
+        </button>
+        <h2 class="range-heading">${this.rangeHeading}</h2>
+        <button
+          class="nav-button"
+          @click="${this.navigateNext}"
+          aria-label="Next month"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 18l6-6-6-6" />
+          </svg>
+        </button>
+      </div>
+      <div
+        class="calendars-wrapper"
+        @mouseleave="${this.clearHoverPreview}"
+      >
+        <lui-calendar
+          display-month="${leftDisplayMonth}"
+          hide-navigation
+          .renderDay="${this.renderRangeDay}"
+          .locale="${this.effectiveLocale}"
+          min-date="${this.minDate || nothing}"
+          max-date="${this.maxDate || nothing}"
+          @change="${this.handleCalendarSelect}"
+        ></lui-calendar>
+        <lui-calendar
+          display-month="${rightDisplayMonth}"
+          hide-navigation
+          .renderDay="${this.renderRangeDay}"
+          .locale="${this.effectiveLocale}"
+          min-date="${this.minDate || nothing}"
+          max-date="${this.maxDate || nothing}"
+          @change="${this.handleCalendarSelect}"
+        ></lui-calendar>
+      </div>
+    `;
+  }
+
+  override render() {
+    return html`
+      <div class="date-range-wrapper">
+        ${this.label
+          ? html`
+              <label
+                for=${this.inputId}
+                class="date-range-label"
+              >
+                ${this.label}
+                ${this.required
+                  ? html`<span class="required-indicator">*</span>`
+                  : nothing}
+              </label>
+            `
+          : nothing}
+
+        <div
+          class="input-container ${this.hasError ? 'container-error' : ''} ${this.disabled ? 'container-disabled' : ''}"
+          @click="${this.openPopup}"
+        >
+          <input
+            id=${this.inputId}
+            type="text"
+            .value=${this.displayValue}
+            placeholder=${this.effectivePlaceholder}
+            readonly
+            ?disabled=${this.disabled}
+            aria-invalid=${this.hasError ? 'true' : nothing}
+            aria-errormessage=${this.hasError ? `${this.inputId}-error` : nothing}
+            aria-describedby=${this.hasError
+              ? `${this.inputId}-error`
+              : this.helperText
+                ? `${this.inputId}-helper`
+                : nothing}
+            aria-label=${!this.label ? 'Date range' : nothing}
+            aria-disabled=${this.disabled ? 'true' : nothing}
+          />
+
+          <button
+            type="button"
+            class="action-button"
+            aria-label="Open calendar"
+            ?disabled=${this.disabled}
+            @click=${(e: Event) => { e.stopPropagation(); this.togglePopup(); }}
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true" class="action-icon">
+              ${this.calendarIcon}
+            </svg>
+          </button>
         </div>
+
+        ${this.helperText && !this.hasError
+          ? html`
+              <span
+                id="${this.inputId}-helper"
+                class="helper-text"
+              >${this.helperText}</span>
+            `
+          : nothing}
+
+        ${this.hasError && this.displayError
+          ? html`
+              <span
+                id="${this.inputId}-error"
+                class="error-text"
+                role="alert"
+              >${this.displayError}</span>
+            `
+          : nothing}
+
+        ${this.isOpen
+          ? html`
+              <div
+                class="popup"
+                role="dialog"
+                aria-modal="true"
+                aria-label="Choose date range"
+                @keydown=${this.handlePopupKeydown}
+              >
+                ${this.renderCalendarContent()}
+              </div>
+            `
+          : nothing}
       </div>
     `;
   }
