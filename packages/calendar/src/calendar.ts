@@ -25,7 +25,7 @@ import {
   startOfDay,
 } from './date-utils.js';
 import { parseISO } from 'date-fns';
-import { getFirstDayOfWeek, getWeekdayNames, getMonthNames } from './intl-utils.js';
+import { getFirstDayOfWeek, getWeekdayNames, getWeekdayLongNames, getMonthNames } from './intl-utils.js';
 
 /**
  * Represents the parsed date constraint state for the calendar.
@@ -321,6 +321,14 @@ export class Calendar extends TailwindElement {
   disabledDates: string[] = [];
 
   /**
+   * Override the first day of week detected from locale.
+   * Accepts Intl format values: 1=Monday through 7=Sunday.
+   * When empty or invalid, falls back to locale detection.
+   */
+  @property({ type: String, attribute: 'first-day-of-week' })
+  firstDayOfWeekOverride = '';
+
+  /**
    * The currently displayed month.
    */
   @state()
@@ -435,8 +443,15 @@ export class Calendar extends TailwindElement {
 
   /**
    * First day of week in Intl format (1=Mon ... 7=Sun).
+   * Uses the override property if valid (1-7), otherwise detects from locale.
    */
   private get firstDayOfWeek(): number {
+    if (this.firstDayOfWeekOverride) {
+      const parsed = parseInt(this.firstDayOfWeekOverride, 10);
+      if (parsed >= 1 && parsed <= 7) {
+        return parsed;
+      }
+    }
     return getFirstDayOfWeek(this.effectiveLocale);
   }
 
@@ -563,6 +578,7 @@ export class Calendar extends TailwindElement {
 
   protected override render() {
     const weekdays = getWeekdayNames(this.effectiveLocale, this.firstDayOfWeek);
+    const weekdayLongNames = getWeekdayLongNames(this.effectiveLocale, this.firstDayOfWeek);
     const days = getCalendarDays(this.currentMonth, this.weekStartsOn);
     const monthLabel = getMonthYearLabel(this.currentMonth, this.effectiveLocale);
 
@@ -619,11 +635,11 @@ export class Calendar extends TailwindElement {
         </div>
         <div class="calendar-weekdays" role="row">
           ${weekdays.map(
-            (name) => html`
+            (name, i) => html`
               <div
                 class="weekday-header"
                 role="columnheader"
-                aria-label="${name}"
+                aria-label="${weekdayLongNames[i]}"
               >
                 ${name}
               </div>

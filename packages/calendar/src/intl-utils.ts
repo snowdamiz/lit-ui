@@ -72,6 +72,38 @@ export function getWeekdayNames(
 }
 
 /**
+ * Get localized long weekday names starting from the given first day.
+ *
+ * Uses Intl.DateTimeFormat to generate locale-aware long weekday names,
+ * then rotates the array so the specified first day of the week is at index 0.
+ * Useful for aria-labels on weekday column headers.
+ *
+ * @param locale - BCP 47 locale tag
+ * @param firstDayOfWeek - First day of week in Intl format (1=Monday ... 7=Sunday)
+ * @returns Array of 7 localized long weekday names
+ */
+export function getWeekdayLongNames(
+  locale: string,
+  firstDayOfWeek: number
+): string[] {
+  const formatter = new Intl.DateTimeFormat(locale, { weekday: 'long' });
+  // Jan 4, 2026 is a Sunday (day index 0)
+  const refSunday = new Date(2026, 0, 4);
+  const days: string[] = [];
+
+  for (let i = 0; i < 7; i++) {
+    const day = new Date(refSunday);
+    day.setDate(refSunday.getDate() + i);
+    days.push(formatter.format(day));
+  }
+
+  // Rotate: Intl firstDay 7=Sunday maps to array index 0,
+  // firstDay 1=Monday maps to index 1, etc.
+  const startIndex = firstDayOfWeek === 7 ? 0 : firstDayOfWeek;
+  return [...days.slice(startIndex), ...days.slice(0, startIndex)];
+}
+
+/**
  * Get localized month names for all 12 months.
  *
  * Uses Intl.DateTimeFormat to generate locale-aware long month names.
