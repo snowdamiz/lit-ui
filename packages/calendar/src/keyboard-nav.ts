@@ -9,7 +9,12 @@
  *
  * @example
  * ```typescript
+ * // Standard 7-column calendar grid (default)
  * const manager = new KeyboardNavigationManager(gridCells);
+ *
+ * // 4-column grid for decade/century views
+ * const decadeManager = new KeyboardNavigationManager(gridCells, 4);
+ *
  * manager.setInitialFocus(selectedIndex);
  * const nextIndex = manager.moveFocus(currentIndex, 'right');
  * const element = manager.getElement(nextIndex);
@@ -37,21 +42,24 @@ export type NavigationDirection =
  * - Update tabindex attributes (only one element has tabindex="0")
  * - Provide element access for focus() calls
  *
- * Grid layout assumptions:
- * - 7 columns (standard calendar week)
+ * Grid layout:
+ * - Column count is configurable (default 7 for calendar week)
+ * - Supports 4-column grids for decade/century views
  * - Cells are ordered left-to-right, top-to-bottom
  * - Index 0 is top-left cell
  */
 export class KeyboardNavigationManager {
   private focusableElements: HTMLElement[];
-  private readonly columns = 7; // Calendar week has 7 days
+  private readonly columns: number;
 
   /**
    * Create a KeyboardNavigationManager
    * @param elements Array of focusable grid cells
+   * @param columns Number of columns in the grid (default 7 for calendar week, use 4 for decade/century views)
    */
-  constructor(elements: HTMLElement[]) {
+  constructor(elements: HTMLElement[], columns: number = 7) {
     this.focusableElements = elements;
+    this.columns = columns;
   }
 
   /**
