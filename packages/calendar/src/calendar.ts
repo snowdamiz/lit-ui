@@ -22,8 +22,9 @@ import { PropertyValues } from 'lit';
 import { TailwindElement, tailwindBaseStyles } from '@lit-ui/core';
 
 // Import utility functions
-import { getMonthDays, formatDate, isSameDayCompare, isDateToday, addMonthsTo, subtractMonths } from './date-utils.js';
-import { getWeekdayNames, getMonthYearLabel } from './intl-utils.js';
+import { getMonthDays, formatDate, isSameDayCompare, isDateToday, addMonthsTo, subtractMonths, parseDate, isDateDisabled, isWeekendDate, DateConstraints } from './date-utils.js';
+import { isBefore, isAfter, isSameDay } from 'date-fns';
+import { getWeekdayNames, getMonthYearLabel, getMonthName } from './intl-utils.js';
 import { KeyboardNavigationManager } from './keyboard-nav.js';
 
 /**
@@ -47,6 +48,37 @@ export class Calendar extends TailwindElement {
    */
   @property({ type: String })
   value: string = '';
+
+  /**
+   * Minimum selectable date in ISO 8601 format (YYYY-MM-DD).
+   * Dates before this value are disabled.
+   * @default undefined (no minimum)
+   */
+  @property({ type: String, attribute: 'min-date' })
+  minDate?: string;
+
+  /**
+   * Maximum selectable date in ISO 8601 format (YYYY-MM-DD).
+   * Dates after this value are disabled.
+   * @default undefined (no maximum)
+   */
+  @property({ type: String, attribute: 'max-date' })
+  maxDate?: string;
+
+  /**
+   * Array of disabled dates in ISO 8601 format (YYYY-MM-DD).
+   * These specific dates cannot be selected.
+   * @default undefined (no disabled dates)
+   */
+  @property({ type: Array, attribute: 'disabled-dates' })
+  disabledDates?: string[];
+
+  /**
+   * Whether to disable weekend dates (Saturday and Sunday).
+   * @default false
+   */
+  @property({ type: Boolean, attribute: 'disable-weekends' })
+  disableWeekends = false;
 
   /**
    * Internal state tracking the currently displayed month.
@@ -102,6 +134,24 @@ export class Calendar extends TailwindElement {
    */
   @state()
   private selectedYear: number = new Date().getFullYear();
+
+  /**
+   * Internal state storing parsed minimum date as Date object.
+   */
+  @state()
+  private parsedMinDate?: Date;
+
+  /**
+   * Internal state storing parsed maximum date as Date object.
+   */
+  @state()
+  private parsedMaxDate?: Date;
+
+  /**
+   * Internal state storing parsed disabled dates as Date objects.
+   */
+  @state()
+  private parsedDisabledDates?: Date[];
 
   /**
    * Controls keyboard help dialog visibility.
@@ -194,6 +244,21 @@ export class Calendar extends TailwindElement {
 
   override updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
+
+    // Parse minDate when it changes
+    if (changedProperties.has('minDate')) {
+      this.parsedMinDate = this.minDate ? parseDate(this.minDate) : undefined;
+    }
+
+    // Parse maxDate when it changes
+    if (changedProperties.has('maxDate')) {
+      this.parsedMaxDate = this.maxDate ? parseDate(this.maxDate) : undefined;
+    }
+
+    // Parse disabledDates when it changes
+    if (changedProperties.has('disabledDates')) {
+      this.parsedDisabledDates = this.disabledDates?.map(d => parseDate(d));
+    }
 
     // Reinitialize navigation manager when grid cells change (month change)
     if (changedProperties.has('currentMonth') && this.gridCells) {
