@@ -59,6 +59,22 @@ export class KeyboardNavigationManager {
   }
 
   /**
+   * Update the column count at runtime.
+   * Allows switching between 7-column (month grid) and 4-column
+   * (decade/century grid) layouts without recreating the manager.
+   */
+  setColumns(columns: number): void {
+    this.columns = columns;
+  }
+
+  /**
+   * Returns the current column count.
+   */
+  getColumns(): number {
+    return this.columns;
+  }
+
+  /**
    * Move focus in the given direction.
    *
    * Returns the new focused index, or -1 if the movement would
