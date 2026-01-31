@@ -460,6 +460,8 @@ export class DatePicker extends TailwindElement {
         this.displayValue = '';
         this.updateFormValue();
       }
+      // Sync ElementInternals validity when value changes programmatically
+      this.validate();
     }
   }
 
@@ -505,6 +507,7 @@ export class DatePicker extends TailwindElement {
 
   /**
    * Handle input blur: parse typed text and validate.
+   * Sets internalError for display and syncs ElementInternals validity.
    */
   private handleInputBlur(): void {
     this.isEditing = false;
@@ -522,6 +525,11 @@ export class DatePicker extends TailwindElement {
           const min = startOfDay(parseISO(this.minDate));
           if (isBefore(startOfDay(parsed), min)) {
             this.internalError = `Date must be on or after ${this.minDate}`;
+            this.internals?.setValidity(
+              { rangeUnderflow: true },
+              this.internalError,
+              this.inputEl
+            );
             return;
           }
         }
@@ -529,6 +537,11 @@ export class DatePicker extends TailwindElement {
           const max = startOfDay(parseISO(this.maxDate));
           if (isAfter(startOfDay(parsed), max)) {
             this.internalError = `Date must be on or before ${this.maxDate}`;
+            this.internals?.setValidity(
+              { rangeOverflow: true },
+              this.internalError,
+              this.inputEl
+            );
             return;
           }
         }
@@ -537,21 +550,34 @@ export class DatePicker extends TailwindElement {
         this.displayValue = formatDateForDisplay(parsed, this.effectiveLocale);
         this.internalError = '';
         this.updateFormValue();
+        this.validate();
         dispatchCustomEvent(this, 'change', {
           date: parsed,
           isoString: this.value,
         });
       } else {
+        // Unparseable text — badInput
         this.internalError = 'Please enter a valid date';
+        this.internals?.setValidity(
+          { badInput: true },
+          this.internalError,
+          this.inputEl
+        );
       }
     } else if (this.required) {
       this.internalError = 'Please select a date';
+      this.internals?.setValidity(
+        { valueMissing: true },
+        this.internalError,
+        this.inputEl
+      );
     } else {
       // Empty input, not required: clear everything
+      this.internalError = '';
+      this.internals?.setValidity({});
       if (this.value) {
         this.value = '';
         this.displayValue = '';
-        this.internalError = '';
         this.updateFormValue();
         dispatchCustomEvent(this, 'change', {
           date: null,
@@ -678,6 +704,7 @@ export class DatePicker extends TailwindElement {
     this.displayValue = formatDateForDisplay(date, this.effectiveLocale);
     this.internalError = '';
     this.updateFormValue();
+    this.validate();
 
     // Close popup (restores focus to input)
     this.closePopup();
@@ -835,6 +862,7 @@ export class DatePicker extends TailwindElement {
             ?required=${this.required}
             ?disabled=${this.disabled}
             aria-invalid=${this.hasError ? 'true' : nothing}
+            aria-errormessage=${this.hasError ? `${this.inputId}-error` : nothing}
             aria-describedby=${this.hasError
               ? `${this.inputId}-error`
               : this.helperText
