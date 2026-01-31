@@ -142,6 +142,15 @@ export class DatePicker extends TailwindElement {
   disabled = false;
 
   /**
+   * Render an always-visible calendar without popup/input wrapper.
+   * In inline mode, the input field, popup, Floating UI, click-outside,
+   * and focus trap are all skipped. Label, presets, error, and helper
+   * text are still rendered.
+   */
+  @property({ type: Boolean, reflect: true })
+  inline = false;
+
+  /**
    * External error message. When set, overrides internal validation errors.
    */
   @property({ type: String })
@@ -413,6 +422,18 @@ export class DatePicker extends TailwindElement {
         border: 0;
       }
 
+      /* Inline mode */
+      :host([inline]) {
+        width: auto;
+        display: inline-block;
+      }
+
+      .inline-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+      }
+
       /* Dark mode */
       :host-context(.dark) .input-container {
         border-color: var(--ui-date-picker-border, var(--ui-input-border, #374151));
@@ -547,14 +568,14 @@ export class DatePicker extends TailwindElement {
 
   override connectedCallback(): void {
     super.connectedCallback();
-    if (!isServer) {
+    if (!isServer && !this.inline) {
       document.addEventListener('click', this.handleDocumentClick);
     }
   }
 
   override disconnectedCallback(): void {
     super.disconnectedCallback();
-    if (!isServer) {
+    if (!isServer && !this.inline) {
       document.removeEventListener('click', this.handleDocumentClick);
     }
   }
@@ -688,6 +709,7 @@ export class DatePicker extends TailwindElement {
    * Toggle the calendar popup open/close.
    */
   private togglePopup(): void {
+    if (this.inline) return;
     if (this.open) {
       this.closePopup();
     } else {
@@ -700,6 +722,7 @@ export class DatePicker extends TailwindElement {
    * Focuses the calendar after positioning for keyboard accessibility.
    */
   private async openPopup(): Promise<void> {
+    if (this.inline) return;
     if (this.disabled) return;
     this.open = true;
     this.triggerElement = this.inputEl;
@@ -772,8 +795,10 @@ export class DatePicker extends TailwindElement {
     this.updateFormValue();
     this.validate();
 
-    // Close popup (restores focus to input)
-    this.closePopup();
+    // Close popup (restores focus to input) — skip in inline mode
+    if (!this.inline) {
+      this.closePopup();
+    }
 
     dispatchCustomEvent(this, 'change', {
       date,
@@ -834,11 +859,14 @@ export class DatePicker extends TailwindElement {
   private validate(): boolean {
     if (!this.internals) return true;
 
+    // In inline mode there is no input element to use as anchor.
+    const anchor = this.inputEl ?? undefined;
+
     if (this.required && !this.value) {
       this.internals.setValidity(
         { valueMissing: true },
         'Please select a date',
-        this.inputEl
+        anchor
       );
       return false;
     }
@@ -850,7 +878,7 @@ export class DatePicker extends TailwindElement {
         this.internals.setValidity(
           { rangeUnderflow: true },
           `Date must be on or after ${this.minDate}`,
-          this.inputEl
+          anchor
         );
         return false;
       }
@@ -863,7 +891,7 @@ export class DatePicker extends TailwindElement {
         this.internals.setValidity(
           { rangeOverflow: true },
           `Date must be on or before ${this.maxDate}`,
-          this.inputEl
+          anchor
         );
         return false;
       }
@@ -924,7 +952,9 @@ export class DatePicker extends TailwindElement {
     this.internalError = '';
     this.updateFormValue();
     this.validate();
-    this.closePopup();
+    if (!this.inline) {
+      this.closePopup();
+    }
 
     dispatchCustomEvent(this, 'change', {
       date,
@@ -959,10 +989,59 @@ export class DatePicker extends TailwindElement {
   }
 
   // ---------------------------------------------------------------------------
+  // Inline mode
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Render the inline (always-visible) calendar layout.
+   * Skips input field, popup, Floating UI, click-outside, and focus trap.
+   * Still renders label, presets, calendar, helper text, and error text.
+   */
+  private renderInlineCalendar() {
+    return html`
+      <div class="inline-wrapper">
+        ${this.label
+          ? html`
+              <span class="date-picker-label">
+                ${this.label}
+                ${this.required
+                  ? html`<span class="required-indicator">*</span>`
+                  : nothing}
+              </span>
+            `
+          : nothing}
+
+        ${this.renderPresets()}
+
+        <lui-calendar
+          .value=${this.value}
+          .locale=${this.effectiveLocale}
+          min-date=${this.minDate || nothing}
+          max-date=${this.maxDate || nothing}
+          ?show-constraint-tooltips=${!!(this.minDate || this.maxDate)}
+          @change=${this.handleCalendarSelect}
+        ></lui-calendar>
+
+        ${this.helperText && !this.hasError
+          ? html`<span class="helper-text">${this.helperText}</span>`
+          : nothing}
+
+        ${this.hasError && this.errorMessage
+          ? html`<span class="error-text" role="alert">${this.errorMessage}</span>`
+          : nothing}
+      </div>
+    `;
+  }
+
+  // ---------------------------------------------------------------------------
   // Render
   // ---------------------------------------------------------------------------
 
   override render() {
+    if (this.inline) {
+      return this.renderInlineCalendar();
+    }
+
     const showInputValue = this.isEditing ? this.inputValue : this.displayValue;
 
     return html`
@@ -1070,7 +1149,7 @@ export class DatePicker extends TailwindElement {
                   ?show-constraint-tooltips=${!!(this.minDate || this.maxDate)}
                   @change=${this.handleCalendarSelect}
                 ></lui-calendar>
-                <!-- TODO: Plan 03 (inline mode) will add renderInlineCalendar() — add show-constraint-tooltips there too -->
+
               </div>
             `
           : nothing}
