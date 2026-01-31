@@ -234,7 +234,7 @@ export class Calendar extends TailwindElement {
   override render() {
     return html`
       <div role="grid" aria-labelledby="calendar-heading">
-        <h2 id="calendar-heading" class="text-lg font-semibold mb-2">
+        <h2 id="calendar-heading" class="text-lg font-semibold mb-2" aria-live="polite">
           ${this.getMonthYearLabel()}
         </h2>
 
