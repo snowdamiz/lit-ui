@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-30)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** Phase 45 Date Picker Advanced — In Progress
+**Current focus:** Phase 45 Date Picker Advanced — Complete
 
 ## Current Position
 
-Phase: 4 of 9 (Date Picker Advanced) - In progress
-Plan: 3 of 5 in current phase (4 executions complete)
-Status: In progress
-Last activity: 2026-01-31 — Completed 45-03-PLAN.md
+Phase: 4 of 9 (Date Picker Advanced) - Complete
+Plan: 5 of 5 in current phase (5 executions complete)
+Status: Phase complete
+Last activity: 2026-01-31 — Completed 45-05-PLAN.md
 
-Progress: [████████████████████████] 100% (25/25 plans)
+Progress: [████████████████████████████████] 100% (27/27 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 31
+- Total plans completed: 32
 - Average duration: 2.1 min
-- Total execution time: 1.11 hours
+- Total execution time: 1.14 hours
 
 **By Phase:**
 
@@ -31,7 +31,7 @@ Progress: [███████████████████████
 | 43    | 8     | 8     | 1.9 min |
 
 **Recent Trend:**
-- Last 3 plans: 2 min (45-03), 2 min (45-02), 2 min (45-01)
+- Last 3 plans: 2 min (45-05), 2 min (45-03), 2 min (45-02)
 - Trend: Consistent execution pace
 
 *Updated after each plan completion*
@@ -123,6 +123,7 @@ Recent decisions affecting current work:
 - **Phase 45-03**: Inline mode skips all popup infrastructure (Floating UI, click-outside, focus trap, document listeners)
 - **Phase 45-03**: validate() uses optional anchor (this.inputEl ?? undefined) since inline mode has no input element
 - **Phase 45-03**: Inline label rendered as span (not label-for) since there is no input to associate
+- **Phase 45-05**: LuiDatePickerProperties interface separates JS-only props (presets, format) from HTML attributes in JSX types
 
 ### Pending Todos
 
@@ -138,6 +139,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-31 (45-03 complete)
-Stopped at: Completed 45-03-PLAN.md (Inline mode)
+Last session: 2026-01-31 (45-05 complete, Phase 45 complete)
+Stopped at: Completed 45-05-PLAN.md (Dark mode, exports, JSX types)
 Resume file: None
