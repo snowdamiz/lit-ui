@@ -472,6 +472,30 @@ export class Calendar extends TailwindElement {
         border-color: var(--ui-calendar-focus, var(--color-brand-500));
         box-shadow: 0 0 0 3px var(--ui-calendar-focus-ring, rgba(59, 130, 246, 0.1));
       }
+
+      /* Dark mode navigation buttons */
+      :host-context(.dark) .calendar-header button {
+        background: var(--ui-calendar-button-bg-dark, var(--color-background-dark, var(--color-gray-950)));
+        border-color: var(--ui-calendar-button-border-dark, var(--color-border-dark, var(--color-gray-800)));
+        color: var(--ui-calendar-button-text-dark, var(--color-foreground-dark, var(--color-gray-50)));
+      }
+
+      :host-context(.dark) .calendar-header button:hover {
+        background: var(--ui-calendar-button-hover-bg-dark, var(--color-muted-dark, var(--color-gray-800)));
+      }
+
+      /* Dark mode dropdown selectors */
+      :host-context(.dark) .calendar-selectors select {
+        background: var(--ui-calendar-button-bg-dark, var(--color-background-dark, var(--color-gray-950)));
+        border-color: var(--ui-calendar-button-border-dark, var(--color-border-dark, var(--color-gray-800)));
+        color: var(--ui-calendar-button-text-dark, var(--color-foreground-dark, var(--color-gray-50)));
+      }
+
+      /* Dark mode help dialog */
+      :host-context(.dark) .help-dialog {
+        background: var(--color-background-dark, var(--color-gray-900));
+        border-color: var(--color-border-dark, var(--color-gray-800));
+      }
     `,
   ];
 
@@ -534,6 +558,57 @@ export class Calendar extends TailwindElement {
   }
 
   /**
+   * Check if a date cell should be disabled.
+   *
+   * Evaluates date constraints (min/max, disabled dates) and weekend setting.
+   *
+   * @param date - Date to check
+   * @returns True if date should be disabled
+   */
+  private isCellDisabled(date: Date): boolean {
+    const constraints: DateConstraints = {
+      minDate: this.parsedMinDate,
+      maxDate: this.parsedMaxDate,
+      disabledDates: this.parsedDisabledDates
+    };
+
+    // Check date constraints
+    if (isDateDisabled(date, constraints)) {
+      return true;
+    }
+
+    // Check weekend setting
+    if (this.disableWeekends && isWeekendDate(date)) {
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * Get the reason why a date is disabled.
+   * Used for aria-label to provide context to screen reader users.
+   *
+   * @param date - Date to check
+   * @returns Human-readable disabled reason
+   */
+  private getDisabledReason(date: Date): string {
+    if (this.parsedMinDate && isBefore(date, this.parsedMinDate)) {
+      return 'before minimum date';
+    }
+    if (this.parsedMaxDate && isAfter(date, this.parsedMaxDate)) {
+      return 'after maximum date';
+    }
+    if (this.parsedDisabledDates?.some(d => isSameDay(date, d))) {
+      return 'unavailable';
+    }
+    if (this.disableWeekends && isWeekendDate(date)) {
+      return 'weekend';
+    }
+    return 'not available';
+  }
+
+  /**
    * Render a single date cell.
    */
   private renderDayCell(date: Date, index: number) {
@@ -541,15 +616,26 @@ export class Calendar extends TailwindElement {
     const isSelected = this.selectedDate ? isSameDayCompare(date, new Date(this.selectedDate)) : false;
     const isToday = isDateToday(date);
     const isFocused = index === this.focusedIndex;
+    const isDisabled = this.isCellDisabled(date);
+
+    // Generate aria-label with disabled reason
+    let ariaLabel = String(date.getDate());
+    if (isDisabled) {
+      const reason = this.getDisabledReason(date);
+      ariaLabel = `${date.getDate()}, ${reason}`;
+    }
 
     return html`
       <div
         role="gridcell"
         aria-selected=${isSelected ? 'true' : 'false'}
         aria-current=${isToday ? 'date' : nothing}
+        aria-disabled=${isDisabled ? 'true' : nothing}
+        aria-label=${ariaLabel}
         tabindex=${isFocused ? '0' : '-1'}
         data-date="${isoDate}"
-        @click=${() => this.handleDateClick(date)}
+        class="calendar-cell ${isToday ? 'today' : ''} ${isSelected ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}"
+        @click=${isDisabled ? nothing : () => this.handleDateClick(date)}
       >
         ${date.getDate()}
       </div>
