@@ -451,8 +451,71 @@ export class DateRangePicker extends TailwindElement {
    * Arrow function to preserve `this` binding when passed to lui-calendar.
    */
   renderRangeDay = (state: DayCellState): unknown => {
-    // Placeholder: will be fully implemented in Task 2
-    return html`<span>${state.date.getDate()}</span>`;
+    const dateStr = state.formattedDate;
+    const isStart = dateStr === this.startDate;
+    const isEnd = dateStr === this.endDate;
+    const inRange = isDateInRange(dateStr, this.startDate, this.endDate);
+    const inPreview = this.rangeState === 'start-selected'
+      ? isDateInPreview(dateStr, this.startDate, this.hoveredDate)
+      : false;
+
+    // Build inline styles array — inline because CSS classes cannot
+    // penetrate the calendar's Shadow DOM (Pitfall 1).
+    // CSS custom properties DO cascade through Shadow DOM for theming.
+    const styles: string[] = [
+      'display: flex',
+      'align-items: center',
+      'justify-content: center',
+      'width: 100%',
+      'height: 100%',
+      'border-radius: 0',
+      'transition: background-color 150ms',
+    ];
+
+    const isSingleDay = isStart && isEnd;
+
+    if (isSingleDay) {
+      // Single-day range: full circle
+      styles.push(
+        'background-color: var(--ui-range-selected-bg, var(--color-primary, #3b82f6))',
+        'color: var(--ui-range-selected-text, white)',
+        'border-radius: 9999px',
+      );
+    } else if (isStart) {
+      // Start date: rounded left
+      styles.push(
+        'background-color: var(--ui-range-selected-bg, var(--color-primary, #3b82f6))',
+        'color: var(--ui-range-selected-text, white)',
+        'border-radius: 9999px 0 0 9999px',
+      );
+    } else if (isEnd) {
+      // End date: rounded right
+      styles.push(
+        'background-color: var(--ui-range-selected-bg, var(--color-primary, #3b82f6))',
+        'color: var(--ui-range-selected-text, white)',
+        'border-radius: 0 9999px 9999px 0',
+      );
+    } else if (inRange) {
+      // In-range: highlight background, no rounding
+      styles.push(
+        'background-color: var(--ui-range-highlight-bg, #dbeafe)',
+        'color: var(--ui-range-highlight-text, inherit)',
+      );
+    } else if (inPreview) {
+      // Preview: lighter highlight background, no rounding
+      styles.push(
+        'background-color: var(--ui-range-preview-bg, #eff6ff)',
+      );
+    }
+
+    return html`
+      <span
+        style="${styles.join('; ')}"
+        @mouseenter="${() => this.handleDayHover(dateStr)}"
+      >
+        ${state.date.getDate()}
+      </span>
+    `;
   };
 
   // ---------------------------------------------------------------------------
