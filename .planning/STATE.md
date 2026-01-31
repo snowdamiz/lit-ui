@@ -10,28 +10,28 @@ See: .planning/PROJECT.md (updated 2026-01-30)
 ## Current Position
 
 Phase: 2 of 9 (Calendar Display Advanced)
-Plan: 6 of 8 in current phase (6 execution complete)
+Plan: 7 of 8 in current phase (7 execution complete)
 Status: In progress
-Last activity: 2026-01-31 — Completed 43-05-PLAN.md (calendar integration)
+Last activity: 2026-01-31 — Completed 43-06-PLAN.md (multi-month calendar)
 
-Progress: [████████████████░░░░] 89% (16/18 plans)
+Progress: [█████████████████░░░] 94% (17/18 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 16
+- Total plans completed: 17
 - Average duration: 2.3 min
-- Total execution time: 0.63 hours
+- Total execution time: 0.67 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 42    | 10    | 10    | 2.6 min |
-| 43    | 6     | 6     | 2.0 min |
+| 43    | 7     | 7     | 2.0 min |
 
 **Recent Trend:**
-- Last 3 plans: 2 min (43-02), 3 min (43-04), 3 min (43-05)
+- Last 3 plans: 3 min (43-04), 3 min (43-05), 2 min (43-06)
 - Trend: Consistent execution pace
 
 *Updated after each plan completion*
@@ -92,6 +92,10 @@ Recent decisions affecting current work:
 - **Phase 43-05**: renderDay callback receives DayCellState, wrapper retains all ARIA attributes
 - **Phase 43-05**: Week numbers use button elements with aria-label for keyboard accessibility
 - **Phase 43-05**: DayCellState.isInRange is inverse of isDisabled for simplicity
+- **Phase 43-06**: CalendarMulti owns navigation; child Calendars use display-month and hide-navigation
+- **Phase 43-06**: display-month supports YYYY-MM-DD and YYYY-MM formats with auto-parsing in updated()
+- **Phase 43-06**: Months clamped to 2-3 in CalendarMulti, flexbox layout with 280px min-width
+- **Phase 43-06**: Month range heading uses Intl.DateTimeFormat with en-dash, handles cross-year display
 
 ### Pending Todos
 
@@ -108,5 +112,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-01-31 (phase 43 in progress)
-Stopped at: Completed 43-05-PLAN.md (calendar integration)
+Stopped at: Completed 43-06-PLAN.md (multi-month calendar)
 Resume file: None
