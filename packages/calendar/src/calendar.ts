@@ -430,6 +430,9 @@ export class Calendar extends TailwindElement {
     css`
       :host {
         display: block;
+        position: relative;
+        container-type: inline-size;
+        container-name: calendar;
       }
 
       /* Grid container with 7 columns */
@@ -810,6 +813,29 @@ export class Calendar extends TailwindElement {
 
       :host-context(.dark) .week-number {
         color: var(--color-gray-400);
+      }
+
+      /* Container query: Compact (container < 280px) */
+      @container calendar (max-width: 280px) {
+        [role='grid'] { gap: 0.125rem; }
+        [role='gridcell'] { min-height: 1.75rem; font-size: 0.7rem; }
+        [role='columnheader'] { padding: 0.125rem; font-size: 0.7rem; }
+        .calendar-header h2 { font-size: 0.75rem; }
+        .calendar-header button { font-size: 0.75rem; padding: 0.125rem 0.25rem; }
+        .calendar-selectors select { font-size: 0.7rem; padding: 0.125rem 0.25rem; }
+        .year-grid [role="gridcell"],
+        .decade-grid [role="gridcell"] {
+          min-height: 2rem;
+          font-size: 0.75rem;
+        }
+      }
+
+      /* Container query: Standard (280px - 380px) is the default — no overrides */
+
+      /* Container query: Spacious (container > 380px) */
+      @container calendar (min-width: 380px) {
+        [role='gridcell'] { min-height: 3rem; }
+        .calendar-header h2 { font-size: 1.25rem; }
       }
     `,
   ];
