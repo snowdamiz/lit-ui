@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-30)
 ## Current Position
 
 Phase: 4 of 9 (Date Picker Advanced) - In progress
-Plan: 1 of 5 in current phase (2 executions complete)
+Plan: 2 of 5 in current phase (3 executions complete)
 Status: In progress
-Last activity: 2026-01-31 — Completed 45-01-PLAN.md
+Last activity: 2026-01-31 — Completed 45-02-PLAN.md
 
-Progress: [██████████████████████░░] 96% (23/24 plans)
+Progress: [███████████████████████░] 96% (24/25 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 29
+- Total plans completed: 30
 - Average duration: 2.1 min
-- Total execution time: 1.05 hours
+- Total execution time: 1.08 hours
 
 **By Phase:**
 
@@ -31,7 +31,7 @@ Progress: [██████████████████████░
 | 43    | 8     | 8     | 1.9 min |
 
 **Recent Trend:**
-- Last 3 plans: 2 min (45-01), 2 min (45-04), 2 min (44-05)
+- Last 3 plans: 2 min (45-02), 2 min (45-01), 2 min (45-04)
 - Trend: Consistent execution pace
 
 *Updated after each plan completion*
@@ -117,6 +117,9 @@ Recent decisions affecting current work:
 - **Phase 45-04**: Capitalize constraint reason strings for user-facing tooltip display
 - **Phase 45-01**: NL resolver functions called at evaluation time (not import) for SSR safety
 - **Phase 45-01**: Natural language parsing runs before format-based parsing in parseDateInput pipeline
+- **Phase 45-02**: Presets property accepts boolean | DatePreset[] — true uses DEFAULT_PRESETS, array for custom
+- **Phase 45-02**: Format property is JS-only (attribute: false) since Intl.DateTimeFormatOptions is an object
+- **Phase 45-02**: Preset resolver functions called at click time (not render time) for SSR safety
 
 ### Pending Todos
 
@@ -132,6 +135,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-31 (45-01 complete)
-Stopped at: Completed 45-01-PLAN.md (Natural language date parser)
+Last session: 2026-01-31 (45-02 complete)
+Stopped at: Completed 45-02-PLAN.md (Presets and format)
 Resume file: None
