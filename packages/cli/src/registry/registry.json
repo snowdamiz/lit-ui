@@ -85,6 +85,18 @@
       ],
       "dependencies": [],
       "registryDependencies": []
+    },
+    {
+      "name": "calendar",
+      "description": "Accessible calendar component with month grid, navigation, keyboard accessibility, and screen reader support",
+      "files": [
+        { "path": "components/calendar/calendar.ts", "type": "component" },
+        { "path": "components/calendar/date-utils.ts", "type": "component" },
+        { "path": "components/calendar/intl-utils.ts", "type": "component" },
+        { "path": "components/calendar/keyboard-nav.ts", "type": "component" }
+      ],
+      "dependencies": ["date-fns"],
+      "registryDependencies": []
     }
   ]
 }

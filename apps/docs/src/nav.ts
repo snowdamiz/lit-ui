@@ -32,6 +32,7 @@ export const navigation: NavSection[] = [
     title: "Components",
     items: [
       { title: "Button", href: "/components/button" },
+      { title: "Calendar", href: "/components/calendar" },
       { title: "Checkbox", href: "/components/checkbox" },
       { title: "Dialog", href: "/components/dialog" },
       { title: "Input", href: "/components/input" },
