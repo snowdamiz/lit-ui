@@ -7,8 +7,12 @@
 
 import { html, css, isServer, type PropertyValues, type CSSResultGroup } from 'lit';
 import { property, state } from 'lit/decorators.js';
-import { TailwindElement, tailwindBaseStyles } from '@lit-ui/core';
+import { TailwindElement, tailwindBaseStyles, dispatchCustomEvent } from '@lit-ui/core';
 import {
+  addMonths,
+  subMonths,
+  getYear,
+  getMonth,
   getCalendarDays,
   getMonthYearLabel,
   intlFirstDayToDateFns,
@@ -66,6 +70,33 @@ export class Calendar extends TailwindElement {
         font-size: 0.875rem;
         font-weight: 600;
         margin: 0;
+      }
+
+      .nav-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 2rem;
+        height: 2rem;
+        border: none;
+        background: none;
+        cursor: pointer;
+        border-radius: var(--ui-calendar-radius, 0.375rem);
+        color: var(--ui-calendar-nav-color, currentColor);
+      }
+
+      .nav-button:hover {
+        background-color: var(--ui-calendar-hover-bg, #f3f4f6);
+      }
+
+      .nav-button:focus-visible {
+        outline: 2px solid var(--ui-calendar-focus-ring, var(--color-ring, #3b82f6));
+        outline-offset: 2px;
+      }
+
+      .nav-button svg {
+        width: 1rem;
+        height: 1rem;
       }
 
       .calendar-weekdays {
@@ -153,6 +184,32 @@ export class Calendar extends TailwindElement {
     return intlFirstDayToDateFns(this.firstDayOfWeek);
   }
 
+  /**
+   * Navigate to the previous month.
+   */
+  private navigatePrevMonth(): void {
+    this.currentMonth = subMonths(this.currentMonth, 1);
+    this.emitMonthChange();
+  }
+
+  /**
+   * Navigate to the next month.
+   */
+  private navigateNextMonth(): void {
+    this.currentMonth = addMonths(this.currentMonth, 1);
+    this.emitMonthChange();
+  }
+
+  /**
+   * Emit ui-month-change event with the current year and month.
+   */
+  private emitMonthChange(): void {
+    dispatchCustomEvent(this, 'ui-month-change', {
+      year: getYear(this.currentMonth),
+      month: getMonth(this.currentMonth),
+    });
+  }
+
   protected override render() {
     const weekdays = getWeekdayNames(this.effectiveLocale, this.firstDayOfWeek);
     const days = getCalendarDays(this.currentMonth, this.weekStartsOn);
@@ -161,7 +218,25 @@ export class Calendar extends TailwindElement {
     return html`
       <div class="calendar">
         <div class="calendar-header">
+          <button
+            class="nav-button"
+            @click="${this.navigatePrevMonth}"
+            aria-label="Previous month, ${getMonthYearLabel(subMonths(this.currentMonth, 1), this.effectiveLocale)}"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M15 18l-6-6 6-6" />
+            </svg>
+          </button>
           <h2 id="month-heading">${monthLabel}</h2>
+          <button
+            class="nav-button"
+            @click="${this.navigateNextMonth}"
+            aria-label="Next month, ${getMonthYearLabel(addMonths(this.currentMonth, 1), this.effectiveLocale)}"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 18l6-6-6-6" />
+            </svg>
+          </button>
         </div>
         <div class="calendar-weekdays" role="row">
           ${weekdays.map(
