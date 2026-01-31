@@ -617,6 +617,21 @@ export class Calendar extends TailwindElement {
   private previousView: CalendarView = 'month';
 
   /**
+   * Override the displayed month externally (e.g., from CalendarMulti).
+   * Accepts ISO strings in YYYY-MM-DD or YYYY-MM format.
+   * When set, currentMonth is driven by this property.
+   */
+  @property({ type: String, attribute: 'display-month' })
+  displayMonth = '';
+
+  /**
+   * When true, hides the calendar header (prev/next buttons and heading).
+   * Used by CalendarMulti to suppress individual calendar navigation.
+   */
+  @property({ type: Boolean, attribute: 'hide-navigation' })
+  hideNavigation = false;
+
+  /**
    * Whether to display ISO week numbers in a column.
    */
   @property({ type: Boolean, attribute: 'show-week-numbers' })
@@ -927,6 +942,17 @@ export class Calendar extends TailwindElement {
         this.animationController.transition(direction);
       }
     }
+    // Parse display-month when it changes to drive currentMonth externally
+    if (changedProperties.has('displayMonth') && this.displayMonth) {
+      const raw = this.displayMonth.trim();
+      if (raw.length === 7) {
+        // YYYY-MM format — append '-01' for valid ISO date
+        this.currentMonth = parseISO(raw + '-01');
+      } else if (raw.length >= 10) {
+        // YYYY-MM-DD format
+        this.currentMonth = parseISO(raw);
+      }
+    }
     if (changedProperties.has('value') && this.value) {
       this.selectedDate = parseISO(this.value);
     }
@@ -1170,6 +1196,7 @@ export class Calendar extends TailwindElement {
 
     return html`
       <div class="calendar">
+        ${this.hideNavigation ? nothing : html`
         <div class="calendar-header">
           <button
             class="nav-button"
@@ -1199,6 +1226,7 @@ export class Calendar extends TailwindElement {
             </svg>
           </button>
         </div>
+        `}
         <div class="month-grid">
           <div class="${weekdaysClass}" role="row">
             ${this.showWeekNumbers ? html`<div class="weekday-header week-number-header" role="columnheader" aria-label="Week number"></div>` : nothing}
@@ -1397,6 +1425,7 @@ export class Calendar extends TailwindElement {
 
     return html`
       <div class="calendar">
+        ${this.hideNavigation ? nothing : html`
         <div class="calendar-header">
           <button
             class="nav-button"
@@ -1425,6 +1454,7 @@ export class Calendar extends TailwindElement {
             </svg>
           </button>
         </div>
+        `}
         <div
           class="year-grid"
           role="grid"
@@ -1468,6 +1498,7 @@ export class Calendar extends TailwindElement {
 
     return html`
       <div class="calendar">
+        ${this.hideNavigation ? nothing : html`
         <div class="calendar-header">
           <button
             class="nav-button"
@@ -1491,6 +1522,7 @@ export class Calendar extends TailwindElement {
             </svg>
           </button>
         </div>
+        `}
         <div
           class="decade-grid"
           role="grid"
