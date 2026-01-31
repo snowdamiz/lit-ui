@@ -44,22 +44,22 @@ Requirements for v4.3 milestone - complete date/time input capabilities. Each ma
 - [ ] **DP-01**: Input field displays selected date in formatted locale-aware string
 - [ ] **DP-02**: Calendar icon button triggers popup
 - [ ] **DP-03**: Input focus opens calendar popup
-- [ ] **DP-04**: Text input parses dates in multiple formats (dashes, slashes, dots)
-- [ ] **DP-05**: Date format displays month name or uses labeled fields for international clarity
-- [ ] **DP-06**: Component integrates with forms via ElementInternals
-- [ ] **DP-07**: Form value submits as ISO 8601 format (YYYY-MM-DD)
-- [ ] **DP-08**: Invalid dates show inline error with aria-invalid="true"
-- [ ] **DP-09**: Placeholder text shows expected date format
-- [ ] **DP-10**: Helper text displays format requirements
-- [ ] **DP-11**: Clear button (X icon) resets date selection
-- [ ] **DP-12**: Focus is trapped within calendar popup when open
-- [ ] **DP-13**: Focus returns to input when popup closes
-- [ ] **DP-14**: Escape key closes calendar popup
-- [ ] **DP-15**: Clicking outside popup closes calendar
-- [ ] **DP-16**: Calendar popup uses Floating UI for positioning
-- [ ] **DP-17**: Calendar popup uses flip/shift middleware to avoid clipping
-- [ ] **DP-18**: Popup uses composedPath() for click-outside detection
-- [ ] **DP-19**: Component uses date-fns for date manipulation
+- [x] **DP-04**: Text input parses dates in multiple formats (dashes, slashes, dots)
+- [x] **DP-05**: Date format displays month name or uses labeled fields for international clarity
+- [x] **DP-06**: Component integrates with forms via ElementInternals
+- [x] **DP-07**: Form value submits as ISO 8601 format (YYYY-MM-DD)
+- [x] **DP-08**: Invalid dates show inline error with aria-invalid="true"
+- [x] **DP-09**: Placeholder text shows expected date format
+- [x] **DP-10**: Helper text displays format requirements
+- [x] **DP-11**: Clear button (X icon) resets date selection
+- [x] **DP-12**: Focus is trapped within calendar popup when open
+- [x] **DP-13**: Focus returns to input when popup closes
+- [x] **DP-14**: Escape key closes calendar popup
+- [x] **DP-15**: Clicking outside popup closes calendar
+- [x] **DP-16**: Calendar popup uses Floating UI for positioning
+- [x] **DP-17**: Calendar popup uses flip/shift middleware to avoid clipping
+- [x] **DP-18**: Popup uses composedPath() for click-outside detection
+- [x] **DP-19**: Component uses date-fns for date manipulation
 - [ ] **DP-20**: Natural language parsing accepts "tomorrow", "next week", "today"
 - [ ] **DP-21**: Quick preset buttons provide one-click common dates
 - [ ] **DP-22**: Preset buttons include Today, Tomorrow, Next Week options
@@ -202,22 +202,22 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DP-01 | Phase 43 | Pending |
 | DP-02 | Phase 43 | Pending |
 | DP-03 | Phase 43 | Pending |
-| DP-04 | Phase 44 | Pending |
-| DP-05 | Phase 44 | Pending |
-| DP-06 | Phase 44 | Pending |
-| DP-07 | Phase 44 | Pending |
-| DP-08 | Phase 44 | Pending |
-| DP-09 | Phase 44 | Pending |
-| DP-10 | Phase 44 | Pending |
-| DP-11 | Phase 44 | Pending |
-| DP-12 | Phase 44 | Pending |
-| DP-13 | Phase 44 | Pending |
-| DP-14 | Phase 44 | Pending |
-| DP-15 | Phase 44 | Pending |
-| DP-16 | Phase 44 | Pending |
-| DP-17 | Phase 44 | Pending |
-| DP-18 | Phase 44 | Pending |
-| DP-19 | Phase 44 | Pending |
+| DP-04 | Phase 44 | Complete |
+| DP-05 | Phase 44 | Complete |
+| DP-06 | Phase 44 | Complete |
+| DP-07 | Phase 44 | Complete |
+| DP-08 | Phase 44 | Complete |
+| DP-09 | Phase 44 | Complete |
+| DP-10 | Phase 44 | Complete |
+| DP-11 | Phase 44 | Complete |
+| DP-12 | Phase 44 | Complete |
+| DP-13 | Phase 44 | Complete |
+| DP-14 | Phase 44 | Complete |
+| DP-15 | Phase 44 | Complete |
+| DP-16 | Phase 44 | Complete |
+| DP-17 | Phase 44 | Complete |
+| DP-18 | Phase 44 | Complete |
+| DP-19 | Phase 44 | Complete |
 | DP-20 | Phase 45 | Pending |
 | DP-21 | Phase 45 | Pending |
 | DP-22 | Phase 45 | Pending |

@@ -410,10 +410,10 @@ Plans:
 
 Plans:
 - [x] 44-01-PLAN.md — Package scaffolding and TDD date input parser (multi-format parsing)
-- [ ] 44-02-PLAN.md — Component core with input field, calendar popup, clear button, form integration
-- [ ] 44-03-PLAN.md — Floating UI popup positioning with flip/shift and click-outside detection
-- [ ] 44-04-PLAN.md — Focus management (trap in popup, restore on close) and validation states
-- [ ] 44-05-PLAN.md — Package exports, custom element registration, and React JSX types
+- [x] 44-02-PLAN.md — Component core with input field, calendar popup, clear button, form integration
+- [x] 44-03-PLAN.md — Floating UI popup positioning with flip/shift and click-outside detection
+- [x] 44-04-PLAN.md — Focus management (trap in popup, restore on close) and validation states
+- [x] 44-05-PLAN.md — Package exports, custom element registration, and React JSX types
 
 #### Phase 45: Date Picker Advanced
 **Goal**: Advanced date picker features including natural language parsing, presets, inline mode, and custom formatting.
@@ -556,7 +556,7 @@ Phases execute in numeric order: 42 → 43 → 44 → 45 → 46 → 47 → 48 �
 |-------|-----------|----------------|--------|-----------|
 | 42. Calendar Display Foundation | v4.3 | 8/8 | Complete | 2026-01-31 |
 | 43. Calendar Display Advanced | v4.3 | 8/8 | Complete | 2026-01-31 |
-| 44. Date Picker Core | v4.3 | 1/5 | In progress | - |
+| 44. Date Picker Core | v4.3 | 5/5 | Complete | 2026-01-31 |
 | 45. Date Picker Advanced | v4.3 | 0/6 | Not started | - |
 | 46. Date Range Picker Core | v4.3 | 0/9 | Not started | - |
 | 47. Date Range Picker Advanced | v4.3 | 0/6 | Not started | - |
