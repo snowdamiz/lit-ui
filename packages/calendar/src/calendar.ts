@@ -241,6 +241,20 @@ export class Calendar extends TailwindElement {
     this.navigationManager.setInitialFocus(initialIndex);
   }
 
+  override firstUpdated(_changedProperties: PropertyValues): void {
+    super.firstUpdated(_changedProperties);
+
+    // Set initial tabindex imperatively after first render
+    // Template has no tabindex, so we must set it via DOM manipulation
+    if (!isServer && this.gridCells) {
+      this.initializeNavigationManager();
+      requestAnimationFrame(() => {
+        const initialIndex = this.focusedIndex;
+        this.navigationManager?.setInitialFocus(initialIndex);
+      });
+    }
+  }
+
   override updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
 
@@ -262,6 +276,14 @@ export class Calendar extends TailwindElement {
     // Reinitialize navigation manager when grid cells change (month change)
     if (changedProperties.has('currentMonth') && this.gridCells) {
       this.initializeNavigationManager();
+
+      // Set initial tabindex AFTER render completes via requestAnimationFrame
+      // This ensures Lit's declarative render (with NO tabindex in template)
+      // completes first, then KeyboardNavigationManager sets tabindex imperatively
+      requestAnimationFrame(() => {
+        const initialIndex = this.focusedIndex;
+        this.navigationManager?.setInitialFocus(initialIndex);
+      });
     }
   }
 
