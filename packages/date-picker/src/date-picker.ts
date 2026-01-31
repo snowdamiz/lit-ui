@@ -605,22 +605,39 @@ export class DatePicker extends TailwindElement {
 
   /**
    * Open the calendar popup and position it via Floating UI.
+   * Focuses the calendar after positioning for keyboard accessibility.
    */
   private async openPopup(): Promise<void> {
     if (this.disabled) return;
     this.open = true;
     this.triggerElement = this.inputEl;
 
-    // Wait for popup to render, then position
+    // Wait for popup to render, then position and focus calendar
     await this.updateComplete;
     this.positionPopup();
+    requestAnimationFrame(() => {
+      this.focusCalendar();
+    });
   }
 
   /**
-   * Close the calendar popup.
+   * Close the calendar popup and restore focus to the trigger element.
    */
   private closePopup(): void {
     this.open = false;
+    requestAnimationFrame(() => {
+      this.triggerElement?.focus();
+      this.triggerElement = null;
+    });
+  }
+
+  /**
+   * Focus the lui-calendar element inside the popup.
+   * The calendar manages its own internal keyboard navigation.
+   */
+  private focusCalendar(): void {
+    const calendar = this.shadowRoot?.querySelector('lui-calendar') as HTMLElement | null;
+    calendar?.focus();
   }
 
   /**
@@ -660,12 +677,10 @@ export class DatePicker extends TailwindElement {
     this.value = isoString;
     this.displayValue = formatDateForDisplay(date, this.effectiveLocale);
     this.internalError = '';
-    this.open = false;
     this.updateFormValue();
 
-    // Restore focus to input after selection
-    this.triggerElement?.focus();
-    this.triggerElement = null;
+    // Close popup (restores focus to input)
+    this.closePopup();
 
     dispatchCustomEvent(this, 'change', {
       date,
@@ -692,16 +707,19 @@ export class DatePicker extends TailwindElement {
 
   /**
    * Handle keyboard events on the popup.
+   * Traps Tab/Shift+Tab within the popup and handles Escape to close.
    * Respects calendar's defaultPrevented for Escape key (view drilling).
    */
   private handlePopupKeydown(e: KeyboardEvent): void {
-    if (e.key === 'Escape') {
+    if (e.key === 'Tab') {
+      // Trap focus within the popup — keep focus on the calendar
+      e.preventDefault();
+      this.focusCalendar();
+    } else if (e.key === 'Escape') {
       // If the calendar already handled Escape (e.g., drilling from year to month view),
       // don't close the popup
       if (!e.defaultPrevented) {
         this.closePopup();
-        this.triggerElement?.focus();
-        this.triggerElement = null;
       }
     }
   }
