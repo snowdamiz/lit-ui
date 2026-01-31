@@ -28,16 +28,16 @@ Requirements for v4.3 milestone - complete date/time input capabilities. Each ma
 - [x] **CAL-17**: Weekday names localize via Intl.DateTimeFormat
 - [x] **CAL-18**: Component respects dark mode via :host-context(.dark)
 - [x] **CAL-19**: Component renders via SSR with Declarative Shadow DOM
-- [ ] **CAL-20**: Multiple month display shows 2-3 month grids side-by-side
-- [ ] **CAL-21**: Decade view displays year grid for fast year selection
-- [ ] **CAL-22**: Century view displays decade grid for birth year selection
-- [ ] **CAL-23**: Date cells support custom rendering via slot API
-- [ ] **CAL-24**: Month transition animates with slide or fade effect
-- [ ] **CAL-25**: Animations respect prefers-reduced-motion media query
-- [ ] **CAL-26**: Week number column displays ISO 8601 week numbers
-- [ ] **CAL-27**: Clicking week number selects entire week
-- [ ] **CAL-28**: Touch swipe gesture navigates between months
-- [ ] **CAL-29**: Component layout adapts responsively to screen size
+- [x] **CAL-20**: Multiple month display shows 2-3 month grids side-by-side
+- [x] **CAL-21**: Decade view displays year grid for fast year selection
+- [x] **CAL-22**: Century view displays decade grid for birth year selection
+- [x] **CAL-23**: Date cells support custom rendering via slot API
+- [x] **CAL-24**: Month transition animates with slide or fade effect
+- [x] **CAL-25**: Animations respect prefers-reduced-motion media query
+- [x] **CAL-26**: Week number column displays ISO 8601 week numbers
+- [x] **CAL-27**: Clicking week number selects entire week
+- [x] **CAL-28**: Touch swipe gesture navigates between months
+- [x] **CAL-29**: Component layout adapts responsively to screen size
 
 ### Date Picker
 
@@ -189,16 +189,16 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CAL-17 | Phase 42 | Complete |
 | CAL-18 | Phase 42 | Complete |
 | CAL-19 | Phase 42 | Complete |
-| CAL-20 | Phase 43 | Pending |
-| CAL-21 | Phase 43 | Pending |
-| CAL-22 | Phase 43 | Pending |
-| CAL-23 | Phase 43 | Pending |
-| CAL-24 | Phase 43 | Pending |
-| CAL-25 | Phase 43 | Pending |
-| CAL-26 | Phase 43 | Pending |
-| CAL-27 | Phase 43 | Pending |
-| CAL-28 | Phase 43 | Pending |
-| CAL-29 | Phase 43 | Pending |
+| CAL-20 | Phase 43 | Complete |
+| CAL-21 | Phase 43 | Complete |
+| CAL-22 | Phase 43 | Complete |
+| CAL-23 | Phase 43 | Complete |
+| CAL-24 | Phase 43 | Complete |
+| CAL-25 | Phase 43 | Complete |
+| CAL-26 | Phase 43 | Complete |
+| CAL-27 | Phase 43 | Complete |
+| CAL-28 | Phase 43 | Complete |
+| CAL-29 | Phase 43 | Complete |
 | DP-01 | Phase 43 | Pending |
 | DP-02 | Phase 43 | Pending |
 | DP-03 | Phase 43 | Pending |

@@ -5,7 +5,7 @@
 See: .planning/PROJECT.md (updated 2026-01-30)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** Phase 43 Calendar Display Advanced — complete
+**Current focus:** Phase 43 complete — next: Phase 44 Date Picker Core
 
 ## Current Position
 

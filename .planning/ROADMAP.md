@@ -389,14 +389,14 @@ Plans:
 **Plans**: 8 plans in 6 waves
 
 Plans:
-- [ ] 43-01-PLAN.md -- Configurable KeyboardNavigationManager columns
-- [ ] 43-02-PLAN.md -- Gesture handler and animation controller modules
-- [ ] 43-03-PLAN.md -- ISO week number utilities in date-utils
-- [ ] 43-04-PLAN.md -- Decade and century views in Calendar
-- [ ] 43-05-PLAN.md -- Animations, swipe, week numbers, renderDay integration
-- [ ] 43-06-PLAN.md -- display-month/hide-navigation props + multi-month wrapper
-- [ ] 43-07-PLAN.md -- Responsive container query layout
-- [ ] 43-08-PLAN.md -- Package exports, JSX types, element registration
+- [x] 43-01-PLAN.md -- Configurable KeyboardNavigationManager columns
+- [x] 43-02-PLAN.md -- Gesture handler and animation controller modules
+- [x] 43-03-PLAN.md -- ISO week number utilities in date-utils
+- [x] 43-04-PLAN.md -- Decade and century views in Calendar
+- [x] 43-05-PLAN.md -- Animations, swipe, week numbers, renderDay integration
+- [x] 43-06-PLAN.md -- display-month/hide-navigation props + multi-month wrapper
+- [x] 43-07-PLAN.md -- Responsive container query layout
+- [x] 43-08-PLAN.md -- Package exports, JSX types, element registration
 
 #### Phase 44: Date Picker Core
 **Goal**: Single date picker with input field, calendar popup, positioning, form integration, and validation.
@@ -562,7 +562,7 @@ Phases execute in numeric order: 42 → 43 → 44 → 45 → 46 → 47 → 48 �
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 42. Calendar Display Foundation | v4.3 | 10/10 | Complete | 2026-01-31 |
-| 43. Calendar Display Advanced | v4.3 | 0/8 | Planned | - |
+| 43. Calendar Display Advanced | v4.3 | 8/8 | Complete | 2026-01-31 |
 | 44. Date Picker Core | v4.3 | 0/10 | Not started | - |
 | 45. Date Picker Advanced | v4.3 | 0/6 | Not started | - |
 | 46. Date Range Picker Core | v4.3 | 0/9 | Not started | - |
