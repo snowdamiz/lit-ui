@@ -10,28 +10,28 @@ See: .planning/PROJECT.md (updated 2026-01-30)
 ## Current Position
 
 Phase: 2 of 9 (Calendar Display Advanced)
-Plan: 7 of 8 in current phase (7 execution complete)
+Plan: 8 of 8 in current phase (8 execution complete)
 Status: In progress
-Last activity: 2026-01-31 — Completed 43-06-PLAN.md (multi-month calendar)
+Last activity: 2026-01-31 — Completed 43-07-PLAN.md (container query responsive layout)
 
-Progress: [█████████████████░░░] 94% (17/18 plans)
+Progress: [██████████████████░░] 95% (18/19 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 17
-- Average duration: 2.3 min
-- Total execution time: 0.67 hours
+- Total plans completed: 18
+- Average duration: 2.2 min
+- Total execution time: 0.68 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 42    | 10    | 10    | 2.6 min |
-| 43    | 7     | 7     | 2.0 min |
+| 43    | 8     | 8     | 1.9 min |
 
 **Recent Trend:**
-- Last 3 plans: 3 min (43-04), 3 min (43-05), 2 min (43-06)
+- Last 3 plans: 3 min (43-05), 2 min (43-06), 1 min (43-07)
 - Trend: Consistent execution pace
 
 *Updated after each plan completion*
@@ -96,6 +96,9 @@ Recent decisions affecting current work:
 - **Phase 43-06**: display-month supports YYYY-MM-DD and YYYY-MM formats with auto-parsing in updated()
 - **Phase 43-06**: Months clamped to 2-3 in CalendarMulti, flexbox layout with 280px min-width
 - **Phase 43-06**: Month range heading uses Intl.DateTimeFormat with en-dash, handles cross-year display
+- **Phase 43-07**: Use container queries (not viewport media queries) for component-level responsiveness
+- **Phase 43-07**: Three breakpoints: compact (<280px), standard (280-380px default), spacious (>380px)
+- **Phase 43-07**: CalendarMulti stacks vertically at 600px container width
 
 ### Pending Todos
 
@@ -112,5 +115,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-01-31 (phase 43 in progress)
-Stopped at: Completed 43-06-PLAN.md (multi-month calendar)
+Stopped at: Completed 43-07-PLAN.md (container query responsive layout)
 Resume file: None
