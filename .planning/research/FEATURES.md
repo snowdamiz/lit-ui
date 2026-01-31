@@ -1,7 +1,7 @@
 # Feature Research
 
 **Domain:** Framework-agnostic component library (Lit.js web components)
-**Researched:** 2026-01-23 (v1.0), 2026-01-24 (v2.0 NPM + SSR), 2026-01-26 (v4.0 Form Inputs)
+**Researched:** 2026-01-23 (v1.0), 2026-01-24 (v2.0 NPM + SSR), 2026-01-26 (v4.0 Form Inputs), 2026-01-30 (v4.3 Date/Time Components)
 **Confidence:** HIGH (verified across multiple authoritative sources)
 
 ## Feature Landscape
@@ -463,5 +463,405 @@ Based on research, prioritized features for v4.0 MVP:
 - [Password Forms Accessibility (Medium)](https://medium.com/kiipco/password-creation-3-ways-to-make-it-accessible-bc8f2b53b7ee)
 
 **Auto-resize Textarea:**
-- [Cleanest Trick for Autogrowing Textareas (CSS-Tricks)](https://css-tricks.com/the-cleanest-trick-for-autogrowing-textareas/)
+- [Cleanest Trick for Autogrowing Textareas (CSS-Tricks)](https://www.css-tricks.com/the-cleanest-trick-for-autogrowing-textareas/)
 - [Auto-Growing Inputs and Textareas (CSS-Tricks)](https://css-tricks.com/auto-growing-inputs-textareas/)
+
+---
+
+## v4.3 Date/Time Components Feature Research
+
+**Researched:** 2026-01-30
+**Focus:** Calendar, Date Picker, Date Range Picker, and Time Picker components
+**Confidence:** MEDIUM (WebSearch verified with official sources)
+
+### Calendar Display Features
+
+#### Table Stakes (Must Have)
+
+Features users expect from any calendar component. Missing these makes the component feel incomplete.
+
+| Feature | Why Expected | Complexity | Dependencies | Notes |
+|---------|--------------|------------|--------------|-------|
+| **Month grid view** | Users expect calendar layout to see days of week | LOW | None | Standard 7-column grid with weekday headers |
+| **Today indicator** | Users need to know current date for reference | LOW | None | Visual highlight on today's date with `aria-current="date"` |
+| **Selected date highlight** | Users must see which date is selected | LOW | None | Distinct visual style (filled circle, bold, different background) |
+| **Month navigation** | Users need to move between months | LOW | None | Previous/next buttons with descriptive labels |
+| **Year navigation** | Users selecting dates far from today need year jumps | MEDIUM | None | Month/year dropdowns or decade view |
+| **Weekday headers** | Users need day-of-week context | LOW | None | Abbreviated names (Mon, Tue, Wed) |
+| **Keyboard navigation** | WCAG 2.1 Level A requirement | MEDIUM | None | Arrow keys, Home/End, Page Up/Down, `role="application"` |
+| **Screen reader announcements** | Accessibility requirement | HIGH | None | Live region feedback for month changes, selections |
+| **Minimum/maximum date constraints** | Prevent invalid selections (e.g., past dates, booking cutoffs) | LOW | None | Visual disabled state + keyboard skip |
+| **Disabled dates** | Business logic (weekends, holidays, unavailable slots) | MEDIUM | None | Grayed out, not interactive, with reason in aria-label |
+| **First day of week localization** | International users expect local conventions | MEDIUM | None | Sunday (US) vs Monday (EU) based on locale |
+| **Month/day names localization** | International users need native language | LOW | None | `Intl.DateTimeFormat` for localized names |
+| **Dark mode support** | Expected in 2026 | LOW | Existing system | `:host-context(.dark)` pattern from other components |
+| **SSR compatibility** | Works with Next.js, Astro | MEDIUM | @lit-ui/ssr | `isServer` guards, Declarative Shadow DOM |
+
+#### Differentiators (Competitive Advantage)
+
+| Feature | Value Proposition | Complexity | Dependencies | Notes |
+|---------|-------------------|------------|--------------|-------|
+| **Multiple month display** | Power users see wider date range | MEDIUM | None | 2-3 month grid for booking systems |
+| **Decade/century view** | Faster year navigation for distant dates | MEDIUM | None | Year grid for selecting birth years |
+| **Custom date cell rendering** | Developers can add badges, indicators, icons | HIGH | None | Slot API for date cells |
+| **Animation on month change** | Polished feel | MEDIUM | None | Slide or fade transitions, respect `prefers-reduced-motion` |
+| **Week row selection** | Select entire week at once | MEDIUM | None | Click week number to select all days |
+| **Keyboard shortcuts** | Power user efficiency | MEDIUM | None | "T" for today, "D" for this week |
+| **Touch gesture support** | Swipe to change months on mobile | MEDIUM | None | Natural mobile interaction |
+| **Week numbers (optional)** | Some regions (EU) require week numbers | MEDIUM | None | ISO 8601 week numbers, locale-dependent |
+| **Responsive layout** | Adapts to screen size | LOW | None | Full grid on desktop, compact on mobile |
+
+#### Calendar Anti-Features (Do NOT Build)
+
+| Anti-Feature | Why Avoid | What to Do Instead |
+|--------------|-----------|-------------------|
+| **HTML table for calendar grid** | Screen readers announce "column 2 row 2" noise, requires `role="presentation"` workaround | Use CSS Grid or Flexbox (as 24a11y recommends) |
+| **Single-letter keyboard shortcuts** | Conflicts with screen reader navigation (e.g., "B" for buttons) | Use multi-key shortcuts or none at all |
+| **Auto-popup on page load** | Disruptive, users may not be ready to select | Open on user action (click, focus, Enter key) |
+| **Year dropdown only** | Scrolling through 100 years for birthdate is terrible | Allow year typing or decade view |
+| **Fixed MM/DD/YYYY format for international** | Ambiguity causes errors (10/11 = Nov 10 or Oct 11?) | Use locale formats or spell month names |
+
+---
+
+### Date Picker Features
+
+#### Table Stakes (Must Have)
+
+| Feature | Why Expected | Complexity | Dependencies | Notes |
+|---------|--------------|------------|--------------|-------|
+| **Input field with formatted display** | Users see selected date in familiar format | LOW | None | Supports typing and parsing |
+| **Calendar popup trigger** | Visual indicator that picker is available | LOW | Dialog component | Calendar icon or field focus |
+| **Text input support** | Fastest way to enter known dates | MEDIUM | None | Parse multiple formats (dashes, slashes, dots) |
+| **Date format clarity** | MM/DD/YYYY vs DD/MM/YYYY ambiguity causes errors | MEDIUM | None | Spell month name or use labeled fields for international audiences |
+| **Form integration** | Must work with existing form system | LOW | @lit-ui/core | `ElementInternals` like existing Input component |
+| **Validation feedback** | Users need error messages for invalid dates | LOW | None | Inline error, aria-invalid |
+| **Placeholder or helper text** | Users need to know expected format | LOW | None | "YYYY-MM-DD" or localized format |
+| **Clear button** | Users need way to reset selection | LOW | None | X icon or clear button |
+| **Focus management** | Accessibility requirement | MEDIUM | Dialog component | Trap focus in popup, return to input on close |
+| **Escape key closes** | Standard keyboard pattern | LOW | Dialog component | Expected behavior for popups |
+| **Click outside closes** | Standard UI pattern | LOW | Dialog component | Backdrop click detection |
+| **Calendar popup** | Visual date selection | LOW | Calendar component | Uses Calendar component in popover |
+| **Dark mode support** | Expected in 2026 | LOW | Existing system | `:host-context(.dark)` pattern |
+| **SSR compatibility** | Framework support | MEDIUM | @lit-ui/ssr | Same pattern as Input |
+
+#### Differentiators (Competitive Advantage)
+
+| Feature | Value Proposition | Complexity | Dependencies | Notes |
+|---------|-------------------|------------|--------------|-------|
+| **Natural language parsing** | "tomorrow", "next week" parsing | HIGH | None | Date-fns or similar library |
+| **Quick presets** | One-click common dates (Today, Tomorrow, Next Week) | LOW | None | Buttons above calendar |
+| **Date format auto-detection** | Accept any format user types | MEDIUM | None | Parse and validate on input |
+| **Inline calendar mode** | Always-visible calendar (no popup) | LOW | None | For dashboard/filter contexts |
+| **Custom date formatting** | Display as "Jan 15", "15 Jan", etc. | MEDIUM | None | Format prop with `Intl.DateTimeFormat` |
+| **Min/max date indicators** | Show users why dates are disabled | LOW | None | Tooltip or subtitle on disabled dates |
+| **Date range presets** | "Last 7 days", "This month" buttons | LOW | None | For filter contexts |
+| **Custom validation** | Developer-defined business rules | HIGH | None | Validator function prop |
+
+#### Date Picker Anti-Features (Do NOT Build)
+
+| Anti-Feature | Why Avoid | What to Do Instead |
+|--------------|-----------|-------------------|
+| **Strict format enforcement** | Priceline rejects "9-3-17" but accepts "09/08/17" - confusing | Accept dashes, slashes, dots, parse intelligently |
+| **Shift date ranges in two-calendar view** | NNG: Southwest shifts return month when selecting departure - confusing | Keep both calendars showing same range |
+| **Required special characters** | Users shouldn't have to type "/" or "-" | Auto-format after user types numbers |
+| **Calendar-only without text input** | NNG: "typing is fastest" for distant dates | Always support both input methods |
+| **Infinite scroll for dates** | Todoist-style scrolling is tedious for distant dates | Calendar picker + text input combo |
+| **Hidden format requirements** | Priceline error: no format hints before submit | Show expected format in placeholder or helper text |
+
+---
+
+### Date Range Picker Features
+
+#### Table Stakes (Must Have)
+
+| Feature | Why Expected | Complexity | Dependencies | Notes |
+|---------|--------------|------------|--------------|-------|
+| **Start/end date selection** | Core purpose of range picker | LOW | Date Picker | First click sets start, second sets end |
+| **Range highlighting** | Users need visual feedback for selected range | MEDIUM | None | Background color between start and end dates |
+| **Two calendar display** | Best for ranges spanning months | MEDIUM | None | Side-by-side months (NNG recommends) |
+| **Hover preview** | Users see potential range before selecting end date | MEDIUM | None | Highlight from start date to hovered date |
+| **Start date visual distinction** | Users need to know which end is which | LOW | None | Different style than end date |
+| **End date visual distinction** | Users need to know which end is which | LOW | None | Different style than start date |
+| **Swap start/end if out of order** | Users might click end date first | MEDIUM | None | Auto-correct or show error |
+| **Minimum range duration** | Business logic (e.g., 3-night minimum) | LOW | None | Validation on selection |
+| **Maximum range duration** | Business logic (e.g., max 30-day range) | LOW | None | Validation on selection |
+| **Range constraints** | Start must be before end, no past dates | LOW | None | Disable invalid dates, validate on blur |
+| **Clear range button** | Users need way to reset both dates | LOW | None | Clear both fields |
+| **Form integration** | Must work with existing form system | LOW | @lit-ui/core | `ElementInternals` for range values |
+
+#### Differentiators (Competitive Advantage)
+
+| Feature | Value Proposition | Complexity | Dependencies | Notes |
+|---------|-------------------|------------|--------------|-------|
+| **Defined range presets** | "Last 30 days", "This quarter" one-click | LOW | None | Common in analytics dashboards |
+| **Drag to select range** | More intuitive than click-click | HIGH | None | Mouse down, drag, mouse up |
+| **Range comparison mode** | Compare two date ranges | VERY HIGH | None | "Compare to previous period" |
+| **Exclusion zones** | Block out holidays within range | MEDIUM | None | Visual indicators for excluded dates |
+| **Range duration display** | "5 days selected" feedback | LOW | None | Helps users verify selection |
+| **Split view with sticky calendars** | Large ranges remain visible | MEDIUM | None | Calendars stay visible while scrolling |
+
+#### Date Range Picker Anti-Features (Do NOT Build)
+
+| Anti-Feature | Why Avoid | What to Do Instead |
+|--------------|-----------|-------------------|
+| **Separate date pickers for start/end** | Harder to see relationship between dates | Single unified component with two calendars |
+| **Auto-advance both calendars** | Confusing when month shifts unexpectedly | Keep view stable until user navigates |
+| **No range preview before selection** | Users can't see what they're selecting | Hover state showing potential range |
+| **Allow end date before start date** | Invalid business logic, requires validation | Prevent selection, show error, or auto-swap |
+
+---
+
+### Time Picker Features
+
+#### Table Stakes (Must Have)
+
+| Feature | Why Expected | Complexity | Dependencies | Notes |
+|---------|--------------|------------|--------------|-------|
+| **Hour input** | Core time component | LOW | None | 12-hour or 24-hour based on locale |
+| **Minute input** | Core time component | LOW | None | Typically 15 or 30-minute intervals for bookings |
+| **AM/PM indicator (12-hour)** | Required for 12-hour format | LOW | None | Clear toggle, not subtle dropdown |
+| **24-hour format support** | International audiences expect it | MEDIUM | None | Toggle or locale-based |
+| **Clock face or dropdown** | Visual time selection | MEDIUM | None | Clock face (mobile) vs dropdowns (desktop) |
+| **Time zone awareness** | Users booking across time zones need clarity | HIGH | None | Show local time, optionally show timezone |
+| **Time validation** | Prevent impossible times | LOW | None | End time after start time |
+| **Quick time presets** | Efficiency for common times | LOW | None | "Morning", "Afternoon", "Evening" buttons |
+| **"Now" button** | Users expect current time option | LOW | None | Quickly select current time |
+| **Keyboard navigation** | Arrow keys to adjust hours/minutes | MEDIUM | None | Up/down arrows, Enter to confirm |
+| **Form integration** | Must work with existing form system | LOW | @lit-ui/core | `ElementInternals` for time values |
+
+#### Differentiators (Competitive Advantage)
+
+| Feature | Value Proposition | Complexity | Dependencies | Notes |
+|---------|-------------------|------------|--------------|-------|
+| **Time range slider** | Visual duration selection | MEDIUM | None | Drag handles for start/end times |
+| **Business hours highlighting** | Show 9-5 differently from evenings | LOW | None | Visual distinction for availability |
+| **Time zone conversion** | Show "2 PM EST (11 AM PST)" | HIGH | None | Multi-timezone display |
+| **Smart time suggestions** | Suggest available slots based on context | HIGH | None | Integration with booking systems |
+| **Recurring time selection** | "Every Monday at 2 PM" | VERY HIGH | None | Complex recurrence rules |
+| **Voice input support** | "Schedule for 3 PM tomorrow" | VERY HIGH | None | Web Speech API integration |
+| **Time precision control** | 15, 30, 60-minute intervals | LOW | None | Prop for granular control |
+| **Mobile scrolling wheels** | iOS/Android native pattern | HIGH | None | Platform-specific patterns |
+
+#### Time Picker Anti-Features (Do NOT Build)
+
+| Anti-Feature | Why Avoid | What to Do Instead |
+|--------------|-----------|-------------------|
+| **Ambiguous AM/PM toggle** | Reddit: Designs that flip midnight/noon are confusing | Use 24-hour format or very clear AM/PM labels |
+| **Hidden time zone context** | Users assume local time, confusion when not | Explicitly show timezone if different from local |
+| **Arbitrary time precision (seconds)** | Most use cases don't need seconds | Default to 15-minute intervals, optional precision |
+| **Tiny tap targets on mobile** | Reddit: "mobile date/time UIs are notoriously bad" | Minimum 44px touch targets |
+| **Clock face without AM/PM clarity** | Users confuse morning/evening times | Clear AM/PM indicator or 24-hour format |
+| **Time picker scrolling wheels on desktop** | Unnatural with mouse, clunky interaction | Dropdowns or text input on desktop |
+
+---
+
+### Feature Dependencies on Existing Code
+
+| New Feature | Depends On | Already Exists? | Notes |
+|-------------|------------|-----------------|-------|
+| ElementInternals pattern | Input/Textarea implementation | YES | Copy `attachInternals()` pattern with `isServer` guard |
+| Focus management | Dialog focus trap | YES | Copy focus trap pattern for calendar popup |
+| Dark mode | `:host-context(.dark)` pattern | YES | Copy from Button/Dialog/Input |
+| Error state colors | Theme system | YES | Use existing `--ui-color-destructive` |
+| Tailwind integration | TailwindElement base class | YES | Extend `TailwindElement` from @lit-ui/core |
+| SSR support | `isServer` guard pattern | YES | Same pattern as Input's `attachInternals()` |
+| CSS custom properties | Theme system | YES | Follow `--ui-calendar-*` naming convention |
+| Form validation | Input/Textarea validation | YES | Use same ValidityState pattern |
+| Size variants | Core design tokens | YES | Use existing `--ui-*-padding-*` pattern |
+
+---
+
+### MVP Feature Scope for v4.3
+
+Based on research, prioritized features for v4.3 MVP:
+
+#### Phase 1: Calendar Display
+
+| Feature | Complexity | Status |
+|---------|------------|--------|
+| Month grid view with weekday headers | LOW | To build |
+| Today indicator with `aria-current="date"` | LOW | To build |
+| Selected date highlight | LOW | To build |
+| Month navigation (previous/next) | LOW | To build |
+| Year navigation (month/year dropdowns) | MEDIUM | To build |
+| Keyboard navigation (arrows, Home/End, Page Up/Down) | MEDIUM | To build |
+| Screen reader announcements (live region) | HIGH | To build |
+| Min/max date constraints | LOW | To build |
+| Disabled dates (weekends, holidays) | MEDIUM | To build |
+| First day of week localization | MEDIUM | To build |
+| Month/day names localization | LOW | To build |
+| Dark mode, SSR support | LOW | To build |
+
+#### Phase 2: Date Picker
+
+| Feature | Complexity | Status |
+|---------|------------|--------|
+| Input field with formatted display | LOW | To build |
+| Calendar popup trigger | LOW | To build |
+| Text input support (parse multiple formats) | MEDIUM | To build |
+| Date format clarity (spell month or labels) | MEDIUM | To build |
+| Form integration (ElementInternals) | LOW | To build |
+| Validation feedback | LOW | To build |
+| Placeholder/helper text | LOW | To build |
+| Clear button | LOW | To build |
+| Focus management (trap in popup) | MEDIUM | To build |
+| Escape key closes, click outside closes | LOW | To build |
+| Calendar popup (uses Calendar component) | LOW | To build |
+
+#### Phase 3: Date Range Picker
+
+| Feature | Complexity | Status |
+|---------|------------|--------|
+| Start/end date selection | LOW | To build |
+| Range highlighting | MEDIUM | To build |
+| Two calendar display | MEDIUM | To build |
+| Hover preview | MEDIUM | To build |
+| Start/end visual distinction | LOW | To build |
+| Swap start/end if out of order | MEDIUM | To build |
+| Min/max range duration | LOW | To build |
+| Range constraints | LOW | To build |
+| Clear range button | LOW | To build |
+| Form integration | LOW | To build |
+
+#### Phase 4: Time Picker
+
+| Feature | Complexity | Status |
+|---------|------------|--------|
+| Hour/minute inputs | LOW | To build |
+| AM/PM indicator (12-hour) | LOW | To build |
+| 24-hour format support | MEDIUM | To build |
+| Clock face or dropdown | MEDIUM | To build |
+| Time zone awareness | HIGH | To build |
+| Time validation | LOW | To build |
+| Quick time presets | LOW | To build |
+| "Now" button | LOW | To build |
+| Keyboard navigation | MEDIUM | To build |
+| Form integration | LOW | To build |
+
+#### Phase 5: Differentiators (Optional for MVP)
+
+| Feature | Complexity | Status |
+|---------|------------|--------|
+| Quick presets (Today, Tomorrow, Next Week) | LOW | Optional |
+| Natural language parsing | HIGH | Optional |
+| Week numbers | MEDIUM | Optional |
+| Decade/century view | MEDIUM | Optional |
+| Custom date cell rendering | HIGH | Optional |
+| Animation on month change | MEDIUM | Optional |
+| Time zone conversion | HIGH | Optional |
+| Voice input support | VERY HIGH | Optional |
+
+---
+
+### Mobile vs Desktop Patterns
+
+#### Mobile Considerations
+
+- **Tap targets**: Minimum 44px for all interactive elements
+- **Scrolling pickers**: iOS-style wheels are native, users expect them
+- **Single calendar**: Screen too small for two-calendar range view
+- **Gestures**: Swipe to change months is expected
+- **Native pickers**: Consider using `<input type="date">` and `<input type="time">` on mobile
+
+#### Desktop Considerations
+
+- **Keyboard shortcuts**: Power users expect arrow key navigation
+- **Hover states**: Can show more information (tooltips, hover previews)
+- **Two calendars**: Screen space allows side-by-side months
+- **Text input**: Faster than clicking for precise dates
+
+---
+
+### Form Validation Behaviors
+
+#### Shared Validation Patterns
+
+- **Min/max dates**: Disable visually, prevent keyboard selection
+- **Disabled dates**: Gray out, include reason in aria-label
+- **Required field**: Show error on blur if empty
+- **Invalid format**: Show inline error, suggest correct format
+- **End before start**: Auto-swap or show error for range pickers
+- **Future dates only**: Disable past dates for booking contexts
+- **Past dates only**: Disable future dates for birthdate contexts
+
+#### Validation Timing
+
+- **On selection**: Prevent invalid clicks (disabled dates)
+- **On blur**: Validate text input, show errors
+- **On change**: Update form validity state
+- **On submit**: Final validation before form submission
+
+---
+
+### Complexity Assessment Summary
+
+| Component | Low Complexity | Medium Complexity | High Complexity |
+|-----------|----------------|-------------------|------------------|
+| **Calendar Display** | Month grid, today indicator, navigation | Keyboard nav, localization, disabled dates | Custom cell rendering, decade view |
+| **Date Picker** | Input field, popup trigger, format display | Text parsing, validation, focus management | Natural language parsing |
+| **Date Range Picker** | Start/end selection, basic highlighting | Two-calendar display, range constraints | Drag selection, comparison mode |
+| **Time Picker** | Hour/minute inputs, AM/PM toggle | 24-hour format, intervals, time zones | Voice input, recurring selection |
+
+---
+
+### Sources
+
+**Authoritative UX Research:**
+- [Date-Input Form Fields: UX Design Guidelines - Nielsen Norman Group](https://www.nngroup.com/articles/date-input/) - HIGH confidence, authoritative UX research
+- [A New Day: Making a Better Calendar - 24 Accessibility](https://www.24a11y.com/2018/a-new-day-making-a-better-calendar/) - HIGH confidence, accessibility expert
+- [Time Picker UX: Best Practices, Patterns & Trends for 2025 - Eleken](https://www.eleken.co/blog-posts/time-picker-ux) - MEDIUM confidence, current UX patterns
+
+**Accessibility Standards:**
+- [Understanding SC 2.1.1: Keyboard - W3C WAI](https://www.w3.org/WAI/WCAG21/Understanding/keyboard.html) - HIGH confidence, official WCAG guidelines
+- [Date Picker Accessibility - USWDS](https://designsystem.digital.gov/components/date-picker/accessibility-tests/) - HIGH confidence, government design system
+- [Understanding Guideline 2.1: Keyboard Accessible - W3C WAI](https://www.w3.org/WAI/WCAG22/Understanding/keyboard-accessible.html) - HIGH confidence, official WCAG guidelines
+
+**Design Systems:**
+- [Material Design Date Pickers](https://m2.material.io/components/date-pickers) - HIGH confidence, official design system
+- [Ant Design DatePicker](https://ant.design/components/date-picker/) - MEDIUM confidence, component library reference
+- [AWS Cloudscape Date Range Picker](https://cloudscape.design/components/date-range-picker/) - MEDIUM confidence, component library reference
+
+**Implementation References:**
+- [React DayPicker - Disabling Dates](https://daypicker.dev/selections/disabling-dates) - MEDIUM confidence, implementation reference
+- [ng-bootstrap Datepicker with i18n](https://ng-bootstrap.github.io/#/components/datepicker/overview#i18n) - MEDIUM confidence, internationalization patterns
+- [Shadcn UI Date Picker](https://ui.shadcn.com/docs/components/date-picker) - MEDIUM confidence, implementation patterns
+- [Shadcn UI Calendar](https://ui.shadcn.com/docs/components/radix/calendar) - MEDIUM confidence, component library reference
+
+**Localization:**
+- [VCalendar i18n Documentation](https://v2.vcalendar.io/i18n.html) - MEDIUM confidence, locale configuration
+- [Date and Time Localization Guide - Lokalise](https://lokalise.com/blog/date-time-localization/) - MEDIUM confidence, localization best practices
+
+**Mobile Patterns:**
+- [Design Guidelines for Mobile Date-Pickers - UXDesign.cc](https://uxdesign.cc/design-guidelines-for-mobile-date-pickers-8e8d87026215) - MEDIUM confidence, mobile UX patterns
+
+**Community Discussions:**
+- [Date range picker visual feedback - daterangepicker.com](https://www.daterangepicker.com/) - LOW confidence, commercial examples only
+- [jQuery DatePicker Disabled Dates - Telerik](https://www.telerik.com/kendo-jquery-ui/documentation/controls/datepicker/disabled-dates) - MEDIUM confidence, implementation patterns
+
+---
+
+### Open Questions for Implementation
+
+1. **Date library**: Should we use date-fns, Day.js, or native `Intl` API for date manipulation?
+2. **Calendar math**: How to handle month overflow, leap years, ISO week numbers?
+3. **Time zones**: Should Time Picker support time zones or just local time?
+4. **Mobile native inputs**: Should we use `<input type="date">` on mobile or custom picker everywhere?
+5. **Form integration**: How do date/time components integrate with existing form validation system?
+6. **SSR considerations**: Calendar rendering on server vs client, initial state hydration?
+
+---
+
+### Confidence Assessment
+
+| Area | Confidence | Notes |
+|------|------------|-------|
+| Table stakes features | HIGH | Verified against NNG, WAI-ARIA, Material Design |
+| Accessibility requirements | HIGH | Official WCAG sources, 24a11y expert guidance |
+| Anti-features | HIGH | NNG research, common pitfalls documented |
+| Mobile patterns | MEDIUM | Some sources, but platform-specific guidance varies |
+| Localization features | MEDIUM | WebSearch sources, but implementation patterns vary |
+| Differentiator features | LOW-MEDIUM | Mostly WebSearch, limited official sources |
+
+---
+
+**Next steps:** This FEATURES.md should inform requirements definition for v4.3 milestone. Stack research (date libraries) and architecture research (component structure) should follow.

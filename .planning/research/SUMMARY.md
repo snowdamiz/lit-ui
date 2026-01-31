@@ -1,327 +1,238 @@
 # Project Research Summary
 
-**Project:** LitUI v4.2 - Form Controls Milestone (Checkbox, Radio, Switch)
-**Domain:** Web component toggle controls with group containers
-**Researched:** 2026-01-26
+**Project:** LitUI v4.3 - Date/Time Components
+**Domain:** Web component library (Lit.js) - Date/time input components
+**Researched:** 2026-01-30
 **Confidence:** HIGH
 
 ## Executive Summary
 
-This research covers the v4.2 milestone: building production-ready Checkbox, Radio, and Switch components for the LitUI web component library. These are fundamentally simpler than the v4.1 Select component -- they require no positioning logic, no virtualization, and no async operations. **Zero new npm dependencies are needed.** All animation is achievable with pure CSS transitions, and all form participation uses the existing ElementInternals pattern already proven in Button, Input, Textarea, and Select.
+Date/time components are a fundamental part of modern form interfaces, used for booking systems, analytics dashboards, scheduling applications, and data entry. Research across authoritative sources (Nielsen Norman Group, WAI-ARIA APG, Material Design, USWDS) reveals that successful date/time components must balance three critical dimensions: **accessibility** (WCAG 2.1 keyboard navigation, screen reader support), **internationalization** (locale-aware formatting, first day of week, RTL support), and **Shadow DOM compatibility** (event retargeting, positioning, form integration).
 
-The recommended architecture follows established LitUI patterns: three separate packages (`@lit-ui/checkbox`, `@lit-ui/radio`, `@lit-ui/switch`), each extending TailwindElement and using form-associated custom elements. The critical architectural insight is that RadioGroup must own form participation (not individual radios) because native radio mutual exclusion breaks across Shadow DOM boundaries. CheckboxGroup is simpler -- it's a layout/accessibility container only, with each checkbox managing its own form value. Switch is fully standalone with no group needed.
+The recommended approach for LitUI v4.3 is to use **date-fns v4.1.0** for date manipulation (modular, tree-shakeable, built-in timezone support in v4), **native Intl API** for localization (no additional dependencies), and **Floating UI** for dropdown positioning (already proven in Select component). Components should follow existing LitUI patterns: TailwindElement base class, ElementInternals for form participation, CSS custom properties for theming, and internal composition (Calendar composed by Date Picker, not slotted like Select/Option).
 
-The primary risks are cross-Shadow-DOM challenges inherent to web components: radio grouping requires explicit state management by RadioGroup, roving tabindex must operate on host elements (not shadow internals), and ARIA ID references like `aria-controls` cannot cross shadow boundaries. All of these have proven solutions documented in the W3C APG and reference implementations like Google's HowTo Components. Implementation order matters: build Switch first (simplest standalone pattern), then Checkbox/CheckboxGroup (introduces group communication without form ownership complexity), then Radio/RadioGroup last (combines group communication with form ownership and roving tabindex navigation).
+**Key risks** identified: Shadow DOM event retargeting breaks click-outside detection (use `event.composedPath()`), ARIA grid keyboard navigation requires roving tabindex pattern (only one cell has `tabindex="0"` at a time), and ISO 8601 form value format prevents timezone/date parsing bugs. **Mitigation**: All critical pitfalls have clear prevention strategies backed by authoritative sources. The research is HIGH confidence with verified sources (date-fns official, MDN, W3C WAI-ARIA APG).
 
 ## Key Findings
 
 ### Recommended Stack
 
-**Verdict: Zero new dependencies required.** All capabilities needed for Checkbox, Radio, and Switch exist in the current stack: Lit 3.3.2, TailwindElement from `@lit-ui/core`, ElementInternals for form participation, and CSS transitions for animation. No positioning libraries (Floating UI), no virtualization (TanStack Virtual), no async task management.
+**Date manipulation library**: date-fns v4.1.0 — Modular, tree-shakeable, 200+ functions, native timezone support in v4, TypeScript-first, immutable/pure functions, zero dependencies. Alternative libraries (Moment.js, Luxon, Day.js) were rejected: Moment.js is deprecated, Luxon has 2-3x larger bundle, Day.js has unfixed timezone issues per community reports.
 
-**Core technologies (all existing):**
-- **Lit 3.3.2**: Component framework with `html`, `css`, `svg` template literals, reactive properties, Shadow DOM
-- **@lit-ui/core TailwindElement**: Base class providing Tailwind utility injection, design token system, dispatchCustomEvent helper
-- **ElementInternals**: Form-associated custom elements API for form submission, validation, reset lifecycle (pattern established in Input/Select)
-- **CSS transitions**: GPU-composited animations for checkbox checkmark draw (`stroke-dashoffset`), radio dot scale (`transform: scale`), switch thumb slide (`transform: translateX`)
-- **TypeScript 5.9.3**: Type safety for component properties and DOM interactions
+**Localization**: Native Intl API — Universal browser support (Intl.DateTimeFormat, Intl.Locale.getWeekInfo()), no polyfill needed for modern browsers. Temporal API is NOT production-ready (only Chrome 144+, Firefox 139+, Safari/Edge missing as of 2026-01).
 
-**CSS animation techniques (no JS libraries):**
-- Checkbox: SVG `<polyline>` with `stroke-dasharray`/`stroke-dashoffset` animation for checkmark drawing (150ms + 50ms delay after box fill)
-- Radio: CSS `transform: scale(0)` to `scale(1)` on inner dot element (150ms)
-- Switch: CSS `transform: translateX()` on thumb element (150ms), simultaneous `background-color` transition on track
+**Form participation**: ElementInternals — Already proven in Input/Textarea components. Submit ISO 8601 format (YYYY-MM-DD for dates, HH:mm:ss for times) to match native `<input type="date">` behavior and avoid timezone bugs.
 
-**Package structure:** Three new packages following existing convention (mirroring `@lit-ui/input`, `@lit-ui/button`):
-- `@lit-ui/checkbox` contains `lui-checkbox` + `lui-checkbox-group`
-- `@lit-ui/radio` contains `lui-radio` + `lui-radio-group`
-- `@lit-ui/switch` contains `lui-switch` only
+**Accessibility**: WAI-ARIA APG Grid Pattern — No additional libraries needed. Calendar uses `role="grid"`, roving tabindex for keyboard navigation, `aria-live` regions for screen reader announcements.
 
-Each package has zero runtime dependencies -- only peer dependencies on `lit ^3.0.0` and `@lit-ui/core ^1.0.0`.
+**Positioning**: Floating UI (already in Select) — Proven pattern for dropdown positioning. Use flip/shift middleware to prevent Shadow DOM clipping issues.
+
+**Core technologies:**
+- date-fns v4.1.0: Date manipulation, formatting, parsing — Modular, tree-shakeable, v4 has built-in timezone support
+- Intl.DateTimeFormat: Locale-aware formatting, month/day names — Browser-native, no dependencies
+- Floating UI: Calendar popover positioning — Reuses existing Select pattern, proven in production
+- CSS Grid: 7-column calendar layout — Natively handles calendar grid structure
+- ElementInternals: Form value submission — ISO 8601 format, matches native input behavior
 
 ### Expected Features
 
 **Must have (table stakes):**
+- Month grid view with weekday headers — Users expect calendar layout, 7-column grid
+- Today indicator with aria-current="date" — Users need reference point
+- Selected date highlight — Visual feedback for current selection
+- Month/year navigation — Previous/next buttons, year selection
+- Keyboard navigation (arrows, Home/End, Page Up/Down) — WCAG 2.1 Level A requirement
+- Screen reader announcements — aria-live region for selections/month changes
+- Min/max date constraints — Disable invalid dates (past dates, booking cutoffs)
+- Disabled dates (weekends, holidays) — Business logic enforcement
+- First day of week localization — Sunday (US) vs Monday (EU) based on locale
+- Month/day names localization — Intl.DateTimeFormat for native language
+- Input field with formatted display — Text input for fast date entry
+- Form integration (ElementInternals) — Submit ISO 8601 format
+- Focus management — Trap focus in popup, return to trigger on close
+- Escape key closes, click outside closes — Standard UI patterns
 
-**Checkbox:**
-- Checked/unchecked toggle with `checked` boolean property
-- Indeterminate (tri-state) state for "select all" parent checkboxes (set via JS only, matches native behavior)
-- Form participation via ElementInternals: `name`, `value`, submit when checked
-- `required` validation via `setValidity({ valueMissing })`
-- Size variants (sm/md/lg) matching existing LitUI convention
-- `role="checkbox"` with `aria-checked="true|false|mixed"`
-- Space key toggles (not Enter -- per W3C APG spec)
-- CSS design tokens following `--ui-checkbox-*` pattern
+**Should have (competitive):**
+- Quick presets (Today, Tomorrow, Next Week) — One-click common dates for efficiency
+- Hover preview for range selection — Show potential range before selecting end date
+- Range highlighting between start/end dates — Visual feedback for selected range
+- Two calendar display for ranges — Side-by-side months (NNG recommends)
+- Date range presets ("Last 7 days", "This month") — Common in analytics dashboards
+- Auto-resize textarea — Field-sizing: content with fallback for Safari/Firefox
+- Character counter with aria-describedby — Visual count for maxlength fields
+- Password visibility toggle — Built-in eye icon with aria-pressed
+- Search clear button — X icon appears when value is non-empty
+- Prefix/suffix slots — Icons, text, or buttons alongside input
 
-**CheckboxGroup:**
-- Group label with `role="group"` and `aria-labelledby`
-- Vertical layout by default
-- Optional group-level required validation ("at least one must be checked")
-- Error message display matching Input/Select pattern
-- NOT form-associated -- each child checkbox submits independently
-
-**Radio:**
-- Checked/unchecked state with mutual exclusion managed by parent group
-- `value` attribute identifying which option is selected
-- Size variants, label support, disabled state
-- `role="radio"` with `aria-checked="true|false"` (no mixed state)
-- Individual radios are NOT form-associated
-
-**RadioGroup:**
-- Mutual exclusion (checking one unchecks all siblings) -- CRITICAL because native radio grouping breaks across Shadow DOM
-- Arrow key navigation with roving tabindex (Up/Left = previous, Down/Right = next, with wrapping)
-- `role="radiogroup"` with `aria-labelledby`
-- Group IS form-associated, submits selected radio's value
-- `required` validation, `name` attribute, `value` property reflecting current selection
-
-**Switch:**
-- On/off toggle with `checked` boolean property
-- Track + thumb visual (thumb slides left/right)
-- Form participation (like individual checkbox)
-- `role="switch"` with `aria-checked="true|false"` (no mixed state -- distinct from checkbox semantics)
-- Space key toggles (Enter optional but recommended)
-- Size variants, CSS design tokens following `--ui-switch-*` pattern
-
-**Should have (competitive differentiators):**
-- Animated check transition for checkbox (SVG stroke-dashoffset draw-in)
-- Animated radio selection transition (scale transform on dot)
-- Animated switch thumb slide (translateX with track color cross-fade)
-- `defaultChecked` property for proper form reset behavior
-- CSS parts for deep styling (`::part(box)`, `::part(track)`, etc.)
-- Help text below controls with `aria-describedby`
-- Horizontal layout option for groups (`orientation="horizontal"`)
-
-**Defer to v2+:**
-- Select all/none helper (tri-state parent checkbox managing group) -- high complexity, niche use case
-- Radio button variant (pill/segmented button style) -- high complexity, defer
-- Switch loading state (async operations) -- nice-to-have, can add later
-- Min/max validation on CheckboxGroup -- uncommon requirement
-- Custom thumb content slot on Switch (icons inside thumb) -- advanced theming
+**Defer (v2+):**
+- Natural language parsing ("tomorrow", "next week") — HIGH complexity, library dependency
+- Decade/century view — MEDIUM complexity, edge case for birthdates
+- Custom date cell rendering — HIGH complexity, slot API for badges/icons
+- Drag to select range — HIGH complexity, mouse events handling
+- Time zone conversion — HIGH complexity, multi-timezone display
+- Voice input support — VERY HIGH complexity, Web Speech API
+- Recurring time selection ("Every Monday at 2 PM") — VERY HIGH complexity, recurrence rules
 
 ### Architecture Approach
 
-The architecture follows Lit's "properties down, events up" pattern with slot-based parent-child communication, proven in the existing `lui-select` / `lui-option` implementation.
+**Key architectural decision**: Calendar Display is a standalone, reusable component (NOT a slotted child like Option). Date Picker and Date Range Picker compose Calendar internally (not via slots). This differs from Select/Option because calendar selection state is complex (selected date, hover date, focused date, visible month), calendar needs to work standalone (e.g., always-visible booking UI), and picker needs tight control for dropdown positioning and closing. Time Picker is a separate, simpler component.
 
-**Major components and responsibilities:**
+All components follow established LitUI patterns: Extend `TailwindElement` base class, use `ElementInternals` for form participation, use Floating UI for dropdown positioning (reusing Select pattern), CSS custom properties for theming (`--ui-calendar-*`, `--ui-date-picker-*`), and `isServer` guards for SSR compatibility.
 
-1. **Individual Toggle Controls** (Checkbox, Radio, Switch) -- Each extends TailwindElement, implements ElementInternals (except Radio), handles keyboard interaction, emits `ui-change` events. Radio is NOT form-associated individually because it depends on group for mutual exclusion.
+**Form value format**: Date Picker submits ISO 8601 (YYYY-MM-DD), Date Range Picker submits two ISO strings via hidden native inputs (ElementInternals limitation), Time Picker submits ISO 8601 time (HH:mm or HH:mm:ss).
 
-2. **CheckboxGroup** -- Layout and accessibility container only. Discovers children via `slotchange`, can propagate disabled/size properties, optionally validates "at least N checked." NOT form-associated -- children submit independently.
+**Major components:**
+1. Calendar Display (lui-calendar) — Standalone month grid, NOT form-associated, emits ui-date-select/ui-month-change events, used internally by pickers
+2. Date Picker (lui-date-picker) — Single date selection with input + dropdown calendar, form-associated, composes Calendar internally, submits ISO 8601 format
+3. Date Range Picker (lui-date-range-picker) — Start/end date selection, dual calendar display, form-associated via hidden inputs, range highlighting, hover preview
+4. Time Picker (lui-time-picker) — Hour/minute/second selection, 12/24 hour format, AM/PM selector, form-associated, submits ISO 8601 time format
 
-3. **RadioGroup** -- Owns all state and behavior: form participation (form-associated), mutual exclusion logic (unchecks siblings when one is checked), roving tabindex management (only one radio has `tabindex="0"` at a time), arrow key navigation with wrapping. Discovers children via `slotchange`, sets properties imperatively, listens for `ui-radio-change` events.
+### Critical Pitfalls
 
-**Parent-child communication pattern:**
-1. Child discovery via `slotchange` event (same as Select uses for Options)
-2. Properties down: parent sets properties directly on child elements (`radio.checked = true`)
-3. Events up: children dispatch `composed: true` custom events that bubble to parent (`ui-radio-change`)
-
-**Form ownership:** RadioGroup is form-associated and calls `setFormValue()` with the selected radio's value. Individual radios are presentational. This is the key architectural decision that solves the "radio buttons in Shadow DOM break native grouping" problem.
-
-**Keyboard navigation:** RadioGroup uses roving tabindex on host elements (not shadow DOM internals). Only the checked radio (or first if none checked) has `tabindex="0"`. Arrow keys move focus AND selection simultaneously with wrapping. CheckboxGroup uses standard tabbing (each checkbox is independently focusable).
-
-**Shared patterns:** All three toggle controls share similar property surfaces (checked, disabled, required, name, value, label, size) but do NOT use a shared mixin/base class. LitUI deliberately avoids mixins to keep components self-contained for CLI copy-source mode. Small duplication is acceptable.
-
-### Critical Pitfalls (Top 5 for Phase 1)
-
-1. **Radio Buttons as Separate Web Components Break Native Grouping** -- Shadow DOM encapsulation prevents native radio mutual exclusion. Multiple radios can be checked simultaneously, arrow keys fail, FormData contains conflicts. **Prevention:** RadioGroup is the form-associated element with `formAssociated = true`. Individual radios are presentational children. Group manages `setFormValue()` with selected value.
-
-2. **Roving Tabindex Fails When Radio Items Are in Separate Shadow DOMs** -- Shadow boundaries prevent parent from manipulating tabindex on elements inside children's shadow roots. **Prevention:** Manage tabindex on host elements (the `<lui-radio>` custom elements themselves), not shadow internals. Use `delegatesFocus: true` on radio components. Arrow keys MUST wrap (first to last, last to first).
-
-3. **aria-controls on Mixed-State Checkbox Cannot Cross Shadow DOM Boundaries** -- ARIA ID references (`aria-controls`, `aria-labelledby`) are scoped to their DOM tree, cannot cross shadow boundaries. Parent "select all" checkbox cannot reference child checkboxes. **Prevention:** Keep parent and children in the same DOM tree, or skip `aria-controls` entirely (has poor screen reader support anyway). Rely on clear labeling instead.
-
-4. **role="switch" Screen Reader Inconsistency** -- `role="switch"` is not consistently announced. VoiceOver and NVDA often announce switches as "checkboxes." **Prevention:** Still use `role="switch"` (correct semantics, improving support). Never use `aria-checked="mixed"` on switches (spec forbids it). Test with VoiceOver+Safari, NVDA+Chrome, TalkBack+Chrome. Use visual design (sliding thumb) to reinforce toggle semantics.
-
-5. **Checkbox Group Form Submission Loses Unchecked Values** -- Native checkboxes submit nothing when unchecked. `setFormValue(null)` removes field from FormData entirely. Server-side code expecting field presence fails. **Prevention:** Decide on submission model early: (1) submit only checked values (matches native), or (2) always submit, empty string when none checked (developer-friendly). Document the chosen approach.
-
-**Additional critical considerations:**
-- Indeterminate state is visual/ARIA only (`aria-checked="mixed"`), never a submitted form value
-- Radio group arrow keys change selection AND move focus (unlike checkbox groups where arrow keys only move focus)
-- Missing form lifecycle callbacks (`formResetCallback`, `formDisabledCallback`, `formStateRestoreCallback`) breaks form reset and bfcache
-- Switch animation must respect `prefers-reduced-motion` for WCAG 2.3.3 compliance
+1. **Calendar popup positioning breaks with Shadow DOM stacking contexts** — Use @floating-ui/dom with flip/shift middleware, set popover to position: fixed with high z-index, test at viewport edges and in scrollable containers
+2. **Click-outside-to-close fails with event retargeting** — Use `event.composedPath()` instead of `event.target`, attach click listener to document, clean up in disconnectedCallback
+3. **ARIA grid keyboard navigation fails without roving tabindex** — Only one cell has tabindex="0" at a time, arrow keys move focus AND update tabindex programmatically, follow W3C ARIA APG Grid Pattern
+4. **Form value format mismatch (ISO8601 vs display format)** — Always store/submit ISO8601 (YYYY-MM-DD) without timezone, use date-fns for formatting, never use `Date.parse()` or `new Date(string)` (implementation-dependent)
+5. **Screen reader doesn't announce date changes** — Add aria-live region for announcements, update on date selection, each grid cell needs aria-label with full date (e.g., "Monday, January 15, 2026")
 
 ## Implications for Roadmap
 
-Based on research, suggested phase structure (3 phases):
+Based on combined research from STACK, FEATURES, ARCHITECTURE, and PITFALLS, the recommended phase structure for v4.3:
 
-### Phase 1: Switch Component (Standalone Fundamentals)
-**Rationale:** Switch is the simplest toggle control -- fully standalone, no group coordination needed, no mutual exclusion logic. Validates the toggle visual pattern (track + thumb CSS animation), form participation pattern (ElementInternals), and ARIA semantics (`role="switch"`) before tackling more complex group components.
+### Phase 1: Calendar Display (Foundation)
+**Rationale:** Standalone component with no dependencies on other date/time components. Provides visual foundation for all date pickers. Can be used independently (e.g., always-visible booking UI). Validates CSS Grid layout and navigation patterns before adding complexity.
 
-**Delivers:**
-- Complete `@lit-ui/switch` package with `lui-switch` element
-- Form-associated custom element with ElementInternals
-- CSS `transform: translateX()` animation for thumb slide
-- Size variants (sm/md/lg) and design tokens
-- ARIA `role="switch"` with `aria-checked`
-- Space/Enter keyboard support
-- `prefers-reduced-motion` support
-- Form lifecycle callbacks (reset, disabled, restore)
+**Delivers:** Working `lui-calendar` component with month grid, today indicator, navigation, keyboard accessibility, screen reader support.
 
-**Addresses from FEATURES.md:**
-- Table stakes: on/off toggle, track + thumb visual, disabled state, form participation, size variants, keyboard interaction
-- Differentiators: animated slide transition, CSS parts for styling
+**Addresses:** FEATURES.md table stakes (month grid, today indicator, navigation, keyboard nav, screen reader announcements, min/max constraints, disabled dates, localization).
 
-**Avoids from PITFALLS.md:**
-- Pitfall 4: role="switch" screen reader inconsistency (test across SR/browser combos)
-- Pitfall 9: missing `prefers-reduced-motion` (include from start)
-- Pitfall 10: missing form lifecycle callbacks (copy pattern from Input)
-- Pitfall 12: dynamic switch labels (document: labels describe setting, not action)
-- Pitfall 15: missing `delegatesFocus` (set in shadowRootOptions)
+**Avoids:** PITFALLS.md #3 (ARIA grid without roving tabindex), #11 (focus management breaks after month nav), #7 (date parsing inconsistencies - use date-fns from start).
 
-**Testing requirements:** Switch is a new ARIA role for LitUI. Must test with VoiceOver (macOS/iOS), NVDA (Windows), TalkBack (Android) to verify announcement behavior. Document observed inconsistencies.
+**Stack used:** date-fns v4.1.0 for date math, Intl API for localization, CSS Grid for layout.
 
-### Phase 2: Checkbox + CheckboxGroup (Parent-Child Communication)
-**Rationale:** Checkbox standalone works like Switch (same form participation pattern). CheckboxGroup introduces slot-based child discovery and parent-child communication without the complexity of form ownership (children are independently form-associated). This establishes the group communication pattern before tackling RadioGroup's form ownership.
+### Phase 2: Date Picker (Core UX)
+**Rationale:** Most common use case (single date selection). Builds on Calendar component. Introduces Floating UI dropdown positioning (reusing Select pattern). Introduces form participation for date values. Validates internal composition pattern (NOT slot-based).
 
-**Delivers:**
-- Complete `@lit-ui/checkbox` package with `lui-checkbox` and `lui-checkbox-group` elements
-- Checkbox: checked/unchecked, indeterminate tri-state, form participation, `role="checkbox"`
-- SVG checkmark animation with `stroke-dashoffset` (draw-in effect)
-- CheckboxGroup: slot discovery, `role="group"`, optional aggregate validation (min/max selections)
-- Vertical/horizontal layout options
-- Group propagation of disabled/size to children
+**Delivers:** Working `lui-date-picker` component with input field, calendar trigger, dropdown, form integration, text input parsing, validation.
 
-**Addresses from FEATURES.md:**
-- Table stakes: checked/unchecked/indeterminate, form submission, required validation, size variants, ARIA semantics, Space key toggle
-- CheckboxGroup: group label, layout, error display, disabled propagation
-- Differentiators: animated check transition, `defaultChecked`, CSS parts, help text
+**Addresses:** FEATURES.md table stakes (input field, popup trigger, text input support, date format clarity, form integration, validation feedback, clear button, focus management, escape/click-outside closes).
 
-**Avoids from PITFALLS.md:**
-- Pitfall 3: `aria-controls` cross-shadow boundary (skip `aria-controls` for select-all pattern, use clear labeling)
-- Pitfall 5: checkbox group form submission model (document: each checkbox submits independently)
-- Pitfall 6: indeterminate as form value (document: mixed is visual/ARIA only)
-- Pitfall 11: missing group role/label (add `role="group"` with `aria-labelledby` from start)
+**Avoids:** PITFALLS.md #1 (popup positioning with Shadow DOM), #2 (click-outside fails with retargeting), #4 (ISO8601 format mismatch), #5 (screen reader announcements for picker), #14 (virtual keyboard covers calendar on mobile).
 
-**Dependencies:** Builds on Switch's form participation pattern. Uses same ElementInternals approach, same event naming convention (`ui-change`), same CSS animation timing.
+**Stack used:** Floating UI (existing), ElementInternals (existing pattern), date-fns for parsing.
 
-**Research flags:** Indeterminate state and parent-child checkbox relationships have nuanced ARIA semantics. Reference W3C APG mixed-state checkbox example during implementation. Consider deferring "select all/none" helper to post-MVP (listed as high complexity differentiator).
+### Phase 3: Time Picker (Simpler, Parallel)
+**Rationale:** Simpler than Date Range Picker (no calendar dependency). Can be built in parallel with Date Range Picker. Independent component with its own patterns. Useful standalone component.
 
-### Phase 3: Radio + RadioGroup (Form Ownership + Roving Tabindex)
-**Rationale:** Radio is the most complex component due to RadioGroup owning form participation AND managing mutual exclusion AND implementing roving tabindex keyboard navigation. Benefits from lessons learned in CheckboxGroup's slot communication pattern. Must be built last because it combines all complexity.
+**Delivers:** Working `lui-time-picker` component with hour/minute inputs, AM/PM selector, 24-hour format, form integration, time validation.
 
-**Delivers:**
-- Complete `@lit-ui/radio` package with `lui-radio` and `lui-radio-group` elements
-- RadioGroup: form-associated, owns form value submission
-- Mutual exclusion logic (checking one radio unchecks all siblings)
-- Roving tabindex navigation (only one radio focusable at a time)
-- Arrow key navigation (Up/Left = previous, Down/Right = next) with wrapping
-- `role="radiogroup"` on group, `role="radio"` on children
-- Space key checks focused radio
+**Addresses:** FEATURES.md table stakes (hour/minute inputs, AM/PM indicator, 24-hour format, clock face or dropdown, time validation, "Now" button, keyboard navigation, form integration).
 
-**Addresses from FEATURES.md:**
-- Table stakes: checked state, value attribute, mutual exclusion, arrow key navigation with roving tabindex, form participation (group owns), required validation
-- Differentiators: animated selection transition (scale transform), CSS parts, horizontal layout option
+**Avoids:** PITFALLS.md #6 (DST transition causes invalid/impossible times), #4 (form value format - use HH:mm:ss), #7 (time parsing with date-fns).
 
-**Avoids from PITFALLS.md:**
-- Pitfall 1: separate radio web components break grouping (group is form-associated, radios are presentational)
-- Pitfall 2: roving tabindex across shadow boundaries (manage on host elements, arrow keys wrap)
-- Pitfall 7: radio vs checkbox keyboard differences (arrows change selection in radio, only move focus in checkbox)
-- Pitfall 8: avoid `aria-activedescendant` for radio group (use roving tabindex, not activedescendant)
+**Stack used:** date-fns for time manipulation, Intl API for locale-aware formatting.
 
-**Uses from STACK.md:**
-- ElementInternals for RadioGroup form participation
-- Slot discovery pattern from CheckboxGroup
-- CSS `transform: scale()` animation for radio dot
-- `dispatchCustomEvent` from `@lit-ui/core` for `ui-radio-change` internal event
+### Phase 4: Date Range Picker (Most Complex)
+**Rationale:** Most complex component (dual calendar state management). Benefits from lessons learned in Date Picker. Less common use case than single date picker. Requires dual calendar composition and range validation logic.
 
-**Implements from ARCHITECTURE.md:**
-- Group owns form value (calls `setFormValue()`)
-- Roving tabindex on host elements via `updateTabindex()` method
-- Keyboard handler on group container, not individual radios
-- Arrow keys wrap at boundaries
+**Delivers:** Working `lui-date-range-picker` component with start/end selection, range highlighting, hover preview, two calendar display, min/max range constraints, quick presets.
 
-**Testing requirements:** Roving tabindex is a new navigation pattern for LitUI. Must test keyboard navigation thoroughly (arrow wrapping, disabled skipping, Tab exit). Test with screen readers to verify "X of Y" position announcements and group context.
+**Addresses:** FEATURES.md table stakes (start/end selection, range highlighting, two calendar display, hover preview, start/end visual distinction, swap out-of-order, min/max duration, range constraints, clear button, form integration).
 
-**Research flags:** Roving tabindex keyboard navigation is well-documented in W3C APG but new to this codebase. Reference W3C APG Radio Group example and Google HowTo Radio Group implementation during development. Consider creating keyboard nav utility if complexity warrants extraction.
+**Avoids:** PITFALLS.md #10 (performance with large date ranges - virtualization if needed), #4 (form value format - hidden inputs for dual values), #6 (DST handling for time ranges).
+
+**Stack used:** Calendar component (Phase 1), ElementInternals, hidden native inputs workaround.
+
+### Phase 5: Documentation and Testing
+**Rationale:** All components complete. Documentation is essential for adoption. Testing validates accessibility, cross-browser compatibility, and mobile behavior.
+
+**Delivers:** Documentation pages for all components, form integration examples, accessibility documentation, keyboard shortcuts docs, visual regression tests, screen reader testing.
+
+**Addresses:** FEATURES.md differentiators (quick presets, character counter, password visibility toggle - if built).
+
+**Testing coverage:** PITFALLS.md all 14 pitfalls verified (positioning, click-outside, keyboard nav, form format, screen readers, DST, parsing, i18n, performance, focus management, leap years, mobile touch, virtual keyboard).
 
 ### Phase Ordering Rationale
 
-- **Switch first** because it's fully standalone with zero group complexity. Establishes toggle form participation, CSS animation, and ARIA semantics foundation.
-- **Checkbox second** because CheckboxGroup introduces parent-child slot communication without form ownership complexity. Each checkbox manages its own form value, making the group a simpler coordination container.
-- **Radio last** because RadioGroup combines group communication (from CheckboxGroup) with form ownership (new) AND roving tabindex navigation (new). It's the most complex integration.
+- **Calendar first**: Validates core patterns (CSS Grid, keyboard navigation, i18n) before adding complexity. Reusable by all date pickers.
+- **Date Picker second**: Most common use case, proves internal composition pattern, introduces Floating UI + form integration.
+- **Time Picker third**: Simpler than range picker, can parallel-track with range picker development.
+- **Date Range Picker last**: Most complex (dual calendar, range validation), benefits from Date Picker lessons.
+- **Documentation final**: Requires all components to be complete, validates accessibility and cross-browser behavior.
 
-This ordering allows incremental complexity addition: standalone toggle → group coordination → group + form ownership + advanced keyboard nav.
+**Grouping based on architecture**:
+- Foundation (Phase 1): Core calendar patterns
+- Single selection (Phases 2-3): Date + Time pickers (can parallel-track)
+- Range selection (Phase 4): Builds on single selection patterns
+- Validation (Phase 5): Documentation, testing, examples
 
-Each phase is independently shippable and valuable. Users can consume Switch alone, or Switch + Checkbox, or all three.
+**Pitfall avoidance by phase**:
+- Phase 1 addresses all accessibility pitfalls (#3, #5, #11) upfront
+- Phase 2 addresses Shadow DOM pitfalls (#1, #2) and form format (#4)
+- Phase 3 addresses time-specific pitfalls (#6, DST)
+- Phase 4 addresses performance (#10) and range-specific edge cases
+- Phase 5 validates all pitfalls with testing
 
 ### Research Flags
 
-**Phases needing focused implementation research:**
-- **Phase 2 (Indeterminate):** W3C APG mixed-state checkbox example should be referenced for tri-state semantics. Consider whether parent "select all" checkbox belongs in Phase 2 or deferred to v4.3.
-- **Phase 3 (Roving Tabindex):** First implementation of roving tabindex in LitUI. Reference W3C APG keyboard practices and Google HowTo Radio Group code. May warrant keyboard navigation utility abstraction if other components need this pattern.
+**Phases likely needing deeper research during planning:**
+- **Phase 1 (Calendar Display):** Keyboard navigation details from WAI-ARIA APG grid pattern, specific aria-label formats for screen readers
+- **Phase 2 (Date Picker):** Text input parsing with date-fns (multiple format support), Floating UI positioning with Shadow DOM edge cases
+- **Phase 3 (Time Picker):** DST boundary handling (spring-forward invalid times, fall-back ambiguity), time zone support if needed
+- **Phase 4 (Date Range Picker):** Range validation edge cases (month-crossing, disabled date ranges), performance optimization for large ranges
 
-**Phases with standard patterns (minimal additional research):**
-- **Phase 1 (Switch):** Straightforward form participation and CSS animation. Pattern established in Input/Select.
-- **Phase 2 (Checkbox standalone):** Form participation matches Switch pattern exactly.
-- **Phase 2 (CheckboxGroup):** Slot discovery matches Select/Option pattern.
-
-**Cross-phase considerations:**
-- Shadow DOM + ARIA challenges are consistent across all phases. Keep ARIA ID references in same DOM tree or avoid them.
-- Form lifecycle callbacks must be implemented in Phase 1 and copied to Phases 2-3.
-- Animation `prefers-reduced-motion` support must be in Phase 1 and copied to Phases 2-3.
-- Test coverage for screen readers should be established in Phase 1 and reused in later phases.
+**Phases with standard patterns (skip research-phase):**
+- **Phase 5 (Documentation):** Well-documented pattern from existing components (Button, Dialog, Input), follow existing docs structure
 
 ## Confidence Assessment
 
 | Area | Confidence | Notes |
 |------|------------|-------|
-| Stack | HIGH | Zero new dependencies needed. All capabilities (Lit, ElementInternals, CSS transitions) proven in existing components. |
-| Features | HIGH | W3C APG patterns are stable, well-documented standards. Shoelace provides production reference implementations. |
-| Architecture | HIGH | Package structure, parent-child communication, form ownership decisions all follow established LitUI patterns or proven web component practices. |
-| Pitfalls | HIGH | Cross-Shadow-DOM ARIA challenges are well-documented by experts (Nolan Lawson, Adrian Roselli, Alice Boxhall). Solutions proven in Google HowTo Components. |
+| Stack | HIGH | date-fns v4.1.0 verified via official sources, Intl API has universal browser support, Floating UI proven in Select component |
+| Features | HIGH | Verified against NNG (Nielsen Norman Group), WAI-ARIA APG, Material Design, USWDS documentation |
+| Architecture | HIGH | Based on existing LitUI patterns (TailwindElement, ElementInternals), CSS Grid is standard for calendars, internal composition validated against Select/Option tradeoffs |
+| Pitfalls | HIGH | All 14 pitfalls verified with authoritative sources (W3C, MDN, Nolan Lawson, Flatpickr/PrimeVue issues), prevention strategies are explicit and actionable |
 
 **Overall confidence:** HIGH
 
 ### Gaps to Address
 
-**Screen reader support variability for role="switch":**
-- Research documents inconsistent switch announcements across SR/browser combos
-- VoiceOver and NVDA often announce switches as "checkboxes"
-- **Mitigation:** Document observed behavior in component API docs. Ensure visual design clearly communicates toggle semantics. Still use `role="switch"` (correct semantics, support improving).
-
-**Indeterminate checkbox "select all" pattern:**
-- Research confirms the pattern exists and ARIA semantics are clear
-- Implementation complexity is high (listed as Phase 4 or defer)
-- **Mitigation:** Implement basic indeterminate state in Phase 2 (tri-state property, mixed aria-checked, dash icon). Defer parent-child "select all" coordination to post-MVP unless users strongly request it.
-
-**Roving tabindex keyboard navigation:**
-- Pattern is well-documented but new to this codebase
-- Arrow key wrapping and disabled item skipping need careful implementation
-- **Mitigation:** Reference W3C APG example code directly. Add comprehensive keyboard navigation tests. Consider extracting reusable utility if pattern is needed elsewhere (unlikely for v4.2 scope).
-
-**CSS animation timing:**
-- Research provides specific durations (150ms base, 200ms for checkbox with 50ms delay) based on existing Button transition patterns
-- Actual perceived quality needs user testing
-- **Mitigation:** Start with researched timings. Add CSS custom properties for transition durations so consumers can tune. Gather feedback during beta.
+- **date-fns bundle size impact**: Official sources cite 17.5KB gzipped for full library, but real usage varies (5-10 functions typical). Validate with actual build analysis during implementation.
+- **Mobile native inputs vs custom picker**: Research suggests using `<input type="date">` on mobile for better UX, but implementation pattern needs validation. Consider platform-specific rendering during Phase 2.
+- **Time zone support**: Time Picker timezone awareness is HIGH complexity. MVP should focus on local time only. Timezone support can be deferred to v2+ or addressed via date-fns-tz if user demand emerges.
+- **Temporal API future-proofing**: Temporal API is expected to reach Stage 4 in March 2026. Monitor for maturity. date-fns provides stable fallback until Temporal is production-ready.
 
 ## Sources
 
 ### Primary (HIGH confidence)
-- [W3C WAI-ARIA APG: Checkbox Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/checkbox/) -- ARIA roles, keyboard interaction, indeterminate state
-- [W3C WAI-ARIA APG: Radio Group Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/radio/) -- Roving tabindex specification, mutual exclusion, arrow key wrapping
-- [W3C WAI-ARIA APG: Switch Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/switch/) -- role="switch" vs role="checkbox" semantics, aria-checked values
-- [MDN: ElementInternals](https://developer.mozilla.org/en-US/docs/Web/API/ElementInternals) -- Form-associated custom elements API, setFormValue, lifecycle callbacks
-- [MDN: ElementInternals.ariaChecked](https://developer.mozilla.org/en-US/docs/Web/API/ElementInternals/ariaChecked) -- Setting ARIA checked state via ElementInternals
-- [WebKit: ElementInternals and Form-Associated Custom Elements](https://webkit.org/blog/13711/elementinternals-and-form-associated-custom-elements/) -- Form participation patterns, lifecycle callbacks
-- [Shoelace: Checkbox](https://shoelace.style/components/checkbox), [Radio](https://shoelace.style/components/radio), [Switch](https://shoelace.style/components/switch) -- Production reference implementations
-- Existing LitUI codebase: `packages/input/src/input.ts`, `packages/select/src/select.ts`, `packages/core/src/tailwind-element.ts` -- Established patterns for ElementInternals, slot communication, TailwindElement
+- [date-fns GitHub Repository](https://github.com/date-fns/date-fns) — v4.1.0 with timezone support
+- [date-fns v4.0 Announcement](https://blog.date-fns.org/v40-with-time-zone-support/) — First-class timezone support verification
+- [MDN: Intl.DateTimeFormat](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat) — Browser compatibility for localization
+- [MDN: Intl.Locale.getWeekInfo()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Locale/getWeekInfo) — First day of week by locale
+- [WAI-ARIA Date Picker Dialog Example](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/examples/datepicker-dialog/) — Official accessibility pattern
+- [W3C WAI-ARIA APG: Grid Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/grid/) — Keyboard navigation for calendar grids
+- [Nielsen Norman Group: Date-Input Form Fields](https://www.nngroup.com/articles/date-input/) — UX best practices for date input
+- [24 Accessibility: Making a Better Calendar](https://www.24a11y.com/2018/a-new-day-making-a-better-calendar/) — Accessibility expert guidance
 
-### Expert Articles (HIGH confidence)
-- [Adrian Roselli: Switch Role Support](https://adrianroselli.com/2021/10/switch-role-support.html) -- Screen reader support matrix for role="switch"
-- [Nolan Lawson: Shadow DOM and Accessibility](https://nolanlawson.com/2022/11/28/shadow-dom-and-accessibility-the-trouble-with-aria/) -- Cross-root ARIA problem documentation
-- [Alice Boxhall: Shadow DOM and Accessibility in Conflict](https://alice.pages.igalia.com/blog/how-shadow-dom-and-accessibility-are-in-conflict/) -- aria-controls, aria-labelledby cross-boundary challenges
-- [Google HowTo Components: Radio Group](https://googlechromelabs.github.io/howto-components/howto-radio-group/) -- Reference implementation of roving tabindex and group form ownership
-- [Kitty Giraudel: Accessible Toggle](https://kittygiraudel.com/2021/04/05/an-accessible-toggle/) -- prefers-reduced-motion pattern for switch animation
-- [Benny Powers: Form-Associated Custom Elements](https://bennypowers.dev/posts/form-associated-custom-elements/) -- ElementInternals patterns, form lifecycle
+### Secondary (MEDIUM confidence)
+- [JavaScript Temporal in 2026](https://bryntum.com/blog/javascript-temporal-is-it-finally-here/) — Temporal API status (not production-ready)
+- [Nolan Lawson: Shadow DOM Problems](https://nolanlawson.com/2023/08/23/use-web-components-for-what-theyre-good-at/) — Shadow DOM event retargeting
+- [LamplightDev: Click Outside Web Component](https://lamplightdev.com/blog/2021/04/10/how-to-detect-clicks-outside-of-a-web-component/) — Click-outside detection pattern
+- [Flatpickr Shadow DOM Issue #1024](https://github.com/flatpickr/flatpickr/issues/1024) — Real-world positioning issues
+- [PrimeVue DatePicker in Web Components #7161](https://github.com/primefaces/primevue/issues/7161) — Stacking context problems
+- [Dev.to: Date/Timezone Best Practices](https://dev.to/kcsujeet/how-to-handle-date-and-time-correctly-to-avoid-timezone-bugs-4o03) — DST handling strategies
+- [Material Design Date Pickers](https://m2.material.io/components/date-pickers) — Design system patterns
+- [USWDS: Date Picker Accessibility Tests](https://designsystem.digital.gov/components/date-picker/accessibility-tests/) — Government standard validation
 
-### Implementation References (MEDIUM-HIGH confidence)
-- [MDN: Using CSS Transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Transitions/Using) -- GPU-composited animation techniques
-- [Modern CSS Solutions: Pure CSS Custom Styled Radio Buttons](https://moderncss.dev/pure-css-custom-styled-radio-buttons/) -- Scale transform technique for radio dot
-- [Go Make Things: Creating a Toggle Switch with CSS](https://gomakethings.com/creating-a-toggle-switch-with-just-css/) -- translateX pattern for switch thumb
-- [Fluent UI: ElementInternals Radio/RadioGroup PR](https://github.com/microsoft/fluentui/pull/31783) -- RadioGroup with ElementInternals pattern
-- [Noah Liebman: Radio Button Web Component](https://noahliebman.net/2023/12/radio-button-with-host-has/) -- Documents Shadow DOM radio pitfall
+### Tertiary (LOW confidence)
+- [NPM Trends: date-fns vs dayjs vs luxon vs moment](https://npmtrends.com/date-fns-vs-dayjs-vs-luxon-vs-moment) — Usage statistics (community preference)
+- [Reddit: Luxon vs date-fns](https://www.reddit.com/r/react/comments/1bpd2es/luxon_vs_datefns/) — Community feedback on timezone issues (unverified)
+- [You Don't Need Moment.js](https://github.com/you-dont-need/You-Dont-Need-Momentjs/blob/master/README.md) — Migration guidance (general consensus)
+- Bundle size claims for specific date-fns functions — Verify with actual build analysis during implementation
 
 ---
-**Research completed:** 2026-01-26
-**Ready for roadmap:** Yes
-**Dependencies resolved:** Yes (zero new dependencies required)
-**Critical risks identified:** Yes (5 critical pitfalls with prevention strategies)
-**Phase suggestions:** 3 phases (Switch → Checkbox/CheckboxGroup → Radio/RadioGroup)
+*Research completed: 2026-01-30*
+*Ready for roadmap: yes*
+*Critical risks identified: 14 pitfalls documented, all with prevention strategies*
+*Recommended stack: date-fns v4.1.0 + native Intl API + Floating UI*
+*Phase count: 5 phases (Foundation → Core UX → Time Picker → Range Picker → Docs/Testing)*
