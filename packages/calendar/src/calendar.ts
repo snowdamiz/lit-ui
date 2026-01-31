@@ -105,10 +105,25 @@ export class Calendar extends TailwindElement {
   private focusedIndex: number = 0;
 
   /**
-   * Keyboard navigation manager for roving tabindex.
+   * Keyboard navigation manager for roving tabindex (month view, 7 columns).
    * Not reactive - managed imperatively, no re-render needed.
    */
   private navigationManager: KeyboardNavigationManager | null = null;
+
+  /**
+   * Keyboard navigation manager for decade view (4 columns).
+   */
+  private decadeNavigationManager: KeyboardNavigationManager | null = null;
+
+  /**
+   * Keyboard navigation manager for century view (4 columns).
+   */
+  private centuryNavigationManager: KeyboardNavigationManager | null = null;
+
+  /**
+   * Focused index for decade/century grid navigation.
+   */
+  private viewFocusedIndex: number = 0;
 
   /**
    * Query all grid cell elements for keyboard navigation.
@@ -558,6 +573,59 @@ export class Calendar extends TailwindElement {
       :host-context(.dark) .help-dialog {
         background: var(--color-background-dark, var(--color-gray-900));
         border-color: var(--color-border-dark, var(--color-gray-800));
+      }
+
+      /* Year grid (decade view) and decade grid (century view) */
+      .year-grid, .decade-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: var(--ui-calendar-gap, 0.25rem);
+      }
+
+      .year-grid [role='gridcell'],
+      .decade-grid [role='gridcell'] {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 3rem;
+        cursor: pointer;
+        border-radius: var(--ui-calendar-cell-radius, 0.375rem);
+        transition: background-color 150ms;
+        font-size: 0.875rem;
+      }
+
+      .year-grid [role='gridcell']:hover,
+      .decade-grid [role='gridcell']:hover {
+        background-color: var(--color-gray-100);
+      }
+
+      :host-context(.dark) .year-grid [role='gridcell']:hover,
+      :host-context(.dark) .decade-grid [role='gridcell']:hover {
+        background-color: var(--color-gray-800);
+      }
+
+      .year-grid [role='gridcell'][aria-selected='true'],
+      .decade-grid [role='gridcell'][aria-selected='true'] {
+        background-color: var(--ui-calendar-selected-bg, var(--color-brand-500));
+        color: var(--ui-calendar-selected-text, oklch(0.98 0.01 250));
+      }
+
+      :host-context(.dark) .year-grid [role='gridcell'][aria-selected='true'],
+      :host-context(.dark) .decade-grid [role='gridcell'][aria-selected='true'] {
+        background-color: var(--ui-calendar-selected-bg-dark, var(--color-brand-400));
+        color: var(--ui-calendar-selected-text-dark, oklch(0.2 0.01 250));
+      }
+
+      .year-grid [role='gridcell']:focus-visible,
+      .decade-grid [role='gridcell']:focus-visible {
+        outline: 2px solid var(--color-brand-500);
+        outline-offset: 2px;
+        z-index: 1;
+      }
+
+      .year-grid .outside-range,
+      .decade-grid .outside-range {
+        opacity: 0.4;
       }
     `,
   ];
@@ -1013,19 +1081,388 @@ export class Calendar extends TailwindElement {
   }
 
   /**
+   * Get the start year of the current decade.
+   */
+  private getDecadeStart(): number {
+    return Math.floor(this.currentMonth.getFullYear() / 10) * 10;
+  }
+
+  /**
+   * Get the start decade of the current century.
+   */
+  private getCenturyStart(): number {
+    return Math.floor(this.currentMonth.getFullYear() / 100) * 100;
+  }
+
+  /**
+   * Get 12 years for the decade view (1 before + 10 in decade + 1 after).
+   */
+  private getDecadeYears(): { year: number; inRange: boolean }[] {
+    const start = this.getDecadeStart();
+    const years: { year: number; inRange: boolean }[] = [];
+    for (let i = -1; i <= 10; i++) {
+      years.push({
+        year: start + i,
+        inRange: i >= 0 && i <= 9
+      });
+    }
+    return years;
+  }
+
+  /**
+   * Get 12 decades for the century view (1 before + 10 in century + 1 after).
+   */
+  private getCenturyDecades(): { decade: number; inRange: boolean }[] {
+    const start = this.getCenturyStart();
+    const decades: { decade: number; inRange: boolean }[] = [];
+    for (let i = -1; i <= 10; i++) {
+      decades.push({
+        decade: start + i * 10,
+        inRange: i >= 0 && i <= 9
+      });
+    }
+    return decades;
+  }
+
+  /**
+   * Select a year from decade view, return to month view.
+   */
+  private selectYear(year: number): void {
+    this.currentMonth = new Date(year, this.currentMonth.getMonth(), 1);
+    this.selectedMonth = this.currentMonth.getMonth();
+    this.selectedYear = year;
+    this.view = 'month';
+    this.announceViewChange(`${year}, month`);
+  }
+
+  /**
+   * Select a decade from century view, return to decade (year) view.
+   */
+  private selectDecade(decade: number): void {
+    this.currentMonth = new Date(decade, this.currentMonth.getMonth(), 1);
+    this.selectedYear = decade;
+    this.view = 'year';
+    this.announceViewChange(`${decade}s, year selection`);
+  }
+
+  /**
+   * Navigate to previous decade (decade view).
+   */
+  private handlePreviousDecade(): void {
+    const year = this.currentMonth.getFullYear() - 10;
+    this.currentMonth = new Date(year, this.currentMonth.getMonth(), 1);
+    this.selectedYear = year;
+    this.liveAnnouncement = `${this.getDecadeStart()} - ${this.getDecadeStart() + 9}`;
+  }
+
+  /**
+   * Navigate to next decade (decade view).
+   */
+  private handleNextDecade(): void {
+    const year = this.currentMonth.getFullYear() + 10;
+    this.currentMonth = new Date(year, this.currentMonth.getMonth(), 1);
+    this.selectedYear = year;
+    this.liveAnnouncement = `${this.getDecadeStart()} - ${this.getDecadeStart() + 9}`;
+  }
+
+  /**
+   * Navigate to previous century (century view).
+   */
+  private handlePreviousCentury(): void {
+    const year = this.currentMonth.getFullYear() - 100;
+    this.currentMonth = new Date(year, this.currentMonth.getMonth(), 1);
+    this.selectedYear = year;
+    this.liveAnnouncement = `${this.getCenturyStart()} - ${this.getCenturyStart() + 99}`;
+  }
+
+  /**
+   * Navigate to next century (century view).
+   */
+  private handleNextCentury(): void {
+    const year = this.currentMonth.getFullYear() + 100;
+    this.currentMonth = new Date(year, this.currentMonth.getMonth(), 1);
+    this.selectedYear = year;
+    this.liveAnnouncement = `${this.getCenturyStart()} - ${this.getCenturyStart() + 99}`;
+  }
+
+  /**
+   * Handle keyboard navigation in decade view (4-column grid).
+   */
+  private handleDecadeKeyDown(event: KeyboardEvent): void {
+    const currentIndex = this.viewFocusedIndex;
+    let nextIndex = currentIndex;
+
+    switch (event.key) {
+      case 'ArrowRight':
+        nextIndex = this.decadeNavigationManager?.moveFocus(currentIndex, 'right') ?? currentIndex;
+        break;
+      case 'ArrowLeft':
+        nextIndex = this.decadeNavigationManager?.moveFocus(currentIndex, 'left') ?? currentIndex;
+        break;
+      case 'ArrowDown':
+        nextIndex = this.decadeNavigationManager?.moveFocus(currentIndex, 'down') ?? currentIndex;
+        break;
+      case 'ArrowUp':
+        nextIndex = this.decadeNavigationManager?.moveFocus(currentIndex, 'up') ?? currentIndex;
+        break;
+      case 'Home':
+        nextIndex = this.decadeNavigationManager?.moveFocus(currentIndex, 'home') ?? currentIndex;
+        break;
+      case 'End':
+        nextIndex = this.decadeNavigationManager?.moveFocus(currentIndex, 'end') ?? currentIndex;
+        break;
+      case 'Enter':
+      case ' ': {
+        const years = this.getDecadeYears();
+        if (years[currentIndex]) {
+          this.selectYear(years[currentIndex].year);
+        }
+        event.preventDefault();
+        return;
+      }
+      case 'Escape':
+        this.view = 'month';
+        this.announceViewChange('Month');
+        event.preventDefault();
+        return;
+      default:
+        return;
+    }
+
+    event.preventDefault();
+    this.viewFocusedIndex = nextIndex;
+    const nextElement = this.decadeNavigationManager?.getElement(nextIndex);
+    nextElement?.focus();
+  }
+
+  /**
+   * Handle keyboard navigation in century view (4-column grid).
+   */
+  private handleCenturyKeyDown(event: KeyboardEvent): void {
+    const currentIndex = this.viewFocusedIndex;
+    let nextIndex = currentIndex;
+
+    switch (event.key) {
+      case 'ArrowRight':
+        nextIndex = this.centuryNavigationManager?.moveFocus(currentIndex, 'right') ?? currentIndex;
+        break;
+      case 'ArrowLeft':
+        nextIndex = this.centuryNavigationManager?.moveFocus(currentIndex, 'left') ?? currentIndex;
+        break;
+      case 'ArrowDown':
+        nextIndex = this.centuryNavigationManager?.moveFocus(currentIndex, 'down') ?? currentIndex;
+        break;
+      case 'ArrowUp':
+        nextIndex = this.centuryNavigationManager?.moveFocus(currentIndex, 'up') ?? currentIndex;
+        break;
+      case 'Home':
+        nextIndex = this.centuryNavigationManager?.moveFocus(currentIndex, 'home') ?? currentIndex;
+        break;
+      case 'End':
+        nextIndex = this.centuryNavigationManager?.moveFocus(currentIndex, 'end') ?? currentIndex;
+        break;
+      case 'Enter':
+      case ' ': {
+        const decades = this.getCenturyDecades();
+        if (decades[currentIndex]) {
+          this.selectDecade(decades[currentIndex].decade);
+        }
+        event.preventDefault();
+        return;
+      }
+      case 'Escape':
+        this.view = 'year';
+        this.announceViewChange('Year selection');
+        event.preventDefault();
+        return;
+      default:
+        return;
+    }
+
+    event.preventDefault();
+    this.viewFocusedIndex = nextIndex;
+    const nextElement = this.centuryNavigationManager?.getElement(nextIndex);
+    nextElement?.focus();
+  }
+
+  /**
+   * Initialize decade/century navigation manager after render.
+   */
+  private initializeViewNavigationManager(gridClass: string, manager: 'decade' | 'century'): void {
+    if (isServer) return;
+
+    requestAnimationFrame(() => {
+      const grid = this.shadowRoot?.querySelector(`.${gridClass}`);
+      if (!grid) return;
+      const cells = Array.from(grid.querySelectorAll('[role="gridcell"]')) as HTMLElement[];
+      if (cells.length === 0) return;
+
+      const navManager = new KeyboardNavigationManager(cells, 4);
+      if (manager === 'decade') {
+        this.decadeNavigationManager = navManager;
+      } else {
+        this.centuryNavigationManager = navManager;
+      }
+
+      this.viewFocusedIndex = 0;
+      navManager.setInitialFocus(0);
+    });
+  }
+
+  /**
+   * Render the decade view header with navigation.
+   */
+  private renderDecadeHeader() {
+    const start = this.getDecadeStart();
+    const headingText = `${start} - ${start + 9}`;
+    const isHeadingClickable = true; // Can drill into century view
+
+    return html`
+      <div class="calendar-header">
+        <button
+          @click=${this.handlePreviousDecade}
+          aria-label="Previous decade"
+          type="button"
+        >
+          &lt;
+        </button>
+        <h2
+          id="calendar-heading"
+          aria-live="polite"
+          role="button"
+          tabindex="0"
+          class="clickable-heading"
+          @click=${this.handleHeadingClick}
+          @keydown=${(e: KeyboardEvent) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              this.handleHeadingClick();
+            }
+          }}
+        >
+          ${headingText}
+        </h2>
+        <button
+          @click=${this.handleNextDecade}
+          aria-label="Next decade"
+          type="button"
+        >
+          &gt;
+        </button>
+      </div>
+    `;
+  }
+
+  /**
+   * Render the century view header with navigation.
+   */
+  private renderCenturyHeader() {
+    const start = this.getCenturyStart();
+    const headingText = `${start} - ${start + 99}`;
+
+    return html`
+      <div class="calendar-header">
+        <button
+          @click=${this.handlePreviousCentury}
+          aria-label="Previous century"
+          type="button"
+        >
+          &lt;
+        </button>
+        <h2 id="calendar-heading" aria-live="polite">
+          ${headingText}
+        </h2>
+        <button
+          @click=${this.handleNextCentury}
+          aria-label="Next century"
+          type="button"
+        >
+          &gt;
+        </button>
+      </div>
+    `;
+  }
+
+  /**
    * Render the decade view (4x3 year grid).
-   * Placeholder - implemented in Task 2.
    */
   private renderDecadeView() {
-    return html`<div>Decade view</div>`;
+    const years = this.getDecadeYears();
+    const currentYear = new Date().getFullYear();
+
+    // Initialize navigation manager after render
+    this.updateComplete.then(() => {
+      this.initializeViewNavigationManager('year-grid', 'decade');
+    });
+
+    return html`
+      ${this.renderDecadeHeader()}
+      <div
+        class="year-grid"
+        role="grid"
+        aria-label="Year selection"
+        @keydown=${this.handleDecadeKeyDown}
+      >
+        ${years.map(({ year, inRange }) => html`
+          <div
+            role="gridcell"
+            aria-selected=${year === this.currentMonth.getFullYear() ? 'true' : 'false'}
+            aria-label="${year}"
+            class="${!inRange ? 'outside-range' : ''}"
+            data-year="${year}"
+            @click=${() => this.selectYear(year)}
+          >
+            ${year}
+          </div>
+        `)}
+      </div>
+
+      <!-- Screen reader live region -->
+      <div aria-live="polite" aria-atomic="true" class="sr-only" part="live-region">
+        ${this.liveAnnouncement}
+      </div>
+    `;
   }
 
   /**
    * Render the century view (4x3 decade grid).
-   * Placeholder - implemented in Task 2.
    */
   private renderCenturyView() {
-    return html`<div>Century view</div>`;
+    const decades = this.getCenturyDecades();
+    const currentDecade = Math.floor(new Date().getFullYear() / 10) * 10;
+
+    // Initialize navigation manager after render
+    this.updateComplete.then(() => {
+      this.initializeViewNavigationManager('decade-grid', 'century');
+    });
+
+    return html`
+      ${this.renderCenturyHeader()}
+      <div
+        class="decade-grid"
+        role="grid"
+        aria-label="Decade selection"
+        @keydown=${this.handleCenturyKeyDown}
+      >
+        ${decades.map(({ decade, inRange }) => html`
+          <div
+            role="gridcell"
+            aria-selected=${decade === currentDecade ? 'true' : 'false'}
+            aria-label="${decade} to ${decade + 9}"
+            class="${!inRange ? 'outside-range' : ''}"
+            data-decade="${decade}"
+            @click=${() => this.selectDecade(decade)}
+          >
+            ${decade}s
+          </div>
+        `)}
+      </div>
+
+      <!-- Screen reader live region -->
+      <div aria-live="polite" aria-atomic="true" class="sr-only" part="live-region">
+        ${this.liveAnnouncement}
+      </div>
+    `;
   }
 
   /**
