@@ -1,90 +1,75 @@
 /**
  * Internationalization Utility Functions
  *
- * Locale-aware formatting functions using native Intl API.
- * Provides weekday names, month names, and month/year labels
- * for calendar display.
- *
- * Uses Intl.DateTimeFormat and Intl.Locale.getWeekInfo() for
- * browser-native localization without external dependencies.
+ * Locale-aware formatting functions using the native Intl API.
+ * Provides weekday names, month names, and formatted labels for the calendar.
  */
 
 /**
- * Get localized weekday names starting from Sunday.
+ * Get localized weekday names.
  *
- * Uses Intl.DateTimeFormat with weekday: 'short' to generate
- * abbreviated weekday names (e.g., "Sun", "Mon", "Tue").
+ * Uses Intl.DateTimeFormat to get weekday abbreviations based on locale.
+ * Starts from Sunday (day 1) to Saturday (day 7) for consistency.
  *
- * Note: This implementation starts from Sunday (day 1) regardless
- * of locale. Locale-aware first day of week will be handled in
- * the calendar component using Intl.Locale.getWeekInfo().
- *
- * @param locale - BCP 47 language tag (e.g., "en-US", "fr-FR")
- * @returns Array of 7 weekday names starting from Sunday
+ * @param locale - Locale string (e.g., 'en-US', 'en-GB', 'fr-FR')
+ * @param style - Weekday style format ('long', 'short', 'narrow')
+ * @returns Array of weekday names starting from Sunday
  *
  * @example
  * ```typescript
- * getWeekdayNames("en-US")
- * // ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+ * getWeekdayNames('en-US', 'short')
+ * // Returns ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
  *
- * getWeekdayNames("fr-FR")
- * // ["dim.", "lun.", "mar.", "mer.", "jeu.", "ven.", "sam."]
+ * getWeekdayNames('en-GB', 'short')
+ * // Returns ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+ * // (Note: order is always Sun-Sat, locale affects first day display)
  * ```
  */
-export function getWeekdayNames(locale: string): string[] {
-  const formatter = new Intl.DateTimeFormat(locale, {
-    weekday: 'short',
+export function getWeekdayNames(
+  locale: string,
+  style: 'long' | 'short' | 'narrow' = 'short'
+): string[] {
+  const formatter = new Intl.DateTimeFormat(locale, { weekday: style });
+
+  // Generate names for Sunday through Saturday
+  // 2023-01-01 was a Sunday, so we use that as our base date
+  return Array.from({ length: 7 }, (_, i) => {
+    const date = new Date(2023, 0, i + 1);
+    return formatter.format(date);
   });
-
-  // 2023-01-01 was a Sunday (day 1)
-  // Generate names for Sunday (day 1) through Saturday (day 7)
-  const names: string[] = [];
-  for (let i = 1; i <= 7; i++) {
-    const date = new Date(2023, 0, i);
-    names.push(formatter.format(date));
-  }
-
-  return names;
 }
 
 /**
  * Get localized month name for a date.
  *
- * Uses Intl.DateTimeFormat with month: 'long' to get the full
- * month name (e.g., "January", "February").
- *
- * @param date - Date in the target month
- * @param locale - BCP 47 language tag (e.g., "en-US", "fr-FR")
- * @returns Localized month name
+ * @param date - Date to get month name for
+ * @param locale - Locale string (e.g., 'en-US', 'fr-FR')
+ * @returns Full month name (e.g., "January", "janvier")
  *
  * @example
  * ```typescript
- * getMonthName(new Date(2026, 0, 15), "en-US") // "January"
- * getMonthName(new Date(2026, 0, 15), "fr-FR") // "janvier"
+ * getMonthName(new Date(2026, 0, 15), 'en-US') // "January"
+ * getMonthName(new Date(2026, 0, 15), 'fr-FR') // "janvier"
  * ```
  */
 export function getMonthName(date: Date, locale: string): string {
-  const formatter = new Intl.DateTimeFormat(locale, {
-    month: 'long',
-  });
-
+  const formatter = new Intl.DateTimeFormat(locale, { month: 'long' });
   return formatter.format(date);
 }
 
 /**
  * Get localized month and year label.
  *
- * Uses Intl.DateTimeFormat with year: 'numeric' and month: 'long'
- * to generate a formatted string like "January 2026".
+ * Formats a date as a localized month-year string for calendar headings.
  *
- * @param date - Date in the target month
- * @param locale - BCP 47 language tag (e.g., "en-US", "fr-FR")
- * @returns Localized month/year label
+ * @param date - Date to format
+ * @param locale - Locale string (e.g., 'en-US', 'de-DE')
+ * @returns Formatted month-year string (e.g., "January 2026")
  *
  * @example
  * ```typescript
- * getMonthYearLabel(new Date(2026, 0, 15), "en-US") // "January 2026"
- * getMonthYearLabel(new Date(2026, 0, 15), "fr-FR") // "janvier 2026"
+ * getMonthYearLabel(new Date(2026, 0, 15), 'en-US') // "January 2026"
+ * getMonthYearLabel(new Date(2026, 0, 15), 'de-DE') // "Januar 2026"
  * ```
  */
 export function getMonthYearLabel(date: Date, locale: string): string {
@@ -92,6 +77,5 @@ export function getMonthYearLabel(date: Date, locale: string): string {
     year: 'numeric',
     month: 'long',
   });
-
   return formatter.format(date);
 }

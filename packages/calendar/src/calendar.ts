@@ -101,7 +101,7 @@ export class Calendar extends TailwindElement {
       [role='grid'] {
         display: grid;
         grid-template-columns: repeat(7, 1fr);
-        gap: 0.25rem;
+        gap: var(--ui-calendar-gap, 0.25rem);
       }
 
       /* Weekday headers */
@@ -122,8 +122,8 @@ export class Calendar extends TailwindElement {
         display: flex;
         align-items: center;
         justify-content: center;
-        min-height: 2.5rem;
-        border-radius: 0.375rem;
+        min-height: var(--ui-calendar-cell-size, 2.5rem);
+        border-radius: var(--ui-calendar-cell-radius, 0.375rem);
         cursor: pointer;
         transition: background-color 150ms;
       }
@@ -138,18 +138,24 @@ export class Calendar extends TailwindElement {
 
       /* Today indicator */
       [role='gridcell'][aria-current='date'] {
-        font-weight: 600;
-        border: 2px solid var(--color-brand-500);
+        font-weight: var(--ui-calendar-today-font-weight, 600);
+        border: var(--ui-calendar-today-border, 2px solid var(--color-brand-500));
       }
 
       /* Selected date */
       [role='gridcell'][aria-selected='true'] {
-        background-color: var(--color-brand-500);
-        color: var(--color-gray-50);
+        background-color: var(--ui-calendar-selected-bg, var(--color-brand-500));
+        color: var(--ui-calendar-selected-text, oklch(0.98 0.01 250));
       }
 
       [role='gridcell'][aria-selected='true']:hover {
         opacity: 0.9;
+      }
+
+      /* Disabled state */
+      [role='gridcell'][aria-disabled='true'] {
+        opacity: var(--ui-calendar-disabled-opacity, 0.4);
+        pointer-events: none;
       }
     `,
   ];
