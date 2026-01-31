@@ -386,17 +386,17 @@ Plans:
   3. User sees smooth month transitions with animations that respect prefers-reduced-motion
   4. User can swipe between months on touch devices and click week numbers to select entire weeks
   5. User sees responsive layout that adapts to screen size
-**Plans**: TBD
+**Plans**: 8 plans in 6 waves
 
 Plans:
-- [ ] 43-01: Multiple month display with synchronized navigation
-- [ ] 43-02: Decade view with year grid for fast year selection
-- [ ] 43-03: Century view with decade grid for birth year selection
-- [ ] 43-04: Month transition animations with reduced-motion support
-- [ ] 43-05: Week number column with ISO 8601 week display
-- [ ] 43-06: Touch swipe gesture support for month navigation
-- [ ] 43-07: Responsive layout for mobile and desktop
-- [ ] 43-08: Custom date cell rendering via slot API
+- [ ] 43-01-PLAN.md -- Configurable KeyboardNavigationManager columns
+- [ ] 43-02-PLAN.md -- Gesture handler and animation controller modules
+- [ ] 43-03-PLAN.md -- ISO week number utilities in date-utils
+- [ ] 43-04-PLAN.md -- Decade and century views in Calendar
+- [ ] 43-05-PLAN.md -- Animations, swipe, week numbers, renderDay integration
+- [ ] 43-06-PLAN.md -- display-month/hide-navigation props + multi-month wrapper
+- [ ] 43-07-PLAN.md -- Responsive container query layout
+- [ ] 43-08-PLAN.md -- Package exports, JSX types, element registration
 
 #### Phase 44: Date Picker Core
 **Goal**: Single date picker with input field, calendar popup, positioning, form integration, and validation.
@@ -562,7 +562,7 @@ Phases execute in numeric order: 42 → 43 → 44 → 45 → 46 → 47 → 48 �
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 42. Calendar Display Foundation | v4.3 | 10/10 | Complete | 2026-01-31 |
-| 43. Calendar Display Advanced | v4.3 | 0/8 | Not started | - |
+| 43. Calendar Display Advanced | v4.3 | 0/8 | Planned | - |
 | 44. Date Picker Core | v4.3 | 0/10 | Not started | - |
 | 45. Date Picker Advanced | v4.3 | 0/6 | Not started | - |
 | 46. Date Range Picker Core | v4.3 | 0/9 | Not started | - |
