@@ -185,6 +185,8 @@ export class CalendarMulti extends TailwindElement {
     css`
       :host {
         display: block;
+        container-type: inline-size;
+        container-name: calendar-multi;
       }
 
       .calendar-multi-header {
@@ -246,6 +248,16 @@ export class CalendarMulti extends TailwindElement {
 
       :host-context(.dark) .calendar-multi-header h2 {
         color: var(--ui-calendar-button-text-dark, var(--color-foreground-dark, var(--color-gray-50)));
+      }
+
+      /* Container query: stack vertically on narrow containers */
+      @container calendar-multi (max-width: 600px) {
+        .calendar-grid-container {
+          flex-direction: column;
+        }
+        .calendar-grid-container > * {
+          flex: 1 1 auto;
+        }
       }
     `,
   ];
