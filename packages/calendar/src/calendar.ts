@@ -3,6 +3,8 @@
  *
  * Renders a 7-column month grid with localized weekday headers,
  * leading/trailing days from adjacent months, and CSS Grid layout.
+ * Supports month, year (decade), and decade (century) views for
+ * fast drill-down navigation to distant dates.
  */
 
 import { html, css, nothing, isServer, type PropertyValues, type CSSResultGroup } from 'lit';
@@ -25,8 +27,16 @@ import {
   startOfDay,
 } from './date-utils.js';
 import { parseISO } from 'date-fns';
-import { getFirstDayOfWeek, getWeekdayNames, getWeekdayLongNames, getMonthNames } from './intl-utils.js';
+import { getFirstDayOfWeek, getWeekdayNames, getWeekdayLongNames } from './intl-utils.js';
 import { KeyboardNavigationManager } from './keyboard-nav.js';
+
+/**
+ * The three view modes for the calendar.
+ * - 'month': Standard 7-column day grid
+ * - 'year': 4x3 grid of 12 years (decade view)
+ * - 'decade': 4x3 grid of 12 decades (century view)
+ */
+type CalendarView = 'month' | 'year' | 'decade';
 
 /**
  * Represents the parsed date constraint state for the calendar.
@@ -70,6 +80,7 @@ function formatDateLabel(date: Date, locale: string): string {
  * - CSS Grid layout with customizable sizing via CSS custom properties
  * - SSR-safe with isServer guards
  * - Date constraints: min-date, max-date, and disabled-dates with ARIA support
+ * - Month, year, and decade views for fast date navigation
  *
  * @element lui-calendar
  * @fires change - Dispatched when a date is selected, with { date: Date, isoString: string }
@@ -127,27 +138,32 @@ export class Calendar extends TailwindElement {
         height: 1rem;
       }
 
-      .month-year-selectors {
-        display: flex;
-        align-items: center;
-        gap: 0.25rem;
-      }
-
-      .month-select,
-      .year-select {
-        padding: 0.25rem 0.5rem;
-        border: 1px solid var(--ui-calendar-border, #e5e7eb);
-        border-radius: var(--ui-calendar-radius, 0.375rem);
-        background: var(--ui-calendar-bg, white);
+      .view-heading {
         font-size: 0.875rem;
+        font-weight: 600;
+        background: none;
+        border: none;
         cursor: pointer;
+        padding: 0.25rem 0.5rem;
+        border-radius: var(--ui-calendar-radius, 0.375rem);
         color: inherit;
       }
 
-      .month-select:focus-visible,
-      .year-select:focus-visible {
+      .view-heading:hover {
+        background-color: var(--ui-calendar-hover-bg, #f3f4f6);
+      }
+
+      .view-heading:focus-visible {
         outline: 2px solid var(--ui-calendar-focus-ring, var(--color-ring, #3b82f6));
         outline-offset: 2px;
+      }
+
+      .view-heading.top-level {
+        cursor: default;
+      }
+
+      .view-heading.top-level:hover {
+        background: none;
       }
 
       .sr-only {
@@ -231,6 +247,54 @@ export class Calendar extends TailwindElement {
         pointer-events: none;
       }
 
+      .year-grid,
+      .decade-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.25rem;
+        padding: 0.5rem;
+      }
+
+      .year-cell,
+      .decade-cell {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.75rem 0.5rem;
+        border-radius: var(--ui-calendar-radius, 0.375rem);
+        border: 2px solid transparent;
+        background: none;
+        cursor: pointer;
+        font-size: 0.875rem;
+        color: inherit;
+      }
+
+      .year-cell:hover,
+      .decade-cell:hover {
+        background-color: var(--ui-calendar-hover-bg, #f3f4f6);
+      }
+
+      .year-cell:focus-visible,
+      .decade-cell:focus-visible {
+        outline: 2px solid var(--ui-calendar-focus-ring, var(--color-ring, #3b82f6));
+        outline-offset: 2px;
+      }
+
+      .year-cell.outside,
+      .decade-cell.outside {
+        opacity: var(--ui-calendar-outside-opacity, 0.4);
+      }
+
+      .year-cell.current {
+        border-color: var(--ui-calendar-today-border, var(--color-primary, #3b82f6));
+        font-weight: 600;
+      }
+
+      .decade-cell.current {
+        border-color: var(--ui-calendar-today-border, var(--color-primary, #3b82f6));
+        font-weight: 600;
+      }
+
       .visually-hidden {
         position: absolute;
         width: 1px;
@@ -294,14 +358,20 @@ export class Calendar extends TailwindElement {
         background-color: var(--ui-calendar-hover-bg, #1f2937);
       }
 
-      :host-context(.dark) .month-select,
-      :host-context(.dark) .year-select {
-        background: var(--ui-calendar-bg, #030712);
-        border-color: var(--ui-calendar-border, #1f2937);
-        color: var(--ui-calendar-text, #f9fafb);
+      :host-context(.dark) .nav-button:hover {
+        background-color: var(--ui-calendar-hover-bg, #1f2937);
       }
 
-      :host-context(.dark) .nav-button:hover {
+      :host-context(.dark) .view-heading:hover {
+        background-color: var(--ui-calendar-hover-bg, #1f2937);
+      }
+
+      :host-context(.dark) .view-heading.top-level:hover {
+        background: none;
+      }
+
+      :host-context(.dark) .year-cell:hover,
+      :host-context(.dark) .decade-cell:hover {
         background-color: var(--ui-calendar-hover-bg, #1f2937);
       }
 
@@ -380,16 +450,10 @@ export class Calendar extends TailwindElement {
   private selectedDate: Date | null = null;
 
   /**
-   * Tracks the selected month index in the dropdown (0-11).
+   * The current calendar view mode.
    */
   @state()
-  private selectedMonth: number = getMonth(new Date());
-
-  /**
-   * Tracks the selected year in the dropdown.
-   */
-  @state()
-  private selectedYear: number = getYear(new Date());
+  private currentView: CalendarView = 'month';
 
   /**
    * Text for the dedicated aria-live announcement region.
@@ -424,6 +488,11 @@ export class Calendar extends TailwindElement {
   private navigationManager: KeyboardNavigationManager | null = null;
 
   /**
+   * Track previous view for detecting view changes in updated().
+   */
+  private previousView: CalendarView = 'month';
+
+  /**
    * Initialize keyboard navigation manager after first render.
    */
   protected override firstUpdated(): void {
@@ -455,10 +524,115 @@ export class Calendar extends TailwindElement {
   }
 
   /**
+   * Initialize keyboard navigation for the current view.
+   * Sets column count and cell references for year/decade grids.
+   */
+  private setupViewCells(): void {
+    if (!this.navigationManager) return;
+
+    if (this.currentView === 'month') {
+      this.navigationManager.setColumns(7);
+      this.setupCells();
+    } else if (this.currentView === 'year') {
+      this.navigationManager.setColumns(4);
+      const buttons = Array.from(
+        this.renderRoot.querySelectorAll('.year-cell')
+      ) as HTMLElement[];
+      this.navigationManager.setCells(buttons);
+      this.navigationManager.setFocusedIndex(0);
+    } else if (this.currentView === 'decade') {
+      this.navigationManager.setColumns(4);
+      const buttons = Array.from(
+        this.renderRoot.querySelectorAll('.decade-cell')
+      ) as HTMLElement[];
+      this.navigationManager.setCells(buttons);
+      this.navigationManager.setFocusedIndex(0);
+    }
+  }
+
+  /**
+   * Switch to the parent view level.
+   * month -> year, year -> decade, decade stays.
+   */
+  private drillUp(): void {
+    if (this.currentView === 'month') {
+      this.currentView = 'year';
+    } else if (this.currentView === 'year') {
+      this.currentView = 'decade';
+    }
+    // decade is top level, do nothing
+  }
+
+  /**
+   * Switch to a specific child view level.
+   * Initializes keyboard navigation after the view renders.
+   */
+  private drillDown(view: CalendarView): void {
+    this.currentView = view;
+    this.updateComplete.then(() => {
+      requestAnimationFrame(() => this.setupViewCells());
+    });
+  }
+
+  /**
+   * Handle click on the view heading button to drill up.
+   */
+  private handleViewHeadingClick(): void {
+    this.drillUp();
+  }
+
+  /**
+   * Handle keyboard events on the view heading button.
+   */
+  private handleViewHeadingKeydown(e: KeyboardEvent): void {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      this.drillUp();
+    }
+  }
+
+  /**
    * Handle keyboard navigation on the calendar grid.
    */
   private handleKeydown(e: KeyboardEvent): void {
     if (!this.navigationManager) return;
+
+    // Escape key navigates back one view level
+    if (e.key === 'Escape') {
+      if (this.currentView === 'decade') {
+        e.preventDefault();
+        this.drillDown('year');
+      } else if (this.currentView === 'year') {
+        e.preventDefault();
+        this.drillDown('month');
+      }
+      return;
+    }
+
+    // Enter/Space handling for year and decade views
+    if (this.currentView === 'year' && (e.key === 'Enter' || e.key === ' ')) {
+      e.preventDefault();
+      const idx = this.navigationManager.getFocusedIndex();
+      const buttons = Array.from(
+        this.renderRoot.querySelectorAll('.year-cell')
+      ) as HTMLElement[];
+      if (buttons[idx]) {
+        buttons[idx].click();
+      }
+      return;
+    }
+
+    if (this.currentView === 'decade' && (e.key === 'Enter' || e.key === ' ')) {
+      e.preventDefault();
+      const idx = this.navigationManager.getFocusedIndex();
+      const buttons = Array.from(
+        this.renderRoot.querySelectorAll('.decade-cell')
+      ) as HTMLElement[];
+      if (buttons[idx]) {
+        buttons[idx].click();
+      }
+      return;
+    }
 
     const keyMap: Record<string, 'left' | 'right' | 'up' | 'down' | 'home' | 'end'> = {
       ArrowLeft: 'left',
@@ -473,8 +647,10 @@ export class Calendar extends TailwindElement {
     if (direction) {
       e.preventDefault();
       const result = this.navigationManager.moveFocus(direction);
-      if (result === -1) {
-        // Boundary crossing — navigate month
+
+      // Boundary crossing only applies in month view (navigate months)
+      // In year/decade views, boundary just stops (no wrapping)
+      if (result === -1 && this.currentView === 'month') {
         if (direction === 'left' || direction === 'up') {
           this.navigatePrevMonth();
           this.updateComplete.then(() => {
@@ -503,35 +679,38 @@ export class Calendar extends TailwindElement {
       return;
     }
 
-    if (e.key === 'PageUp') {
-      e.preventDefault();
-      const currentIdx = this.navigationManager.getFocusedIndex();
-      this.navigatePrevMonth();
-      this.updateComplete.then(() => {
-        requestAnimationFrame(() => {
-          this.setupCells();
-          this.navigationManager!.setFocusedIndex(currentIdx);
-          this.navigationManager!.focusCurrent();
+    // PageUp/PageDown only in month view
+    if (this.currentView === 'month') {
+      if (e.key === 'PageUp') {
+        e.preventDefault();
+        const currentIdx = this.navigationManager.getFocusedIndex();
+        this.navigatePrevMonth();
+        this.updateComplete.then(() => {
+          requestAnimationFrame(() => {
+            this.setupCells();
+            this.navigationManager!.setFocusedIndex(currentIdx);
+            this.navigationManager!.focusCurrent();
+          });
         });
-      });
-      return;
+        return;
+      }
+
+      if (e.key === 'PageDown') {
+        e.preventDefault();
+        const currentIdx = this.navigationManager.getFocusedIndex();
+        this.navigateNextMonth();
+        this.updateComplete.then(() => {
+          requestAnimationFrame(() => {
+            this.setupCells();
+            this.navigationManager!.setFocusedIndex(currentIdx);
+            this.navigationManager!.focusCurrent();
+          });
+        });
+        return;
+      }
     }
 
-    if (e.key === 'PageDown') {
-      e.preventDefault();
-      const currentIdx = this.navigationManager.getFocusedIndex();
-      this.navigateNextMonth();
-      this.updateComplete.then(() => {
-        requestAnimationFrame(() => {
-          this.setupCells();
-          this.navigationManager!.setFocusedIndex(currentIdx);
-          this.navigationManager!.focusCurrent();
-        });
-      });
-      return;
-    }
-
-    if (e.key === 'Enter' || e.key === ' ') {
+    if (this.currentView === 'month' && (e.key === 'Enter' || e.key === ' ')) {
       e.preventDefault();
       const idx = this.navigationManager.getFocusedIndex();
       const buttons = Array.from(
@@ -545,14 +724,23 @@ export class Calendar extends TailwindElement {
   }
 
   /**
-   * Sync dropdown state, value property, and date constraints when reactive properties change.
+   * Sync view state, value property, and date constraints when reactive properties change.
    */
   protected override updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
-    if (changedProperties.has('currentMonth' as keyof this)) {
-      this.selectedMonth = getMonth(this.currentMonth);
-      this.selectedYear = getYear(this.currentMonth);
+
+    // Detect view changes and reinitialize keyboard nav
+    if (this.currentView !== this.previousView) {
+      this.previousView = this.currentView;
       if (!isServer) {
+        this.updateComplete.then(() => {
+          requestAnimationFrame(() => this.setupViewCells());
+        });
+      }
+    }
+
+    if (changedProperties.has('currentMonth' as keyof this)) {
+      if (!isServer && this.currentView === 'month') {
         requestAnimationFrame(() => this.setupCells());
       }
     }
@@ -649,6 +837,66 @@ export class Calendar extends TailwindElement {
   }
 
   /**
+   * Navigate year view to previous decade.
+   */
+  private navigatePrevDecade(): void {
+    const newDate = new Date(this.currentMonth);
+    newDate.setFullYear(getYear(this.currentMonth) - 10);
+    this.currentMonth = newDate;
+  }
+
+  /**
+   * Navigate year view to next decade.
+   */
+  private navigateNextDecade(): void {
+    const newDate = new Date(this.currentMonth);
+    newDate.setFullYear(getYear(this.currentMonth) + 10);
+    this.currentMonth = newDate;
+  }
+
+  /**
+   * Navigate decade view to previous century.
+   */
+  private navigatePrevCentury(): void {
+    const newDate = new Date(this.currentMonth);
+    newDate.setFullYear(getYear(this.currentMonth) - 100);
+    this.currentMonth = newDate;
+  }
+
+  /**
+   * Navigate decade view to next century.
+   */
+  private navigateNextCentury(): void {
+    const newDate = new Date(this.currentMonth);
+    newDate.setFullYear(getYear(this.currentMonth) + 100);
+    this.currentMonth = newDate;
+  }
+
+  /**
+   * Select a year from the year view and drill down to month view.
+   */
+  private selectYear(year: number): void {
+    const newDate = new Date(this.currentMonth);
+    newDate.setFullYear(year);
+    newDate.setMonth(0);
+    newDate.setDate(1);
+    this.currentMonth = newDate;
+    this.drillDown('month');
+  }
+
+  /**
+   * Select a decade from the decade view and drill down to year view.
+   */
+  private selectDecade(decade: number): void {
+    const newDate = new Date(this.currentMonth);
+    newDate.setFullYear(decade);
+    newDate.setMonth(0);
+    newDate.setDate(1);
+    this.currentMonth = newDate;
+    this.drillDown('year');
+  }
+
+  /**
    * Emit month-change event with the current year and month.
    */
   private emitMonthChange(): void {
@@ -709,43 +957,23 @@ export class Calendar extends TailwindElement {
   }
 
   /**
-   * Handle month dropdown selection change.
+   * Render the main calendar dispatching to view-specific renderers.
    */
-  private handleMonthSelect(e: Event): void {
-    const month = parseInt((e.target as HTMLSelectElement).value, 10);
-    const newDate = new Date(this.currentMonth);
-    newDate.setMonth(month);
-    this.currentMonth = newDate;
-    this.emitMonthChange();
-    this.announceMonthChange();
-  }
-
-  /**
-   * Handle year dropdown selection change.
-   */
-  private handleYearSelect(e: Event): void {
-    const year = parseInt((e.target as HTMLSelectElement).value, 10);
-    const newDate = new Date(this.currentMonth);
-    newDate.setFullYear(year);
-    this.currentMonth = newDate;
-    this.emitMonthChange();
-    this.announceMonthChange();
-  }
-
-  /**
-   * Generate a range of years for the year dropdown.
-   * Returns 150 years: current year - 100 through current year + 50.
-   */
-  private getYearRange(): number[] {
-    const currentYear = getYear(new Date());
-    const years: number[] = [];
-    for (let y = currentYear - 100; y <= currentYear + 50; y++) {
-      years.push(y);
-    }
-    return years;
-  }
-
   protected override render() {
+    switch (this.currentView) {
+      case 'year':
+        return this.renderYearView();
+      case 'decade':
+        return this.renderDecadeView();
+      default:
+        return this.renderMonthView();
+    }
+  }
+
+  /**
+   * Render the standard month view with 7-column day grid.
+   */
+  private renderMonthView() {
     const weekdays = getWeekdayNames(this.effectiveLocale, this.firstDayOfWeek);
     const weekdayLongNames = getWeekdayLongNames(this.effectiveLocale, this.firstDayOfWeek);
     const days = getCalendarDays(this.currentMonth, this.weekStartsOn);
@@ -763,35 +991,15 @@ export class Calendar extends TailwindElement {
               <path d="M15 18l-6-6 6-6" />
             </svg>
           </button>
-          <div class="month-year-selectors">
-            <h2 id="month-heading" class="sr-only" aria-live="polite">${monthLabel}</h2>
-            <select
-              class="month-select"
-              aria-label="Select month"
-              @change="${this.handleMonthSelect}"
-            >
-              ${getMonthNames(this.effectiveLocale).map(
-                (name, i) => html`
-                  <option value="${i}" ?selected="${i === this.selectedMonth}">
-                    ${name}
-                  </option>
-                `
-              )}
-            </select>
-            <select
-              class="year-select"
-              aria-label="Select year"
-              @change="${this.handleYearSelect}"
-            >
-              ${this.getYearRange().map(
-                (year) => html`
-                  <option value="${year}" ?selected="${year === this.selectedYear}">
-                    ${year}
-                  </option>
-                `
-              )}
-            </select>
-          </div>
+          <button
+            class="view-heading"
+            @click="${this.handleViewHeadingClick}"
+            @keydown="${this.handleViewHeadingKeydown}"
+            aria-label="Switch to year view"
+          >
+            ${monthLabel}
+          </button>
+          <h2 id="month-heading" class="sr-only" aria-live="polite">${monthLabel}</h2>
           <button
             class="nav-button"
             @click="${this.navigateNextMonth}"
@@ -879,6 +1087,8 @@ export class Calendar extends TailwindElement {
             <li><span>Start of month</span> <kbd>Home</kbd></li>
             <li><span>End of month</span> <kbd>End</kbd></li>
             <li><span>Select date</span> <kbd>Enter</kbd></li>
+            <li><span>Year view</span> <kbd>Click heading</kbd></li>
+            <li><span>Back to month</span> <kbd>Escape</kbd></li>
           </ul>
           <button
             @click="${this.closeHelpDialog}"
@@ -887,6 +1097,142 @@ export class Calendar extends TailwindElement {
             Close
           </button>
         </dialog>
+      </div>
+    `;
+  }
+
+  /**
+   * Render the year view showing a 4x3 grid of 12 years (decade).
+   */
+  private renderYearView() {
+    const currentYear = getYear(this.currentMonth);
+    const decadeStart = Math.floor(currentYear / 10) * 10;
+    const years: number[] = [];
+    for (let y = decadeStart - 1; y <= decadeStart + 10; y++) {
+      years.push(y);
+    }
+    const headingLabel = `${decadeStart}\u2013${decadeStart + 9}`;
+
+    return html`
+      <div class="calendar">
+        <div class="calendar-header">
+          <button
+            class="nav-button"
+            @click="${this.navigatePrevDecade}"
+            aria-label="Previous decade"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M15 18l-6-6 6-6" />
+            </svg>
+          </button>
+          <button
+            class="view-heading"
+            @click="${this.handleViewHeadingClick}"
+            @keydown="${this.handleViewHeadingKeydown}"
+            aria-label="Switch to decade view"
+          >
+            ${headingLabel}
+          </button>
+          <button
+            class="nav-button"
+            @click="${this.navigateNextDecade}"
+            aria-label="Next decade"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 18l6-6-6-6" />
+            </svg>
+          </button>
+        </div>
+        <div
+          class="year-grid"
+          role="grid"
+          aria-label="${headingLabel}"
+          @keydown="${this.handleKeydown}"
+        >
+          ${years.map((year) => {
+            const outside = year < decadeStart || year > decadeStart + 9;
+            const current = year === currentYear;
+            return html`
+              <button
+                class="year-cell ${outside ? 'outside' : ''} ${current ? 'current' : ''}"
+                tabindex="-1"
+                aria-label="${year}"
+                @click="${() => this.selectYear(year)}"
+              >
+                ${year}
+              </button>
+            `;
+          })}
+        </div>
+        <div class="visually-hidden" role="status" aria-live="polite" aria-atomic="true">
+          ${this.liveAnnouncement}
+        </div>
+      </div>
+    `;
+  }
+
+  /**
+   * Render the decade view showing a 4x3 grid of 12 decades (century).
+   */
+  private renderDecadeView() {
+    const currentYear = getYear(this.currentMonth);
+    const centuryStart = Math.floor(currentYear / 100) * 100;
+    const decades: number[] = [];
+    for (let d = centuryStart - 10; d <= centuryStart + 100; d += 10) {
+      decades.push(d);
+    }
+    const headingLabel = `${centuryStart}\u2013${centuryStart + 99}`;
+    const currentDecade = Math.floor(currentYear / 10) * 10;
+
+    return html`
+      <div class="calendar">
+        <div class="calendar-header">
+          <button
+            class="nav-button"
+            @click="${this.navigatePrevCentury}"
+            aria-label="Previous century"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M15 18l-6-6 6-6" />
+            </svg>
+          </button>
+          <span class="view-heading top-level" aria-label="${headingLabel}">
+            ${headingLabel}
+          </span>
+          <button
+            class="nav-button"
+            @click="${this.navigateNextCentury}"
+            aria-label="Next century"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 18l6-6-6-6" />
+            </svg>
+          </button>
+        </div>
+        <div
+          class="decade-grid"
+          role="grid"
+          aria-label="${headingLabel}"
+          @keydown="${this.handleKeydown}"
+        >
+          ${decades.map((decade) => {
+            const outside = decade < centuryStart || decade >= centuryStart + 100;
+            const current = decade === currentDecade;
+            return html`
+              <button
+                class="decade-cell ${outside ? 'outside' : ''} ${current ? 'current' : ''}"
+                tabindex="-1"
+                aria-label="${decade} to ${decade + 9}"
+                @click="${() => this.selectDecade(decade)}"
+              >
+                ${decade}
+              </button>
+            `;
+          })}
+        </div>
+        <div class="visually-hidden" role="status" aria-live="polite" aria-atomic="true">
+          ${this.liveAnnouncement}
+        </div>
       </div>
     `;
   }
