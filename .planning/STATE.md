@@ -5,32 +5,33 @@
 See: .planning/PROJECT.md (updated 2026-01-30)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** Phase 42 complete — next: Phase 43 Calendar Display Advanced
+**Current focus:** Phase 43 Calendar Display Advanced — in progress
 
 ## Current Position
 
-Phase: 1 of 9 (Calendar Display Foundation)
-Plan: 10 of 10 in current phase (10 execution complete, phase complete)
-Status: Phase complete
-Last activity: 2026-01-31 — Completed 42-10-PLAN.md (screen reader month announcements)
+Phase: 2 of 9 (Calendar Display Advanced)
+Plan: 3 of 8 in current phase (3 execution complete)
+Status: In progress
+Last activity: 2026-01-31 — Completed 43-03-PLAN.md (ISO week number utilities)
 
-Progress: [██████████] 100%
+Progress: [█████████████░░░░░░░] 72% (13/18 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 10
-- Average duration: 2.6 min
-- Total execution time: 0.43 hours
+- Total plans completed: 11
+- Average duration: 2.5 min
+- Total execution time: 0.45 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 42    | 10    | 10    | 2.6 min |
+| 43    | 1     | 1     | 1 min   |
 
 **Recent Trend:**
-- Last 3 plans: 4 min (42-08), 2 min (42-09), 1 min (42-10)
+- Last 3 plans: 2 min (42-09), 1 min (42-10), 1 min (43-03)
 - Trend: Consistent execution pace
 
 *Updated after each plan completion*
@@ -74,6 +75,9 @@ Recent decisions affecting current work:
 - **Phase 42-09**: Use requestAnimationFrame in firstUpdated/updated for post-render tabindex setup
 - **Phase 42-10**: Use shared announceMonthChange() method for all four navigation handlers (DRY)
 - **Phase 42-10**: Belt-and-suspenders: keep aria-live on heading AND dedicated liveAnnouncement region
+- **Phase 43-03**: Use date-fns getISOWeek/startOfISOWeek/endOfISOWeek for ISO 8601 week compliance
+- **Phase 43-03**: Key WeekInfo map by start timestamp for year boundary deduplication
+- **Phase 43-03**: Sort getMonthWeeks by startDate for calendar display order
 
 ### Pending Todos
 
@@ -89,6 +93,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-31 (phase 42 completion)
-Stopped at: Phase 42 complete — all 10 plans executed, verification passed (5/5 must-haves, 19/19 requirements)
+Last session: 2026-01-31 (phase 43 in progress)
+Stopped at: Completed 43-03-PLAN.md (ISO week number utilities)
 Resume file: None
