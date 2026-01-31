@@ -283,6 +283,44 @@ export class Calendar extends TailwindElement {
         border-radius: 0.25rem;
         font-size: 0.75rem;
       }
+
+      /* Dark mode via :host-context(.dark) */
+      :host-context(.dark) .calendar {
+        color: var(--ui-calendar-text, #f9fafb);
+      }
+
+      :host-context(.dark) .date-button:hover {
+        background-color: var(--ui-calendar-hover-bg, #1f2937);
+      }
+
+      :host-context(.dark) .month-select,
+      :host-context(.dark) .year-select {
+        background: var(--ui-calendar-bg, #030712);
+        border-color: var(--ui-calendar-border, #1f2937);
+        color: var(--ui-calendar-text, #f9fafb);
+      }
+
+      :host-context(.dark) .nav-button:hover {
+        background-color: var(--ui-calendar-hover-bg, #1f2937);
+      }
+
+      :host-context(.dark) .help-dialog {
+        background: var(--ui-calendar-bg, #030712);
+        border-color: var(--ui-calendar-border, #1f2937);
+        color: var(--ui-calendar-text, #f9fafb);
+      }
+
+      :host-context(.dark) .weekday-header {
+        color: var(--ui-calendar-weekday-color, #9ca3af);
+      }
+
+      :host-context(.dark) .help-button {
+        color: var(--ui-calendar-weekday-color, #9ca3af);
+      }
+
+      :host-context(.dark) .shortcut-list kbd {
+        background: var(--ui-calendar-hover-bg, #1f2937);
+      }
     `,
   ];
 
