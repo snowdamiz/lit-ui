@@ -189,6 +189,15 @@
   /* Card */
   --color-card: var(--color-gray-900);
   --color-card-foreground: var(--color-gray-50);
+
+  /* Calendar dark mode */
+  --ui-calendar-today-border-dark: 2px solid var(--color-brand-400);
+  --ui-calendar-selected-bg-dark: var(--color-brand-400);
+  --ui-calendar-selected-text-dark: oklch(0.2 0.01 250);
+  --ui-calendar-button-bg-dark: var(--color-background-dark, var(--color-gray-950));
+  --ui-calendar-button-border-dark: var(--color-border-dark, var(--color-gray-800));
+  --ui-calendar-button-text-dark: var(--color-foreground-dark, var(--color-gray-50));
+  --ui-calendar-button-hover-bg-dark: var(--color-muted-dark, var(--color-gray-800));
 }
 
 /* ==========================================================================
@@ -612,6 +621,35 @@
 
   /* Group tokens */
   --ui-radio-group-gap: 0.5rem;
+
+  /* -------------------------------------------------------------------------
+   * Calendar Component
+   * ------------------------------------------------------------------------- */
+
+  /* Layout */
+  --ui-calendar-gap: 0.25rem;
+  --ui-calendar-cell-size: 2.5rem;
+  --ui-calendar-cell-radius: 0.375rem;
+
+  /* Today indicator */
+  --ui-calendar-today-font-weight: 600;
+  --ui-calendar-today-border: 2px solid var(--color-brand-500);
+
+  /* Selected date */
+  --ui-calendar-selected-bg: var(--color-brand-500);
+  --ui-calendar-selected-text: oklch(0.98 0.01 250);
+
+  /* Disabled state */
+  --ui-calendar-disabled-opacity: 0.4;
+
+  /* Navigation buttons and dropdowns */
+  --ui-calendar-border: var(--color-border, #e5e7eb);
+  --ui-calendar-bg: var(--color-background, #ffffff);
+  --ui-calendar-radius: 0.25rem;
+  --ui-calendar-text: var(--color-text, #111827);
+  --ui-calendar-hover-bg: var(--color-muted, #f3f4f6);
+  --ui-calendar-focus: var(--color-brand-500);
+  --ui-calendar-focus-ring: rgba(59, 130, 246, 0.1);
 }
 
 /* ==========================================================================
