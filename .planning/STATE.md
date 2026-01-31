@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-30)
 ## Current Position
 
 Phase: 5 of 9 (Date Range Picker Core)
-Plan: 2 of 5 in current phase (2 executions complete)
+Plan: 3 of 5 in current phase (3 executions complete)
 Status: In progress
-Last activity: 2026-01-31 — Completed 46-02-PLAN.md
+Last activity: 2026-01-31 — Completed 46-03-PLAN.md
 
-Progress: [████████████░░░░░░░░░░░░░░░░░░░░] 40% (2/5 plans in phase 46)
+Progress: [███████████████████░░░░░░░░░░░░░] 60% (3/5 plans in phase 46)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 34
+- Total plans completed: 35
 - Average duration: 2.1 min
-- Total execution time: 1.22 hours
+- Total execution time: 1.27 hours
 
 **By Phase:**
 
@@ -31,7 +31,7 @@ Progress: [████████████░░░░░░░░░░░
 | 43    | 8     | 8     | 1.9 min |
 
 **Recent Trend:**
-- Last 3 plans: 2 min (46-02), 3 min (46-01), 2 min (45-05)
+- Last 3 plans: 3 min (46-03), 2 min (46-02), 3 min (46-01)
 - Trend: Consistent execution pace
 
 *Updated after each plan completion*
@@ -130,6 +130,11 @@ Recent decisions affecting current work:
 - **Phase 46-02**: Inline styles for renderDay output (Shadow DOM CSS boundary — classes cannot reach calendar internals)
 - **Phase 46-02**: CSS custom properties (--ui-range-*) for range theming (cascade through Shadow DOM)
 - **Phase 46-02**: Listen for @change on lui-calendar (not @ui-change) matching date-picker pattern
+- **Phase 46-03**: Readonly input (not editable) since range picker uses calendar-only selection
+- **Phase 46-03**: Input click opens popup; calendar icon toggles (stopPropagation prevents double-fire)
+- **Phase 46-03**: displayValue getter uses Intl.DateTimeFormat with short month format for range display
+- **Phase 46-03**: Popup wraps dual-calendar layout via renderCalendarContent() extraction
+- **Phase 46-03**: formResetCallback closes popup for clean form reset behavior
 
 ### Pending Todos
 
@@ -145,6 +150,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-31 (46-02 complete)
-Stopped at: Completed 46-02-PLAN.md (Dual calendar rendering, range highlighting)
+Last session: 2026-01-31 (46-03 complete)
+Stopped at: Completed 46-03-PLAN.md (Input field, popup, Floating UI, click-outside, focus trap)
 Resume file: None
