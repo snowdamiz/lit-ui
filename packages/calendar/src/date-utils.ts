@@ -22,6 +22,9 @@ import {
   isBefore,
   isAfter,
   startOfDay,
+  getISOWeek,
+  startOfISOWeek,
+  endOfISOWeek,
 } from 'date-fns';
 
 // Re-export commonly used date-fns functions for convenience
@@ -37,6 +40,7 @@ export {
   isBefore,
   isAfter,
   startOfDay,
+  getISOWeek,
 };
 
 /**
@@ -89,4 +93,88 @@ export function intlFirstDayToDateFns(
   intlFirstDay: number
 ): 0 | 1 | 2 | 3 | 4 | 5 | 6 {
   return (intlFirstDay === 7 ? 0 : intlFirstDay) as 0 | 1 | 2 | 3 | 4 | 5 | 6;
+}
+
+/**
+ * Information about a single week row in the calendar grid.
+ */
+export interface WeekInfo {
+  /** ISO 8601 week number (1-53). */
+  weekNumber: number;
+  /** First day of this calendar row. */
+  startDate: Date;
+  /** Last day of this calendar row. */
+  endDate: Date;
+  /** All 7 days in this calendar row. */
+  days: Date[];
+}
+
+/**
+ * Get ISO 8601 week number for a date.
+ * Week 1 is the week containing the first Thursday of the year.
+ *
+ * @param date - The date to get the week number for
+ * @returns ISO 8601 week number (1-53)
+ */
+export function getISOWeekNumber(date: Date): number {
+  return getISOWeek(date);
+}
+
+/**
+ * Get all 7 dates in an ISO week (Monday to Sunday) for the given date.
+ *
+ * Always returns Monday through Sunday regardless of locale first-day-of-week
+ * setting, since ISO 8601 weeks always start on Monday.
+ *
+ * @param date - Any date within the target ISO week
+ * @returns Array of 7 Date objects (Monday to Sunday)
+ */
+export function getISOWeekDates(date: Date): Date[] {
+  return eachDayOfInterval({
+    start: startOfISOWeek(date),
+    end: endOfISOWeek(date),
+  });
+}
+
+/**
+ * Get all weeks displayed in a calendar month grid with ISO week numbers.
+ *
+ * Each WeekInfo contains the week number and the 7 displayed days for that
+ * calendar row. The `days` array matches what the calendar renders (respecting
+ * weekStartsOn), while `weekNumber` follows ISO 8601 (determined by the
+ * row's Thursday).
+ *
+ * @param month - Any date within the target month
+ * @param weekStartsOn - First day of week (0=Sun, 1=Mon, ..., 6=Sat)
+ * @returns Array of WeekInfo sorted by startDate
+ */
+export function getMonthWeeks(
+  month: Date,
+  weekStartsOn: 0 | 1 | 2 | 3 | 4 | 5 | 6
+): WeekInfo[] {
+  const allDays = getCalendarDays(month, weekStartsOn);
+  const seen = new Map<number, WeekInfo>();
+
+  // Group days into rows of 7 (each row is one calendar week row)
+  for (let i = 0; i < allDays.length; i += 7) {
+    const row = allDays.slice(i, i + 7);
+    if (row.length < 7) break;
+
+    // ISO 8601 defines a week by its Thursday
+    const thursday = row.find((d) => d.getDay() === 4) ?? row[0];
+    const weekKey = startOfISOWeek(thursday).getTime();
+
+    if (!seen.has(weekKey)) {
+      seen.set(weekKey, {
+        weekNumber: getISOWeekNumber(thursday),
+        startDate: row[0],
+        endDate: row[6],
+        days: row,
+      });
+    }
+  }
+
+  return Array.from(seen.values()).sort(
+    (a, b) => a.startDate.getTime() - b.startDate.getTime()
+  );
 }
