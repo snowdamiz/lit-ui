@@ -17,12 +17,14 @@
  */
 
 import { html, css, nothing, isServer } from 'lit';
-import { property, state } from 'lit/decorators.js';
+import { property, state, query } from 'lit/decorators.js';
+import { PropertyValues } from 'lit';
 import { TailwindElement, tailwindBaseStyles } from '@lit-ui/core';
 
 // Import utility functions
 import { getMonthDays, formatDate, isSameDayCompare, isDateToday } from './date-utils.js';
 import { getWeekdayNames, getMonthYearLabel } from './intl-utils.js';
+import { KeyboardNavigationManager } from './keyboard-nav.js';
 
 /**
  * Calendar component displaying a 7-column month grid.
@@ -61,11 +63,37 @@ export class Calendar extends TailwindElement {
   private selectedDate: string = '';
 
   /**
+   * Internal state tracking the currently focused cell index.
+   * Used for roving tabindex keyboard navigation.
+   */
+  @state()
+  private focusedIndex: number = 0;
+
+  /**
+   * Keyboard navigation manager for roving tabindex.
+   * Initialized when grid cells are available.
+   */
+  @state()
+  private navigationManager: KeyboardNavigationManager | null = null;
+
+  /**
+   * Query all grid cell elements for keyboard navigation.
+   */
+  @query('[role="gridcell"]')
+  gridCells!: NodeListOf<HTMLElement>;
+
+  /**
    * Internal state for screen reader announcements.
    * Updated when dates are selected to announce to screen readers.
    */
   @state()
   private liveAnnouncement: string = '';
+
+  /**
+   * Controls keyboard help dialog visibility.
+   */
+  @state()
+  private showKeyboardHelp: boolean = false;
 
   constructor() {
     super();
@@ -90,6 +118,61 @@ export class Calendar extends TailwindElement {
     // Initialize selectedDate from value when element connects
     if (this.value && !this.selectedDate) {
       this.selectedDate = this.value;
+    }
+
+    // Initialize keyboard navigation (client-only)
+    if (!isServer && this.gridCells) {
+      this.initializeNavigationManager();
+    }
+  }
+
+  /**
+   * Initialize navigation manager and set initial focus.
+   * Called when element connects and when grid cells change.
+   */
+  private initializeNavigationManager(): void {
+    if (isServer) return;
+
+    const cells = Array.from(this.gridCells);
+    if (cells.length === 0) return;
+
+    // Create or update navigation manager
+    if (!this.navigationManager) {
+      this.navigationManager = new KeyboardNavigationManager(cells);
+    } else {
+      this.navigationManager.updateElements(cells);
+    }
+
+    // Find initial focus index (selected date or today)
+    let initialIndex = 0;
+    if (this.selectedDate) {
+      const selectedIndex = cells.findIndex(cell =>
+        cell.getAttribute('data-date') === this.selectedDate
+      );
+      if (selectedIndex !== -1) {
+        initialIndex = selectedIndex;
+      }
+    } else {
+      // Find today's date
+      const todayIndex = cells.findIndex(cell => {
+        const dateAttr = cell.getAttribute('data-date');
+        return dateAttr && isDateToday(new Date(dateAttr));
+      });
+      if (todayIndex !== -1) {
+        initialIndex = todayIndex;
+      }
+    }
+
+    this.focusedIndex = initialIndex;
+    this.navigationManager.setInitialFocus(initialIndex);
+  }
+
+  override updated(changedProperties: PropertyValues): void {
+    super.updated(changedProperties);
+
+    // Reinitialize navigation manager when grid cells change (month change)
+    if (changedProperties.has('currentMonth') && this.gridCells) {
+      this.initializeNavigationManager();
     }
   }
 
@@ -165,6 +248,13 @@ export class Calendar extends TailwindElement {
         pointer-events: none;
       }
 
+      /* Focus visible indicator for keyboard navigation */
+      [role='gridcell']:focus-visible {
+        outline: 2px solid var(--color-brand-500);
+        outline-offset: 2px;
+        z-index: 1;
+      }
+
       /* Screen reader only content (visually hidden but accessible) */
       .sr-only {
         position: absolute;
@@ -207,17 +297,18 @@ export class Calendar extends TailwindElement {
   /**
    * Render a single date cell.
    */
-  private renderDayCell(date: Date) {
+  private renderDayCell(date: Date, index: number) {
     const isoDate = formatDate(date);
     const isSelected = this.selectedDate ? isSameDayCompare(date, new Date(this.selectedDate)) : false;
     const isToday = isDateToday(date);
+    const isFocused = index === this.focusedIndex;
 
     return html`
       <div
         role="gridcell"
         aria-selected=${isSelected ? 'true' : 'false'}
         aria-current=${isToday ? 'date' : nothing}
-        tabindex="0"
+        tabindex=${isFocused ? '0' : '-1'}
         data-date="${isoDate}"
         @click=${() => this.handleDateClick(date)}
       >
@@ -260,11 +351,99 @@ export class Calendar extends TailwindElement {
   }
 
   /**
+   * Handle keyboard navigation on the calendar grid.
+   * Implements WAI-ARIA Grid Pattern keyboard interactions.
+   */
+  private handleKeyDown(event: KeyboardEvent): void {
+    const currentIndex = this.focusedIndex;
+    let nextIndex = currentIndex;
+
+    switch (event.key) {
+      case 'ArrowRight':
+        nextIndex = this.navigationManager?.moveFocus(currentIndex, 'right') ?? currentIndex;
+        break;
+      case 'ArrowLeft':
+        nextIndex = this.navigationManager?.moveFocus(currentIndex, 'left') ?? currentIndex;
+        break;
+      case 'ArrowDown':
+        nextIndex = this.navigationManager?.moveFocus(currentIndex, 'down') ?? currentIndex;
+        break;
+      case 'ArrowUp':
+        nextIndex = this.navigationManager?.moveFocus(currentIndex, 'up') ?? currentIndex;
+        break;
+      case 'Home':
+        nextIndex = this.navigationManager?.moveFocus(currentIndex, 'home') ?? currentIndex;
+        break;
+      case 'End':
+        nextIndex = this.navigationManager?.moveFocus(currentIndex, 'end') ?? currentIndex;
+        break;
+      case 'PageDown':
+        this.handleNextMonth();
+        return;
+      case 'PageUp':
+        this.handlePreviousMonth();
+        return;
+      case 'Enter':
+      case ' ':
+        const days = this.getMonthDays();
+        const focusedDate = days[currentIndex];
+        this.handleDateClick(focusedDate);
+        event.preventDefault();
+        return;
+      default:
+        return;
+    }
+
+    event.preventDefault();
+    this.focusedIndex = nextIndex;
+    const nextElement = this.navigationManager?.getElement(nextIndex);
+    nextElement?.focus();
+  }
+
+  /**
+   * Navigate to previous month.
+   */
+  private handlePreviousMonth(): void {
+    const newMonth = new Date(this.currentMonth);
+    newMonth.setMonth(newMonth.getMonth() - 1);
+    this.currentMonth = newMonth;
+    this.emitMonthChange(newMonth);
+  }
+
+  /**
+   * Navigate to next month.
+   */
+  private handleNextMonth(): void {
+    const newMonth = new Date(this.currentMonth);
+    newMonth.setMonth(newMonth.getMonth() + 1);
+    this.currentMonth = newMonth;
+    this.emitMonthChange(newMonth);
+  }
+
+  /**
+   * Emit ui-month-change event when month changes.
+   */
+  private emitMonthChange(date: Date): void {
+    this.dispatchEvent(new CustomEvent('ui-month-change', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        year: date.getFullYear(),
+        month: date.getMonth()
+      }
+    }));
+  }
+
+  /**
    * Render the calendar grid with weekday headers and date cells.
    */
   override render() {
     return html`
-      <div role="grid" aria-labelledby="calendar-heading">
+      <div
+        role="grid"
+        aria-labelledby="calendar-heading"
+        @keydown=${this.handleKeyDown}
+      >
         <h2 id="calendar-heading" class="text-lg font-semibold mb-2" aria-live="polite">
           ${this.getMonthYearLabel()}
         </h2>
@@ -281,7 +460,7 @@ export class Calendar extends TailwindElement {
         </div>
 
         <!-- Date cells -->
-        ${this.getMonthDays().map((date) => this.renderDayCell(date))}
+        ${this.getMonthDays().map((date, index) => this.renderDayCell(date, index))}
 
         <!-- Screen reader live region for announcements -->
         <div aria-live="polite" aria-atomic="true" class="sr-only" part="live-region">
