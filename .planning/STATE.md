@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-30)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** Phase 43 complete — next: Phase 44 Date Picker Core
+**Current focus:** Phase 44 Date Picker Core — plan 01 complete
 
 ## Current Position
 
-Phase: 2 of 9 (Calendar Display Advanced)
-Plan: 8 of 8 in current phase (8 executions complete)
-Status: Phase complete, verified (29/29 must-haves)
-Last activity: 2026-01-31 — Phase 43 verified and complete
+Phase: 3 of 9 (Date Picker Core)
+Plan: 1 of 5 in current phase (1 execution complete)
+Status: In progress
+Last activity: 2026-01-31 — Completed 44-01-PLAN.md
 
-Progress: [████████████████░░░░] 84% (16/19 plans)
+Progress: [█████████████████░░░] 85% (17/19 plans)
 
 ## Performance Metrics
 
@@ -101,6 +101,8 @@ Recent decisions affecting current work:
 - **Phase 43-07**: CalendarMulti stacks vertically at 600px container width
 - **Phase 43-08**: Export GestureHandler and AnimationController as advanced-usage public API
 - **Phase 43-08**: JSX types include event handler types for ui-date-select, ui-month-change, ui-week-select
+- **Phase 44-01**: Use Intl.DateTimeFormat for display formatting instead of date-fns format() (zero bundle cost)
+- **Phase 44-01**: en-US/en-CA use MM/dd ordering; all other locales use dd/MM for date input parsing
 
 ### Pending Todos
 
@@ -116,6 +118,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-31 (43-08 complete, Phase 43 complete)
-Stopped at: Completed 43-08-PLAN.md (Package exports and JSX types)
+Last session: 2026-01-31 (44-01 complete)
+Stopped at: Completed 44-01-PLAN.md (Package scaffolding and date input parser)
 Resume file: None
