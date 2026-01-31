@@ -6,6 +6,44 @@
  */
 
 /**
+ * Get the first day of the week for a given locale.
+ *
+ * Uses Intl.Locale.getWeekInfo() when available (Chrome 99+, Safari 17+)
+ * with fallback for unsupported browsers.
+ *
+ * @param locale - Locale string (e.g., 'en-US', 'en-GB', 'fr-FR')
+ * @returns First day of week (1=Monday, 7=Sunday)
+ *
+ * @example
+ * ```typescript
+ * getFirstDayOfWeek('en-US') // 7 (Sunday)
+ * getFirstDayOfWeek('en-GB') // 1 (Monday)
+ * getFirstDayOfWeek('fr-FR') // 1 (Monday)
+ * ```
+ */
+export function getFirstDayOfWeek(locale: string): number {
+  try {
+    const localeObj = new Intl.Locale(locale as any);
+
+    // Check if getWeekInfo is available (Chrome 99+, Safari 17+)
+    if (typeof (localeObj as any).getWeekInfo === 'function') {
+      const weekInfo = (localeObj as any).getWeekInfo();
+      // getWeekInfo returns: { firstDay: number, weekend: number[], minimalDays: number }
+      // firstDay: 1=Monday, 7=Sunday
+      return weekInfo.firstDay;
+    }
+  } catch (e) {
+    // Fall through to fallback
+  }
+
+  // Fallback: Sunday (7) for US/IL, Monday (1) for most others
+  if (locale.startsWith('en-US') || locale.startsWith('he-IL')) {
+    return 7; // Sunday
+  }
+  return 1; // Monday
+}
+
+/**
  * Get localized weekday names.
  *
  * Uses Intl.DateTimeFormat to get weekday abbreviations based on locale.
