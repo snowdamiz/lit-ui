@@ -493,6 +493,30 @@ export class DateRangePicker extends TailwindElement {
         border-color: var(--color-muted-foreground, #6b7280);
       }
 
+      :host-context(.dark) .range-heading {
+        color: var(--ui-date-picker-text, var(--ui-input-text, #f9fafb));
+      }
+
+      :host-context(.dark) .nav-button {
+        color: var(--ui-calendar-nav-color, #f9fafb);
+      }
+
+      :host-context(.dark) .action-button {
+        color: var(--color-muted-foreground, #9ca3af);
+      }
+
+      :host-context(.dark) .error-text {
+        color: var(--ui-date-picker-error, var(--ui-input-text-error, #f87171));
+      }
+
+      :host-context(.dark) .required-indicator {
+        color: var(--ui-date-picker-error, var(--ui-input-text-error, #f87171));
+      }
+
+      :host-context(.dark) input:disabled {
+        color: var(--ui-date-picker-text-disabled, var(--ui-input-text-disabled, #6b7280));
+      }
+
       /* Container query: vertical stacking for narrow containers */
       @container (max-width: 599px) {
         .calendars-wrapper {
