@@ -60,6 +60,13 @@ export class Calendar extends TailwindElement {
   @state()
   private selectedDate: string = '';
 
+  /**
+   * Internal state for screen reader announcements.
+   * Updated when dates are selected to announce to screen readers.
+   */
+  @state()
+  private liveAnnouncement: string = '';
+
   constructor() {
     super();
     // Client-only initialization
@@ -157,6 +164,19 @@ export class Calendar extends TailwindElement {
         opacity: var(--ui-calendar-disabled-opacity, 0.4);
         pointer-events: none;
       }
+
+      /* Screen reader only content (visually hidden but accessible) */
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border-width: 0;
+      }
     `,
   ];
 
@@ -209,10 +229,21 @@ export class Calendar extends TailwindElement {
   /**
    * Handle date cell click.
    * Updates selectedDate state and emits ui-date-select event.
+   * Also sets live announcement for screen readers.
    */
   private handleDateClick(date: Date): void {
     const isoDate = formatDate(date);
     this.selectedDate = isoDate;
+
+    // Format announcement: "Selected Friday, January 30, 2026"
+    const formatter = new Intl.DateTimeFormat(this.locale, {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+    this.liveAnnouncement = `Selected ${formatter.format(date)}`;
+
     this.emitDateSelect(date);
   }
 
@@ -251,6 +282,11 @@ export class Calendar extends TailwindElement {
 
         <!-- Date cells -->
         ${this.getMonthDays().map((date) => this.renderDayCell(date))}
+
+        <!-- Screen reader live region for announcements -->
+        <div aria-live="polite" aria-atomic="true" class="sr-only" part="live-region">
+          ${this.liveAnnouncement}
+        </div>
       </div>
     `;
   }
