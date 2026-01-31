@@ -23,6 +23,7 @@ import { property, state, query } from 'lit/decorators.js';
 import { TailwindElement, tailwindBaseStyles, dispatchCustomEvent } from '@lit-ui/core';
 import { parseDateInput, formatDateForDisplay, getPlaceholderText } from './date-input-parser.js';
 import { parseISO, isBefore, isAfter, startOfDay, format } from 'date-fns';
+import { computePosition, flip, shift, offset } from '@floating-ui/dom';
 
 /**
  * Date picker component that renders an input field with a calendar popup.
@@ -335,11 +336,8 @@ export class DatePicker extends TailwindElement {
       }
 
       .popup {
-        position: absolute;
-        top: 100%;
-        left: 0;
+        position: fixed;
         z-index: 50;
-        margin-top: 0.25rem;
         background-color: var(--ui-date-picker-popup-bg, white);
         border: 1px solid var(--ui-date-picker-popup-border, #e5e7eb);
         border-radius: 0.5rem;
@@ -578,12 +576,16 @@ export class DatePicker extends TailwindElement {
   }
 
   /**
-   * Open the calendar popup.
+   * Open the calendar popup and position it via Floating UI.
    */
-  private openPopup(): void {
+  private async openPopup(): Promise<void> {
     if (this.disabled) return;
     this.open = true;
     this.triggerElement = this.inputEl;
+
+    // Wait for popup to render, then position
+    await this.updateComplete;
+    this.positionPopup();
   }
 
   /**
@@ -591,6 +593,30 @@ export class DatePicker extends TailwindElement {
    */
   private closePopup(): void {
     this.open = false;
+  }
+
+  /**
+   * Position the popup using Floating UI with flip/shift middleware.
+   * Uses fixed strategy to avoid clipping in scrollable containers.
+   */
+  private async positionPopup(): Promise<void> {
+    if (isServer) return;
+    if (!this.inputContainerEl || !this.popupEl) return;
+
+    const { x, y } = await computePosition(this.inputContainerEl, this.popupEl, {
+      placement: 'bottom-start',
+      strategy: 'fixed',
+      middleware: [
+        offset(4),
+        flip({ fallbackPlacements: ['top-start'] }),
+        shift({ padding: 8 }),
+      ],
+    });
+
+    Object.assign(this.popupEl.style, {
+      left: `${x}px`,
+      top: `${y}px`,
+    });
   }
 
   /**
