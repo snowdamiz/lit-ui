@@ -19,6 +19,9 @@ import {
   getYear,
   getMonth,
   format,
+  isBefore,
+  isAfter,
+  startOfDay,
 } from 'date-fns';
 
 // Re-export commonly used date-fns functions for convenience
@@ -31,6 +34,9 @@ export {
   getYear,
   getMonth,
   format,
+  isBefore,
+  isAfter,
+  startOfDay,
 };
 
 /**

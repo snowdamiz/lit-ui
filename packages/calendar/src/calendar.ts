@@ -20,10 +20,29 @@ import {
   isSameDay,
   isToday,
   format,
+  isBefore,
+  isAfter,
+  startOfDay,
 } from './date-utils.js';
 import { parseISO } from 'date-fns';
 import { getFirstDayOfWeek, getWeekdayNames, getMonthNames } from './intl-utils.js';
-import { KeyboardNavigationManager, type NavigationDirection } from './keyboard-nav.js';
+
+/**
+ * Represents the parsed date constraint state for the calendar.
+ */
+export interface DateConstraints {
+  minDate: Date | null;
+  maxDate: Date | null;
+  disabledDates: Date[];
+}
+
+/**
+ * Result of checking whether a date is disabled.
+ */
+interface DateDisabledResult {
+  disabled: boolean;
+  reason: string;
+}
 
 /**
  * Format a date as a full accessible label for screen readers.
@@ -41,16 +60,6 @@ function formatDateLabel(date: Date, locale: string): string {
   }).format(date);
 }
 
-/** Map of keyboard event keys to navigation directions. */
-const KEY_TO_DIRECTION: Record<string, NavigationDirection> = {
-  ArrowLeft: 'left',
-  ArrowRight: 'right',
-  ArrowUp: 'up',
-  ArrowDown: 'down',
-  Home: 'home',
-  End: 'end',
-};
-
 /**
  * Calendar display component that renders a 7-column month grid.
  *
@@ -59,7 +68,7 @@ const KEY_TO_DIRECTION: Record<string, NavigationDirection> = {
  * - Leading/trailing days from adjacent months with reduced opacity
  * - CSS Grid layout with customizable sizing via CSS custom properties
  * - SSR-safe with isServer guards
- * - Full keyboard navigation (WAI-ARIA APG Grid Pattern)
+ * - Date constraints: min-date, max-date, and disabled-dates with ARIA support
  *
  * @element lui-calendar
  * @fires ui-date-select - Dispatched when a date is selected, with { date: Date, isoString: string }
@@ -215,6 +224,12 @@ export class Calendar extends TailwindElement {
         outline-offset: 2px;
       }
 
+      .date-button[aria-disabled="true"] {
+        opacity: var(--ui-calendar-disabled-opacity, 0.5);
+        cursor: not-allowed;
+        pointer-events: none;
+      }
+
       .visually-hidden {
         position: absolute;
         width: 1px;
@@ -285,6 +300,27 @@ export class Calendar extends TailwindElement {
   locale = '';
 
   /**
+   * Minimum selectable date as ISO string (YYYY-MM-DD).
+   * Dates before this are visually grayed and not selectable.
+   */
+  @property({ type: String, attribute: 'min-date' })
+  minDate = '';
+
+  /**
+   * Maximum selectable date as ISO string (YYYY-MM-DD).
+   * Dates after this are visually grayed and not selectable.
+   */
+  @property({ type: String, attribute: 'max-date' })
+  maxDate = '';
+
+  /**
+   * Array of specific disabled dates as ISO strings (YYYY-MM-DD).
+   * These dates are visually grayed and not selectable.
+   */
+  @property({ type: Array, attribute: false })
+  disabledDates: string[] = [];
+
+  /**
    * The currently displayed month.
    */
   @state()
@@ -321,81 +357,73 @@ export class Calendar extends TailwindElement {
   private showHelp = false;
 
   /**
+   * Parsed date constraints derived from minDate, maxDate, and disabledDates properties.
+   */
+  private parsedConstraints: DateConstraints = {
+    minDate: null,
+    maxDate: null,
+    disabledDates: [],
+  };
+
+  /**
    * Reference to the native dialog element for help shortcuts.
    */
   @query('.help-dialog')
   private helpDialog!: HTMLDialogElement;
 
   /**
-   * Keyboard navigation manager for roving tabindex.
-   * NOT a Lit reactive property — managed imperatively.
-   */
-  private navigationManager: KeyboardNavigationManager | null = null;
-
-  /**
-   * Current focused cell index. Plain number, NOT @state().
-   * Managed imperatively by KeyboardNavigationManager.
-   */
-  private focusedIndex: number = 0;
-
-  /**
-   * The calendar days array, cached for use in keyboard handler.
-   * Only includes current-month days (not outside-month).
-   */
-  private currentMonthDays: Date[] = [];
-
-  /**
-   * Initialize keyboard navigation after first render.
-   */
-  protected override firstUpdated(): void {
-    if (isServer) return;
-    this.navigationManager = new KeyboardNavigationManager(7);
-    requestAnimationFrame(() => this.setupCells());
-  }
-
-  /**
-   * Sync dropdown state and value property when reactive properties change.
+   * Sync dropdown state, value property, and date constraints when reactive properties change.
    */
   protected override updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
     if (changedProperties.has('currentMonth' as keyof this)) {
       this.selectedMonth = getMonth(this.currentMonth);
       this.selectedYear = getYear(this.currentMonth);
-      // Re-setup cells after month changes (DOM will be updated)
-      if (!isServer) {
-        requestAnimationFrame(() => this.setupCells());
-      }
     }
     if (changedProperties.has('value') && this.value) {
       this.selectedDate = parseISO(this.value);
     }
+    // Parse constraint properties to Date objects when they change
+    if (changedProperties.has('minDate')) {
+      this.parsedConstraints = {
+        ...this.parsedConstraints,
+        minDate: this.minDate ? startOfDay(parseISO(this.minDate)) : null,
+      };
+    }
+    if (changedProperties.has('maxDate')) {
+      this.parsedConstraints = {
+        ...this.parsedConstraints,
+        maxDate: this.maxDate ? startOfDay(parseISO(this.maxDate)) : null,
+      };
+    }
+    if (changedProperties.has('disabledDates' as keyof this)) {
+      this.parsedConstraints = {
+        ...this.parsedConstraints,
+        disabledDates: this.disabledDates.map((d) => startOfDay(parseISO(d))),
+      };
+    }
   }
 
   /**
-   * Query current-month date buttons from the DOM and configure
-   * the navigation manager with them.
+   * Check whether a date is disabled based on min/max/disabled constraints.
+   *
+   * @param date - The date to check
+   * @returns Object with disabled flag and human-readable reason
    */
-  private setupCells(): void {
-    if (!this.navigationManager) return;
+  private isDateDisabled(date: Date): DateDisabledResult {
+    const normalized = startOfDay(date);
+    const { minDate, maxDate, disabledDates } = this.parsedConstraints;
 
-    const buttons = Array.from(
-      this.renderRoot.querySelectorAll('.date-button:not(.outside-month)')
-    ) as HTMLElement[];
-
-    // Cache current-month days for keyboard selection
-    const allDays = getCalendarDays(this.currentMonth, this.weekStartsOn);
-    this.currentMonthDays = allDays.filter((d) => isSameMonth(d, this.currentMonth));
-
-    this.navigationManager.setCells(buttons);
-
-    // Try to focus today if it's in the current month, otherwise first day
-    const todayIndex = this.currentMonthDays.findIndex((d) => isToday(d));
-    if (todayIndex !== -1) {
-      this.focusedIndex = todayIndex;
-    } else {
-      this.focusedIndex = 0;
+    if (minDate && isBefore(normalized, minDate)) {
+      return { disabled: true, reason: 'before minimum date' };
     }
-    this.navigationManager.setFocusedIndex(this.focusedIndex);
+    if (maxDate && isAfter(normalized, maxDate)) {
+      return { disabled: true, reason: 'after maximum date' };
+    }
+    if (disabledDates.some((d) => isSameDay(d, normalized))) {
+      return { disabled: true, reason: 'unavailable' };
+    }
+    return { disabled: false, reason: '' };
   }
 
   /**
@@ -478,10 +506,14 @@ export class Calendar extends TailwindElement {
 
   /**
    * Handle date selection via click.
-   * Skips outside-month dates, sets selectedDate, and emits ui-date-select.
+   * Skips outside-month dates and disabled dates, sets selectedDate, and emits ui-date-select.
    */
   private handleDateSelect(date: Date): void {
     if (!isSameMonth(date, this.currentMonth)) {
+      return;
+    }
+    const { disabled } = this.isDateDisabled(date);
+    if (disabled) {
       return;
     }
     this.selectedDate = date;
@@ -490,106 +522,6 @@ export class Calendar extends TailwindElement {
       isoString: format(date, 'yyyy-MM-dd'),
     });
     this.liveAnnouncement = 'Selected ' + formatDateLabel(date, this.effectiveLocale);
-  }
-
-  /**
-   * Handle keyboard navigation within the calendar grid.
-   * Implements WAI-ARIA APG Grid Pattern with roving tabindex.
-   */
-  private handleKeydown(e: KeyboardEvent): void {
-    if (!this.navigationManager) return;
-
-    // Arrow keys, Home, End — directional navigation
-    const direction = KEY_TO_DIRECTION[e.key];
-    if (direction) {
-      e.preventDefault();
-      const result = this.navigationManager.moveFocus(direction);
-      if (result === -1) {
-        // Boundary crossed — navigate to adjacent month
-        if (direction === 'left' || direction === 'up') {
-          const savedIndex = this.navigationManager.getFocusedIndex();
-          this.navigatePrevMonth();
-          // After render, focus last cell (or preserve relative row position for up)
-          this.updateComplete.then(() => {
-            requestAnimationFrame(() => {
-              if (!this.navigationManager) return;
-              const cellCount = this.currentMonthDays.length;
-              if (direction === 'left') {
-                this.navigationManager.setFocusedIndex(cellCount - 1);
-              } else {
-                // 'up' — try same column in last row
-                const col = savedIndex % 7;
-                const lastRowStart = Math.floor((cellCount - 1) / 7) * 7;
-                const targetIndex = Math.min(lastRowStart + col, cellCount - 1);
-                this.navigationManager.setFocusedIndex(targetIndex);
-              }
-              this.navigationManager.focusCurrent();
-            });
-          });
-        } else if (direction === 'right' || direction === 'down') {
-          const savedIndex = this.navigationManager.getFocusedIndex();
-          this.navigateNextMonth();
-          this.updateComplete.then(() => {
-            requestAnimationFrame(() => {
-              if (!this.navigationManager) return;
-              if (direction === 'right') {
-                this.navigationManager.setFocusedIndex(0);
-              } else {
-                // 'down' — try same column in first row
-                const col = savedIndex % 7;
-                this.navigationManager.setFocusedIndex(col);
-              }
-              this.navigationManager.focusCurrent();
-            });
-          });
-        }
-      } else {
-        this.focusedIndex = result;
-      }
-      return;
-    }
-
-    // PageUp — previous month
-    if (e.key === 'PageUp') {
-      e.preventDefault();
-      const savedIndex = this.navigationManager.getFocusedIndex();
-      this.navigatePrevMonth();
-      this.updateComplete.then(() => {
-        requestAnimationFrame(() => {
-          if (!this.navigationManager) return;
-          const cellCount = this.currentMonthDays.length;
-          this.navigationManager.setFocusedIndex(Math.min(savedIndex, cellCount - 1));
-          this.navigationManager.focusCurrent();
-        });
-      });
-      return;
-    }
-
-    // PageDown — next month
-    if (e.key === 'PageDown') {
-      e.preventDefault();
-      const savedIndex = this.navigationManager.getFocusedIndex();
-      this.navigateNextMonth();
-      this.updateComplete.then(() => {
-        requestAnimationFrame(() => {
-          if (!this.navigationManager) return;
-          const cellCount = this.currentMonthDays.length;
-          this.navigationManager.setFocusedIndex(Math.min(savedIndex, cellCount - 1));
-          this.navigationManager.focusCurrent();
-        });
-      });
-      return;
-    }
-
-    // Enter or Space — select focused date
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      const focusIdx = this.navigationManager.getFocusedIndex();
-      if (focusIdx >= 0 && focusIdx < this.currentMonthDays.length) {
-        this.handleDateSelect(this.currentMonthDays[focusIdx]);
-      }
-      return;
-    }
   }
 
   /**
@@ -633,9 +565,6 @@ export class Calendar extends TailwindElement {
     const weekdays = getWeekdayNames(this.effectiveLocale, this.firstDayOfWeek);
     const days = getCalendarDays(this.currentMonth, this.weekStartsOn);
     const monthLabel = getMonthYearLabel(this.currentMonth, this.effectiveLocale);
-
-    // Track which current-month button index we're at for initial tabindex
-    let currentMonthButtonIndex = 0;
 
     return html`
       <div class="calendar">
@@ -705,32 +634,23 @@ export class Calendar extends TailwindElement {
           class="calendar-grid"
           role="grid"
           aria-labelledby="month-heading"
-          @keydown="${this.handleKeydown}"
         >
           ${days.map((day) => {
             const outsideMonth = !isSameMonth(day, this.currentMonth);
             const today = isToday(day);
             const selected = this.selectedDate !== null && isSameDay(day, this.selectedDate);
-
-            // Compute initial tabindex for keyboard discoverability.
-            // First current-month button gets tabindex=0, all others get -1.
-            // After firstUpdated(), KeyboardNavigationManager takes over imperatively.
-            let tabindex = -1;
-            if (!outsideMonth) {
-              if (currentMonthButtonIndex === 0) {
-                tabindex = 0;
-              }
-              currentMonthButtonIndex++;
-            }
-
+            const constraint = this.isDateDisabled(day);
+            const isDisabled = outsideMonth || constraint.disabled;
+            const label = constraint.disabled
+              ? `${formatDateLabel(day, this.effectiveLocale)}, ${constraint.reason}`
+              : formatDateLabel(day, this.effectiveLocale);
             return html`
               <button
                 class="date-button ${outsideMonth ? 'outside-month' : ''} ${today ? 'today' : ''}"
-                tabindex="${tabindex}"
-                aria-label="${formatDateLabel(day, this.effectiveLocale)}"
+                aria-label="${label}"
                 aria-current="${today ? 'date' : nothing}"
                 aria-selected="${selected ? 'true' : 'false'}"
-                ?aria-disabled="${outsideMonth}"
+                aria-disabled="${isDisabled ? 'true' : 'false'}"
                 @click="${() => this.handleDateSelect(day)}"
               >
                 ${day.getDate()}
