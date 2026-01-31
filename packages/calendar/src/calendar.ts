@@ -22,7 +22,7 @@ import { PropertyValues } from 'lit';
 import { TailwindElement, tailwindBaseStyles } from '@lit-ui/core';
 
 // Import utility functions
-import { getMonthDays, formatDate, isSameDayCompare, isDateToday } from './date-utils.js';
+import { getMonthDays, formatDate, isSameDayCompare, isDateToday, addMonthsTo, subtractMonths } from './date-utils.js';
 import { getWeekdayNames, getMonthYearLabel } from './intl-utils.js';
 import { KeyboardNavigationManager } from './keyboard-nav.js';
 
@@ -88,6 +88,20 @@ export class Calendar extends TailwindElement {
    */
   @state()
   private liveAnnouncement: string = '';
+
+  /**
+   * Internal state tracking the selected month index for dropdown.
+   * @default current month (0-11)
+   */
+  @state()
+  private selectedMonth: number = new Date().getMonth();
+
+  /**
+   * Internal state tracking the selected year for dropdown.
+   * @default current year
+   */
+  @state()
+  private selectedYear: number = new Date().getFullYear();
 
   /**
    * Controls keyboard help dialog visibility.
@@ -267,6 +281,56 @@ export class Calendar extends TailwindElement {
         white-space: nowrap;
         border-width: 0;
       }
+
+      /* Keyboard help button */
+      .help-button {
+        padding: 0.25rem 0.5rem;
+        margin-left: 0.5rem;
+        border-radius: 0.25rem;
+        background: var(--color-gray-200);
+        border: 1px solid var(--color-gray-300);
+        cursor: pointer;
+        font-size: 0.875rem;
+      }
+
+      .help-button:hover {
+        background: var(--color-gray-300);
+      }
+
+      /* Keyboard help dialog */
+      .help-dialog {
+        position: absolute;
+        top: 3rem;
+        right: 0;
+        background: var(--color-background, #fff);
+        border: 1px solid var(--color-border, var(--color-gray-300));
+        padding: 1rem;
+        border-radius: 0.375rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        z-index: 10;
+        max-width: 300px;
+      }
+
+      .help-dialog h3 {
+        margin: 0 0 0.5rem 0;
+        font-size: 1rem;
+        font-weight: 600;
+      }
+
+      .help-dialog p {
+        margin: 0 0 1rem 0;
+        font-size: 0.875rem;
+        line-height: 1.5;
+      }
+
+      .help-dialog button {
+        padding: 0.25rem 0.75rem;
+        border-radius: 0.25rem;
+        background: var(--color-brand-500);
+        color: white;
+        border: none;
+        cursor: pointer;
+      }
     `,
   ];
 
@@ -292,6 +356,14 @@ export class Calendar extends TailwindElement {
    */
   private getMonthYearLabel(): string {
     return getMonthYearLabel(this.currentMonth, this.locale);
+  }
+
+  /**
+   * Get keyboard help text.
+   * Provides information about keyboard navigation shortcuts.
+   */
+  private get keyboardHelpText(): string {
+    return 'Use arrow keys to navigate dates. Enter or Space to select. Page Up and Page Down change months.';
   }
 
   /**
@@ -448,6 +520,15 @@ export class Calendar extends TailwindElement {
           ${this.getMonthYearLabel()}
         </h2>
 
+        <!-- Keyboard help button -->
+        <button
+          @click=${() => this.showKeyboardHelp = true}
+          aria-label="Keyboard shortcuts help"
+          class="help-button"
+        >
+          ?
+        </button>
+
         <!-- Weekday headers -->
         <div role="row">
           ${this.getWeekdayNames().map(
@@ -466,6 +547,15 @@ export class Calendar extends TailwindElement {
         <div aria-live="polite" aria-atomic="true" class="sr-only" part="live-region">
           ${this.liveAnnouncement}
         </div>
+
+        <!-- Keyboard help dialog -->
+        ${this.showKeyboardHelp ? html`
+          <div role="dialog" aria-modal="true" aria-labelledby="help-title" class="help-dialog">
+            <h3 id="help-title">Keyboard Navigation</h3>
+            <p aria-live="polite">${this.keyboardHelpText}</p>
+            <button @click=${() => this.showKeyboardHelp = false}>Close</button>
+          </div>
+        ` : ''}
       </div>
     `;
   }
