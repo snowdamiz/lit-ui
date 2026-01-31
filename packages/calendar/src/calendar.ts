@@ -501,13 +501,13 @@ export class Calendar extends TailwindElement {
 
   /**
    * Get localized month names for dropdown.
+   * Calls getMonthName from intl-utils.
    */
   private getMonthOptions(): string[] {
     const months: string[] = [];
     for (let i = 0; i < 12; i++) {
       const date = new Date(2026, i, 1);
-      const formatter = new Intl.DateTimeFormat(this.locale, { month: 'long' });
-      months.push(formatter.format(date));
+      months.push(getMonthName(date, this.locale));
     }
     return months;
   }
