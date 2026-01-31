@@ -1,9 +1,14 @@
 // @lit-ui/calendar - Accessible calendar display component with SSR support
-// /// <reference path="./jsx.d.ts" />
+/// <reference path="./jsx.d.ts" />
 import { isServer } from 'lit';
 
 // Export component classes and types
 export { Calendar } from './calendar.js';
+export type { DateConstraints } from './calendar.js';
+
+// Export keyboard navigation manager
+export { KeyboardNavigationManager } from './keyboard-nav.js';
+export type { NavigationDirection } from './keyboard-nav.js';
 
 // Re-export TailwindElement and isServer for convenience
 export { TailwindElement, isServer } from '@lit-ui/core';
@@ -21,6 +26,9 @@ export {
   getYear,
   getMonth,
   format,
+  isBefore,
+  isAfter,
+  startOfDay,
 } from './date-utils.js';
 
 export {
