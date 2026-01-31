@@ -110,6 +110,24 @@ export class Calendar extends TailwindElement {
   showWeekNumbers = false;
 
   /**
+   * Externally controlled display month in ISO format (YYYY-MM-DD or YYYY-MM).
+   * When set, overrides internal currentMonth state.
+   * Used by multi-month wrapper to control which month each child displays.
+   * @default undefined (internal navigation controls displayed month)
+   */
+  @property({ type: String, attribute: 'display-month' })
+  displayMonth?: string;
+
+  /**
+   * Whether to hide navigation controls (header buttons, heading, dropdowns).
+   * When true, only the month grid is rendered without any navigation UI.
+   * Used by multi-month wrapper where navigation is owned by the parent.
+   * @default false
+   */
+  @property({ type: Boolean, attribute: 'hide-navigation' })
+  hideNavigation = false;
+
+  /**
    * Custom render callback for day cell content.
    * When provided, receives DayCellState and should return Lit template content.
    * The calendar wrapper div retains all accessibility attributes regardless.
@@ -372,6 +390,21 @@ export class Calendar extends TailwindElement {
     // Parse disabledDates when it changes
     if (changedProperties.has('disabledDates')) {
       this.parsedDisabledDates = this.disabledDates?.map(d => parseDate(d));
+    }
+
+    // Sync displayMonth to internal state when externally controlled
+    if (changedProperties.has('displayMonth') && this.displayMonth) {
+      let dateStr = this.displayMonth;
+      // Support YYYY-MM format by appending -01
+      if (/^\d{4}-\d{2}$/.test(dateStr)) {
+        dateStr = `${dateStr}-01`;
+      }
+      const parsed = parseDate(dateStr);
+      if (parsed && !isNaN(parsed.getTime())) {
+        this.currentMonth = parsed;
+        this.selectedMonth = parsed.getMonth();
+        this.selectedYear = parsed.getFullYear();
+      }
     }
 
     // Reinitialize navigation manager when grid cells change (month change)
@@ -1285,17 +1318,19 @@ export class Calendar extends TailwindElement {
         aria-labelledby="calendar-heading"
         @keydown=${this.handleKeyDown}
       >
-        ${this.renderHeader()}
-        ${this.renderSelectors()}
+        ${this.hideNavigation ? nothing : this.renderHeader()}
+        ${this.hideNavigation ? nothing : this.renderSelectors()}
 
-        <!-- Keyboard help button -->
-        <button
-          @click=${() => this.showKeyboardHelp = true}
-          aria-label="Keyboard shortcuts help"
-          class="help-button"
-        >
-          ?
-        </button>
+        ${this.hideNavigation ? nothing : html`
+          <!-- Keyboard help button -->
+          <button
+            @click=${() => this.showKeyboardHelp = true}
+            aria-label="Keyboard shortcuts help"
+            class="help-button"
+          >
+            ?
+          </button>
+        `}
 
         <!-- Month grid wrapper for animation targeting -->
         <div class="month-grid">
@@ -1313,7 +1348,7 @@ export class Calendar extends TailwindElement {
         </div>
 
         <!-- Keyboard help dialog -->
-        ${this.showKeyboardHelp ? html`
+        ${!this.hideNavigation && this.showKeyboardHelp ? html`
           <div role="dialog" aria-modal="true" aria-labelledby="help-title" class="help-dialog">
             <h3 id="help-title">Keyboard Navigation</h3>
             <p aria-live="polite">${this.keyboardHelpText}</p>
