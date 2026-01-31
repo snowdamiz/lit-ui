@@ -94,15 +94,21 @@ export function parseDateInput(input: string, locale?: string): Date | null {
  *
  * @param date - The date to format
  * @param locale - BCP 47 locale string, defaults to 'en-US' (SSR-safe)
+ * @param options - Optional Intl.DateTimeFormatOptions to customize display format
  * @returns Formatted date string
  */
-export function formatDateForDisplay(date: Date, locale?: string): string {
+export function formatDateForDisplay(
+  date: Date,
+  locale?: string,
+  options?: Intl.DateTimeFormatOptions,
+): string {
   const effectiveLocale = locale || 'en-US';
-  return new Intl.DateTimeFormat(effectiveLocale, {
+  const effectiveOptions = options ?? {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
-  }).format(date);
+  };
+  return new Intl.DateTimeFormat(effectiveLocale, effectiveOptions).format(date);
 }
 
 /**
