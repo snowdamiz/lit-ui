@@ -473,6 +473,25 @@ export class DatePicker extends TailwindElement {
         background-color: var(--ui-date-picker-bg-disabled, var(--ui-input-bg-disabled, #1f2937));
         border-color: var(--ui-date-picker-border-disabled, var(--ui-input-border-disabled, #374151));
       }
+
+      :host-context(.dark) .preset-buttons {
+        border-bottom-color: var(--ui-date-picker-popup-border, #374151);
+      }
+
+      :host-context(.dark) .preset-button {
+        border-color: var(--ui-date-picker-preset-border, #4b5563);
+        background: var(--ui-date-picker-preset-bg, #1f2937);
+        color: var(--ui-date-picker-preset-text, #f9fafb);
+      }
+
+      :host-context(.dark) .preset-button:hover:not(:disabled) {
+        background: var(--ui-date-picker-preset-bg-hover, #374151);
+        border-color: var(--ui-date-picker-preset-border-hover, #6b7280);
+      }
+
+      :host-context(.dark) .inline-wrapper {
+        color: var(--ui-date-picker-text, #f9fafb);
+      }
     `,
   ];
 
