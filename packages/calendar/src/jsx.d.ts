@@ -16,8 +16,8 @@ interface LuiCalendarAttributes {
 
 // Event handler types
 interface LuiCalendarEvents {
-  'onui-date-select'?: (e: CustomEvent<{ date: Date; isoString: string }>) => void;
-  'onui-month-change'?: (e: CustomEvent<{ year: number; month: number }>) => void;
+  onchange?: (e: CustomEvent<{ date: Date; isoString: string }>) => void;
+  'onmonth-change'?: (e: CustomEvent<{ year: number; month: number }>) => void;
 }
 
 // React JSX support
@@ -43,8 +43,8 @@ declare module 'vue' {
 declare namespace svelteHTML {
   interface IntrinsicElements {
     'lui-calendar': LuiCalendarAttributes & {
-      'on:ui-date-select'?: (e: CustomEvent<{ date: Date; isoString: string }>) => void;
-      'on:ui-month-change'?: (e: CustomEvent<{ year: number; month: number }>) => void;
+      'on:change'?: (e: CustomEvent<{ date: Date; isoString: string }>) => void;
+      'on:month-change'?: (e: CustomEvent<{ year: number; month: number }>) => void;
     };
   }
 }

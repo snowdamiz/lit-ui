@@ -90,27 +90,55 @@ const firstDayCode = `<!-- Force Monday start regardless of locale -->
 <!-- Force Sunday start -->
 <lui-calendar first-day-of-week="7"></lui-calendar>`;
 
-const disabledDatesCode = `<lui-calendar id="my-calendar"></lui-calendar>
+const disabledDatesHtmlCode = `<lui-calendar id="my-calendar"></lui-calendar>
 
 <script>
-  const cal = document.getElementById('my-calendar');
-  cal.disabledDates = ['2026-02-14', '2026-02-15', '2026-02-16'];
+  document.getElementById('my-calendar')
+    .disabledDates = ['2026-02-14', '2026-02-15', '2026-02-16'];
 </script>`;
 
-const eventsCode = `<lui-calendar id="cal"></lui-calendar>
+const disabledDatesReactCode = `const disabled = ['2026-02-14', '2026-02-15', '2026-02-16'];
 
-<script>
-  const cal = document.getElementById('cal');
+<lui-calendar
+  ref={(el) => { if (el) el.disabledDates = disabled; }}
+/>`;
 
-  cal.addEventListener('ui-date-select', (e) => {
-    console.log('Selected:', e.detail.isoString);
-    // e.detail.date is a Date object
-  });
+const disabledDatesVueCode = `<template>
+  <lui-calendar ref="cal" />
+</template>
 
-  cal.addEventListener('ui-month-change', (e) => {
-    console.log('Month:', e.detail.year, e.detail.month);
-  });
+<script setup>
+import { ref, onMounted } from 'vue';
+const cal = ref(null);
+onMounted(() => {
+  cal.value.disabledDates = ['2026-02-14', '2026-02-15', '2026-02-16'];
+});
 </script>`;
+
+const disabledDatesSvelteCode = `<script>
+  let cal;
+  $: if (cal) {
+    cal.disabledDates = ['2026-02-14', '2026-02-15', '2026-02-16'];
+  }
+</script>
+
+<lui-calendar bind:this={cal} />`;
+
+const eventsHtmlCode = `<lui-calendar
+  onchange="console.log('Selected:', this.value)"
+></lui-calendar>`;
+
+const eventsReactCode = `<lui-calendar
+  onchange={(e) => console.log('Selected:', e.target.value)}
+/>`;
+
+const eventsVueCode = `<lui-calendar
+  @change="console.log('Selected:', $event.target.value)"
+/>`;
+
+const eventsSvelteCode = `<lui-calendar
+  on:change={(e) => console.log('Selected:', e.target.value)}
+/>`;
 
 const cssVarsCode = `/* Global override */
 :root {
@@ -272,10 +300,10 @@ export function CalendarPage() {
                   max-date={isoDate(60)}
                 ></lui-calendar>
               }
-              html={disabledDatesCode}
-              react={disabledDatesCode}
-              vue={disabledDatesCode}
-              svelte={disabledDatesCode}
+              html={disabledDatesHtmlCode}
+              react={disabledDatesReactCode}
+              vue={disabledDatesVueCode}
+              svelte={disabledDatesSvelteCode}
             />
           </section>
 
@@ -283,16 +311,16 @@ export function CalendarPage() {
           <section>
             <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-2">Listening to Events</h3>
             <p className="text-gray-500 dark:text-gray-400 mb-4 text-sm">
-              The calendar emits <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">ui-date-select</code> when a date is clicked and <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">ui-month-change</code> when navigating months.
+              The calendar emits a standard <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">change</code> event when a date is selected (updating the <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">value</code> property) and <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">month-change</code> when navigating months.
             </p>
             <ExampleBlock
               preview={
                 <lui-calendar></lui-calendar>
               }
-              html={eventsCode}
-              react={eventsCode}
-              vue={eventsCode}
-              svelte={eventsCode}
+              html={eventsHtmlCode}
+              react={eventsReactCode}
+              vue={eventsVueCode}
+              svelte={eventsSvelteCode}
             />
           </section>
 
@@ -424,10 +452,10 @@ export function CalendarPage() {
                 <div className="pointer-events-none absolute inset-0 rounded-xl bg-gradient-to-br from-gray-50 dark:from-gray-800 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
                 <div className="relative">
                   <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                    <code className="px-2 py-1 bg-gray-900 text-white rounded-lg text-xs font-mono font-medium">ui-date-select</code>
+                    <code className="px-2 py-1 bg-gray-900 text-white rounded-lg text-xs font-mono font-medium">change</code>
                   </h4>
                   <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-                    Fired when a date is selected. Detail: <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">{'{ date: Date, isoString: string }'}</code>
+                    Fired when a date is selected. The <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">value</code> property is updated to the ISO string. Detail: <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">{'{ date: Date, isoString: string }'}</code>
                   </p>
                 </div>
               </div>
@@ -435,7 +463,7 @@ export function CalendarPage() {
                 <div className="pointer-events-none absolute inset-0 rounded-xl bg-gradient-to-br from-gray-50 dark:from-gray-800 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
                 <div className="relative">
                   <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                    <code className="px-2 py-1 bg-gray-900 text-white rounded-lg text-xs font-mono font-medium">ui-month-change</code>
+                    <code className="px-2 py-1 bg-gray-900 text-white rounded-lg text-xs font-mono font-medium">month-change</code>
                   </h4>
                   <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
                     Fired when the displayed month changes via navigation buttons, dropdowns, or keyboard. Detail: <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">{'{ year: number, month: number }'}</code>

@@ -72,8 +72,8 @@ function formatDateLabel(date: Date, locale: string): string {
  * - Date constraints: min-date, max-date, and disabled-dates with ARIA support
  *
  * @element lui-calendar
- * @fires ui-date-select - Dispatched when a date is selected, with { date: Date, isoString: string }
- * @fires ui-month-change - Dispatched when the displayed month changes
+ * @fires change - Dispatched when a date is selected, with { date: Date, isoString: string }
+ * @fires month-change - Dispatched when the displayed month changes
  */
 export class Calendar extends TailwindElement {
   static override styles: CSSResultGroup = [
@@ -649,10 +649,10 @@ export class Calendar extends TailwindElement {
   }
 
   /**
-   * Emit ui-month-change event with the current year and month.
+   * Emit month-change event with the current year and month.
    */
   private emitMonthChange(): void {
-    dispatchCustomEvent(this, 'ui-month-change', {
+    dispatchCustomEvent(this, 'month-change', {
       year: getYear(this.currentMonth),
       month: getMonth(this.currentMonth),
     });
@@ -689,7 +689,7 @@ export class Calendar extends TailwindElement {
 
   /**
    * Handle date selection via click.
-   * Skips outside-month dates and disabled dates, sets selectedDate, and emits ui-date-select.
+   * Skips outside-month dates and disabled dates, sets selectedDate, updates value, and emits change.
    */
   private handleDateSelect(date: Date): void {
     if (!isSameMonth(date, this.currentMonth)) {
@@ -700,9 +700,10 @@ export class Calendar extends TailwindElement {
       return;
     }
     this.selectedDate = date;
-    dispatchCustomEvent(this, 'ui-date-select', {
+    this.value = format(date, 'yyyy-MM-dd');
+    dispatchCustomEvent(this, 'change', {
       date: date,
-      isoString: format(date, 'yyyy-MM-dd'),
+      isoString: this.value,
     });
     this.liveAnnouncement = 'Selected ' + formatDateLabel(date, this.effectiveLocale);
   }
