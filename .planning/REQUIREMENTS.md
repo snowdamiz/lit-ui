@@ -9,25 +9,25 @@ Requirements for v4.3 milestone - complete date/time input capabilities. Each ma
 
 ### Calendar Display
 
-- [ ] **CAL-01**: Component displays 7-column month grid with weekday headers
-- [ ] **CAL-02**: Today indicator visually highlights current date with aria-current="date"
-- [ ] **CAL-03**: Selected date is visually distinct from today and other dates
-- [ ] **CAL-04**: Previous/next month navigation buttons with descriptive ARIA labels
-- [ ] **CAL-05**: Month/year dropdown selectors for jumping to specific months
-- [ ] **CAL-06**: Year dropdown or decade view for distant year selection
-- [ ] **CAL-07**: Keyboard navigation supports arrow keys, Home/End, Page Up/Down
-- [ ] **CAL-08**: Roving tabindex implementation for grid navigation
-- [ ] **CAL-09**: Screen reader announces month changes via aria-live region
-- [ ] **CAL-10**: Screen reader announces selected date via aria-live region
-- [ ] **CAL-11**: Minimum date constraint disables dates before min
-- [ ] **CAL-12**: Maximum date constraint disables dates after max
-- [ ] **CAL-13**: Specific dates can be disabled with visual gray state
-- [ ] **CAL-14**: Disabled dates include reason in aria-label
-- [ ] **CAL-15**: First day of week localizes based on user locale (Sunday US, Monday EU)
-- [ ] **CAL-16**: Month names localize via Intl.DateTimeFormat
-- [ ] **CAL-17**: Weekday names localize via Intl.DateTimeFormat
-- [ ] **CAL-18**: Component respects dark mode via :host-context(.dark)
-- [ ] **CAL-19**: Component renders via SSR with Declarative Shadow DOM
+- [x] **CAL-01**: Component displays 7-column month grid with weekday headers
+- [x] **CAL-02**: Today indicator visually highlights current date with aria-current="date"
+- [x] **CAL-03**: Selected date is visually distinct from today and other dates
+- [x] **CAL-04**: Previous/next month navigation buttons with descriptive ARIA labels
+- [x] **CAL-05**: Month/year dropdown selectors for jumping to specific months
+- [x] **CAL-06**: Year dropdown or decade view for distant year selection
+- [x] **CAL-07**: Keyboard navigation supports arrow keys, Home/End, Page Up/Down
+- [x] **CAL-08**: Roving tabindex implementation for grid navigation
+- [x] **CAL-09**: Screen reader announces month changes via aria-live region
+- [x] **CAL-10**: Screen reader announces selected date via aria-live region
+- [x] **CAL-11**: Minimum date constraint disables dates before min
+- [x] **CAL-12**: Maximum date constraint disables dates after max
+- [x] **CAL-13**: Specific dates can be disabled with visual gray state
+- [x] **CAL-14**: Disabled dates include reason in aria-label
+- [x] **CAL-15**: First day of week localizes based on user locale (Sunday US, Monday EU)
+- [x] **CAL-16**: Month names localize via Intl.DateTimeFormat
+- [x] **CAL-17**: Weekday names localize via Intl.DateTimeFormat
+- [x] **CAL-18**: Component respects dark mode via :host-context(.dark)
+- [x] **CAL-19**: Component renders via SSR with Declarative Shadow DOM
 - [ ] **CAL-20**: Multiple month display shows 2-3 month grids side-by-side
 - [ ] **CAL-21**: Decade view displays year grid for fast year selection
 - [ ] **CAL-22**: Century view displays decade grid for birth year selection
@@ -170,25 +170,25 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CAL-01 | Phase 42 | Pending |
-| CAL-02 | Phase 42 | Pending |
-| CAL-03 | Phase 42 | Pending |
-| CAL-04 | Phase 42 | Pending |
-| CAL-05 | Phase 42 | Pending |
-| CAL-06 | Phase 42 | Pending |
-| CAL-07 | Phase 42 | Pending |
-| CAL-08 | Phase 42 | Pending |
-| CAL-09 | Phase 42 | Pending |
-| CAL-10 | Phase 42 | Pending |
-| CAL-11 | Phase 42 | Pending |
-| CAL-12 | Phase 42 | Pending |
-| CAL-13 | Phase 42 | Pending |
-| CAL-14 | Phase 42 | Pending |
-| CAL-15 | Phase 42 | Pending |
-| CAL-16 | Phase 42 | Pending |
-| CAL-17 | Phase 42 | Pending |
-| CAL-18 | Phase 42 | Pending |
-| CAL-19 | Phase 42 | Pending |
+| CAL-01 | Phase 42 | Complete |
+| CAL-02 | Phase 42 | Complete |
+| CAL-03 | Phase 42 | Complete |
+| CAL-04 | Phase 42 | Complete |
+| CAL-05 | Phase 42 | Complete |
+| CAL-06 | Phase 42 | Complete |
+| CAL-07 | Phase 42 | Complete |
+| CAL-08 | Phase 42 | Complete |
+| CAL-09 | Phase 42 | Complete |
+| CAL-10 | Phase 42 | Complete |
+| CAL-11 | Phase 42 | Complete |
+| CAL-12 | Phase 42 | Complete |
+| CAL-13 | Phase 42 | Complete |
+| CAL-14 | Phase 42 | Complete |
+| CAL-15 | Phase 42 | Complete |
+| CAL-16 | Phase 42 | Complete |
+| CAL-17 | Phase 42 | Complete |
+| CAL-18 | Phase 42 | Complete |
+| CAL-19 | Phase 42 | Complete |
 | CAL-20 | Phase 43 | Pending |
 | CAL-21 | Phase 43 | Pending |
 | CAL-22 | Phase 43 | Pending |

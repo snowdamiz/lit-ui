@@ -373,8 +373,8 @@ Plans:
 - [x] 42-06-PLAN.md — Date constraints (min/max, disabled dates) with accessibility
 - [x] 42-07-PLAN.md — Internationalization (first day of week, month/day names) via Intl API
 - [x] 42-08-PLAN.md — Dark mode support and SSR compatibility
-- [ ] 42-09-PLAN.md — Fix roving tabindex to use KeyboardNavigationManager.moveFocus() (gap closure)
-- [ ] 42-10-PLAN.md — Add month change screen reader announcements via liveAnnouncement (gap closure)
+- [x] 42-09-PLAN.md — Fix roving tabindex to use KeyboardNavigationManager.moveFocus() (gap closure)
+- [x] 42-10-PLAN.md — Add month change screen reader announcements via liveAnnouncement (gap closure)
 
 #### Phase 43: Calendar Display Advanced
 **Goal**: Advanced calendar features including multiple months, decade/century views, animations, and touch gestures.
@@ -561,7 +561,7 @@ Phases execute in numeric order: 42 → 43 → 44 → 45 → 46 → 47 → 48 �
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
-| 42. Calendar Display Foundation | v4.3 | 0/8 | Not started | - |
+| 42. Calendar Display Foundation | v4.3 | 10/10 | Complete | 2026-01-31 |
 | 43. Calendar Display Advanced | v4.3 | 0/8 | Not started | - |
 | 44. Date Picker Core | v4.3 | 0/10 | Not started | - |
 | 45. Date Picker Advanced | v4.3 | 0/6 | Not started | - |
