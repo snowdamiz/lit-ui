@@ -406,19 +406,14 @@ Plans:
   3. User sees inline errors for invalid dates with aria-invalid="true"
   4. User can clear date selection with X button and submit form with ISO 8601 format
   5. User experiences focus management with trap in popup and return to input on close
-**Plans**: TBD
+**Plans**: 5 plans in 5 waves
 
 Plans:
-- [ ] 44-01: Input field with formatted date display and locale awareness
-- [ ] 44-02: Calendar icon button and trigger behavior
-- [ ] 44-03: Text input parsing with multiple format support
-- [ ] 44-04: Form integration via ElementInternals with ISO 8601 submission
-- [ ] 44-05: Validation states with inline errors and aria-invalid
-- [ ] 44-06: Clear button and placeholder/helper text
-- [ ] 44-07: Focus management (trap in popup, return to input)
-- [ ] 44-08: Escape key and click-outside to close popup
-- [ ] 44-09: Floating UI positioning with flip/shift middleware
-- [ ] 44-10: date-fns integration for date manipulation
+- [ ] 44-01-PLAN.md — Package scaffolding and TDD date input parser (multi-format parsing)
+- [ ] 44-02-PLAN.md — Component core with input field, calendar popup, clear button, form integration
+- [ ] 44-03-PLAN.md — Floating UI popup positioning with flip/shift and click-outside detection
+- [ ] 44-04-PLAN.md — Focus management (trap in popup, restore on close) and validation states
+- [ ] 44-05-PLAN.md — Package exports, custom element registration, and React JSX types
 
 #### Phase 45: Date Picker Advanced
 **Goal**: Advanced date picker features including natural language parsing, presets, inline mode, and custom formatting.
@@ -561,7 +556,7 @@ Phases execute in numeric order: 42 → 43 → 44 → 45 → 46 → 47 → 48 �
 |-------|-----------|----------------|--------|-----------|
 | 42. Calendar Display Foundation | v4.3 | 8/8 | Complete | 2026-01-31 |
 | 43. Calendar Display Advanced | v4.3 | 8/8 | Complete | 2026-01-31 |
-| 44. Date Picker Core | v4.3 | 0/10 | Not started | - |
+| 44. Date Picker Core | v4.3 | 0/5 | Not started | - |
 | 45. Date Picker Advanced | v4.3 | 0/6 | Not started | - |
 | 46. Date Range Picker Core | v4.3 | 0/9 | Not started | - |
 | 47. Date Range Picker Advanced | v4.3 | 0/6 | Not started | - |
