@@ -27,6 +27,9 @@ import { isBefore, isAfter, isSameDay } from 'date-fns';
 import { getWeekdayNames, getMonthYearLabel, getMonthName } from './intl-utils.js';
 import { KeyboardNavigationManager } from './keyboard-nav.js';
 
+export type CalendarSize = 'sm' | 'md' | 'lg';
+export type CalendarView = 'month' | 'year' | 'decade';
+
 /**
  * Calendar component displaying a 7-column month grid.
  *
@@ -157,6 +160,13 @@ export class Calendar extends TailwindElement {
    */
   @state()
   private showKeyboardHelp: boolean = false;
+
+  /**
+   * Current calendar view: month (day grid), year (decade/year grid), decade (century/decade grid).
+   * @default 'month'
+   */
+  @state()
+  private view: CalendarView = 'month';
 
   constructor() {
     super();
@@ -477,6 +487,27 @@ export class Calendar extends TailwindElement {
         font-weight: 600;
         text-align: center;
         flex: 1;
+      }
+
+      /* Clickable heading for view drilling */
+      .calendar-header h2.clickable-heading {
+        cursor: pointer;
+        border-radius: var(--ui-calendar-radius, 0.25rem);
+        padding: 0.125rem 0.25rem;
+        transition: background-color 150ms;
+      }
+
+      .calendar-header h2.clickable-heading:hover {
+        background: var(--ui-calendar-hover-bg, var(--color-muted, #f3f4f6));
+      }
+
+      .calendar-header h2.clickable-heading:focus-visible {
+        outline: 2px solid var(--ui-calendar-focus, var(--color-brand-500));
+        outline-offset: 2px;
+      }
+
+      :host-context(.dark) .calendar-header h2.clickable-heading:hover {
+        background: var(--ui-calendar-button-hover-bg-dark, var(--color-muted-dark, var(--color-gray-800)));
       }
 
       /* Dropdown selectors container */
@@ -833,9 +864,25 @@ export class Calendar extends TailwindElement {
   }
 
   /**
+   * Handle clicking the heading to drill into deeper views.
+   * month -> year (decade view), year -> decade (century view).
+   */
+  private handleHeadingClick(): void {
+    if (this.view === 'month') {
+      this.view = 'year';
+      this.announceViewChange('Year selection');
+    } else if (this.view === 'year') {
+      this.view = 'decade';
+      this.announceViewChange('Decade selection');
+    }
+  }
+
+  /**
    * Render the calendar header with navigation buttons.
    */
   private renderHeader() {
+    const isHeadingClickable = this.view !== 'decade';
+
     return html`
       <div class="calendar-header">
         <button
@@ -845,7 +892,20 @@ export class Calendar extends TailwindElement {
         >
           &lt;
         </button>
-        <h2 id="calendar-heading" aria-live="polite">
+        <h2
+          id="calendar-heading"
+          aria-live="polite"
+          role=${isHeadingClickable ? 'button' : nothing}
+          tabindex=${isHeadingClickable ? '0' : nothing}
+          class=${isHeadingClickable ? 'clickable-heading' : ''}
+          @click=${isHeadingClickable ? this.handleHeadingClick : nothing}
+          @keydown=${isHeadingClickable ? (e: KeyboardEvent) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              this.handleHeadingClick();
+            }
+          } : nothing}
+        >
           ${this.getMonthYearLabel()}
         </h2>
         <button
@@ -893,9 +953,16 @@ export class Calendar extends TailwindElement {
   }
 
   /**
-   * Render the calendar grid with weekday headers and date cells.
+   * Announce view changes to screen readers.
    */
-  override render() {
+  private announceViewChange(viewLabel: string): void {
+    this.liveAnnouncement = `${viewLabel} view`;
+  }
+
+  /**
+   * Render the month view (default) with weekday headers and date cells.
+   */
+  private renderMonthView() {
     return html`
       <div
         role="grid"
@@ -943,5 +1010,35 @@ export class Calendar extends TailwindElement {
         ` : ''}
       </div>
     `;
+  }
+
+  /**
+   * Render the decade view (4x3 year grid).
+   * Placeholder - implemented in Task 2.
+   */
+  private renderDecadeView() {
+    return html`<div>Decade view</div>`;
+  }
+
+  /**
+   * Render the century view (4x3 decade grid).
+   * Placeholder - implemented in Task 2.
+   */
+  private renderCenturyView() {
+    return html`<div>Century view</div>`;
+  }
+
+  /**
+   * Main render dispatches to the appropriate view.
+   */
+  override render() {
+    switch (this.view) {
+      case 'year':
+        return this.renderDecadeView();
+      case 'decade':
+        return this.renderCenturyView();
+      default:
+        return this.renderMonthView();
+    }
   }
 }

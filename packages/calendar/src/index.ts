@@ -4,6 +4,7 @@ import { isServer } from 'lit';
 
 // Export component class and types
 export { Calendar } from './calendar.js';
+export type { CalendarView } from './calendar.js';
 
 // Export utility functions for public API
 export {
