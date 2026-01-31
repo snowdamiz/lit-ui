@@ -22,13 +22,31 @@ import { PropertyValues } from 'lit';
 import { TailwindElement, tailwindBaseStyles } from '@lit-ui/core';
 
 // Import utility functions
-import { getMonthDays, formatDate, isSameDayCompare, isDateToday, addMonthsTo, subtractMonths, parseDate, isDateDisabled, isWeekendDate, DateConstraints } from './date-utils.js';
+import { getMonthDays, formatDate, isSameDayCompare, isDateToday, addMonthsTo, subtractMonths, parseDate, isDateDisabled, isWeekendDate, DateConstraints, getMonthWeeks, getISOWeekNumber, WeekInfo } from './date-utils.js';
 import { isBefore, isAfter, isSameDay } from 'date-fns';
+import { eachDayOfInterval } from 'date-fns';
 import { getWeekdayNames, getMonthYearLabel, getMonthName } from './intl-utils.js';
 import { KeyboardNavigationManager } from './keyboard-nav.js';
+import { AnimationController } from './animation-controller.js';
+import { GestureHandler } from './gesture-handler.js';
 
 export type CalendarSize = 'sm' | 'md' | 'lg';
 export type CalendarView = 'month' | 'year' | 'decade';
+
+/**
+ * State object passed to custom renderDay callback.
+ * Provides all relevant state for a day cell so custom renderers
+ * can build rich cell content while calendar handles accessibility.
+ */
+export interface DayCellState {
+  date: Date;
+  isoDate: string;
+  isToday: boolean;
+  isSelected: boolean;
+  isDisabled: boolean;
+  isInRange: boolean;
+  isWeekend: boolean;
+}
 
 /**
  * Calendar component displaying a 7-column month grid.
@@ -84,6 +102,23 @@ export class Calendar extends TailwindElement {
   disableWeekends = false;
 
   /**
+   * Whether to show ISO 8601 week numbers column.
+   * When true, displays a column of week number buttons on the left of the grid.
+   * @default false
+   */
+  @property({ type: Boolean, attribute: 'show-week-numbers' })
+  showWeekNumbers = false;
+
+  /**
+   * Custom render callback for day cell content.
+   * When provided, receives DayCellState and should return Lit template content.
+   * The calendar wrapper div retains all accessibility attributes regardless.
+   * @default undefined (uses default number rendering)
+   */
+  @property({ attribute: false })
+  renderDay?: (state: DayCellState) => unknown;
+
+  /**
    * Internal state tracking the currently displayed month.
    * Initialized to current date on client side.
    */
@@ -109,6 +144,18 @@ export class Calendar extends TailwindElement {
    * Not reactive - managed imperatively, no re-render needed.
    */
   private navigationManager: KeyboardNavigationManager | null = null;
+
+  /**
+   * Animation controller for month transition effects.
+   * Manages slide/fade animations and respects prefers-reduced-motion.
+   */
+  private animationController: AnimationController | null = null;
+
+  /**
+   * Gesture handler for swipe navigation on touch devices.
+   * Detects horizontal swipes to navigate between months.
+   */
+  private gestureHandler: GestureHandler | null = null;
 
   /**
    * Keyboard navigation manager for decade view (4 columns).
@@ -219,10 +266,25 @@ export class Calendar extends TailwindElement {
       }
     }
 
+    // Initialize animation controller (client-only)
+    if (!isServer) {
+      this.animationController = new AnimationController(
+        () => this.shadowRoot?.querySelector('.month-grid') as HTMLElement | null
+      );
+    }
+
     // Initialize keyboard navigation (client-only)
     if (!isServer && this.gridCells) {
       this.initializeNavigationManager();
     }
+  }
+
+  override disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this.animationController?.destroy();
+    this.animationController = null;
+    this.gestureHandler?.destroy();
+    this.gestureHandler = null;
   }
 
   /**
@@ -277,6 +339,20 @@ export class Calendar extends TailwindElement {
         const initialIndex = this.focusedIndex;
         this.navigationManager?.setInitialFocus(initialIndex);
       });
+    }
+
+    // Initialize gesture handler on the grid container (needs DOM to exist)
+    if (!isServer) {
+      const gridContainer = this.shadowRoot?.querySelector('.month-grid') as HTMLElement | null;
+      if (gridContainer) {
+        this.gestureHandler = new GestureHandler(gridContainer, (result) => {
+          if (result.direction === 'left') {
+            this.handleNextMonth();
+          } else if (result.direction === 'right') {
+            this.handlePreviousMonth();
+          }
+        });
+      }
     }
   }
 
@@ -627,6 +703,81 @@ export class Calendar extends TailwindElement {
       .decade-grid .outside-range {
         opacity: 0.4;
       }
+
+      /* Animation styles for month transitions */
+      .month-grid {
+        transition: transform 200ms ease-out, opacity 200ms ease-out;
+      }
+      .month-grid.slide-out-left { transform: translateX(-100%); opacity: 0; }
+      .month-grid.slide-out-right { transform: translateX(100%); opacity: 0; }
+      .month-grid.slide-in-left { transform: translateX(-100%); opacity: 0; }
+      .month-grid.slide-in-right { transform: translateX(100%); opacity: 0; }
+      .month-grid.fade-out { opacity: 0; }
+
+      @media (prefers-reduced-motion: reduce) {
+        .month-grid {
+          transition: opacity 150ms ease-out;
+          transform: none !important;
+        }
+      }
+
+      /* Touch swipe: allow vertical scrolling but capture horizontal */
+      .grid-container {
+        touch-action: pan-y;
+      }
+
+      /* Week numbers layout */
+      .calendar-with-weeks {
+        display: grid;
+        grid-template-columns: auto 1fr;
+      }
+
+      .week-numbers {
+        display: flex;
+        flex-direction: column;
+        gap: var(--ui-calendar-gap, 0.25rem);
+      }
+
+      .week-number-header {
+        text-align: center;
+        font-weight: 600;
+        padding: 0.5rem;
+        color: var(--color-gray-400);
+        font-size: 0.75rem;
+      }
+
+      .week-number {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        min-height: var(--ui-calendar-cell-size, 2.5rem);
+        padding: 0 0.5rem;
+        border-radius: var(--ui-calendar-cell-radius, 0.375rem);
+        color: var(--color-gray-500);
+        font-size: 0.75rem;
+        transition: background-color 150ms;
+      }
+
+      .week-number:hover {
+        background-color: var(--color-gray-100);
+      }
+
+      :host-context(.dark) .week-number:hover {
+        background-color: var(--color-gray-800);
+      }
+
+      .week-number:focus-visible {
+        outline: 2px solid var(--color-brand-500);
+        outline-offset: 2px;
+        z-index: 1;
+      }
+
+      :host-context(.dark) .week-number {
+        color: var(--color-gray-400);
+      }
     `,
   ];
 
@@ -741,12 +892,15 @@ export class Calendar extends TailwindElement {
 
   /**
    * Render a single date cell.
+   * Supports custom renderDay callback for cell content while preserving
+   * all accessibility attributes on the wrapper div.
    */
   private renderDayCell(date: Date, index: number) {
     const isoDate = formatDate(date);
     const isSelected = this.selectedDate ? isSameDayCompare(date, new Date(this.selectedDate)) : false;
     const isToday = isDateToday(date);
     const isDisabled = this.isCellDisabled(date);
+    const weekend = isWeekendDate(date);
 
     // Generate aria-label with disabled reason
     let ariaLabel = String(date.getDate());
@@ -754,6 +908,19 @@ export class Calendar extends TailwindElement {
       const reason = this.getDisabledReason(date);
       ariaLabel = `${date.getDate()}, ${reason}`;
     }
+
+    // Build DayCellState for custom renderDay callback
+    const cellContent = this.renderDay
+      ? this.renderDay({
+          date,
+          isoDate,
+          isToday,
+          isSelected,
+          isDisabled,
+          isInRange: !isDisabled,
+          isWeekend: weekend,
+        })
+      : date.getDate();
 
     return html`
       <div
@@ -766,7 +933,7 @@ export class Calendar extends TailwindElement {
         class="calendar-cell ${isToday ? 'today' : ''} ${isSelected ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}"
         @click=${isDisabled ? nothing : () => this.handleDateClick(date)}
       >
-        ${date.getDate()}
+        ${cellContent}
       </div>
     `;
   }
@@ -860,25 +1027,45 @@ export class Calendar extends TailwindElement {
   }
 
   /**
-   * Navigate to previous month.
+   * Navigate to previous month with animation.
+   * Uses AnimationController for slide/fade transition.
+   * Falls back to direct update if no controller (SSR).
    */
   private handlePreviousMonth(): void {
-    this.currentMonth = subtractMonths(this.currentMonth, 1);
-    this.selectedMonth = this.currentMonth.getMonth();
-    this.selectedYear = this.currentMonth.getFullYear();
-    this.announceMonthChange();
-    this.emitMonthChange();
+    const updateFn = () => {
+      this.currentMonth = subtractMonths(this.currentMonth, 1);
+      this.selectedMonth = this.currentMonth.getMonth();
+      this.selectedYear = this.currentMonth.getFullYear();
+      this.announceMonthChange();
+      this.emitMonthChange();
+    };
+
+    if (this.animationController) {
+      this.animationController.animateTransition('prev', updateFn);
+    } else {
+      updateFn();
+    }
   }
 
   /**
-   * Navigate to next month.
+   * Navigate to next month with animation.
+   * Uses AnimationController for slide/fade transition.
+   * Falls back to direct update if no controller (SSR).
    */
   private handleNextMonth(): void {
-    this.currentMonth = addMonthsTo(this.currentMonth, 1);
-    this.selectedMonth = this.currentMonth.getMonth();
-    this.selectedYear = this.currentMonth.getFullYear();
-    this.announceMonthChange();
-    this.emitMonthChange();
+    const updateFn = () => {
+      this.currentMonth = addMonthsTo(this.currentMonth, 1);
+      this.selectedMonth = this.currentMonth.getMonth();
+      this.selectedYear = this.currentMonth.getFullYear();
+      this.announceMonthChange();
+      this.emitMonthChange();
+    };
+
+    if (this.animationController) {
+      this.animationController.animateTransition('next', updateFn);
+    } else {
+      updateFn();
+    }
   }
 
   /**
@@ -1028,9 +1215,70 @@ export class Calendar extends TailwindElement {
   }
 
   /**
+   * Handle week number click. Dispatches ui-week-select event
+   * with week number, all 7 ISO date strings, and start/end dates.
+   */
+  private handleWeekSelect(weekInfo: WeekInfo): void {
+    const dates = eachDayOfInterval({ start: weekInfo.startDate, end: weekInfo.endDate });
+    const isoDateStrings = dates.map(d => formatDate(d));
+
+    this.dispatchEvent(new CustomEvent('ui-week-select', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        week: weekInfo.weekNumber,
+        dates: isoDateStrings,
+        start: formatDate(weekInfo.startDate),
+        end: formatDate(weekInfo.endDate),
+      }
+    }));
+  }
+
+  /**
+   * Render the week numbers column for the current month.
+   */
+  private renderWeekNumbers() {
+    const weeks = getMonthWeeks(this.currentMonth);
+
+    return html`
+      <div class="week-numbers">
+        <div class="week-number-header" aria-hidden="true">W</div>
+        ${weeks.map(weekInfo => html`
+          <button
+            class="week-number"
+            type="button"
+            aria-label="Select week ${weekInfo.weekNumber}"
+            @click=${() => this.handleWeekSelect(weekInfo)}
+          >
+            ${weekInfo.weekNumber}
+          </button>
+        `)}
+      </div>
+    `;
+  }
+
+  /**
    * Render the month view (default) with weekday headers and date cells.
    */
   private renderMonthView() {
+    const gridContent = html`
+      <div class="grid-container">
+        <!-- Weekday headers -->
+        <div role="row">
+          ${this.getWeekdayNames().map(
+            (day) => html`
+              <div role="columnheader" aria-label="${day}">
+                ${day}
+              </div>
+            `
+          )}
+        </div>
+
+        <!-- Date cells -->
+        ${this.getMonthDays().map((date, index) => this.renderDayCell(date, index))}
+      </div>
+    `;
+
     return html`
       <div
         role="grid"
@@ -1049,19 +1297,15 @@ export class Calendar extends TailwindElement {
           ?
         </button>
 
-        <!-- Weekday headers -->
-        <div role="row">
-          ${this.getWeekdayNames().map(
-            (day) => html`
-              <div role="columnheader" aria-label="${day}">
-                ${day}
-              </div>
-            `
-          )}
+        <!-- Month grid wrapper for animation targeting -->
+        <div class="month-grid">
+          ${this.showWeekNumbers ? html`
+            <div class="calendar-with-weeks">
+              ${this.renderWeekNumbers()}
+              ${gridContent}
+            </div>
+          ` : gridContent}
         </div>
-
-        <!-- Date cells -->
-        ${this.getMonthDays().map((date, index) => this.renderDayCell(date, index))}
 
         <!-- Screen reader live region for announcements -->
         <div aria-live="polite" aria-atomic="true" class="sr-only" part="live-region">
