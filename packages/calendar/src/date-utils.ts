@@ -20,6 +20,9 @@ import {
   isWeekend,
   isBefore,
   isAfter,
+  getISOWeek,
+  startOfISOWeek,
+  endOfISOWeek,
 } from 'date-fns';
 
 /**
@@ -227,4 +230,100 @@ export function isDateDisabled(
  */
 export function isWeekendDate(date: Date): boolean {
   return isWeekend(date);
+}
+
+/**
+ * Get the ISO 8601 week number for a date.
+ *
+ * ISO weeks start on Monday and the first week of the year contains
+ * January 4th. This means December 31 can belong to week 1 of the
+ * following year, and January 1 can belong to week 52/53 of the
+ * previous year.
+ *
+ * @param date - Date to get week number for
+ * @returns ISO 8601 week number (1-53)
+ *
+ * @example
+ * ```typescript
+ * getISOWeekNumber(new Date(2026, 0, 5)) // 2 (Monday of week 2)
+ * // Year boundary edge case:
+ * getISOWeekNumber(new Date(2025, 11, 31)) // 1 (Dec 31 2025 is ISO week 1 of 2026)
+ * ```
+ */
+export function getISOWeekNumber(date: Date): number {
+  return getISOWeek(date);
+}
+
+/**
+ * Get the start and end dates of the ISO week containing the given date.
+ *
+ * ISO weeks always start on Monday and end on Sunday.
+ *
+ * @param date - Any date within the target week
+ * @returns Object with start (Monday) and end (Sunday) dates
+ *
+ * @example
+ * ```typescript
+ * const range = getWeekRange(new Date(2026, 0, 7)); // Wednesday
+ * // range.start = 2026-01-05 (Monday)
+ * // range.end = 2026-01-11 (Sunday)
+ * ```
+ */
+export function getWeekRange(date: Date): { start: Date; end: Date } {
+  return {
+    start: startOfISOWeek(date),
+    end: endOfISOWeek(date),
+  };
+}
+
+/**
+ * Information about a single ISO week within a month.
+ */
+export interface WeekInfo {
+  weekNumber: number;
+  startDate: Date;
+  endDate: Date;
+}
+
+/**
+ * Get all ISO week numbers that appear in the displayed month.
+ *
+ * Returns a sorted array of WeekInfo objects, one per unique week number
+ * visible in the month. Handles year boundaries correctly (e.g., January 1
+ * may belong to week 52/53 of the previous year).
+ *
+ * @param monthDate - Reference date (any day in the target month)
+ * @returns Array of WeekInfo objects sorted by calendar order
+ *
+ * @example
+ * ```typescript
+ * const weeks = getMonthWeeks(new Date(2026, 0, 1)); // January 2026
+ * // Returns 5 WeekInfo objects for weeks 1-5
+ * // (Jan 1 2026 is a Thursday in ISO week 1)
+ * ```
+ */
+export function getMonthWeeks(monthDate: Date): WeekInfo[] {
+  const days = getMonthDays(monthDate);
+  const weekMap = new Map<string, WeekInfo>();
+
+  for (const day of days) {
+    const weekNumber = getISOWeek(day);
+    const weekStart = startOfISOWeek(day);
+    // Use a composite key of year+week to handle year boundaries
+    // where week 52/53 from previous year and week 1 are both present
+    const key = `${weekStart.getTime()}`;
+
+    if (!weekMap.has(key)) {
+      weekMap.set(key, {
+        weekNumber,
+        startDate: weekStart,
+        endDate: endOfISOWeek(day),
+      });
+    }
+  }
+
+  // Sort by start date to maintain calendar order
+  return Array.from(weekMap.values()).sort(
+    (a, b) => a.startDate.getTime() - b.startDate.getTime()
+  );
 }
