@@ -4,6 +4,7 @@ import { isServer } from 'lit';
 
 // Export component classes and types
 export { Calendar } from './calendar.js';
+export { CalendarMulti } from './calendar-multi.js';
 export type { DateConstraints, DayCellState } from './calendar.js';
 
 // Export keyboard navigation manager
@@ -44,6 +45,7 @@ export {
 
 // Safe custom element registration with collision detection
 import { Calendar } from './calendar.js';
+import { CalendarMulti } from './calendar-multi.js';
 
 if (typeof customElements !== 'undefined') {
   if (!customElements.get('lui-calendar')) {
@@ -54,11 +56,21 @@ if (typeof customElements !== 'undefined') {
         'This may indicate duplicate imports or version conflicts.'
     );
   }
+
+  if (!customElements.get('lui-calendar-multi')) {
+    customElements.define('lui-calendar-multi', CalendarMulti);
+  } else if (!isServer && import.meta.env?.DEV) {
+    console.warn(
+      '[lui-calendar-multi] Custom element already registered. ' +
+        'This may indicate duplicate imports or version conflicts.'
+    );
+  }
 }
 
 // TypeScript global type registration
 declare global {
   interface HTMLElementTagNameMap {
     'lui-calendar': Calendar;
+    'lui-calendar-multi': CalendarMulti;
   }
 }

@@ -4,6 +4,7 @@
  */
 
 import type { Calendar } from './calendar.js';
+import type { CalendarMulti } from './calendar-multi.js';
 
 // Common attributes for lui-calendar
 interface LuiCalendarAttributes {
@@ -12,6 +13,20 @@ interface LuiCalendarAttributes {
   'min-date'?: string;
   'max-date'?: string;
   'first-day-of-week'?: number;
+  'display-month'?: string;
+  'hide-navigation'?: boolean;
+  'show-week-numbers'?: boolean;
+}
+
+// Common attributes for lui-calendar-multi
+interface LuiCalendarMultiAttributes {
+  months?: number;
+  value?: string;
+  locale?: string;
+  'min-date'?: string;
+  'max-date'?: string;
+  'first-day-of-week'?: string;
+  'show-week-numbers'?: boolean;
 }
 
 // Event handler types
@@ -28,6 +43,10 @@ declare global {
         React.HTMLAttributes<Calendar> & LuiCalendarAttributes & LuiCalendarEvents,
         Calendar
       >;
+      'lui-calendar-multi': React.DetailedHTMLProps<
+        React.HTMLAttributes<CalendarMulti> & LuiCalendarMultiAttributes & LuiCalendarEvents,
+        CalendarMulti
+      >;
     }
   }
 }
@@ -36,6 +55,7 @@ declare global {
 declare module 'vue' {
   export interface GlobalComponents {
     'lui-calendar': import('vue').DefineComponent<LuiCalendarAttributes>;
+    'lui-calendar-multi': import('vue').DefineComponent<LuiCalendarMultiAttributes>;
   }
 }
 
@@ -45,6 +65,11 @@ declare namespace svelteHTML {
     'lui-calendar': LuiCalendarAttributes & {
       'on:change'?: (e: CustomEvent<{ date: Date; isoString: string }>) => void;
       'on:month-change'?: (e: CustomEvent<{ year: number; month: number }>) => void;
+    };
+    'lui-calendar-multi': LuiCalendarMultiAttributes & {
+      'on:change'?: (e: CustomEvent<{ date: Date; isoString: string }>) => void;
+      'on:month-change'?: (e: CustomEvent<{ year: number; month: number }>) => void;
+      'on:week-select'?: (e: CustomEvent) => void;
     };
   }
 }
