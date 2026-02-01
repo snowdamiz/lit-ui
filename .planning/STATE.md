@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-30)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** Phase 46 Date Range Picker Core — In progress
+**Current focus:** Phase 47 Date Range Picker Advanced — In progress
 
 ## Current Position
 
-Phase: 5 of 9 (Date Range Picker Core)
-Plan: 5 of 5 in current phase (5 executions complete)
-Status: Phase complete
-Last activity: 2026-01-31 — Completed 46-05-PLAN.md
+Phase: 6 of 9 (Date Range Picker Advanced)
+Plan: 2 of 5 in current phase (2 executions complete)
+Status: In progress
+Last activity: 2026-01-31 — Completed 47-02-PLAN.md
 
-Progress: [████████████████████████████████] 100% (5/5 plans in phase 46)
+Progress: [████████████░░░░░░░░░░░░░░░░░░░░] 40% (2/5 plans in phase 47)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 37
+- Total plans completed: 38
 - Average duration: 2.1 min
-- Total execution time: 1.31 hours
+- Total execution time: 1.33 hours
 
 **By Phase:**
 
@@ -31,7 +31,7 @@ Progress: [███████████████████████
 | 43    | 8     | 8     | 1.9 min |
 
 **Recent Trend:**
-- Last 3 plans: 1 min (46-05), 2 min (46-04), 3 min (46-03)
+- Last 3 plans: 1 min (47-02), 1 min (46-05), 2 min (46-04)
 - Trend: Consistent execution pace
 
 *Updated after each plan completion*
@@ -140,6 +140,7 @@ Recent decisions affecting current work:
 - **Phase 46-04**: Input clear button visible when startDate set; footer clear only on complete range
 - **Phase 46-05**: HTMLElementTagNameMap kept in date-range-picker.ts per Phase 44-05 decision
 - **Phase 46-05**: JSX types separate LuiDateRangePickerAttributes and LuiDateRangePickerEvents interfaces
+- **Phase 47-02**: Drag selection reuses two-click state machine transitions (no new states); Pointer Events API with preventDefault for text selection prevention
 
 ### Pending Todos
 
@@ -155,6 +156,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-31 (46-05 complete, Phase 46 complete)
-Stopped at: Completed 46-05-PLAN.md (Dark mode, exports, JSX types — Phase 46 complete)
+Last session: 2026-01-31 (47-02 complete)
+Stopped at: Completed 47-02-PLAN.md (Drag selection via pointer events)
 Resume file: None
