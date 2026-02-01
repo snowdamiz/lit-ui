@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-30)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** Phase 47 Date Range Picker Advanced — Complete
+**Current focus:** Phase 48 Time Picker Core — In Progress
 
 ## Current Position
 
-Phase: 6 of 9 (Date Range Picker Advanced)
-Plan: 5 of 5 in current phase (5 executions complete)
-Status: Phase complete
-Last activity: 2026-01-31 — Completed 47-05-PLAN.md
+Phase: 7 of 9 (Time Picker Core)
+Plan: 1 of 6 in current phase (1 execution complete)
+Status: In progress
+Last activity: 2026-01-31 — Completed 48-01-PLAN.md
 
-Progress: [████████████████████████████████] 100% (5/5 plans in phase 47 — all complete)
+Progress: [█████░░░░░░░░░░░░░░░░░░░░░░░░░░░] 17% (1/6 plans in phase 48)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 42
+- Total plans completed: 43
 - Average duration: 2.1 min
-- Total execution time: 1.47 hours
+- Total execution time: 1.50 hours
 
 **By Phase:**
 
@@ -31,7 +31,7 @@ Progress: [███████████████████████
 | 43    | 8     | 8     | 1.9 min |
 
 **Recent Trend:**
-- Last 3 plans: 2 min (47-05), 3 min (47-04), 2 min (47-03)
+- Last 3 plans: 2 min (48-01), 2 min (47-05), 3 min (47-04)
 - Trend: Consistent execution pace
 
 *Updated after each plan completion*
@@ -145,6 +145,9 @@ Recent decisions affecting current work:
 - **Phase 47-03**: Presets property uses attribute: false (boolean | DateRangePreset[]); duration text takes priority over selectionStatus in footer; container query stacks presets horizontally at <600px
 - **Phase 47-04**: Use selectionTarget ('primary' | 'comparison') state to route all interactions; primary range takes visual precedence on overlapping days; pipe-delimited format for dual-range form submission; amber/orange CSS custom properties for comparison range
 - **Phase 47-05**: CSS custom properties for comparison dark mode (cascades through Shadow DOM); :host-context(.dark) nested inside @container queries; presets excluded from JSX attributes (attribute: false)
+- **Phase 48-01**: Store time internally as 24-hour (TimeValue.hour 0-23), convert to 12h only for display
+- **Phase 48-01**: Use regex for ISO time parsing (date-fns parseISO does not support time-only strings)
+- **Phase 48-01**: Time preset resolver functions called at click time for SSR safety
 
 ### Pending Todos
 
@@ -160,6 +163,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-31 (47-05 complete, Phase 47 complete)
-Stopped at: Completed 47-05-PLAN.md (Dark mode, exports, JSX types — Phase 47 complete)
+Last session: 2026-01-31 (48-01 complete)
+Stopped at: Completed 48-01-PLAN.md (Package scaffold, time utilities, presets)
 Resume file: None
