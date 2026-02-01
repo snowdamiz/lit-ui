@@ -449,6 +449,46 @@ export class DateRangePicker extends TailwindElement {
         height: 1rem;
       }
 
+      .popup-body {
+        display: flex;
+      }
+
+      .preset-sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        padding: 0.5rem;
+        border-right: 1px solid var(--ui-date-picker-popup-border, #e5e7eb);
+        min-width: 120px;
+      }
+
+      .preset-button {
+        font-size: 0.75rem;
+        padding: 0.375rem 0.75rem;
+        border: none;
+        border-radius: 0.25rem;
+        background: transparent;
+        color: var(--ui-date-picker-text, var(--ui-input-text, inherit));
+        cursor: pointer;
+        text-align: left;
+        white-space: nowrap;
+        transition: background-color 150ms;
+      }
+
+      .preset-button:hover:not(:disabled) {
+        background-color: var(--color-muted, #f3f4f6);
+      }
+
+      .preset-button:focus-visible {
+        outline: 2px solid var(--color-ring, #3b82f6);
+        outline-offset: 1px;
+      }
+
+      .preset-button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
       /* Prevent text selection during pointer drag */
       .calendars-wrapper.dragging {
         user-select: none;
@@ -541,8 +581,27 @@ export class DateRangePicker extends TailwindElement {
         color: var(--ui-date-picker-text-disabled, var(--ui-input-text-disabled, #6b7280));
       }
 
+      :host-context(.dark) .preset-sidebar {
+        border-right-color: var(--ui-date-picker-popup-border, #374151);
+      }
+
+      :host-context(.dark) .preset-button:hover:not(:disabled) {
+        background-color: var(--color-muted, #374151);
+      }
+
       /* Container query: vertical stacking for narrow containers */
       @container (max-width: 599px) {
+        .popup-body {
+          flex-direction: column;
+        }
+
+        .preset-sidebar {
+          flex-direction: row;
+          flex-wrap: wrap;
+          border-right: none;
+          border-bottom: 1px solid var(--ui-date-picker-popup-border, #e5e7eb);
+        }
+
         .calendars-wrapper {
           flex-direction: column;
         }
@@ -1288,31 +1347,46 @@ export class DateRangePicker extends TailwindElement {
           </svg>
         </button>
       </div>
-      <div
-        class="calendars-wrapper ${this.isDragging ? 'dragging' : ''}"
-        @mouseleave="${this.clearHoverPreview}"
-      >
-        <lui-calendar
-          display-month="${leftDisplayMonth}"
-          hide-navigation
-          .renderDay="${this.renderRangeDay}"
-          .locale="${this.effectiveLocale}"
-          min-date="${this.minDate || nothing}"
-          max-date="${this.maxDate || nothing}"
-          @change="${this.handleCalendarSelect}"
-        ></lui-calendar>
-        <lui-calendar
-          display-month="${rightDisplayMonth}"
-          hide-navigation
-          .renderDay="${this.renderRangeDay}"
-          .locale="${this.effectiveLocale}"
-          min-date="${this.minDate || nothing}"
-          max-date="${this.maxDate || nothing}"
-          @change="${this.handleCalendarSelect}"
-        ></lui-calendar>
+      <div class="popup-body">
+        ${this.effectivePresets.length > 0
+          ? html`
+            <div class="preset-sidebar">
+              ${this.effectivePresets.map(preset => html`
+                <button
+                  type="button"
+                  class="preset-button"
+                  ?disabled="${this.isPresetDisabled(preset)}"
+                  @click="${() => this.handlePresetSelect(preset)}"
+                >${preset.label}</button>
+              `)}
+            </div>
+          ` : nothing}
+        <div
+          class="calendars-wrapper ${this.isDragging ? 'dragging' : ''}"
+          @mouseleave="${this.clearHoverPreview}"
+        >
+          <lui-calendar
+            display-month="${leftDisplayMonth}"
+            hide-navigation
+            .renderDay="${this.renderRangeDay}"
+            .locale="${this.effectiveLocale}"
+            min-date="${this.minDate || nothing}"
+            max-date="${this.maxDate || nothing}"
+            @change="${this.handleCalendarSelect}"
+          ></lui-calendar>
+          <lui-calendar
+            display-month="${rightDisplayMonth}"
+            hide-navigation
+            .renderDay="${this.renderRangeDay}"
+            .locale="${this.effectiveLocale}"
+            min-date="${this.minDate || nothing}"
+            max-date="${this.maxDate || nothing}"
+            @change="${this.handleCalendarSelect}"
+          ></lui-calendar>
+        </div>
       </div>
       <div class="popup-footer">
-        <span class="footer-status">${this.selectionStatus}</span>
+        <span class="footer-status">${this.durationText || this.selectionStatus}</span>
         ${this.rangeState === 'complete'
           ? html`
               <button
