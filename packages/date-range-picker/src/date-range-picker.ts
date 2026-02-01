@@ -20,9 +20,11 @@
 import { html, css, nothing, isServer, svg, type PropertyValues, type CSSResultGroup } from 'lit';
 import { property, state, query } from 'lit/decorators.js';
 import { TailwindElement, tailwindBaseStyles, dispatchCustomEvent } from '@lit-ui/core';
-import { addMonths, subMonths, getYear, format } from '@lit-ui/calendar';
+import { addMonths, subMonths, getYear, format, isBefore as isBeforeDate, isAfter as isAfterDate } from '@lit-ui/calendar';
 import type { DayCellState } from '@lit-ui/calendar';
-import { normalizeRange, validateRangeDuration, formatISOInterval, isDateInRange, isDateInPreview } from './range-utils.js';
+import { normalizeRange, validateRangeDuration, formatISOInterval, isDateInRange, isDateInPreview, computeRangeDuration } from './range-utils.js';
+import type { DateRangePreset } from './range-preset-types.js';
+import { DEFAULT_RANGE_PRESETS } from './range-preset-types.js';
 import { computePosition, flip, shift, offset } from '@floating-ui/dom';
 import { parseISO } from 'date-fns';
 
@@ -175,6 +177,15 @@ export class DateRangePicker extends TailwindElement {
    */
   @property({ type: String })
   error = '';
+
+  /**
+   * Preset range buttons for quick one-click selection.
+   * - false: no presets (default)
+   * - true: use DEFAULT_RANGE_PRESETS (Last 7 Days, Last 30 Days, This Month)
+   * - DateRangePreset[]: custom presets array
+   */
+  @property({ attribute: false })
+  presets: DateRangePreset[] | boolean = false;
 
   // ---------------------------------------------------------------------------
   // State (internal reactive)
@@ -632,6 +643,28 @@ export class DateRangePicker extends TailwindElement {
     return '';
   }
 
+  /**
+   * Resolved presets array based on the presets property.
+   * - true: returns DEFAULT_RANGE_PRESETS
+   * - array: returns the array as-is
+   * - false: returns empty array (no presets)
+   */
+  private get effectivePresets(): DateRangePreset[] {
+    if (this.presets === true) return DEFAULT_RANGE_PRESETS;
+    if (Array.isArray(this.presets)) return this.presets;
+    return [];
+  }
+
+  /**
+   * Duration text for the popup footer when a range is complete.
+   * Shows inclusive day count (e.g., "7 days selected").
+   */
+  get durationText(): string {
+    if (this.rangeState !== 'complete' || !this.startDate || !this.endDate) return '';
+    const days = computeRangeDuration(this.startDate, this.endDate);
+    return `${days} day${days === 1 ? '' : 's'} selected`;
+  }
+
   // ---------------------------------------------------------------------------
   // SVG Icons
   // ---------------------------------------------------------------------------
@@ -731,6 +764,45 @@ export class DateRangePicker extends TailwindElement {
    */
   clearHoverPreview(): void {
     this.hoveredDate = '';
+  }
+
+  // ---------------------------------------------------------------------------
+  // Preset selection
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Handle a preset button click.
+   * Resolves the preset dates, sets both start and end, and emits change.
+   *
+   * @param preset - The preset to apply
+   */
+  private handlePresetSelect(preset: DateRangePreset): void {
+    const { start, end } = preset.resolve();
+    const startISO = format(start, 'yyyy-MM-dd');
+    const endISO = format(end, 'yyyy-MM-dd');
+    this.startDate = startISO;
+    this.endDate = endISO;
+    this.rangeState = 'complete';
+    this.validateAndEmit();
+  }
+
+  /**
+   * Check if a preset's resolved range falls outside min/max constraints.
+   *
+   * @param preset - The preset to check
+   * @returns true if the preset should be disabled
+   */
+  private isPresetDisabled(preset: DateRangePreset): boolean {
+    const { start, end } = preset.resolve();
+    if (this.minDate) {
+      const min = parseISO(this.minDate);
+      if (isBeforeDate(start, min)) return true;
+    }
+    if (this.maxDate) {
+      const max = parseISO(this.maxDate);
+      if (isAfterDate(end, max)) return true;
+    }
+    return false;
   }
 
   // ---------------------------------------------------------------------------
