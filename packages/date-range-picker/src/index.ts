@@ -12,9 +12,14 @@ export {
   validateRangeDuration,
   formatISOInterval,
   normalizeRange,
+  computeRangeDuration,
 } from './range-utils.js';
 
 export type { RangeValidation } from './range-utils.js';
+
+// Export range preset types and defaults
+export { DEFAULT_RANGE_PRESETS } from './range-preset-types.js';
+export type { DateRangePreset } from './range-preset-types.js';
 
 // Re-export TailwindElement and isServer for convenience
 export { TailwindElement, isServer } from '@lit-ui/core';

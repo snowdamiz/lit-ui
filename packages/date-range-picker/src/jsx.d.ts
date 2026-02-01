@@ -21,11 +21,21 @@ interface LuiDateRangePickerAttributes {
   error?: string;
   required?: boolean;
   disabled?: boolean;
+  comparison?: boolean;
+  'compare-start-date'?: string;
+  'compare-end-date'?: string;
 }
 
 // Event handler types
 interface LuiDateRangePickerEvents {
-  onChange?: (e: CustomEvent<{ startDate: string; endDate: string; isoInterval: string }>) => void;
+  onChange?: (e: CustomEvent<{
+    startDate: string;
+    endDate: string;
+    isoInterval: string;
+    compareStartDate?: string;
+    compareEndDate?: string;
+    compareIsoInterval?: string;
+  }>) => void;
 }
 
 // React JSX support
@@ -51,7 +61,14 @@ declare module 'vue' {
 declare namespace svelteHTML {
   interface IntrinsicElements {
     'lui-date-range-picker': LuiDateRangePickerAttributes & {
-      'on:change'?: (e: CustomEvent<{ startDate: string; endDate: string; isoInterval: string }>) => void;
+      'on:change'?: (e: CustomEvent<{
+        startDate: string;
+        endDate: string;
+        isoInterval: string;
+        compareStartDate?: string;
+        compareEndDate?: string;
+        compareIsoInterval?: string;
+      }>) => void;
     };
   }
 }
