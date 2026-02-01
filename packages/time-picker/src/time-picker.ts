@@ -666,9 +666,11 @@ export class TimePicker extends TailwindElement {
 
   /**
    * Close the popup and restore focus to the toggle button.
+   * Marks the component as touched for validation display.
    */
   private closePopup(): void {
     this.isOpen = false;
+    this.touched = true;
     requestAnimationFrame(() => {
       this.toggleBtnEl?.focus();
     });
@@ -800,17 +802,29 @@ export class TimePicker extends TailwindElement {
 
   /**
    * Handle keyboard events on the popup.
+   * Enter confirms and closes, Escape cancels and closes,
+   * Tab is trapped within the popup for focus management.
    */
   private handlePopupKeydown(e: KeyboardEvent): void {
     if (e.key === 'Escape') {
       e.preventDefault();
       this.closePopup();
     } else if (e.key === 'Enter') {
-      // Confirm current value and close
-      if (this.internalValue) {
-        this.syncValueFromInternal();
+      // Only confirm if the event originated from a spinbutton or the popup itself
+      // (not from buttons which handle their own clicks)
+      const target = e.target as HTMLElement;
+      const isButton = target.tagName === 'BUTTON';
+      if (!isButton) {
+        e.preventDefault();
+        if (this.internalValue) {
+          this.syncValueFromInternal();
+        }
+        this.closePopup();
       }
-      this.closePopup();
+    } else if (e.key === 'Tab') {
+      // Trap focus within the popup — cycle back to time input
+      e.preventDefault();
+      this.focusTimeInput();
     }
   }
 
