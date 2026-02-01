@@ -466,11 +466,11 @@ Plans:
 **Plans**: 5 plans in 4 waves
 
 Plans:
-- [ ] 47-01-PLAN.md — TDD: DateRangePreset types and computeRangeDuration utility
-- [ ] 47-02-PLAN.md — Mouse drag selection via Pointer Events
-- [ ] 47-03-PLAN.md — Preset sidebar buttons and duration display in popup
-- [ ] 47-04-PLAN.md — Comparison mode with dual range selection
-- [ ] 47-05-PLAN.md — Dark mode styles, SSR compatibility, exports, and JSX types
+- [x] 47-01-PLAN.md — TDD: DateRangePreset types and computeRangeDuration utility
+- [x] 47-02-PLAN.md — Mouse drag selection via Pointer Events
+- [x] 47-03-PLAN.md — Preset sidebar buttons and duration display in popup
+- [x] 47-04-PLAN.md — Comparison mode with dual range selection
+- [x] 47-05-PLAN.md — Dark mode styles, SSR compatibility, exports, and JSX types
 
 #### Phase 48: Time Picker Core
 **Goal**: Time picker with hour/minute inputs, clock face, validation, and form integration.
@@ -553,7 +553,7 @@ Phases execute in numeric order: 42 → 43 → 44 → 45 → 46 → 47 → 48 �
 | 44. Date Picker Core | v4.3 | 5/5 | Complete | 2026-01-31 |
 | 45. Date Picker Advanced | v4.3 | 5/5 | Complete | 2026-01-31 |
 | 46. Date Range Picker Core | v4.3 | 5/5 | Complete | 2026-01-31 |
-| 47. Date Range Picker Advanced | v4.3 | 0/5 | Not started | - |
+| 47. Date Range Picker Advanced | v4.3 | 5/5 | Complete | 2026-01-31 |
 | 48. Time Picker Core | v4.3 | 0/11 | Not started | - |
 | 49. Time Picker Advanced | v4.3 | 0/8 | Not started | - |
 | 50. Documentation | v4.3 | 0/8 | Not started | - |

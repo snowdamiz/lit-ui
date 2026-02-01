@@ -86,13 +86,13 @@ Requirements for v4.3 milestone - complete date/time input capabilities. Each ma
 - [x] **DRP-13**: Clear button resets both start and end dates
 - [x] **DRP-14**: Component integrates with forms via ElementInternals
 - [x] **DRP-15**: Form value submits as ISO 8601 range (YYYY-MM-DD/YYYY-MM-DD)
-- [ ] **DRP-16**: Range presets provide one-click common ranges
-- [ ] **DRP-17**: Preset buttons include Last 7 Days, Last 30 Days, This Month options
-- [ ] **DRP-18**: Mouse drag selection creates range by dragging from start
-- [ ] **DRP-19**: Range duration display shows "X days selected"
-- [ ] **DRP-20**: Range comparison mode supports two date ranges
-- [ ] **DRP-21**: Component respects dark mode via :host-context(.dark)
-- [ ] **DRP-22**: Component renders via SSR with Declarative Shadow DOM
+- [x] **DRP-16**: Range presets provide one-click common ranges
+- [x] **DRP-17**: Preset buttons include Last 7 Days, Last 30 Days, This Month options
+- [x] **DRP-18**: Mouse drag selection creates range by dragging from start
+- [x] **DRP-19**: Range duration display shows "X days selected"
+- [x] **DRP-20**: Range comparison mode supports two date ranges
+- [x] **DRP-21**: Component respects dark mode via :host-context(.dark)
+- [x] **DRP-22**: Component renders via SSR with Declarative Shadow DOM
 
 ### Time Picker
 
@@ -241,13 +241,13 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DRP-13 | Phase 46 | Complete |
 | DRP-14 | Phase 46 | Complete |
 | DRP-15 | Phase 46 | Complete |
-| DRP-16 | Phase 47 | Pending |
-| DRP-17 | Phase 47 | Pending |
-| DRP-18 | Phase 47 | Pending |
-| DRP-19 | Phase 47 | Pending |
-| DRP-20 | Phase 47 | Pending |
-| DRP-21 | Phase 47 | Pending |
-| DRP-22 | Phase 47 | Pending |
+| DRP-16 | Phase 47 | Complete |
+| DRP-17 | Phase 47 | Complete |
+| DRP-18 | Phase 47 | Complete |
+| DRP-19 | Phase 47 | Complete |
+| DRP-20 | Phase 47 | Complete |
+| DRP-21 | Phase 47 | Complete |
+| DRP-22 | Phase 47 | Complete |
 | TP-01 | Phase 48 | Pending |
 | TP-02 | Phase 48 | Pending |
 | TP-03 | Phase 48 | Pending |
