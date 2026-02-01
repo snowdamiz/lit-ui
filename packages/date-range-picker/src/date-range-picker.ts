@@ -210,6 +210,13 @@ export class DateRangePicker extends TailwindElement {
   @state()
   private internalError = '';
 
+  /**
+   * Whether a pointer drag selection is in progress.
+   * True from pointerdown on a day cell until pointerup.
+   */
+  @state()
+  private isDragging = false;
+
   // ---------------------------------------------------------------------------
   // Styles
   // ---------------------------------------------------------------------------
@@ -429,6 +436,12 @@ export class DateRangePicker extends TailwindElement {
       .nav-button svg {
         width: 1rem;
         height: 1rem;
+      }
+
+      /* Prevent text selection during pointer drag */
+      .calendars-wrapper.dragging {
+        user-select: none;
+        -webkit-user-select: none;
       }
 
       /* Dark mode */
@@ -720,6 +733,59 @@ export class DateRangePicker extends TailwindElement {
     this.hoveredDate = '';
   }
 
+  // ---------------------------------------------------------------------------
+  // Drag selection (pointer events)
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Start a drag selection on pointerdown.
+   * Enters start-selected state (same as first click in two-click flow).
+   *
+   * @param isoString - ISO 8601 date string of the pressed day cell
+   */
+  private handleDragStart(isoString: string): void {
+    if (this.disabled) return;
+    this.isDragging = true;
+    // Enter start-selected state (same transition as first click)
+    this.startDate = isoString;
+    this.endDate = '';
+    this.internalError = '';
+    this.rangeState = 'start-selected';
+  }
+
+  /**
+   * Complete a drag selection on pointerup over a day cell.
+   * If released on a different cell than start, completes the range.
+   * If released on the same cell, stays in start-selected for click-to-complete.
+   *
+   * @param isoString - ISO 8601 date string of the released day cell
+   */
+  private handleDragEnd(isoString: string): void {
+    if (!this.isDragging) return;
+    this.isDragging = false;
+    if (this.rangeState === 'start-selected' && isoString !== this.startDate) {
+      // Complete range (same transition as second click)
+      const [normalizedStart, normalizedEnd] = normalizeRange(this.startDate, isoString);
+      this.startDate = normalizedStart;
+      this.endDate = normalizedEnd;
+      this.hoveredDate = '';
+      this.rangeState = 'complete';
+      this.validateAndEmit();
+    }
+    // If released on same cell as start, stay in start-selected for click-to-complete
+  }
+
+  /**
+   * Cancel a drag when pointer is released outside day cells.
+   * Keeps start-selected state so user can still click to complete.
+   */
+  private handleDragCancel(): void {
+    if (this.isDragging) {
+      this.isDragging = false;
+      // Stay in start-selected state — user can still click to complete
+    }
+  }
+
   /**
    * Reset the range picker to idle state.
    * Clears all selection, updates form value, validates, and dispatches change.
@@ -931,6 +997,8 @@ export class DateRangePicker extends TailwindElement {
       <span
         style="${styles.join('; ')}"
         @mouseenter="${() => this.handleDayHover(dateStr)}"
+        @pointerdown="${(e: PointerEvent) => { e.preventDefault(); this.handleDragStart(dateStr); }}"
+        @pointerup="${() => this.handleDragEnd(dateStr)}"
       >
         ${state.date.getDate()}
       </span>
@@ -1149,7 +1217,7 @@ export class DateRangePicker extends TailwindElement {
         </button>
       </div>
       <div
-        class="calendars-wrapper"
+        class="calendars-wrapper ${this.isDragging ? 'dragging' : ''}"
         @mouseleave="${this.clearHoverPreview}"
       >
         <lui-calendar
@@ -1280,6 +1348,7 @@ export class DateRangePicker extends TailwindElement {
                 aria-modal="true"
                 aria-label="Choose date range"
                 @keydown=${this.handlePopupKeydown}
+                @pointerup=${this.handleDragCancel}
               >
                 ${this.renderCalendarContent()}
               </div>
