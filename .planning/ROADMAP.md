@@ -463,15 +463,14 @@ Plans:
   3. User sees range duration display showing "X days selected"
   4. User can use comparison mode for two date ranges (e.g., compare this month vs last month)
   5. User experiences dark mode support and SSR compatibility
-**Plans**: TBD
+**Plans**: 5 plans in 4 waves
 
 Plans:
-- [ ] 47-01: Range preset buttons (Last 7 Days, Last 30 Days, This Month)
-- [ ] 47-02: Mouse drag selection for range creation
-- [ ] 47-03: Range duration display
-- [ ] 47-04: Range comparison mode with two date ranges
-- [ ] 47-05: Dark mode support via :host-context(.dark)
-- [ ] 47-06: SSR compatibility with Declarative Shadow DOM
+- [ ] 47-01-PLAN.md — TDD: DateRangePreset types and computeRangeDuration utility
+- [ ] 47-02-PLAN.md — Mouse drag selection via Pointer Events
+- [ ] 47-03-PLAN.md — Preset sidebar buttons and duration display in popup
+- [ ] 47-04-PLAN.md — Comparison mode with dual range selection
+- [ ] 47-05-PLAN.md — Dark mode styles, SSR compatibility, exports, and JSX types
 
 #### Phase 48: Time Picker Core
 **Goal**: Time picker with hour/minute inputs, clock face, validation, and form integration.
@@ -554,7 +553,7 @@ Phases execute in numeric order: 42 → 43 → 44 → 45 → 46 → 47 → 48 �
 | 44. Date Picker Core | v4.3 | 5/5 | Complete | 2026-01-31 |
 | 45. Date Picker Advanced | v4.3 | 5/5 | Complete | 2026-01-31 |
 | 46. Date Range Picker Core | v4.3 | 5/5 | Complete | 2026-01-31 |
-| 47. Date Range Picker Advanced | v4.3 | 0/6 | Not started | - |
+| 47. Date Range Picker Advanced | v4.3 | 0/5 | Not started | - |
 | 48. Time Picker Core | v4.3 | 0/11 | Not started | - |
 | 49. Time Picker Advanced | v4.3 | 0/8 | Not started | - |
 | 50. Documentation | v4.3 | 0/8 | Not started | - |
