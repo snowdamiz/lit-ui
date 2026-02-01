@@ -621,6 +621,60 @@ export class DateRangePicker extends TailwindElement {
         background-color: var(--color-muted, #374151);
       }
 
+      /* Comparison toggle buttons */
+      .comparison-toggle {
+        display: flex;
+        gap: 0.25rem;
+        padding: 0.25rem 0.5rem;
+        border-bottom: 1px solid var(--ui-date-picker-popup-border, #e5e7eb);
+      }
+
+      .toggle-button {
+        flex: 1;
+        font-size: 0.75rem;
+        padding: 0.375rem 0.5rem;
+        border: 1px solid var(--ui-date-picker-border, var(--ui-input-border, #d1d5db));
+        border-radius: 0.25rem;
+        background: transparent;
+        color: var(--ui-date-picker-text, var(--ui-input-text, inherit));
+        cursor: pointer;
+        transition: background-color 150ms, border-color 150ms;
+      }
+
+      .toggle-button:hover {
+        background-color: var(--color-muted, #f3f4f6);
+      }
+
+      .toggle-button:focus-visible {
+        outline: 2px solid var(--color-ring, #3b82f6);
+        outline-offset: 1px;
+      }
+
+      .toggle-active.toggle-primary {
+        background-color: var(--ui-range-selected-bg, var(--color-primary, #3b82f6));
+        color: var(--ui-range-selected-text, white);
+        border-color: var(--ui-range-selected-bg, var(--color-primary, #3b82f6));
+      }
+
+      .toggle-active.toggle-comparison {
+        background-color: var(--ui-range-compare-bg, #f59e0b);
+        color: var(--ui-range-compare-text, white);
+        border-color: var(--ui-range-compare-bg, #f59e0b);
+      }
+
+      :host-context(.dark) .comparison-toggle {
+        border-bottom-color: var(--ui-date-picker-popup-border, #374151);
+      }
+
+      :host-context(.dark) .toggle-button {
+        border-color: var(--ui-date-picker-border, var(--ui-input-border, #4b5563));
+        color: var(--ui-date-picker-text, var(--ui-input-text, #f9fafb));
+      }
+
+      :host-context(.dark) .toggle-button:hover {
+        background-color: var(--color-muted, #1f2937);
+      }
+
       /* Container query: vertical stacking for narrow containers */
       @container (max-width: 599px) {
         .popup-body {
@@ -728,6 +782,12 @@ export class DateRangePicker extends TailwindElement {
    * Status message for the popup footer based on current selection state.
    */
   get selectionStatus(): string {
+    if (this.comparison && this.selectionTarget === 'comparison') {
+      if (this.compareRangeState === 'idle') return 'Click a date to start comparison range';
+      if (this.compareRangeState === 'start-selected') return 'Click another date to complete comparison';
+      if (this.compareRangeState === 'complete') return this.displayValue;
+      return '';
+    }
     if (this.rangeState === 'idle') return 'Click a date to start selecting';
     if (this.rangeState === 'start-selected') return 'Click another date to complete range';
     if (this.rangeState === 'complete') return this.displayValue;
@@ -751,6 +811,11 @@ export class DateRangePicker extends TailwindElement {
    * Shows inclusive day count (e.g., "7 days selected").
    */
   get durationText(): string {
+    if (this.comparison && this.selectionTarget === 'comparison') {
+      if (this.compareRangeState !== 'complete' || !this.compareStartDate || !this.compareEndDate) return '';
+      const days = computeRangeDuration(this.compareStartDate, this.compareEndDate);
+      return `${days} day${days === 1 ? '' : 's'} selected (comparison)`;
+    }
     if (this.rangeState !== 'complete' || !this.startDate || !this.endDate) return '';
     const days = computeRangeDuration(this.startDate, this.endDate);
     return `${days} day${days === 1 ? '' : 's'} selected`;
@@ -1192,11 +1257,21 @@ export class DateRangePicker extends TailwindElement {
    */
   renderRangeDay = (state: DayCellState): unknown => {
     const dateStr = state.formattedDate;
+
+    // Primary range checks
     const isStart = dateStr === this.startDate;
     const isEnd = dateStr === this.endDate;
     const inRange = isDateInRange(dateStr, this.startDate, this.endDate);
-    const inPreview = this.rangeState === 'start-selected'
+    const inPreview = this.rangeState === 'start-selected' && !(this.comparison && this.selectionTarget === 'comparison')
       ? isDateInPreview(dateStr, this.startDate, this.hoveredDate)
+      : false;
+
+    // Comparison range checks
+    const isCompareStart = this.comparison && dateStr === this.compareStartDate;
+    const isCompareEnd = this.comparison && dateStr === this.compareEndDate;
+    const inCompareRange = this.comparison && isDateInRange(dateStr, this.compareStartDate, this.compareEndDate);
+    const inComparePreview = this.comparison && this.selectionTarget === 'comparison' && this.compareRangeState === 'start-selected'
+      ? isDateInPreview(dateStr, this.compareStartDate, this.hoveredDate)
       : false;
 
     // Build inline styles array — inline because CSS classes cannot
@@ -1214,6 +1289,7 @@ export class DateRangePicker extends TailwindElement {
 
     const isSingleDay = isStart && isEnd;
 
+    // Primary range styles take precedence over comparison styles
     if (isSingleDay) {
       // Single-day range: full circle
       styles.push(
@@ -1245,6 +1321,38 @@ export class DateRangePicker extends TailwindElement {
       // Preview: lighter highlight background, no rounding
       styles.push(
         'background-color: var(--ui-range-preview-bg, #eff6ff)',
+      );
+    } else if (isCompareStart && isCompareEnd) {
+      // Comparison single-day: full circle in amber
+      styles.push(
+        'background-color: var(--ui-range-compare-bg, #f59e0b)',
+        'color: var(--ui-range-compare-text, white)',
+        'border-radius: 9999px',
+      );
+    } else if (isCompareStart) {
+      // Comparison start: rounded left in amber
+      styles.push(
+        'background-color: var(--ui-range-compare-bg, #f59e0b)',
+        'color: var(--ui-range-compare-text, white)',
+        'border-radius: 9999px 0 0 9999px',
+      );
+    } else if (isCompareEnd) {
+      // Comparison end: rounded right in amber
+      styles.push(
+        'background-color: var(--ui-range-compare-bg, #f59e0b)',
+        'color: var(--ui-range-compare-text, white)',
+        'border-radius: 0 9999px 9999px 0',
+      );
+    } else if (inCompareRange) {
+      // In comparison range: amber highlight
+      styles.push(
+        'background-color: var(--ui-range-compare-highlight-bg, #fef3c7)',
+        'color: inherit',
+      );
+    } else if (inComparePreview) {
+      // Comparison preview: lighter amber highlight
+      styles.push(
+        'background-color: var(--ui-range-compare-preview-bg, #fffbeb)',
       );
     }
 
@@ -1471,6 +1579,20 @@ export class DateRangePicker extends TailwindElement {
           </svg>
         </button>
       </div>
+      ${this.comparison ? html`
+        <div class="comparison-toggle">
+          <button
+            type="button"
+            class="toggle-button ${this.selectionTarget === 'primary' ? 'toggle-active toggle-primary' : ''}"
+            @click="${() => { this.selectionTarget = 'primary'; }}"
+          >Primary Range</button>
+          <button
+            type="button"
+            class="toggle-button ${this.selectionTarget === 'comparison' ? 'toggle-active toggle-comparison' : ''}"
+            @click="${() => { this.selectionTarget = 'comparison'; }}"
+          >Comparison Range</button>
+        </div>
+      ` : nothing}
       <div class="popup-body">
         ${this.effectivePresets.length > 0
           ? html`
@@ -1511,7 +1633,7 @@ export class DateRangePicker extends TailwindElement {
       </div>
       <div class="popup-footer">
         <span class="footer-status">${this.durationText || this.selectionStatus}</span>
-        ${this.rangeState === 'complete'
+        ${this.rangeState === 'complete' || (this.comparison && this.compareRangeState === 'complete')
           ? html`
               <button
                 type="button"
