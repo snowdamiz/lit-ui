@@ -5,6 +5,7 @@ import {
   formatISOInterval,
   isDateInPreview,
   normalizeRange,
+  computeRangeDuration,
 } from './range-utils.js';
 
 describe('isDateInRange', () => {
@@ -160,5 +161,31 @@ describe('normalizeRange', () => {
 
   it('handles empty end gracefully', () => {
     expect(normalizeRange('2026-01-10', '')).toEqual(['2026-01-10', '']);
+  });
+});
+
+describe('computeRangeDuration', () => {
+  it('returns 1 for a single-day range', () => {
+    expect(computeRangeDuration('2026-01-10', '2026-01-10')).toBe(1);
+  });
+
+  it('returns 7 for a 7-day inclusive range', () => {
+    expect(computeRangeDuration('2026-01-10', '2026-01-16')).toBe(7);
+  });
+
+  it('returns 31 for a full month', () => {
+    expect(computeRangeDuration('2026-01-01', '2026-01-31')).toBe(31);
+  });
+
+  it('returns 0 when start is missing', () => {
+    expect(computeRangeDuration('', '2026-01-10')).toBe(0);
+  });
+
+  it('returns 0 when end is missing', () => {
+    expect(computeRangeDuration('2026-01-10', '')).toBe(0);
+  });
+
+  it('returns 0 when both are missing', () => {
+    expect(computeRangeDuration('', '')).toBe(0);
   });
 });
