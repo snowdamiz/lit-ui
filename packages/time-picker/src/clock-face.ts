@@ -448,3 +448,10 @@ export class ClockFace extends TailwindElement {
     `;
   }
 }
+
+// Safe custom element registration for internal component
+if (typeof customElements !== 'undefined') {
+  if (!customElements.get('lui-clock-face')) {
+    customElements.define('lui-clock-face', ClockFace);
+  }
+}

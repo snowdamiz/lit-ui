@@ -12,7 +12,7 @@
  * @fires ui-time-input-change - Dispatched when the time value changes, with { value: TimeValue }
  */
 
-import { html, css, nothing, type PropertyValues, type CSSResultGroup } from 'lit';
+import { html, css, nothing, isServer, type PropertyValues, type CSSResultGroup } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import { TailwindElement, tailwindBaseStyles, dispatchCustomEvent } from '@lit-ui/core';
 import { type TimeValue, to12Hour, to24Hour, clampHour, clampMinute } from './time-utils.js';
@@ -524,5 +524,12 @@ export class TimeInput extends TailwindElement {
       window.clearTimeout(this.typeAheadTimer);
       this.typeAheadTimer = undefined;
     }
+  }
+}
+
+// Safe custom element registration for internal component
+if (typeof customElements !== 'undefined') {
+  if (!customElements.get('lui-time-input')) {
+    customElements.define('lui-time-input', TimeInput);
   }
 }

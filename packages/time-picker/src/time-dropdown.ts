@@ -370,3 +370,10 @@ export class TimeDropdown extends TailwindElement {
     `;
   }
 }
+
+// Safe custom element registration for internal component
+if (typeof customElements !== 'undefined') {
+  if (!customElements.get('lui-time-dropdown')) {
+    customElements.define('lui-time-dropdown', TimeDropdown);
+  }
+}
