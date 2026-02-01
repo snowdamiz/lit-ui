@@ -617,8 +617,17 @@ export class DateRangePicker extends TailwindElement {
         border-right-color: var(--ui-date-picker-popup-border, #374151);
       }
 
+      :host-context(.dark) .preset-button {
+        color: var(--ui-date-picker-text, var(--ui-input-text, #f9fafb));
+      }
+
       :host-context(.dark) .preset-button:hover:not(:disabled) {
-        background-color: var(--color-muted, #374151);
+        background-color: var(--color-muted, #1f2937);
+      }
+
+      :host-context(.dark) {
+        --ui-range-compare-highlight-bg: #78350f;
+        --ui-range-compare-preview-bg: #451a03;
       }
 
       /* Comparison toggle buttons */
@@ -686,6 +695,10 @@ export class DateRangePicker extends TailwindElement {
           flex-wrap: wrap;
           border-right: none;
           border-bottom: 1px solid var(--ui-date-picker-popup-border, #e5e7eb);
+        }
+
+        :host-context(.dark) .preset-sidebar {
+          border-bottom-color: var(--ui-date-picker-popup-border, #374151);
         }
 
         .calendars-wrapper {
