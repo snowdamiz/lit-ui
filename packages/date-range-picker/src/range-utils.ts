@@ -119,6 +119,23 @@ export function isDateInPreview(dateISO: string, startISO: string, hoveredISO: s
  * @param endISO - Second selected date (YYYY-MM-DD)
  * @returns Tuple of [start, end] in correct order
  */
+/**
+ * Compute the inclusive day count between two ISO date strings.
+ * Returns 0 if either date is missing.
+ *
+ * @param startISO - Range start date (YYYY-MM-DD)
+ * @param endISO - Range end date (YYYY-MM-DD)
+ * @returns Inclusive day count (e.g., Jan 10 to Jan 16 = 7 days)
+ */
+export function computeRangeDuration(startISO: string, endISO: string): number {
+  if (!startISO || !endISO) return 0;
+
+  const start = startOfDay(parseISO(startISO));
+  const end = startOfDay(parseISO(endISO));
+
+  return differenceInCalendarDays(end, start) + 1;
+}
+
 export function normalizeRange(startISO: string, endISO: string): [string, string] {
   if (!startISO || !endISO) return [startISO, endISO];
 
