@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-30)
 ## Current Position
 
 Phase: 6 of 9 (Date Range Picker Advanced)
-Plan: 2 of 5 in current phase (2 executions complete)
+Plan: 3 of 5 in current phase (3 executions complete)
 Status: In progress
-Last activity: 2026-01-31 — Completed 47-02-PLAN.md
+Last activity: 2026-01-31 — Completed 47-01-PLAN.md
 
-Progress: [████████████░░░░░░░░░░░░░░░░░░░░] 40% (2/5 plans in phase 47)
+Progress: [███████████████████░░░░░░░░░░░░░] 60% (3/5 plans in phase 47)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 38
+- Total plans completed: 39
 - Average duration: 2.1 min
-- Total execution time: 1.33 hours
+- Total execution time: 1.36 hours
 
 **By Phase:**
 
@@ -31,7 +31,7 @@ Progress: [████████████░░░░░░░░░░░
 | 43    | 8     | 8     | 1.9 min |
 
 **Recent Trend:**
-- Last 3 plans: 1 min (47-02), 1 min (46-05), 2 min (46-04)
+- Last 3 plans: 2 min (47-01), 1 min (47-02), 1 min (46-05)
 - Trend: Consistent execution pace
 
 *Updated after each plan completion*
@@ -140,6 +140,7 @@ Recent decisions affecting current work:
 - **Phase 46-04**: Input clear button visible when startDate set; footer clear only on complete range
 - **Phase 46-05**: HTMLElementTagNameMap kept in date-range-picker.ts per Phase 44-05 decision
 - **Phase 46-05**: JSX types separate LuiDateRangePickerAttributes and LuiDateRangePickerEvents interfaces
+- **Phase 47-01**: DateRangePreset.resolve() called at click time for SSR safety; computeRangeDuration uses differenceInCalendarDays + 1 for inclusive counting
 - **Phase 47-02**: Drag selection reuses two-click state machine transitions (no new states); Pointer Events API with preventDefault for text selection prevention
 
 ### Pending Todos
@@ -156,6 +157,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-31 (47-02 complete)
-Stopped at: Completed 47-02-PLAN.md (Drag selection via pointer events)
+Last session: 2026-01-31 (47-01 complete)
+Stopped at: Completed 47-01-PLAN.md (Range preset types and duration utility)
 Resume file: None
