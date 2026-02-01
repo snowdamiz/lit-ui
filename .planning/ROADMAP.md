@@ -482,20 +482,15 @@ Plans:
   3. User can use dropdown interface as desktop alternative
   4. User can click "Now" button for current time and preset buttons (Morning, Afternoon, Evening)
   5. User can submit form with ISO 8601 time format and see validation for end time after start time
-**Plans**: TBD
+**Plans**: 6 plans in 4 waves
 
 Plans:
-- [ ] 48-01: Hour input with 12/24-hour format values
-- [ ] 48-02: Minute input with 0-59 values
-- [ ] 48-03: AM/PM toggle button with clear indication
-- [ ] 48-04: 24-hour format toggle
-- [ ] 48-05: Clock face interface with hour marks and minute indicators
-- [ ] 48-06: Dropdown interface for desktop
-- [ ] 48-07: Time zone label display
-- [ ] 48-08: Time validation (end time after start time)
-- [ ] 48-09: Quick preset buttons (Morning, Afternoon, Evening, Now)
-- [ ] 48-10: Keyboard navigation (arrow keys, Enter to confirm)
-- [ ] 48-11: Form integration via ElementInternals with ISO 8601 time submission
+- [ ] 48-01-PLAN.md — Package scaffolding, time-utils TDD, and time preset types
+- [ ] 48-02-PLAN.md — Time input spinbuttons with AM/PM toggle and 12/24-hour format
+- [ ] 48-03-PLAN.md — SVG clock face interface with hour/minute selection and pointer events
+- [ ] 48-04-PLAN.md — Time dropdown listbox interface with configurable step intervals
+- [ ] 48-05-PLAN.md — Main time-picker component with popup, form integration, validation, presets
+- [ ] 48-06-PLAN.md — Dark mode styles, package exports, custom element registration, JSX types
 
 #### Phase 49: Time Picker Advanced
 **Goal**: Advanced time picker features including business hours, time interval slider, timezone support, and voice input.
@@ -554,6 +549,6 @@ Phases execute in numeric order: 42 → 43 → 44 → 45 → 46 → 47 → 48 �
 | 45. Date Picker Advanced | v4.3 | 5/5 | Complete | 2026-01-31 |
 | 46. Date Range Picker Core | v4.3 | 5/5 | Complete | 2026-01-31 |
 | 47. Date Range Picker Advanced | v4.3 | 5/5 | Complete | 2026-01-31 |
-| 48. Time Picker Core | v4.3 | 0/11 | Not started | - |
+| 48. Time Picker Core | v4.3 | 0/6 | Planned | - |
 | 49. Time Picker Advanced | v4.3 | 0/8 | Not started | - |
 | 50. Documentation | v4.3 | 0/8 | Not started | - |
