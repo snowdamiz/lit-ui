@@ -179,6 +179,25 @@ export class DateRangePicker extends TailwindElement {
   error = '';
 
   /**
+   * Enable comparison mode for selecting two independent date ranges.
+   * When true, toggle buttons appear to switch between primary and comparison ranges.
+   */
+  @property({ type: Boolean, reflect: true })
+  comparison = false;
+
+  /**
+   * The comparison range start date as ISO 8601 string (YYYY-MM-DD).
+   */
+  @property({ type: String, reflect: true, attribute: 'compare-start-date' })
+  compareStartDate = '';
+
+  /**
+   * The comparison range end date as ISO 8601 string (YYYY-MM-DD).
+   */
+  @property({ type: String, reflect: true, attribute: 'compare-end-date' })
+  compareEndDate = '';
+
+  /**
    * Preset range buttons for quick one-click selection.
    * - false: no presets (default)
    * - true: use DEFAULT_RANGE_PRESETS (Last 7 Days, Last 30 Days, This Month)
@@ -227,6 +246,19 @@ export class DateRangePicker extends TailwindElement {
    */
   @state()
   private isDragging = false;
+
+  /**
+   * Which range is currently being selected: primary or comparison.
+   * Only relevant when comparison mode is enabled.
+   */
+  @state()
+  private selectionTarget: 'primary' | 'comparison' = 'primary';
+
+  /**
+   * Current state of the comparison range selection state machine.
+   */
+  @state()
+  private compareRangeState: RangeState = 'idle';
 
   // ---------------------------------------------------------------------------
   // Styles
@@ -760,6 +792,12 @@ export class DateRangePicker extends TailwindElement {
   handleDateClick(isoString: string): void {
     if (this.disabled) return;
 
+    // Route to comparison range handler when in comparison mode targeting comparison
+    if (this.comparison && this.selectionTarget === 'comparison') {
+      this.handleComparisonDateClick(isoString);
+      return;
+    }
+
     if (this.rangeState === 'idle' || this.rangeState === 'complete') {
       // First click: set start date, reset end, enter start-selected state
       this.startDate = isoString;
@@ -773,6 +811,27 @@ export class DateRangePicker extends TailwindElement {
       this.endDate = normalizedEnd;
       this.hoveredDate = '';
       this.rangeState = 'complete';
+      this.validateAndEmit();
+    }
+  }
+
+  /**
+   * Handle a date click for the comparison range.
+   * Same two-click state machine as primary but targeting comparison dates.
+   *
+   * @param isoString - ISO 8601 date string of the clicked date
+   */
+  private handleComparisonDateClick(isoString: string): void {
+    if (this.compareRangeState === 'idle' || this.compareRangeState === 'complete') {
+      this.compareStartDate = isoString;
+      this.compareEndDate = '';
+      this.compareRangeState = 'start-selected';
+    } else if (this.compareRangeState === 'start-selected') {
+      const [normalizedStart, normalizedEnd] = normalizeRange(this.compareStartDate, isoString);
+      this.compareStartDate = normalizedStart;
+      this.compareEndDate = normalizedEnd;
+      this.hoveredDate = '';
+      this.compareRangeState = 'complete';
       this.validateAndEmit();
     }
   }
@@ -793,11 +852,16 @@ export class DateRangePicker extends TailwindElement {
     // Build ISO interval for event payload
     const isoInterval = formatISOInterval(this.startDate, this.endDate);
 
-    // Dispatch change event
+    // Dispatch change event (include comparison fields when comparison mode is active)
     dispatchCustomEvent(this, 'change', {
       startDate: this.startDate,
       endDate: this.endDate,
       isoInterval,
+      ...(this.comparison ? {
+        compareStartDate: this.compareStartDate,
+        compareEndDate: this.compareEndDate,
+        compareIsoInterval: formatISOInterval(this.compareStartDate, this.compareEndDate),
+      } : {}),
     });
 
     // Close popup on valid complete range
@@ -813,7 +877,10 @@ export class DateRangePicker extends TailwindElement {
    * @param dateStr - ISO 8601 date string of the hovered date
    */
   handleDayHover(dateStr: string): void {
-    if (this.rangeState === 'start-selected') {
+    const activeState = this.comparison && this.selectionTarget === 'comparison'
+      ? this.compareRangeState
+      : this.rangeState;
+    if (activeState === 'start-selected') {
       this.hoveredDate = dateStr;
     }
   }
@@ -839,9 +906,16 @@ export class DateRangePicker extends TailwindElement {
     const { start, end } = preset.resolve();
     const startISO = format(start, 'yyyy-MM-dd');
     const endISO = format(end, 'yyyy-MM-dd');
-    this.startDate = startISO;
-    this.endDate = endISO;
-    this.rangeState = 'complete';
+
+    if (this.comparison && this.selectionTarget === 'comparison') {
+      this.compareStartDate = startISO;
+      this.compareEndDate = endISO;
+      this.compareRangeState = 'complete';
+    } else {
+      this.startDate = startISO;
+      this.endDate = endISO;
+      this.rangeState = 'complete';
+    }
     this.validateAndEmit();
   }
 
@@ -877,11 +951,18 @@ export class DateRangePicker extends TailwindElement {
   private handleDragStart(isoString: string): void {
     if (this.disabled) return;
     this.isDragging = true;
-    // Enter start-selected state (same transition as first click)
-    this.startDate = isoString;
-    this.endDate = '';
-    this.internalError = '';
-    this.rangeState = 'start-selected';
+
+    if (this.comparison && this.selectionTarget === 'comparison') {
+      this.compareStartDate = isoString;
+      this.compareEndDate = '';
+      this.compareRangeState = 'start-selected';
+    } else {
+      // Enter start-selected state (same transition as first click)
+      this.startDate = isoString;
+      this.endDate = '';
+      this.internalError = '';
+      this.rangeState = 'start-selected';
+    }
   }
 
   /**
@@ -894,14 +975,26 @@ export class DateRangePicker extends TailwindElement {
   private handleDragEnd(isoString: string): void {
     if (!this.isDragging) return;
     this.isDragging = false;
-    if (this.rangeState === 'start-selected' && isoString !== this.startDate) {
-      // Complete range (same transition as second click)
-      const [normalizedStart, normalizedEnd] = normalizeRange(this.startDate, isoString);
-      this.startDate = normalizedStart;
-      this.endDate = normalizedEnd;
-      this.hoveredDate = '';
-      this.rangeState = 'complete';
-      this.validateAndEmit();
+
+    if (this.comparison && this.selectionTarget === 'comparison') {
+      if (this.compareRangeState === 'start-selected' && isoString !== this.compareStartDate) {
+        const [normalizedStart, normalizedEnd] = normalizeRange(this.compareStartDate, isoString);
+        this.compareStartDate = normalizedStart;
+        this.compareEndDate = normalizedEnd;
+        this.hoveredDate = '';
+        this.compareRangeState = 'complete';
+        this.validateAndEmit();
+      }
+    } else {
+      if (this.rangeState === 'start-selected' && isoString !== this.startDate) {
+        // Complete range (same transition as second click)
+        const [normalizedStart, normalizedEnd] = normalizeRange(this.startDate, isoString);
+        this.startDate = normalizedStart;
+        this.endDate = normalizedEnd;
+        this.hoveredDate = '';
+        this.rangeState = 'complete';
+        this.validateAndEmit();
+      }
     }
     // If released on same cell as start, stay in start-selected for click-to-complete
   }
@@ -928,6 +1021,15 @@ export class DateRangePicker extends TailwindElement {
     this.hoveredDate = '';
     this.internalError = '';
     this.rangeState = 'idle';
+
+    // Also clear comparison state when comparison mode is active
+    if (this.comparison) {
+      this.compareStartDate = '';
+      this.compareEndDate = '';
+      this.compareRangeState = 'idle';
+      this.selectionTarget = 'primary';
+    }
+
     this.updateFormValue();
     this.validate();
 
@@ -935,6 +1037,11 @@ export class DateRangePicker extends TailwindElement {
       startDate: '',
       endDate: '',
       isoInterval: '',
+      ...(this.comparison ? {
+        compareStartDate: '',
+        compareEndDate: '',
+        compareIsoInterval: '',
+      } : {}),
     });
 
     // Focus input after clear for keyboard continuity
@@ -960,6 +1067,14 @@ export class DateRangePicker extends TailwindElement {
       this.updateFormValue();
       this.validate();
     }
+
+    // Sync comparison range state when comparison dates change externally
+    if (changedProps.has('compareStartDate') || changedProps.has('compareEndDate')) {
+      if (this.compareStartDate && this.compareEndDate && this.compareRangeState !== 'complete') {
+        this.compareRangeState = 'complete';
+      }
+      this.updateFormValue();
+    }
   }
 
   // ---------------------------------------------------------------------------
@@ -971,8 +1086,13 @@ export class DateRangePicker extends TailwindElement {
    * Sets form value as ISO 8601 interval (YYYY-MM-DD/YYYY-MM-DD) or null.
    */
   private updateFormValue(): void {
-    const isoInterval = formatISOInterval(this.startDate, this.endDate);
-    this.internals?.setFormValue(isoInterval || null);
+    const primaryInterval = formatISOInterval(this.startDate, this.endDate);
+    if (this.comparison && this.compareStartDate && this.compareEndDate) {
+      const compareInterval = formatISOInterval(this.compareStartDate, this.compareEndDate);
+      this.internals?.setFormValue(primaryInterval ? `${primaryInterval}|${compareInterval}` : null);
+    } else {
+      this.internals?.setFormValue(primaryInterval || null);
+    }
   }
 
   /**
@@ -1027,6 +1147,10 @@ export class DateRangePicker extends TailwindElement {
     this.internalError = '';
     this.rangeState = 'idle';
     this.isOpen = false;
+    this.compareStartDate = '';
+    this.compareEndDate = '';
+    this.compareRangeState = 'idle';
+    this.selectionTarget = 'primary';
     this.internals?.setFormValue(null);
     this.internals?.setValidity({});
   }
