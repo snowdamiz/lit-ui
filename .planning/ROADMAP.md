@@ -485,12 +485,12 @@ Plans:
 **Plans**: 6 plans in 4 waves
 
 Plans:
-- [ ] 48-01-PLAN.md — Package scaffolding, time-utils TDD, and time preset types
-- [ ] 48-02-PLAN.md — Time input spinbuttons with AM/PM toggle and 12/24-hour format
-- [ ] 48-03-PLAN.md — SVG clock face interface with hour/minute selection and pointer events
-- [ ] 48-04-PLAN.md — Time dropdown listbox interface with configurable step intervals
-- [ ] 48-05-PLAN.md — Main time-picker component with popup, form integration, validation, presets
-- [ ] 48-06-PLAN.md — Dark mode styles, package exports, custom element registration, JSX types
+- [x] 48-01-PLAN.md — Package scaffolding, time-utils TDD, and time preset types
+- [x] 48-02-PLAN.md — Time input spinbuttons with AM/PM toggle and 12/24-hour format
+- [x] 48-03-PLAN.md — SVG clock face interface with hour/minute selection and pointer events
+- [x] 48-04-PLAN.md — Time dropdown listbox interface with configurable step intervals
+- [x] 48-05-PLAN.md — Main time-picker component with popup, form integration, validation, presets
+- [x] 48-06-PLAN.md — Dark mode styles, package exports, custom element registration, JSX types
 
 #### Phase 49: Time Picker Advanced
 **Goal**: Advanced time picker features including business hours, time interval slider, timezone support, and voice input.
@@ -549,6 +549,6 @@ Phases execute in numeric order: 42 → 43 → 44 → 45 → 46 → 47 → 48 �
 | 45. Date Picker Advanced | v4.3 | 5/5 | Complete | 2026-01-31 |
 | 46. Date Range Picker Core | v4.3 | 5/5 | Complete | 2026-01-31 |
 | 47. Date Range Picker Advanced | v4.3 | 5/5 | Complete | 2026-01-31 |
-| 48. Time Picker Core | v4.3 | 0/6 | Planned | - |
+| 48. Time Picker Core | v4.3 | 6/6 | Complete | 2026-01-31 |
 | 49. Time Picker Advanced | v4.3 | 0/8 | Not started | - |
 | 50. Documentation | v4.3 | 0/8 | Not started | - |

@@ -96,21 +96,21 @@ Requirements for v4.3 milestone - complete date/time input capabilities. Each ma
 
 ### Time Picker
 
-- [ ] **TP-01**: Hour input accepts 1-12 (12-hour) or 0-23 (24-hour) values
-- [ ] **TP-02**: Minute input accepts 0-59 values
-- [ ] **TP-03**: AM/PM toggle button clearly indicates current period
-- [ ] **TP-04**: 24-hour format toggle switches between formats
-- [ ] **TP-05**: Clock face interface visualizes time selection
-- [ ] **TP-06**: Dropdown interface provides desktop alternative
-- [ ] **TP-07**: Clock face shows hour marks and minute indicators
-- [ ] **TP-08**: Time zone label displays current timezone
-- [ ] **TP-09**: Time validation ensures end time after start time
-- [ ] **TP-10**: Quick preset buttons provide Morning, Afternoon, Evening options
-- [ ] **TP-11**: "Now" button selects current time
-- [ ] **TP-12**: Keyboard arrow keys adjust hours and minutes
-- [ ] **TP-13**: Enter key confirms time selection
-- [ ] **TP-14**: Component integrates with forms via ElementInternals
-- [ ] **TP-15**: Form value submits as ISO 8601 time format (HH:mm:ss)
+- [x] **TP-01**: Hour input accepts 1-12 (12-hour) or 0-23 (24-hour) values
+- [x] **TP-02**: Minute input accepts 0-59 values
+- [x] **TP-03**: AM/PM toggle button clearly indicates current period
+- [x] **TP-04**: 24-hour format toggle switches between formats
+- [x] **TP-05**: Clock face interface visualizes time selection
+- [x] **TP-06**: Dropdown interface provides desktop alternative
+- [x] **TP-07**: Clock face shows hour marks and minute indicators
+- [x] **TP-08**: Time zone label displays current timezone
+- [x] **TP-09**: Time validation ensures end time after start time
+- [x] **TP-10**: Quick preset buttons provide Morning, Afternoon, Evening options
+- [x] **TP-11**: "Now" button selects current time
+- [x] **TP-12**: Keyboard arrow keys adjust hours and minutes
+- [x] **TP-13**: Enter key confirms time selection
+- [x] **TP-14**: Component integrates with forms via ElementInternals
+- [x] **TP-15**: Form value submits as ISO 8601 time format (HH:mm:ss)
 - [ ] **TP-16**: Time interval prop controls minute precision (15, 30, 60)
 - [ ] **TP-17**: Business hours highlight (9 AM - 5 PM) with different style
 - [ ] **TP-18**: Time range slider provides visual duration selection
