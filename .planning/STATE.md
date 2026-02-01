@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-30)
 ## Current Position
 
 Phase: 7 of 9 (Time Picker Core)
-Plan: 3 of 6 in current phase (3 executions complete)
+Plan: 5 of 6 in current phase (5 executions complete)
 Status: In progress
-Last activity: 2026-01-31 — Completed 48-03-PLAN.md
+Last activity: 2026-01-31 — Completed 48-05-PLAN.md
 
-Progress: [████████████████░░░░░░░░░░░░░░░░] 50% (3/6 plans in phase 48)
+Progress: [██████████████████████████░░░░░░] 83% (5/6 plans in phase 48)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 45
+- Total plans completed: 47
 - Average duration: 2.1 min
-- Total execution time: 1.55 hours
+- Total execution time: 1.63 hours
 
 **By Phase:**
 
@@ -31,7 +31,7 @@ Progress: [████████████████░░░░░░░
 | 43    | 8     | 8     | 1.9 min |
 
 **Recent Trend:**
-- Last 3 plans: 2 min (48-03), 1 min (48-04), 2 min (48-01)
+- Last 3 plans: 1 min (48-04), 4 min (48-05), 2 min (48-03)
 - Trend: Consistent execution pace
 
 *Updated after each plan completion*
@@ -157,6 +157,10 @@ Recent decisions affecting current work:
 - **Phase 48-04**: WAI-ARIA Listbox pattern (role=listbox/option) for dropdown time selection
 - **Phase 48-04**: CSS custom properties --ui-time-picker-* with fallback to --ui-input-* for theming
 - **Phase 48-04**: TimeDropdown is internal component (no custom element registration), composed by parent
+- **Phase 48-05**: TimePicker popup uses Floating UI fixed strategy with same middleware as date-picker (offset/flip/shift)
+- **Phase 48-05**: Click-outside uses pointerdown + composedPath().includes(this) for Shadow DOM compatibility
+- **Phase 48-05**: Tab focus trap cycles back to TimeInput hour spinbutton; Enter on spinbuttons confirms and closes
+- **Phase 48-05**: hour12 auto-detected from locale via getDefaultHourCycle when not explicitly set
 
 ### Pending Todos
 
@@ -172,6 +176,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-31 (48-03 complete)
-Stopped at: Completed 48-03-PLAN.md (Clock face SVG component)
+Last session: 2026-01-31 (48-05 complete)
+Stopped at: Completed 48-05-PLAN.md (Main TimePicker component)
 Resume file: None
