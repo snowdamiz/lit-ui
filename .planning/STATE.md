@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-30)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** Phase 48 Time Picker Core — In Progress
+**Current focus:** Phase 48 Time Picker Core — Complete
 
 ## Current Position
 
 Phase: 7 of 9 (Time Picker Core)
-Plan: 5 of 6 in current phase (5 executions complete)
-Status: In progress
-Last activity: 2026-01-31 — Completed 48-05-PLAN.md
+Plan: 6 of 6 in current phase (6 executions complete)
+Status: Phase complete
+Last activity: 2026-01-31 — Completed 48-06-PLAN.md
 
-Progress: [██████████████████████████░░░░░░] 83% (5/6 plans in phase 48)
+Progress: [████████████████████████████████] 100% (6/6 plans in phase 48)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 47
+- Total plans completed: 48
 - Average duration: 2.1 min
-- Total execution time: 1.63 hours
+- Total execution time: 1.68 hours
 
 **By Phase:**
 
@@ -31,7 +31,7 @@ Progress: [███████████████████████
 | 43    | 8     | 8     | 1.9 min |
 
 **Recent Trend:**
-- Last 3 plans: 1 min (48-04), 4 min (48-05), 2 min (48-03)
+- Last 3 plans: 4 min (48-05), 1 min (48-04), 3 min (48-06)
 - Trend: Consistent execution pace
 
 *Updated after each plan completion*
@@ -161,6 +161,9 @@ Recent decisions affecting current work:
 - **Phase 48-05**: Click-outside uses pointerdown + composedPath().includes(this) for Shadow DOM compatibility
 - **Phase 48-05**: Tab focus trap cycles back to TimeInput hour spinbutton; Enter on spinbuttons confirms and closes
 - **Phase 48-05**: hour12 auto-detected from locale via getDefaultHourCycle when not explicitly set
+- **Phase 48-06**: CSS classes on SVG elements for dark mode (attribute selectors don't match var() inline attrs)
+- **Phase 48-06**: Internal components self-register in their own files (imported via side-effect imports in index.ts)
+- **Phase 48-06**: presets property excluded from JSX attributes (attribute: false, JS-only)
 
 ### Pending Todos
 
@@ -176,6 +179,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-31 (48-05 complete)
-Stopped at: Completed 48-05-PLAN.md (Main TimePicker component)
+Last session: 2026-01-31 (48-06 complete, Phase 48 complete)
+Stopped at: Completed 48-06-PLAN.md (Dark mode, exports, JSX types)
 Resume file: None
