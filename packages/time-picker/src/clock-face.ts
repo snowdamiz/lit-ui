@@ -65,6 +65,33 @@ export class ClockFace extends TailwindElement {
       .number-text {
         pointer-events: none;
       }
+
+      .clock-bg {
+        fill: var(--ui-time-picker-clock-bg, #f9fafb);
+        stroke: var(--ui-time-picker-clock-border, #e5e7eb);
+      }
+
+      .clock-number {
+        fill: var(--ui-time-picker-clock-text, #374151);
+      }
+
+      .clock-tick {
+        fill: var(--ui-time-picker-clock-text, #374151);
+      }
+
+      /* Dark mode */
+      :host-context(.dark) .clock-bg {
+        fill: var(--ui-time-picker-clock-bg, #1f2937);
+        stroke: var(--ui-time-picker-clock-border, #374151);
+      }
+
+      :host-context(.dark) .clock-number {
+        fill: var(--ui-time-picker-clock-text, #d1d5db);
+      }
+
+      :host-context(.dark) .clock-tick {
+        fill: var(--ui-time-picker-clock-text, #d1d5db);
+      }
     `,
   ];
 
@@ -116,11 +143,11 @@ export class ClockFace extends TailwindElement {
           />
         ` : ''}
         <text
-          class="number-text"
+          class="number-text ${isSelected ? '' : 'clock-number'}"
           x="${pos.x}" y="${pos.y}"
           text-anchor="middle" dominant-baseline="central"
           font-size="14"
-          fill="${isSelected ? 'white' : 'var(--ui-time-picker-clock-text, #374151)'}"
+          fill="${isSelected ? 'white' : ''}"
         >${i}</text>
       `);
     }
@@ -149,11 +176,11 @@ export class ClockFace extends TailwindElement {
           />
         ` : ''}
         <text
-          class="number-text"
+          class="number-text ${isSelected ? '' : 'clock-number'}"
           x="${pos.x}" y="${pos.y}"
           text-anchor="middle" dominant-baseline="central"
           font-size="14"
-          fill="${isSelected ? 'white' : 'var(--ui-time-picker-clock-text, #374151)'}"
+          fill="${isSelected ? 'white' : ''}"
         >${i}</text>
       `);
     }
@@ -176,11 +203,11 @@ export class ClockFace extends TailwindElement {
           />
         ` : ''}
         <text
-          class="number-text"
+          class="number-text ${isSelected ? '' : 'clock-number'}"
           x="${pos.x}" y="${pos.y}"
           text-anchor="middle" dominant-baseline="central"
           font-size="12"
-          fill="${isSelected ? 'white' : 'var(--ui-time-picker-clock-text, #374151)'}"
+          fill="${isSelected ? 'white' : ''}"
         >${num}</text>
       `);
     }
@@ -210,11 +237,11 @@ export class ClockFace extends TailwindElement {
             />
           ` : ''}
           <text
-            class="number-text"
+            class="number-text ${isSelected ? '' : 'clock-number'}"
             x="${pos.x}" y="${pos.y}"
             text-anchor="middle" dominant-baseline="central"
             font-size="14"
-            fill="${isSelected ? 'white' : 'var(--ui-time-picker-clock-text, #374151)'}"
+            fill="${isSelected ? 'white' : ''}"
           >${label}</text>
         `);
       } else {
@@ -227,8 +254,8 @@ export class ClockFace extends TailwindElement {
             />
           ` : ''}
           <circle
+            class="clock-tick"
             cx="${pos.x}" cy="${pos.y}" r="1"
-            fill="var(--ui-time-picker-clock-text, #374151)"
           />
         `);
       }
@@ -401,9 +428,8 @@ export class ClockFace extends TailwindElement {
       >
         <!-- Clock circle background -->
         <circle
+          class="clock-bg"
           cx="${CENTER}" cy="${CENTER}" r="${OUTER_RADIUS}"
-          fill="var(--ui-time-picker-clock-bg, #f9fafb)"
-          stroke="var(--ui-time-picker-clock-border, #e5e7eb)"
           stroke-width="1"
         />
 
