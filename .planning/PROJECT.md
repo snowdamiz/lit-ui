@@ -4,22 +4,23 @@
 
 A framework-agnostic component library built on Lit.js, following ShadCN's philosophy of beautiful defaults and CLI-driven installation. Components work natively in React, Vue, Svelte, or plain HTML because they're standard web components underneath.
 
-Now with **dual distribution** (copy-source or npm), **SSR support** via Declarative Shadow DOM, **build-time theme customization** via visual configurator, **complete form toolkit** (Input, Textarea, Select, Checkbox, Radio, Switch with group containers), and **date/time components** (Calendar, Date Picker, Date Range Picker, Time Picker).
+Now with **dual distribution** (copy-source or npm), **SSR support** via Declarative Shadow DOM, **build-time theme customization** via visual configurator, **complete form toolkit** (Input, Textarea, Select, Checkbox, Radio, Switch with group containers), **date/time components** (Calendar, Date Picker, Date Range Picker, Time Picker), and **overlay/feedback primitives** (Toast, Tooltip, Popover with shared Floating UI infrastructure).
 
 ## Core Value
 
 Developers can use polished, accessible UI components in any framework without lock-in — one component library that works everywhere.
 
-## Current State (v4.3)
+## Current State (v5.0)
 
-- ~68,000 lines TypeScript across packages and apps
-- Tech stack: Lit.js 3, Tailwind CSS v4, Vite, TypeScript, pnpm workspaces, colorjs.io, Floating UI, @tanstack/lit-virtual, date-fns
-- 15 publishable packages: @lit-ui/core, @lit-ui/button, @lit-ui/dialog, @lit-ui/input, @lit-ui/textarea, @lit-ui/select, @lit-ui/checkbox, @lit-ui/radio, @lit-ui/switch, @lit-ui/calendar, @lit-ui/date-picker, @lit-ui/date-range-picker, @lit-ui/time-picker, @lit-ui/ssr, lit-ui (CLI)
+- ~58,660 lines TypeScript/CSS across packages and apps
+- Tech stack: Lit.js 3, Tailwind CSS v4, Vite, TypeScript, pnpm workspaces, colorjs.io, Floating UI, @tanstack/lit-virtual, date-fns, composed-offset-position
+- 18 publishable packages: @lit-ui/core, @lit-ui/button, @lit-ui/dialog, @lit-ui/input, @lit-ui/textarea, @lit-ui/select, @lit-ui/checkbox, @lit-ui/radio, @lit-ui/switch, @lit-ui/calendar, @lit-ui/date-picker, @lit-ui/date-range-picker, @lit-ui/time-picker, @lit-ui/tooltip, @lit-ui/popover, @lit-ui/toast, @lit-ui/ssr, lit-ui (CLI)
 - Framework examples: Next.js App Router, Astro, Express/Node.js
 - Distribution: copy-source (CLI) or npm packages with SSR support
 - Theme customization: Visual configurator + CLI `--theme` parameter
 - Form components: Input, Textarea, Select (single, multi, combobox, async), Checkbox (with group), Radio (with group), Switch, Date Picker, Date Range Picker, Time Picker
 - Date/time components: Calendar (standalone), Date Picker (with natural language), Date Range Picker (with comparison mode), Time Picker (with clock face, voice input, scroll wheels)
+- Overlay/feedback components: Tooltip (hover/focus with delay groups), Popover (click-toggle with focus management), Toast (imperative API with queue management)
 
 ## Requirements
 
@@ -72,17 +73,17 @@ Developers can use polished, accessible UI components in any framework without l
 - ✓ Date Range Picker with dual calendars, drag selection, presets, comparison mode, and form participation — v4.3
 - ✓ Time Picker with clock face, dropdown, spinbuttons, voice input, scroll wheels, timezone display, and form participation — v4.3
 - ✓ Documentation pages with CLI registry (12 components), accessibility guide, form integration guide, and i18n guide — v4.3
+- ✓ Shared Floating UI positioning utility with Shadow DOM-safe composed-offset-position ponyfill — v5.0
+- ✓ 37 CSS custom properties for overlay theming with dark mode and @starting-style animation patterns — v5.0
+- ✓ Tooltip with hover/focus triggers, delay groups, arrow positioning, rich variant, touch filtering, ARIA accessibility — v5.0
+- ✓ Popover with native Popover API, click-toggle, modal focus trapping, nested support, controlled/uncontrolled modes — v5.0
+- ✓ Toast with imperative API, singleton state manager, queue management, swipe-to-dismiss, promise mode, top-layer rendering — v5.0
+- ✓ Documentation pages for Toast, Tooltip, Popover with interactive demos and API references — v5.0
+- ✓ CLI registry expanded to 15 components with copy-source templates for all overlay components — v5.0
 
 ### Active
 
-#### Current Milestone: v5.0 Overlay & Feedback Components
-
-**Goal:** Add overlay and feedback primitives — Toast, Tooltip, and Popover — that serve as foundational layers for future composite components.
-
-**Target features:**
-- Toast notification system with queue management, stacking, auto-dismiss, action buttons, multiple positions, swipe-to-dismiss, declarative + imperative API
-- Tooltip for hover/focus hints with Floating UI positioning, delays, arrow indicators, accessible via aria-describedby
-- Popover for interactive overlay content with click/programmatic triggers, focus management, nested support, accessible via aria-expanded
+(No active milestone — run `/gsd:new-milestone` to start next)
 
 ### Deferred
 
@@ -180,6 +181,17 @@ Developers can use polished, accessible UI components in any framework without l
 | SVG clock face for time picker | Vector-based, scales to any size, precise hit areas | ✓ Good — clean rendering at all sizes |
 | Web Speech API for voice input | Browser-native, no external dependency | ✓ Good — progressive enhancement |
 | Pointer Events for gestures | Unified mouse/touch/pen API | ✓ Good — single code path for all inputs |
+| Bundle Floating UI into @lit-ui/core/floating | Zero-config DX for consumers | ✓ Good — no extra installs needed |
+| composed-offset-position for Shadow DOM | Fix Floating UI offsetParent in Shadow DOM | ✓ Good — correct positioning in nested shadow roots |
+| tooltipTitle property (not title) | Avoid shadowing HTMLElement.title | ✓ Good — no attribute conflicts |
+| Tooltip position:fixed without Popover API | z-index:50 sufficient for non-interactive overlay | ✓ Good — simpler implementation |
+| Imperative showPopover()/hidePopover() | Shadow DOM spec limits declarative popovertarget | ✓ Good — works reliably cross-shadow |
+| Sentinel-based focus trap for modal popover | Native dialog showModal() not available for popover | ✓ Good — correct focus wrapping |
+| Singleton state manager for toast | Decouple imperative API from web component rendering | ✓ Good — framework-agnostic, proven pattern |
+| popover="manual" for toaster top-layer | Free top-layer above dialogs, no stacking context issues | ✓ Good — renders above everything |
+| Namespaced template keys for toast | Bare fileStem too generic for multi-file components | ✓ Good — prevents future collisions |
+| CSS var() fallbacks in copy-source templates | Standalone usage without token system needs defaults | ✓ Good — visual correctness without setup |
+| @starting-style entry only (no exit animation) for toast | Simpler initial implementation | — Pending — may add animated exit later |
 
 ## Shipped Milestones
 
@@ -191,6 +203,7 @@ Developers can use polished, accessible UI components in any framework without l
 - **v4.1 Select Component** (2026-01-27): Full-featured Select with single, multi, combobox, and async loading
 - **v4.2 Form Controls** (2026-01-27): Checkbox, Radio, Switch with group containers, completing form primitives
 - **v4.3 Date/Time Components** (2026-02-02): Calendar, Date Picker, Date Range Picker, Time Picker with full accessibility
+- **v5.0 Overlay & Feedback Components** (2026-02-02): Toast, Tooltip, Popover with shared Floating UI infrastructure
 
 ---
-*Last updated: 2026-02-02 after v5.0 milestone start*
+*Last updated: 2026-02-02 after v5.0 milestone*

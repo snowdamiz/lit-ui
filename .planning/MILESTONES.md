@@ -1,5 +1,34 @@
 # Project Milestones: LitUI
 
+## v5.0 Overlay & Feedback Components (Shipped: 2026-02-02)
+
+**Delivered:** Toast, Tooltip, and Popover overlay components with shared Floating UI infrastructure, imperative toast API, full accessibility, and CLI distribution — bringing the component library to 15 publishable packages.
+
+**Phases completed:** 51-55 (11 plans total)
+
+**Key accomplishments:**
+
+- Shadow DOM-safe Floating UI positioning wrapper in `@lit-ui/core/floating` with composed-offset-position ponyfill, bundled for zero-config DX
+- Tooltip component with hover/focus triggers, configurable delay groups, arrow indicators, rich variant, touch filtering, and full ARIA (role="tooltip", aria-describedby)
+- Popover component with native Popover API integration, click-toggle trigger, modal focus trapping via sentinel elements, nested popover cascade, and controlled/uncontrolled modes
+- Toast notification system with framework-agnostic imperative API (`toast.success()`, `toast.promise()`), singleton state manager, queue management, swipe-to-dismiss via Pointer Events, and top-layer rendering via `popover="manual"`
+- 37 new CSS custom properties for overlay theming with dark mode, @starting-style entry animations, and prefers-reduced-motion support
+- Documentation pages for all three components with interactive demos, full API references, accessibility notes, and CLI registry expanded to 15 total components
+
+**Stats:**
+
+- 79 files created/modified
+- ~14,018 lines of TypeScript added
+- 5 phases, 11 plans
+- 1 day (2026-02-02)
+- 44 commits
+
+**Git range:** `feat(51-01)` → `docs(55)`
+
+**What's next:** Additional UI components or documentation site completion
+
+---
+
 ## v4.3 Date/Time Components (Shipped: 2026-02-02)
 
 **Delivered:** Calendar, Date Picker, Date Range Picker, and Time Picker components with full accessibility, natural language input, comparison mode, voice input, and comprehensive documentation.
