@@ -9,10 +9,10 @@ Requirements for overlay and feedback components milestone. Each maps to roadmap
 
 ### Shared Infrastructure
 
-- [ ] **INFRA-01**: Shared Floating UI positioning utility in `@lit-ui/core/floating` with `computePosition`, `flip`, `shift`, `offset`, `arrow`, `autoUpdate` wrappers
-- [ ] **INFRA-02**: `composed-offset-position` integration to fix Floating UI `offsetParent` in Shadow DOM
-- [ ] **INFRA-03**: CSS custom property tokens for all overlay components (`--ui-toast-*`, `--ui-tooltip-*`, `--ui-popover-*`)
-- [ ] **INFRA-04**: Shared CSS animation pattern using `@starting-style` + `transition-behavior: allow-discrete` following Dialog's pattern
+- [x] **INFRA-01**: Shared Floating UI positioning utility in `@lit-ui/core/floating` with `computePosition`, `flip`, `shift`, `offset`, `arrow`, `autoUpdate` wrappers
+- [x] **INFRA-02**: `composed-offset-position` integration to fix Floating UI `offsetParent` in Shadow DOM
+- [x] **INFRA-03**: CSS custom property tokens for all overlay components (`--ui-toast-*`, `--ui-tooltip-*`, `--ui-popover-*`)
+- [x] **INFRA-04**: Shared CSS animation pattern using `@starting-style` + `transition-behavior: allow-discrete` following Dialog's pattern
 
 ### Toast
 

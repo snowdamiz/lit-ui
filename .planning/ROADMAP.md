@@ -16,7 +16,7 @@ This milestone adds three overlay/feedback primitives -- Toast, Tooltip, and Pop
 - Integer phases (51, 52, 53): Planned milestone work
 - Decimal phases (52.1, 52.2): Urgent insertions if needed
 
-- [ ] **Phase 51: Shared Infrastructure** - Floating UI positioning utility and shared overlay foundations
+- [x] **Phase 51: Shared Infrastructure** - Floating UI positioning utility and shared overlay foundations
 - [ ] **Phase 52: Tooltip** - Hover/focus tooltip with accessible positioning and delay groups
 - [ ] **Phase 53: Popover** - Click-triggered interactive overlay with focus management
 - [ ] **Phase 54: Toast** - Notification system with imperative API, queue management, and swipe-to-dismiss
@@ -36,8 +36,8 @@ This milestone adds three overlay/feedback primitives -- Toast, Tooltip, and Pop
 **Plans**: 2 plans
 
 Plans:
-- [ ] 51-01-PLAN.md — Floating UI wrapper with Shadow DOM platform fix (`@lit-ui/core/floating` entry point)
-- [ ] 51-02-PLAN.md — CSS design tokens for tooltip/popover/toast and overlay animation pattern
+- [x] 51-01-PLAN.md — Floating UI wrapper with Shadow DOM platform fix (`@lit-ui/core/floating` entry point)
+- [x] 51-02-PLAN.md — CSS design tokens for tooltip/popover/toast and overlay animation pattern
 
 ### Phase 52: Tooltip
 **Goal**: Users can wrap any element with `<lui-tooltip>` to display accessible, well-positioned hint text on hover and keyboard focus
@@ -113,7 +113,7 @@ Phases execute in numeric order: 51 -> 52 -> 53 -> 54 -> 55
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
-| 51. Shared Infrastructure | v5.0 | 0/2 | Planned | - |
+| 51. Shared Infrastructure | v5.0 | 2/2 | Complete | 2026-02-02 |
 | 52. Tooltip | v5.0 | 0/TBD | Not started | - |
 | 53. Popover | v5.0 | 0/TBD | Not started | - |
 | 54. Toast | v5.0 | 0/TBD | Not started | - |
