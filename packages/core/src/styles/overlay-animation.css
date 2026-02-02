@@ -1,0 +1,167 @@
+/**
+ * Overlay Animation Pattern Reference
+ *
+ * This file documents the reusable CSS animation pattern for overlay components
+ * (Tooltip, Popover, Toast). It uses @starting-style + transition-behavior:
+ * allow-discrete to animate elements entering/leaving display:none or the
+ * top layer (Popover API).
+ *
+ * This is NOT imported by tailwind.css or any build. It is a copy-paste
+ * reference that component authors adapt into their component's static styles.
+ *
+ * Proven in production: packages/dialog/src/dialog.ts (lines 136-197)
+ *
+ * KEY CONCEPTS:
+ * - @starting-style defines the "from" values for entry animations
+ * - transition-behavior: allow-discrete enables animating display/overlay
+ * - The `overlay` transition property keeps Popover API elements in the
+ *   top layer during exit animation (prevents instant disappearance)
+ * - prefers-reduced-motion disables all transitions for accessibility
+ *
+ * THE 4 PARTS:
+ * 1. Base state (hidden) - opacity:0, transforms, transition declaration
+ * 2. Active state (visible) - opacity:1, identity transforms
+ * 3. @starting-style - entry animation starting values (same as base)
+ * 4. prefers-reduced-motion - disable transitions
+ */
+
+/* ==========================================================================
+ * GENERIC TEMPLATE
+ * Replace .overlay with your component's element selector.
+ * Replace [data-open] / :popover-open with your state selector.
+ * ========================================================================== */
+
+/*
+.overlay {
+  opacity: 0;
+  transform: scale(0.95);
+  transition:
+    opacity var(--duration, 150ms) ease-out,
+    transform var(--duration, 150ms) ease-out,
+    display var(--duration, 150ms) allow-discrete,
+    overlay var(--duration, 150ms) allow-discrete;
+}
+
+.overlay[data-open],
+.overlay:popover-open {
+  opacity: 1;
+  transform: scale(1);
+}
+
+@starting-style {
+  .overlay[data-open],
+  .overlay:popover-open {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .overlay {
+    transition: none;
+  }
+}
+*/
+
+/* ==========================================================================
+ * TOOLTIP EXAMPLE - Fade only (no transform)
+ * Tooltips are small and appear near the cursor, so scale animation
+ * would feel excessive. A simple fade is clean and fast.
+ * ========================================================================== */
+
+/*
+[role="tooltip"] {
+  opacity: 0;
+  transition:
+    opacity 100ms ease-out,
+    display 100ms allow-discrete,
+    overlay 100ms allow-discrete;
+}
+
+[role="tooltip"][data-open] {
+  opacity: 1;
+}
+
+@starting-style {
+  [role="tooltip"][data-open] {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [role="tooltip"] {
+    transition: none;
+  }
+}
+*/
+
+/* ==========================================================================
+ * POPOVER EXAMPLE - Scale + Fade (same as Dialog)
+ * Popovers are anchored panels that benefit from a subtle scale-in
+ * to draw attention to the content area.
+ * ========================================================================== */
+
+/*
+.popover-panel {
+  opacity: 0;
+  transform: scale(0.95);
+  transition:
+    opacity 150ms ease-out,
+    transform 150ms ease-out,
+    display 150ms allow-discrete,
+    overlay 150ms allow-discrete;
+}
+
+.popover-panel:popover-open {
+  opacity: 1;
+  transform: scale(1);
+}
+
+@starting-style {
+  .popover-panel:popover-open {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .popover-panel {
+    transition: none;
+  }
+}
+*/
+
+/* ==========================================================================
+ * TOAST EXAMPLE - Slide + Fade
+ * Toasts slide in from the edge of the viewport. The translateY direction
+ * depends on position (bottom: +100%, top: -100%).
+ * ========================================================================== */
+
+/*
+.toast {
+  opacity: 0;
+  transform: translateY(100%);
+  transition:
+    opacity 200ms ease-out,
+    transform 200ms ease-out,
+    display 200ms allow-discrete;
+}
+
+.toast[data-open] {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@starting-style {
+  .toast[data-open] {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toast {
+    transition: none;
+  }
+}
+*/

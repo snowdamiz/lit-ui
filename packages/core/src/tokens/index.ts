@@ -228,6 +228,53 @@ export const tokens = {
     highlightWeight: 'var(--ui-select-highlight-weight)',
     highlightText: 'var(--ui-select-highlight-text)',
   },
+  tooltip: {
+    bg: 'var(--ui-tooltip-bg)',
+    text: 'var(--ui-tooltip-text)',
+    radius: 'var(--ui-tooltip-radius)',
+    paddingX: 'var(--ui-tooltip-padding-x)',
+    paddingY: 'var(--ui-tooltip-padding-y)',
+    fontSize: 'var(--ui-tooltip-font-size)',
+    shadow: 'var(--ui-tooltip-shadow)',
+    arrowSize: 'var(--ui-tooltip-arrow-size)',
+    maxWidth: 'var(--ui-tooltip-max-width)',
+    zIndex: 'var(--ui-tooltip-z-index)',
+  },
+  popover: {
+    bg: 'var(--ui-popover-bg)',
+    text: 'var(--ui-popover-text)',
+    border: 'var(--ui-popover-border)',
+    radius: 'var(--ui-popover-radius)',
+    padding: 'var(--ui-popover-padding)',
+    shadow: 'var(--ui-popover-shadow)',
+    arrowSize: 'var(--ui-popover-arrow-size)',
+    maxWidth: 'var(--ui-popover-max-width)',
+    zIndex: 'var(--ui-popover-z-index)',
+  },
+  toast: {
+    bg: 'var(--ui-toast-bg)',
+    text: 'var(--ui-toast-text)',
+    border: 'var(--ui-toast-border)',
+    radius: 'var(--ui-toast-radius)',
+    padding: 'var(--ui-toast-padding)',
+    shadow: 'var(--ui-toast-shadow)',
+    maxWidth: 'var(--ui-toast-max-width)',
+    gap: 'var(--ui-toast-gap)',
+    zIndex: 'var(--ui-toast-z-index)',
+    // Variant colors
+    successBg: 'var(--ui-toast-success-bg)',
+    successBorder: 'var(--ui-toast-success-border)',
+    successIcon: 'var(--ui-toast-success-icon)',
+    errorBg: 'var(--ui-toast-error-bg)',
+    errorBorder: 'var(--ui-toast-error-border)',
+    errorIcon: 'var(--ui-toast-error-icon)',
+    warningBg: 'var(--ui-toast-warning-bg)',
+    warningBorder: 'var(--ui-toast-warning-border)',
+    warningIcon: 'var(--ui-toast-warning-icon)',
+    infoBg: 'var(--ui-toast-info-bg)',
+    infoBorder: 'var(--ui-toast-info-border)',
+    infoIcon: 'var(--ui-toast-info-icon)',
+  },
 } as const;
 
 // Type helpers for token paths
@@ -240,3 +287,6 @@ export type ZIndexToken = keyof typeof tokens.zIndex;
 export type InputToken = keyof typeof tokens.input;
 export type TextareaToken = keyof typeof tokens.textarea;
 export type SelectToken = keyof typeof tokens.select;
+export type TooltipToken = keyof typeof tokens.tooltip;
+export type PopoverToken = keyof typeof tokens.popover;
+export type ToastToken = keyof typeof tokens.toast;
