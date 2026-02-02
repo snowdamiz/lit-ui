@@ -20,7 +20,7 @@ This milestone adds three overlay/feedback primitives -- Toast, Tooltip, and Pop
 - [x] **Phase 52: Tooltip** - Hover/focus tooltip with accessible positioning and delay groups
 - [x] **Phase 53: Popover** - Click-triggered interactive overlay with focus management
 - [x] **Phase 54: Toast** - Notification system with imperative API, queue management, and swipe-to-dismiss
-- [ ] **Phase 55: Documentation** - Docs pages, API references, and CLI registry for all three components
+- [x] **Phase 55: Documentation** - Docs pages, API references, and CLI registry for all three components
 
 ## Phase Details
 
@@ -97,9 +97,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 55-01-PLAN.md — Wiring: package deps, LivePreview imports/types, nav entries, routes, PrevNextNav chain fixes
-- [ ] 55-02-PLAN.md — Tooltip and Popover documentation pages with interactive examples and API reference
-- [ ] 55-03-PLAN.md — Toast documentation page with imperative API docs and interactive button demos
+- [x] 55-01-PLAN.md — Wiring: package deps, LivePreview imports/types, nav entries, routes, PrevNextNav chain fixes
+- [x] 55-02-PLAN.md — Tooltip and Popover documentation pages with interactive examples and API reference
+- [x] 55-03-PLAN.md — Toast documentation page with imperative API docs and interactive button demos
 
 ## Progress
 
@@ -113,4 +113,4 @@ Phases execute in numeric order: 51 -> 52 -> 53 -> 54 -> 55
 | 52. Tooltip | v5.0 | 2/2 | Complete | 2026-02-02 |
 | 53. Popover | v5.0 | 2/2 | Complete | 2026-02-02 |
 | 54. Toast | v5.0 | 2/2 | Complete | 2026-02-02 |
-| 55. Documentation | v5.0 | 0/3 | Not started | - |
+| 55. Documentation | v5.0 | 3/3 | Complete | 2026-02-02 |

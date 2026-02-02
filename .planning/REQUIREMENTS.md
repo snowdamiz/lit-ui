@@ -80,10 +80,10 @@ Requirements for overlay and feedback components milestone. Each maps to roadmap
 
 ### Documentation
 
-- [ ] **DOCS-01**: Toast documentation page with usage examples, API reference, accessibility notes
-- [ ] **DOCS-02**: Tooltip documentation page with usage examples, API reference, accessibility notes
-- [ ] **DOCS-03**: Popover documentation page with usage examples, API reference, accessibility notes
-- [ ] **DOCS-04**: CLI registry updated for all 3 new components (15 total registered)
+- [x] **DOCS-01**: Toast documentation page with usage examples, API reference, accessibility notes
+- [x] **DOCS-02**: Tooltip documentation page with usage examples, API reference, accessibility notes
+- [x] **DOCS-03**: Popover documentation page with usage examples, API reference, accessibility notes
+- [x] **DOCS-04**: CLI registry updated for all 3 new components (15 total registered)
 
 ## Future Requirements
 
@@ -185,10 +185,10 @@ Deferred to later milestones. Tracked but not in current roadmap.
 | POP-16 | Phase 53 | Complete |
 | POP-17 | Phase 53 | Complete |
 | POP-18 | Phase 53 | Complete |
-| DOCS-01 | Phase 55 | Pending |
-| DOCS-02 | Phase 55 | Pending |
-| DOCS-03 | Phase 55 | Pending |
-| DOCS-04 | Phase 55 | Pending |
+| DOCS-01 | Phase 55 | Complete |
+| DOCS-02 | Phase 55 | Complete |
+| DOCS-03 | Phase 55 | Complete |
+| DOCS-04 | Phase 55 | Complete |
 
 **Coverage:**
 - v5.0 requirements: 63 total
