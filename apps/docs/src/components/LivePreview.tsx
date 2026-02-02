@@ -164,6 +164,22 @@ declare global {
           'min-date'?: string;
           'max-date'?: string;
           'first-day-of-week'?: string | number;
+          'display-month'?: string;
+          'hide-navigation'?: boolean;
+          'show-week-numbers'?: boolean;
+          'show-constraint-tooltips'?: boolean;
+        },
+        HTMLElement
+      >;
+      'lui-calendar-multi': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement> & {
+          value?: string;
+          locale?: string;
+          'min-date'?: string;
+          'max-date'?: string;
+          months?: number;
+          'show-week-numbers'?: boolean;
+          'first-day-of-week'?: string | number;
         },
         HTMLElement
       >;

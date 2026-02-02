@@ -7,7 +7,7 @@ import { CodeBlock } from '../../components/CodeBlock';
 // Side-effect import to register custom element
 import '@lit-ui/calendar';
 
-// Props data from source Calendar component (6 props)
+// Props data from source Calendar component (10 props)
 const calendarProps: PropDef[] = [
   {
     name: 'value',
@@ -44,6 +44,30 @@ const calendarProps: PropDef[] = [
     type: 'string',
     default: '""',
     description: 'Override first day of week from locale. 1=Monday through 7=Sunday.',
+  },
+  {
+    name: 'display-month',
+    type: 'string',
+    default: '""',
+    description: 'Display a specific month without selecting a date. Accepts YYYY-MM-DD or YYYY-MM format. Used internally by CalendarMulti.',
+  },
+  {
+    name: 'hide-navigation',
+    type: 'boolean',
+    default: 'false',
+    description: 'Hide the month navigation header (prev/next buttons and heading). Used by CalendarMulti to suppress individual calendar navigation.',
+  },
+  {
+    name: 'show-week-numbers',
+    type: 'boolean',
+    default: 'false',
+    description: 'Show ISO week numbers in a column to the left of the day grid. Week number buttons allow selecting an entire week.',
+  },
+  {
+    name: 'show-constraint-tooltips',
+    type: 'boolean',
+    default: 'false',
+    description: 'Show tooltips on disabled dates explaining why they are disabled (e.g., "Before minimum date").',
   },
 ];
 
@@ -140,6 +164,73 @@ const eventsSvelteCode = `<lui-calendar
   on:change={(e) => console.log('Selected:', e.target.value)}
 />`;
 
+// Multi-month code examples
+const multiMonthHtmlCode = `<lui-calendar-multi></lui-calendar-multi>`;
+
+const multiMonthReactCode = `<lui-calendar-multi></lui-calendar-multi>`;
+
+const multiMonthVueCode = `<lui-calendar-multi></lui-calendar-multi>`;
+
+const multiMonthSvelteCode = `<lui-calendar-multi></lui-calendar-multi>`;
+
+// Week numbers code example
+const weekNumbersCode = `<lui-calendar show-week-numbers></lui-calendar>`;
+
+// Decade/century navigation code example
+const decadeNavHtmlCode = `<lui-calendar></lui-calendar>`;
+
+const decadeNavReactCode = `<lui-calendar></lui-calendar>`;
+
+const decadeNavVueCode = `<lui-calendar></lui-calendar>`;
+
+const decadeNavSvelteCode = `<lui-calendar></lui-calendar>`;
+
+// CalendarMulti props
+const calendarMultiProps: PropDef[] = [
+  {
+    name: 'months',
+    type: 'number',
+    default: '2',
+    description: 'Number of side-by-side month calendars to display (clamped to 2-3).',
+  },
+  {
+    name: 'value',
+    type: 'string',
+    default: '""',
+    description: 'Selected date as ISO string (YYYY-MM-DD). Forwarded to all child calendars.',
+  },
+  {
+    name: 'locale',
+    type: 'string',
+    default: 'navigator.language',
+    description: 'BCP 47 locale tag forwarded to child calendars.',
+  },
+  {
+    name: 'min-date',
+    type: 'string',
+    default: '""',
+    description: 'Minimum selectable date forwarded to child calendars.',
+  },
+  {
+    name: 'max-date',
+    type: 'string',
+    default: '""',
+    description: 'Maximum selectable date forwarded to child calendars.',
+  },
+  {
+    name: 'show-week-numbers',
+    type: 'boolean',
+    default: 'false',
+    description: 'Show ISO week numbers forwarded to child calendars.',
+  },
+  {
+    name: 'first-day-of-week',
+    type: 'string',
+    default: '""',
+    description: 'Override first day of week forwarded to child calendars.',
+  },
+];
+
 const cssVarsCode = `/* Global override */
 :root {
   --ui-calendar-selected-bg: var(--color-accent);
@@ -174,7 +265,7 @@ export function CalendarPage() {
               Calendar
             </h1>
             <p className="text-lg text-gray-500 dark:text-gray-400 leading-relaxed max-w-2xl">
-              Accessible date calendar with month navigation, keyboard support, locale-aware formatting, and date constraints.
+              Accessible date calendar with month navigation, keyboard support, locale-aware formatting, date constraints, multi-month display, gesture navigation, and drill-down decade/century views.
             </p>
           </div>
         </header>
@@ -324,6 +415,71 @@ export function CalendarPage() {
             />
           </section>
 
+          {/* Advanced Features divider */}
+          <div className="flex items-center gap-4 mb-8 mt-8">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456z" />
+              </svg>
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Advanced Features</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Multi-month display, week numbers, and drill-down navigation</p>
+            </div>
+            <div className="flex-1 h-px bg-gradient-to-r from-gray-200 dark:from-gray-700 to-transparent" />
+          </div>
+
+          {/* 8. Multi-Month Display */}
+          <section>
+            <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-2">Multi-Month Display</h3>
+            <p className="text-gray-500 dark:text-gray-400 mb-4 text-sm">
+              The <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">lui-calendar-multi</code> component renders 2 or 3 side-by-side calendars showing consecutive months. It provides unified navigation controls and forwards all props (value, locale, constraints) to its child calendars. On narrow containers, the calendars stack vertically via CSS container queries.
+            </p>
+            <ExampleBlock
+              preview={
+                <lui-calendar-multi></lui-calendar-multi>
+              }
+              html={multiMonthHtmlCode}
+              react={multiMonthReactCode}
+              vue={multiMonthVueCode}
+              svelte={multiMonthSvelteCode}
+            />
+          </section>
+
+          {/* 9. Week Numbers */}
+          <section>
+            <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-2">Week Numbers</h3>
+            <p className="text-gray-500 dark:text-gray-400 mb-4 text-sm">
+              Enable <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">show-week-numbers</code> to display ISO week numbers in a column to the left of each week row. Clicking a week number emits a <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">week-select</code> event with the week number and all selectable dates in that week.
+            </p>
+            <ExampleBlock
+              preview={
+                <lui-calendar show-week-numbers></lui-calendar>
+              }
+              html={weekNumbersCode}
+              react={weekNumbersCode}
+              vue={weekNumbersCode}
+              svelte={weekNumbersCode}
+            />
+          </section>
+
+          {/* 10. Decade/Century Navigation */}
+          <section>
+            <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-2">Decade and Century Views</h3>
+            <p className="text-gray-500 dark:text-gray-400 mb-4 text-sm">
+              Click the month/year heading to drill into a <strong>year view</strong> (4x3 grid of years in the current decade). Click the decade heading again to reach the <strong>century view</strong> (4x3 grid of decades). Select a decade or year to drill back down. Press <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">Escape</code> to navigate back up one level. This enables fast navigation to distant dates without repeatedly clicking prev/next.
+            </p>
+            <ExampleBlock
+              preview={
+                <lui-calendar></lui-calendar>
+              }
+              html={decadeNavHtmlCode}
+              react={decadeNavReactCode}
+              vue={decadeNavVueCode}
+              svelte={decadeNavSvelteCode}
+            />
+          </section>
+
           {/* Accessibility */}
           <section>
             <div className="flex items-center gap-4 mb-6 mt-8">
@@ -360,6 +516,18 @@ export function CalendarPage() {
                 <li className="flex items-start gap-2">
                   <span className="mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded bg-gray-100 dark:bg-gray-800 text-xs font-bold text-gray-500">5</span>
                   Press <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">?</code> to open a keyboard shortcuts help dialog listing all available shortcuts.
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded bg-gray-100 dark:bg-gray-800 text-xs font-bold text-gray-500">6</span>
+                  Swipe gestures on touch devices navigate between months (swipe left for next, swipe right for previous).
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded bg-gray-100 dark:bg-gray-800 text-xs font-bold text-gray-500">7</span>
+                  Month transition animations respect the <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">prefers-reduced-motion</code> media query. Animations are disabled when the user prefers reduced motion.
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded bg-gray-100 dark:bg-gray-800 text-xs font-bold text-gray-500">8</span>
+                  Week number buttons are keyboard-accessible with visible focus indicators and descriptive <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">aria-label</code> text.
                 </li>
               </ul>
             </div>
@@ -470,7 +638,27 @@ export function CalendarPage() {
                   </p>
                 </div>
               </div>
+              <div className="group relative rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-5 card-elevated">
+                <div className="pointer-events-none absolute inset-0 rounded-xl bg-gradient-to-br from-gray-50 dark:from-gray-800 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+                <div className="relative">
+                  <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                    <code className="px-2 py-1 bg-gray-900 text-white rounded-lg text-xs font-mono font-medium">week-select</code>
+                  </h4>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                    Fired when a week number button is clicked (requires <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">show-week-numbers</code>). Detail: <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">{'{ weekNumber: number, dates: Date[], isoStrings: string[] }'}</code>
+                  </p>
+                </div>
+              </div>
             </div>
+          </div>
+
+          {/* CalendarMulti Props */}
+          <div className="mb-12">
+            <div className="flex items-center gap-3 mb-5">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">CalendarMulti Props</h3>
+              <span className="px-2.5 py-1 rounded-full bg-gray-900 dark:bg-gray-100 text-xs font-bold text-white dark:text-gray-900">{calendarMultiProps.length}</span>
+            </div>
+            <PropsTable props={calendarMultiProps} />
           </div>
         </section>
 
