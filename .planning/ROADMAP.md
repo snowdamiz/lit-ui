@@ -18,7 +18,7 @@ This milestone adds three overlay/feedback primitives -- Toast, Tooltip, and Pop
 
 - [x] **Phase 51: Shared Infrastructure** - Floating UI positioning utility and shared overlay foundations
 - [x] **Phase 52: Tooltip** - Hover/focus tooltip with accessible positioning and delay groups
-- [ ] **Phase 53: Popover** - Click-triggered interactive overlay with focus management
+- [x] **Phase 53: Popover** - Click-triggered interactive overlay with focus management
 - [ ] **Phase 54: Toast** - Notification system with imperative API, queue management, and swipe-to-dismiss
 - [ ] **Phase 55: Documentation** - Docs pages, API references, and CLI registry for all three components
 
@@ -68,8 +68,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 53-01-PLAN.md — Popover package scaffolding and full component implementation (POP-01 through POP-17)
-- [ ] 53-02-PLAN.md — CLI registry entry, copy-source template, and full workspace build verification (POP-18)
+- [x] 53-01-PLAN.md — Popover package scaffolding and full component implementation (POP-01 through POP-17)
+- [x] 53-02-PLAN.md — CLI registry entry, copy-source template, and full workspace build verification (POP-18)
 
 ### Phase 54: Toast
 **Goal**: Developers can trigger toast notifications from any framework using a simple imperative API, with queuing, auto-dismiss, swipe gestures, and full accessibility
@@ -113,6 +113,6 @@ Phases execute in numeric order: 51 -> 52 -> 53 -> 54 -> 55
 |-------|-----------|----------------|--------|-----------|
 | 51. Shared Infrastructure | v5.0 | 2/2 | Complete | 2026-02-02 |
 | 52. Tooltip | v5.0 | 2/2 | Complete | 2026-02-02 |
-| 53. Popover | v5.0 | 0/TBD | Not started | - |
+| 53. Popover | v5.0 | 2/2 | Complete | 2026-02-02 |
 | 54. Toast | v5.0 | 0/TBD | Not started | - |
 | 55. Documentation | v5.0 | 0/TBD | Not started | - |

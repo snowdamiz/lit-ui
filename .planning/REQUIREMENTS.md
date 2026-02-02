@@ -59,24 +59,24 @@ Requirements for overlay and feedback components milestone. Each maps to roadmap
 
 ### Popover
 
-- [ ] **POP-01**: Click-to-toggle trigger — click opens/closes popover
-- [ ] **POP-02**: Escape key dismisses popover
-- [ ] **POP-03**: Light dismiss — click outside closes popover (Popover API `auto` or manual detection)
-- [ ] **POP-04**: Floating UI positioning with collision avoidance and 12 placement options
-- [ ] **POP-05**: Arrow indicator, optional, tracks position flips
-- [ ] **POP-06**: Focus management — focus returns to trigger on close, non-modal by default (tab out closes)
-- [ ] **POP-07**: Modal mode option — traps focus like Dialog when explicitly set
-- [ ] **POP-08**: Controlled and uncontrolled modes — internal state by default, `open` property + `open-changed` event for controlled
-- [ ] **POP-09**: Nested popover support — child popover keeps parent open, closing parent closes children
-- [ ] **POP-10**: `aria-expanded` on trigger, `aria-haspopup`, `role="dialog"` on content
-- [ ] **POP-11**: Native Popover API integration — `popover="auto"` for top-layer rendering where supported
-- [ ] **POP-12**: Width matching trigger option via CSS custom property (`--ui-popover-trigger-width`)
-- [ ] **POP-13**: `autoUpdate` for repositioning during scroll/resize
-- [ ] **POP-14**: `prefers-reduced-motion` respect
-- [ ] **POP-15**: SSR safe — renders trigger only, popover content hidden during SSR
-- [ ] **POP-16**: AbortController pattern for listener cleanup
-- [ ] **POP-17**: CSS custom properties for full theming (`--ui-popover-bg`, `--ui-popover-border`, `--ui-popover-radius`, etc.)
-- [ ] **POP-18**: CLI registry entry with copy-source template and npm package `@lit-ui/popover`
+- [x] **POP-01**: Click-to-toggle trigger — click opens/closes popover
+- [x] **POP-02**: Escape key dismisses popover
+- [x] **POP-03**: Light dismiss — click outside closes popover (Popover API `auto` or manual detection)
+- [x] **POP-04**: Floating UI positioning with collision avoidance and 12 placement options
+- [x] **POP-05**: Arrow indicator, optional, tracks position flips
+- [x] **POP-06**: Focus management — focus returns to trigger on close, non-modal by default (tab out closes)
+- [x] **POP-07**: Modal mode option — traps focus like Dialog when explicitly set
+- [x] **POP-08**: Controlled and uncontrolled modes — internal state by default, `open` property + `open-changed` event for controlled
+- [x] **POP-09**: Nested popover support — child popover keeps parent open, closing parent closes children
+- [x] **POP-10**: `aria-expanded` on trigger, `aria-haspopup`, `role="dialog"` on content
+- [x] **POP-11**: Native Popover API integration — `popover="auto"` for top-layer rendering where supported
+- [x] **POP-12**: Width matching trigger option via CSS custom property (`--ui-popover-trigger-width`)
+- [x] **POP-13**: `autoUpdate` for repositioning during scroll/resize
+- [x] **POP-14**: `prefers-reduced-motion` respect
+- [x] **POP-15**: SSR safe — renders trigger only, popover content hidden during SSR
+- [x] **POP-16**: AbortController pattern for listener cleanup
+- [x] **POP-17**: CSS custom properties for full theming (`--ui-popover-bg`, `--ui-popover-border`, `--ui-popover-radius`, etc.)
+- [x] **POP-18**: CLI registry entry with copy-source template and npm package `@lit-ui/popover`
 
 ### Documentation
 
@@ -167,24 +167,24 @@ Deferred to later milestones. Tracked but not in current roadmap.
 | TIP-15 | Phase 52 | Complete |
 | TIP-16 | Phase 52 | Complete |
 | TIP-17 | Phase 52 | Complete |
-| POP-01 | Phase 53 | Pending |
-| POP-02 | Phase 53 | Pending |
-| POP-03 | Phase 53 | Pending |
-| POP-04 | Phase 53 | Pending |
-| POP-05 | Phase 53 | Pending |
-| POP-06 | Phase 53 | Pending |
-| POP-07 | Phase 53 | Pending |
-| POP-08 | Phase 53 | Pending |
-| POP-09 | Phase 53 | Pending |
-| POP-10 | Phase 53 | Pending |
-| POP-11 | Phase 53 | Pending |
-| POP-12 | Phase 53 | Pending |
-| POP-13 | Phase 53 | Pending |
-| POP-14 | Phase 53 | Pending |
-| POP-15 | Phase 53 | Pending |
-| POP-16 | Phase 53 | Pending |
-| POP-17 | Phase 53 | Pending |
-| POP-18 | Phase 53 | Pending |
+| POP-01 | Phase 53 | Complete |
+| POP-02 | Phase 53 | Complete |
+| POP-03 | Phase 53 | Complete |
+| POP-04 | Phase 53 | Complete |
+| POP-05 | Phase 53 | Complete |
+| POP-06 | Phase 53 | Complete |
+| POP-07 | Phase 53 | Complete |
+| POP-08 | Phase 53 | Complete |
+| POP-09 | Phase 53 | Complete |
+| POP-10 | Phase 53 | Complete |
+| POP-11 | Phase 53 | Complete |
+| POP-12 | Phase 53 | Complete |
+| POP-13 | Phase 53 | Complete |
+| POP-14 | Phase 53 | Complete |
+| POP-15 | Phase 53 | Complete |
+| POP-16 | Phase 53 | Complete |
+| POP-17 | Phase 53 | Complete |
+| POP-18 | Phase 53 | Complete |
 | DOCS-01 | Phase 55 | Pending |
 | DOCS-02 | Phase 55 | Pending |
 | DOCS-03 | Phase 55 | Pending |
