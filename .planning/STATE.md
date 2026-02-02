@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-30)
 ## Current Position
 
 Phase: 8 of 9 (Time Picker Advanced)
-Plan: 5 of 6 in current phase (5 executions complete)
+Plan: 6 of 6 in current phase (6 executions complete)
 Status: In progress
-Last activity: 2026-02-02 — Completed 49-05-PLAN.md
+Last activity: 2026-02-02 — Completed 49-01-PLAN.md
 
-Progress: [██████████████████████████░░░░░░] 83% (5/6 plans in phase 49)
+Progress: [████████████████████████████████] 100% (6/6 plans in phase 49)
 
 ## Performance Metrics
 
@@ -171,6 +171,10 @@ Recent decisions affecting current work:
 - **Phase 49-04**: CSS scroll-snap handles all physics (no JS momentum/spring)
 - **Phase 49-04**: scrollend event with debounce fallback for older browsers
 - **Phase 49-04**: Padding items above/below allow first/last items to center in highlight
+- **Phase 49-05**: Progressive enhancement: voice input renders nothing when Speech API unavailable
+- **Phase 49-05**: Runtime window access only for SpeechRecognition (never module-level import)
+- **Phase 49-05**: Time-only parsing from voice transcript; date references ignored
+- **Phase 49-05**: Use any type for SpeechRecognition (runtime-only API, no TS declarations)
 
 ### Pending Todos
 
@@ -186,6 +190,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-02 (49-04 complete)
-Stopped at: Completed 49-04-PLAN.md (Scroll wheel component)
+Last session: 2026-02-02 (49-05 complete)
+Stopped at: Completed 49-05-PLAN.md (Voice input via Web Speech API)
 Resume file: None
