@@ -13,6 +13,7 @@ export default defineConfig({
     lib: {
       entry: {
         index: 'src/index.ts',
+        'floating/index': 'src/floating/index.ts',
         'tokens/index': 'src/tokens/index.ts',
         'utils/index': 'src/utils/index.ts',
       },

@@ -25,6 +25,10 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
+    "./floating": {
+      "types": "./dist/floating/index.d.ts",
+      "import": "./dist/floating/index.js"
+    },
     "./tokens": {
       "types": "./dist/tokens/index.d.ts",
       "import": "./dist/tokens/index.js"
