@@ -81,13 +81,11 @@ Plans:
   3. Each toast supports variants (success/error/warning/info), title + description, an optional action button with callback, and a promise mode that transitions through loading/success/error states
   4. Toasts are accessible -- `role="status"` with `aria-live="polite"` for info toasts and `role="alert"` with `aria-live="assertive"` for errors -- and pause auto-dismiss on hover/focus
   5. Swipe-to-dismiss works via Pointer Events, enter/exit animations respect `prefers-reduced-motion`, and the component ships as `@lit-ui/toast` with CSS custom properties, SSR safety, and CLI registry entry
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 54-01: TBD
-- [ ] 54-02: TBD
-- [ ] 54-03: TBD
-- [ ] 54-04: TBD
+- [ ] 54-01-PLAN.md — Toast package scaffolding, state manager, imperative API, and full component implementation (TOAST-01 through TOAST-19)
+- [ ] 54-02-PLAN.md — CLI registry entry, copy-source templates, and full workspace build verification (TOAST-20)
 
 ### Phase 55: Documentation
 **Goal**: All three overlay components have complete documentation pages with usage examples, API references, and accessibility notes, and the CLI registry is updated to 15 total components
@@ -114,5 +112,5 @@ Phases execute in numeric order: 51 -> 52 -> 53 -> 54 -> 55
 | 51. Shared Infrastructure | v5.0 | 2/2 | Complete | 2026-02-02 |
 | 52. Tooltip | v5.0 | 2/2 | Complete | 2026-02-02 |
 | 53. Popover | v5.0 | 2/2 | Complete | 2026-02-02 |
-| 54. Toast | v5.0 | 0/TBD | Not started | - |
+| 54. Toast | v5.0 | 0/2 | Not started | - |
 | 55. Documentation | v5.0 | 0/TBD | Not started | - |
