@@ -522,17 +522,15 @@ Plans:
   3. User can access accessibility documentation with keyboard shortcuts and ARIA patterns
   4. User can install components via CLI with registered component entries
   5. User can understand form integration patterns and ISO 8601 value formats
-**Plans**: TBD
+**Plans**: 6 plans in 2 waves
 
 Plans:
-- [ ] 50-01: Calendar Display documentation page
-- [ ] 50-02: Date Picker documentation page
-- [ ] 50-03: Date Range Picker documentation page
-- [ ] 50-04: Time Picker documentation page
-- [ ] 50-05: CLI integration for all date/time components
-- [ ] 50-06: Accessibility documentation for date/time components
-- [ ] 50-07: Form integration examples
-- [ ] 50-08: Internationalization documentation
+- [ ] 50-01-PLAN.md — Infrastructure: JSX types, CLI registry, navigation/routing, PrevNextNav chain
+- [ ] 50-02-PLAN.md — Calendar page audit and Phase 42-43 advanced feature documentation
+- [ ] 50-03-PLAN.md — Date Picker documentation page
+- [ ] 50-04-PLAN.md — Date Range Picker documentation page
+- [ ] 50-05-PLAN.md — Time Picker documentation page
+- [ ] 50-06-PLAN.md — Guide pages: Accessibility, Form Integration, Internationalization
 
 ## Progress
 
@@ -549,4 +547,4 @@ Phases execute in numeric order: 42 → 43 → 44 → 45 → 46 → 47 → 48 �
 | 47. Date Range Picker Advanced | v4.3 | 5/5 | Complete | 2026-01-31 |
 | 48. Time Picker Core | v4.3 | 6/6 | Complete | 2026-01-31 |
 | 49. Time Picker Advanced | v4.3 | 6/6 | Complete | 2026-02-02 |
-| 50. Documentation | v4.3 | 0/8 | Not started | - |
+| 50. Documentation | v4.3 | 0/6 | Not started | - |
