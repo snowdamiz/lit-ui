@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-02)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** Planning next milestone
+**Current focus:** v5.0 Overlay & Feedback Components
 
 ## Current Position
 
-Phase: Milestone complete — planning next
-Plan: Not started
-Status: Ready to plan
-Last activity: 2026-02-02 — v4.3 milestone archived
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-02-02 — Milestone v5.0 started
 
-Progress: [████████████████████████████████] 100% (v4.3 complete)
+Progress: ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 0%
 
 ## Performance Metrics
 
@@ -47,6 +47,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-02-02 (v4.3 milestone archived)
-Stopped at: Milestone v4.3 complete, ready for next milestone
+Last session: 2026-02-02 (v5.0 milestone started)
+Stopped at: Defining requirements for v5.0
 Resume file: None

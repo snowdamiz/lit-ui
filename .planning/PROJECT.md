@@ -4,7 +4,7 @@
 
 A framework-agnostic component library built on Lit.js, following ShadCN's philosophy of beautiful defaults and CLI-driven installation. Components work natively in React, Vue, Svelte, or plain HTML because they're standard web components underneath.
 
-Now with **dual distribution** (copy-source or npm), **SSR support** via Declarative Shadow DOM, **build-time theme customization** via visual configurator, and **complete form toolkit** (Input, Textarea, Select, Checkbox, Radio, Switch with group containers).
+Now with **dual distribution** (copy-source or npm), **SSR support** via Declarative Shadow DOM, **build-time theme customization** via visual configurator, **complete form toolkit** (Input, Textarea, Select, Checkbox, Radio, Switch with group containers), and **date/time components** (Calendar, Date Picker, Date Range Picker, Time Picker).
 
 ## Core Value
 
@@ -75,7 +75,14 @@ Developers can use polished, accessible UI components in any framework without l
 
 ### Active
 
-(None — planning next milestone)
+#### Current Milestone: v5.0 Overlay & Feedback Components
+
+**Goal:** Add overlay and feedback primitives — Toast, Tooltip, and Popover — that serve as foundational layers for future composite components.
+
+**Target features:**
+- Toast notification system with queue management, stacking, auto-dismiss, action buttons, multiple positions, swipe-to-dismiss, declarative + imperative API
+- Tooltip for hover/focus hints with Floating UI positioning, delays, arrow indicators, accessible via aria-describedby
+- Popover for interactive overlay content with click/programmatic triggers, focus management, nested support, accessible via aria-expanded
 
 ### Deferred
 
@@ -186,4 +193,4 @@ Developers can use polished, accessible UI components in any framework without l
 - **v4.3 Date/Time Components** (2026-02-02): Calendar, Date Picker, Date Range Picker, Time Picker with full accessibility
 
 ---
-*Last updated: 2026-02-02 after v4.3 milestone*
+*Last updated: 2026-02-02 after v5.0 milestone start*
