@@ -113,6 +113,29 @@ export class TimeDropdown extends TailwindElement {
         background: var(--ui-time-picker-selected-bg, #1e3a5f);
         color: var(--ui-time-picker-selected-text, #93c5fd);
       }
+
+      .time-option.business-hour {
+        border-left: 3px solid var(--ui-time-picker-business-hour-accent, #22c55e);
+        background: var(--ui-time-picker-business-hour-bg, #f0fdf4);
+      }
+
+      .time-option.business-hour:hover {
+        background: var(--ui-time-picker-business-hour-bg-hover, #dcfce7);
+      }
+
+      .time-option.business-hour.selected {
+        background: var(--ui-time-picker-business-hour-bg, #f0fdf4);
+        border-left-color: var(--ui-time-picker-business-hour-accent, #22c55e);
+      }
+
+      :host-context(.dark) .time-option.business-hour {
+        border-left-color: var(--ui-time-picker-business-hour-accent, #4ade80);
+        background: var(--ui-time-picker-business-hour-bg, #052e16);
+      }
+
+      :host-context(.dark) .time-option.business-hour:hover {
+        background: var(--ui-time-picker-business-hour-bg-hover, #064e3b);
+      }
     `,
   ];
 
@@ -131,6 +154,10 @@ export class TimeDropdown extends TailwindElement {
   /** BCP 47 locale tag for formatting */
   @property()
   locale = 'en-US';
+
+  /** Business hours range for visual highlighting (false = disabled) */
+  @property({ attribute: false })
+  businessHours: { start: number; end: number } | false = false;
 
   /** Whether the dropdown is disabled */
   @property({ type: Boolean })
@@ -353,10 +380,13 @@ export class TimeDropdown extends TailwindElement {
         ${this.options.map((opt, i) => {
           const isSelected = this._isSelected(opt);
           const isHighlighted = i === this.highlightedIndex;
+          const isBusinessHour = this.businessHours &&
+            opt.value.hour >= this.businessHours.start &&
+            opt.value.hour < this.businessHours.end;
           return html`
             <div
               role="option"
-              class="time-option ${isSelected ? 'selected' : ''} ${isHighlighted ? 'highlighted' : ''}"
+              class="time-option ${isSelected ? 'selected' : ''} ${isHighlighted ? 'highlighted' : ''} ${isBusinessHour ? 'business-hour' : ''}"
               aria-selected=${isSelected ? 'true' : 'false'}
               id="time-opt-${i}"
               @click=${() => this._selectOption(opt)}
