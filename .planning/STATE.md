@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-30)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** Phase 48 Time Picker Core — Complete
+**Current focus:** Phase 49 Time Picker Advanced — In progress
 
 ## Current Position
 
-Phase: 7 of 9 (Time Picker Core)
-Plan: 6 of 6 in current phase (6 executions complete)
-Status: Phase complete
-Last activity: 2026-01-31 — Completed 48-06-PLAN.md
+Phase: 8 of 9 (Time Picker Advanced)
+Plan: 2 of 6 in current phase (2 executions complete)
+Status: In progress
+Last activity: 2026-02-02 — Completed 49-02-PLAN.md
 
-Progress: [████████████████████████████████] 100% (6/6 plans in phase 48)
+Progress: [██████████░░░░░░░░░░░░░░░░░░░░░░] 33% (2/6 plans in phase 49)
 
 ## Performance Metrics
 
@@ -31,7 +31,7 @@ Progress: [███████████████████████
 | 43    | 8     | 8     | 1.9 min |
 
 **Recent Trend:**
-- Last 3 plans: 4 min (48-05), 1 min (48-04), 3 min (48-06)
+- Last 3 plans: 1 min (48-04), 3 min (48-06), 1 min (49-02)
 - Trend: Consistent execution pace
 
 *Updated after each plan completion*
@@ -164,6 +164,10 @@ Recent decisions affecting current work:
 - **Phase 48-06**: CSS classes on SVG elements for dark mode (attribute selectors don't match var() inline attrs)
 - **Phase 48-06**: Internal components self-register in their own files (imported via side-effect imports in index.ts)
 - **Phase 48-06**: presets property excluded from JSX attributes (attribute: false, JS-only)
+- **Phase 49-02**: Use Intl.DateTimeFormat exclusively for timezone conversion (no hardcoded offsets)
+- **Phase 49-02**: Primary timezone defaults to browser local via resolvedOptions().timeZone
+- **Phase 49-02**: role="status" for screen reader timezone display updates
+- **Phase 49-02**: CSS custom properties --ui-time-picker-timezone-* for timezone theming
 
 ### Pending Todos
 
@@ -179,6 +183,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-31 (48-06 complete, Phase 48 complete)
-Stopped at: Completed 48-06-PLAN.md (Dark mode, exports, JSX types)
+Last session: 2026-02-02 (49-02 complete)
+Stopped at: Completed 49-02-PLAN.md (Timezone display component)
 Resume file: None
