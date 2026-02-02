@@ -31,7 +31,7 @@ Progress: [███████████████████████
 | 43    | 8     | 8     | 1.9 min |
 
 **Recent Trend:**
-- Last 3 plans: 1 min (49-02), 1 min (49-03), 1 min (49-04)
+- Last 3 plans: 1 min (49-03), 1 min (49-04), 2 min (49-01)
 - Trend: Consistent execution pace
 
 *Updated after each plan completion*
@@ -171,6 +171,10 @@ Recent decisions affecting current work:
 - **Phase 49-04**: CSS scroll-snap handles all physics (no JS momentum/spring)
 - **Phase 49-04**: scrollend event with debounce fallback for older browsers
 - **Phase 49-04**: Padding items above/below allow first/last items to center in highlight
+- **Phase 49-01**: Business hours indicator uses small green dot (r=3) below hour numbers on clock face
+- **Phase 49-01**: Step-aware minute mode renders only step-interval labels as major labels
+- **Phase 49-01**: _snapToInterval returns modulo 60 to handle boundary wrapping
+- **Phase 49-01**: 12h business hours check uses current AM/PM context from this.hour >= 12
 - **Phase 49-05**: Progressive enhancement: voice input renders nothing when Speech API unavailable
 - **Phase 49-05**: Runtime window access only for SpeechRecognition (never module-level import)
 - **Phase 49-05**: Time-only parsing from voice transcript; date references ignored
@@ -190,6 +194,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-02 (49-05 complete)
-Stopped at: Completed 49-05-PLAN.md (Voice input via Web Speech API)
+Last session: 2026-02-02 (49-01 complete)
+Stopped at: Completed 49-01-PLAN.md (Interval snapping and business hours)
 Resume file: None
