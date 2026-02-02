@@ -138,6 +138,16 @@
       ],
       "dependencies": ["@floating-ui/dom"],
       "registryDependencies": ["calendar"]
+    },
+    {
+      "name": "tooltip",
+      "description": "Accessible tooltip with hover/focus triggers, Floating UI positioning, delay groups, and arrow indicators",
+      "files": [
+        { "path": "components/tooltip/tooltip.ts", "type": "component" },
+        { "path": "components/tooltip/delay-group.ts", "type": "component" }
+      ],
+      "dependencies": ["@floating-ui/dom", "composed-offset-position"],
+      "registryDependencies": []
     }
   ]
 }
