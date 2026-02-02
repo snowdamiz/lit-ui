@@ -148,6 +148,16 @@
       ],
       "dependencies": ["@floating-ui/dom", "composed-offset-position"],
       "registryDependencies": []
+    },
+    {
+      "name": "popover",
+      "description": "Accessible popover component with click triggers, focus management, and nested support",
+      "files": [
+        { "path": "components/popover/popover.ts", "type": "component" }
+      ],
+      "dependencies": ["@floating-ui/dom", "composed-offset-position"],
+      "peerDependencies": ["lit"],
+      "registryDependencies": []
     }
   ]
 }
