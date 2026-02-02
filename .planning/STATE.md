@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-02)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** v5.0 Overlay & Feedback Components - Phase 54 (Toast)
+**Current focus:** v5.0 Overlay & Feedback Components - Phase 54 (Toast) complete
 
 ## Current Position
 
 Phase: 54 of 55 (Toast)
-Plan: 1 of 2 in current phase
-Status: In progress
-Last activity: 2026-02-02 — Completed 54-01-PLAN.md (Toast package implementation)
+Plan: 2 of 2 in current phase
+Status: Phase complete
+Last activity: 2026-02-02 — Completed 54-02-PLAN.md (CLI registry and copy-source templates)
 
-Progress: █████████████░░░░░░░░░░░░░░░░░░░ ~42%
+Progress: █████████████░░░░░░░░░░░░░░░░░░░ ~43%
 
 ## Performance Metrics
 
@@ -24,7 +24,7 @@ Progress: █████████████░░░░░░░░░░�
 - Total execution time: ~1.9 hours
 
 **v5.0:**
-- Plans completed: 7
+- Plans completed: 8
 - 51-01: 1m 18s
 - 51-02: ~2m
 - 52-01: 2m 45s
@@ -32,6 +32,7 @@ Progress: █████████████░░░░░░░░░░�
 - 53-01: 3m 32s
 - 53-02: 2m 37s
 - 54-01: 3m 25s
+- 54-02: ~2m 10s
 
 ## Accumulated Context
 
@@ -51,6 +52,9 @@ Decisions are logged in PROJECT.md Key Decisions table.
 | 53-02-size-middleware | Popover copy-source template includes size middleware import (tooltip did not need it) for matchTriggerWidth | 53-02 |
 | 54-01-observer-singleton | Toast uses module-level singleton state manager with observer pattern to decouple imperative API from web component rendering | 54-01 |
 | 54-01-popover-manual | Toaster uses popover=manual for top-layer rendering instead of position:fixed + z-index | 54-01 |
+| 54-02-namespaced-keys | Toast template keys use componentName/fileStem pattern to avoid generic filename collisions | 54-02 |
+| 54-02-inline-css-fallbacks | Copy-source templates include CSS var() fallbacks for standalone usage | 54-02 |
+| 54-02-isServer-inline | Toaster template uses inline isServer check instead of lit import | 54-02 |
 
 ### Pending Todos
 
@@ -69,11 +73,8 @@ None.
 - CalendarMulti exported but unused by other packages
 - CLI registry.json incorrect time-picker->calendar dependency
 
-**Research flags for v5.0:**
-- Phase 54 (Toast): Queue state machine, imperative API across frameworks, and swipe thresholds need deeper research during planning
-
 ## Session Continuity
 
 Last session: 2026-02-02
-Stopped at: Completed 54-01-PLAN.md (Toast package implementation)
+Stopped at: Completed 54-02-PLAN.md (CLI registry and copy-source templates)
 Resume file: None
