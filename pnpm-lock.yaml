@@ -41,6 +41,9 @@ importers:
       '@lit-ui/input':
         specifier: workspace:*
         version: link:../../packages/input
+      '@lit-ui/popover':
+        specifier: workspace:*
+        version: link:../../packages/popover
       '@lit-ui/radio':
         specifier: workspace:*
         version: link:../../packages/radio
@@ -53,6 +56,12 @@ importers:
       '@lit-ui/textarea':
         specifier: workspace:*
         version: link:../../packages/textarea
+      '@lit-ui/toast':
+        specifier: workspace:*
+        version: link:../../packages/toast
+      '@lit-ui/tooltip':
+        specifier: workspace:*
+        version: link:../../packages/tooltip
       '@radix-ui/react-collapsible':
         specifier: ^1.1.12
         version: 1.1.12(@types/react-dom@18.3.7(@types/react@18.3.27))(@types/react@18.3.27)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
