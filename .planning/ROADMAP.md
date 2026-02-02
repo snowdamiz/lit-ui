@@ -94,12 +94,12 @@ Plans:
 **Success Criteria** (what must be TRUE):
   1. Toast, Tooltip, and Popover each have a documentation page on the docs site with interactive usage examples, full API reference (properties, events, CSS custom properties), and accessibility notes
   2. The CLI registry includes all 3 new components (15 total), and `npx lit-ui add tooltip`, `npx lit-ui add popover`, and `npx lit-ui add toast` work in both copy-source and npm modes
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 55-01: TBD
-- [ ] 55-02: TBD
-- [ ] 55-03: TBD
+- [ ] 55-01-PLAN.md — Wiring: package deps, LivePreview imports/types, nav entries, routes, PrevNextNav chain fixes
+- [ ] 55-02-PLAN.md — Tooltip and Popover documentation pages with interactive examples and API reference
+- [ ] 55-03-PLAN.md — Toast documentation page with imperative API docs and interactive button demos
 
 ## Progress
 
@@ -113,4 +113,4 @@ Phases execute in numeric order: 51 -> 52 -> 53 -> 54 -> 55
 | 52. Tooltip | v5.0 | 2/2 | Complete | 2026-02-02 |
 | 53. Popover | v5.0 | 2/2 | Complete | 2026-02-02 |
 | 54. Toast | v5.0 | 2/2 | Complete | 2026-02-02 |
-| 55. Documentation | v5.0 | 0/TBD | Not started | - |
+| 55. Documentation | v5.0 | 0/3 | Not started | - |
