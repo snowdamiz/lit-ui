@@ -10,25 +10,16 @@ Now with **dual distribution** (copy-source or npm), **SSR support** via Declara
 
 Developers can use polished, accessible UI components in any framework without lock-in — one component library that works everywhere.
 
-## Current State (v4.2)
+## Current State (v4.3)
 
-- ~29,000 lines TypeScript across packages and apps
-- Tech stack: Lit.js 3, Tailwind CSS v4, Vite, TypeScript, pnpm workspaces, colorjs.io, Floating UI, @tanstack/lit-virtual
-- 11 publishable packages: @lit-ui/core, @lit-ui/button, @lit-ui/dialog, @lit-ui/input, @lit-ui/textarea, @lit-ui/select, @lit-ui/checkbox, @lit-ui/radio, @lit-ui/switch, @lit-ui/ssr, lit-ui (CLI)
+- ~68,000 lines TypeScript across packages and apps
+- Tech stack: Lit.js 3, Tailwind CSS v4, Vite, TypeScript, pnpm workspaces, colorjs.io, Floating UI, @tanstack/lit-virtual, date-fns
+- 15 publishable packages: @lit-ui/core, @lit-ui/button, @lit-ui/dialog, @lit-ui/input, @lit-ui/textarea, @lit-ui/select, @lit-ui/checkbox, @lit-ui/radio, @lit-ui/switch, @lit-ui/calendar, @lit-ui/date-picker, @lit-ui/date-range-picker, @lit-ui/time-picker, @lit-ui/ssr, lit-ui (CLI)
 - Framework examples: Next.js App Router, Astro, Express/Node.js
 - Distribution: copy-source (CLI) or npm packages with SSR support
 - Theme customization: Visual configurator + CLI `--theme` parameter
-- Form components: Input, Textarea, Select (single, multi, combobox, async), Checkbox (with group), Radio (with group), Switch
-
-## Current Milestone: v4.3 Date/Time Components
-
-**Goal:** Add Calendar, Date Picker, Date Range Picker, and Time Picker components for complete date/time input capabilities.
-
-**Target features:**
-- Calendar Display component (standalone grid)
-- Date Picker (input with calendar popup)
-- Date Range Picker (start/end selection)
-- Time Picker (hours/minutes selector)
+- Form components: Input, Textarea, Select (single, multi, combobox, async), Checkbox (with group), Radio (with group), Switch, Date Picker, Date Range Picker, Time Picker
+- Date/time components: Calendar (standalone), Date Picker (with natural language), Date Range Picker (with comparison mode), Time Picker (with clock face, voice input, scroll wheels)
 
 ## Requirements
 
@@ -76,15 +67,17 @@ Developers can use polished, accessible UI components in any framework without l
 - ✓ Switch toggle with role="switch", animated track+thumb, form participation — v4.2
 - ✓ 67+ CSS design tokens for checkbox, radio, switch theming — v4.2
 - ✓ CLI registry (8 components), copy-source templates, docs pages for all form controls — v4.2
+- ✓ Calendar Display component with month grid, navigation, decade/century views, multi-month, animations, and i18n — v4.3
+- ✓ Date Picker with calendar popup, natural language input, presets, inline mode, and form participation — v4.3
+- ✓ Date Range Picker with dual calendars, drag selection, presets, comparison mode, and form participation — v4.3
+- ✓ Time Picker with clock face, dropdown, spinbuttons, voice input, scroll wheels, timezone display, and form participation — v4.3
+- ✓ Documentation pages with CLI registry (12 components), accessibility guide, form integration guide, and i18n guide — v4.3
 
 ### Active
 
-- [ ] Calendar Display component with month grid and navigation — v4.3
-- [ ] Date Picker with calendar popup and form participation — v4.3
-- [ ] Date Range Picker with start/end date selection — v4.3
-- [ ] Time Picker with hours/minutes selection — v4.3
+(None — planning next milestone)
 
-### Deferred (v4.3+)
+### Deferred
 
 - Framework integration guides (React, Vue, Svelte) — from v1.1
 - Accessibility documentation — from v1.1
@@ -125,6 +118,8 @@ Developers can use polished, accessible UI components in any framework without l
 - No auto-update for installed components
 - Docs site phases 9-12 incomplete (Framework, Theming, Accessibility, Polish)
 - 30 CLI tests need update for CSS variable naming change (tech debt from v3.0)
+- CalendarMulti component exported but unused by other packages (available for custom use)
+- CLI registry.json has incorrect time-picker→calendar dependency (minor, causes unnecessary install)
 
 ## Constraints
 
@@ -171,6 +166,13 @@ Developers can use polished, accessible UI components in any framework without l
 | Space-only keyboard for checkbox | W3C APG checkbox spec does not include Enter | ✓ Good — spec-compliant |
 | CSS transitions for all animations | Zero new dependencies, consistent with existing approach | ✓ Good — no runtime overhead |
 | Per-file template lookup in CLI | Multi-file components need different templates per file | ✓ Good — correct copy-source output |
+| date-fns for date manipulation | Comprehensive, tree-shakeable, immutable API | ✓ Good — clean utilities, small bundle impact |
+| Intl API for calendar localization | Zero-bundle-cost i18n, browser-native | ✓ Good — no locale data to ship |
+| KeyboardNavigationManager class | Reusable imperative keyboard nav for grids | ✓ Good — shared across month/decade/century views |
+| Two-click range selection state machine | Clear UX: first click = start, second = end | ✓ Good — intuitive, handles edge cases |
+| SVG clock face for time picker | Vector-based, scales to any size, precise hit areas | ✓ Good — clean rendering at all sizes |
+| Web Speech API for voice input | Browser-native, no external dependency | ✓ Good — progressive enhancement |
+| Pointer Events for gestures | Unified mouse/touch/pen API | ✓ Good — single code path for all inputs |
 
 ## Shipped Milestones
 
@@ -181,6 +183,7 @@ Developers can use polished, accessible UI components in any framework without l
 - **v4.0 Form Inputs** (2026-01-26): Input and Textarea components with validation, form participation
 - **v4.1 Select Component** (2026-01-27): Full-featured Select with single, multi, combobox, and async loading
 - **v4.2 Form Controls** (2026-01-27): Checkbox, Radio, Switch with group containers, completing form primitives
+- **v4.3 Date/Time Components** (2026-02-02): Calendar, Date Picker, Date Range Picker, Time Picker with full accessibility
 
 ---
-*Last updated: 2026-01-30 after starting v4.3 milestone*
+*Last updated: 2026-02-02 after v4.3 milestone*

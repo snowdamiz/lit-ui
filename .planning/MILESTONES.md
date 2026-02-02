@@ -1,5 +1,34 @@
 # Project Milestones: LitUI
 
+## v4.3 Date/Time Components (Shipped: 2026-02-02)
+
+**Delivered:** Calendar, Date Picker, Date Range Picker, and Time Picker components with full accessibility, natural language input, comparison mode, voice input, and comprehensive documentation.
+
+**Phases completed:** 42-50 (54 plans total)
+
+**Key accomplishments:**
+
+- Calendar component with 7-column CSS Grid, date-fns utilities, Intl API localization, decade/century views, swipe gestures, animations, multi-month display, and ISO week numbers
+- Date Picker with multi-format parsing (dashes/slashes/dots), natural language input ("tomorrow", "next week"), Floating UI popup positioning, inline mode, and form participation via ElementInternals
+- Date Range Picker with two-click selection state machine, dual synchronized calendars, hover preview, drag selection, preset ranges, duration display, and comparison mode for overlaying two ranges
+- Time Picker with SVG clock face, dropdown listbox, spinbutton inputs, AM/PM toggle, voice input via Web Speech API, iOS-style scroll wheels, multi-timezone display, and business hours highlighting
+- 96/96 requirements satisfied with full ARIA accessibility (roving tabindex, aria-live regions, screen reader announcements) across all 4 component packages
+- Documentation pages for all components with CLI registry (12 total components), guides for accessibility, form integration, and internationalization
+
+**Stats:**
+
+- 204 files created/modified
+- ~39,672 lines of TypeScript added
+- 9 phases, 54 plans, ~110 tasks
+- 8 days (2026-01-25 → 2026-02-02)
+- 230 commits
+
+**Git range:** `docs(42)` → `docs(50)`
+
+**What's next:** Additional UI components or documentation site completion
+
+---
+
 ## v4.2 Form Controls (Shipped: 2026-01-27)
 
 **Delivered:** Checkbox, Radio, and Switch toggle components with group containers, completing the core form primitive toolkit with zero new dependencies.
