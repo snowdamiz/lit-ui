@@ -24,10 +24,20 @@ export { DEFAULT_TIME_PRESETS, resolveNow } from './time-presets.js';
 // Re-export TailwindElement and isServer for convenience
 export { TailwindElement, isServer } from '@lit-ui/core';
 
+// Export new sub-component classes for advanced consumers
+export { TimezoneDisplay } from './timezone-display.js';
+export { TimeRangeSlider } from './time-range-slider.js';
+export { TimeScrollWheel } from './time-scroll-wheel.js';
+export { TimeVoiceInput } from './time-voice-input.js';
+
 // Import internal components to ensure they are registered
 import './time-input.js';
 import './clock-face.js';
 import './time-dropdown.js';
+import './timezone-display.js';
+import './time-range-slider.js';
+import './time-scroll-wheel.js';
+import './time-voice-input.js';
 
 // Safe custom element registration with collision detection
 import { TimePicker } from './time-picker.js';

@@ -22,7 +22,8 @@ interface LuiTimePickerAttributes {
   'allow-overnight'?: boolean;
   'show-timezone'?: boolean;
   timezone?: string;
-  'interface-mode'?: 'clock' | 'dropdown' | 'both';
+  voice?: boolean;
+  'interface-mode'?: 'clock' | 'dropdown' | 'both' | 'wheel' | 'range';
   class?: string;
   id?: string;
   slot?: string;
@@ -30,8 +31,8 @@ interface LuiTimePickerAttributes {
 }
 
 interface LuiTimePickerEvents {
-  onchange?: (event: CustomEvent<{ value: string }>) => void;
-  'on:change'?: (event: CustomEvent<{ value: string }>) => void;
+  onchange?: (event: CustomEvent<{ value: string; timeValue: import('./time-utils.js').TimeValue | null }>) => void;
+  'on:change'?: (event: CustomEvent<{ value: string; timeValue: import('./time-utils.js').TimeValue | null }>) => void;
 }
 
 type LuiTimePickerProps = LuiTimePickerAttributes & LuiTimePickerEvents;
@@ -65,7 +66,7 @@ declare module 'vue' {
 declare namespace svelteHTML {
   interface IntrinsicElements {
     'lui-time-picker': LuiTimePickerAttributes & {
-      'on:change'?: (event: CustomEvent<{ value: string }>) => void;
+      'on:change'?: (event: CustomEvent<{ value: string; timeValue: import('./time-utils.js').TimeValue | null }>) => void;
     };
   }
 }
