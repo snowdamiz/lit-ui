@@ -17,7 +17,7 @@ This milestone adds three overlay/feedback primitives -- Toast, Tooltip, and Pop
 - Decimal phases (52.1, 52.2): Urgent insertions if needed
 
 - [x] **Phase 51: Shared Infrastructure** - Floating UI positioning utility and shared overlay foundations
-- [ ] **Phase 52: Tooltip** - Hover/focus tooltip with accessible positioning and delay groups
+- [x] **Phase 52: Tooltip** - Hover/focus tooltip with accessible positioning and delay groups
 - [ ] **Phase 53: Popover** - Click-triggered interactive overlay with focus management
 - [ ] **Phase 54: Toast** - Notification system with imperative API, queue management, and swipe-to-dismiss
 - [ ] **Phase 55: Documentation** - Docs pages, API references, and CLI registry for all three components
@@ -52,8 +52,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 52-01-PLAN.md — Tooltip package scaffolding, delay group module, and full tooltip component implementation (TIP-01 through TIP-16)
-- [ ] 52-02-PLAN.md — CLI registry entry, copy-source template, and full workspace build verification (TIP-17)
+- [x] 52-01-PLAN.md — Tooltip package scaffolding, delay group module, and full tooltip component implementation (TIP-01 through TIP-16)
+- [x] 52-02-PLAN.md — CLI registry entry, copy-source template, and full workspace build verification (TIP-17)
 
 ### Phase 53: Popover
 **Goal**: Users can create interactive overlay content that opens on click, manages focus correctly, and supports nesting -- serving as the foundation for menus, dropdowns, and custom overlays
@@ -113,7 +113,7 @@ Phases execute in numeric order: 51 -> 52 -> 53 -> 54 -> 55
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 51. Shared Infrastructure | v5.0 | 2/2 | Complete | 2026-02-02 |
-| 52. Tooltip | v5.0 | 0/2 | Planning complete | - |
+| 52. Tooltip | v5.0 | 2/2 | Complete | 2026-02-02 |
 | 53. Popover | v5.0 | 0/TBD | Not started | - |
 | 54. Toast | v5.0 | 0/TBD | Not started | - |
 | 55. Documentation | v5.0 | 0/TBD | Not started | - |

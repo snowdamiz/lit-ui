@@ -39,23 +39,23 @@ Requirements for overlay and feedback components milestone. Each maps to roadmap
 
 ### Tooltip
 
-- [ ] **TIP-01**: Hover trigger with configurable show delay (default 300ms)
-- [ ] **TIP-02**: Focus trigger — tooltip appears on keyboard focus of trigger element
-- [ ] **TIP-03**: Escape key dismisses tooltip (WAI-ARIA requirement)
-- [ ] **TIP-04**: Floating UI positioning with collision avoidance (flip, shift) and 12 placement options
-- [ ] **TIP-05**: Arrow indicator pointing at trigger element, tracks position flips correctly
-- [ ] **TIP-06**: `role="tooltip"` with `aria-describedby` linking trigger to tooltip content (same shadow root)
-- [ ] **TIP-07**: Non-interactive content only (enforced by design — interactive content uses Popover)
-- [ ] **TIP-08**: `autoUpdate` for repositioning during scroll/resize while tooltip is visible
-- [ ] **TIP-09**: Delay group — when one tooltip closes, adjacent tooltips open immediately (skip show delay within 300ms window)
-- [ ] **TIP-10**: Rich tooltip variant — title + description text for feature explanations
-- [ ] **TIP-11**: Hide delay (100ms) to allow moving cursor from trigger to tooltip without flicker
-- [ ] **TIP-12**: Touch device handling — skip tooltip on touch `pointerType`, no long-press trigger
-- [ ] **TIP-13**: `prefers-reduced-motion` respect — disable/reduce animations
-- [ ] **TIP-14**: SSR safe — renders trigger only, tooltip content hidden during SSR
-- [ ] **TIP-15**: AbortController pattern for listener cleanup in `disconnectedCallback`
-- [ ] **TIP-16**: CSS custom properties for full theming (`--ui-tooltip-bg`, `--ui-tooltip-text`, `--ui-tooltip-radius`, etc.)
-- [ ] **TIP-17**: CLI registry entry with copy-source template and npm package `@lit-ui/tooltip`
+- [x] **TIP-01**: Hover trigger with configurable show delay (default 300ms)
+- [x] **TIP-02**: Focus trigger — tooltip appears on keyboard focus of trigger element
+- [x] **TIP-03**: Escape key dismisses tooltip (WAI-ARIA requirement)
+- [x] **TIP-04**: Floating UI positioning with collision avoidance (flip, shift) and 12 placement options
+- [x] **TIP-05**: Arrow indicator pointing at trigger element, tracks position flips correctly
+- [x] **TIP-06**: `role="tooltip"` with `aria-describedby` linking trigger to tooltip content (same shadow root)
+- [x] **TIP-07**: Non-interactive content only (enforced by design — interactive content uses Popover)
+- [x] **TIP-08**: `autoUpdate` for repositioning during scroll/resize while tooltip is visible
+- [x] **TIP-09**: Delay group — when one tooltip closes, adjacent tooltips open immediately (skip show delay within 300ms window)
+- [x] **TIP-10**: Rich tooltip variant — title + description text for feature explanations
+- [x] **TIP-11**: Hide delay (100ms) to allow moving cursor from trigger to tooltip without flicker
+- [x] **TIP-12**: Touch device handling — skip tooltip on touch `pointerType`, no long-press trigger
+- [x] **TIP-13**: `prefers-reduced-motion` respect — disable/reduce animations
+- [x] **TIP-14**: SSR safe — renders trigger only, tooltip content hidden during SSR
+- [x] **TIP-15**: AbortController pattern for listener cleanup in `disconnectedCallback`
+- [x] **TIP-16**: CSS custom properties for full theming (`--ui-tooltip-bg`, `--ui-tooltip-text`, `--ui-tooltip-radius`, etc.)
+- [x] **TIP-17**: CLI registry entry with copy-source template and npm package `@lit-ui/tooltip`
 
 ### Popover
 
@@ -150,23 +150,23 @@ Deferred to later milestones. Tracked but not in current roadmap.
 | TOAST-18 | Phase 54 | Pending |
 | TOAST-19 | Phase 54 | Pending |
 | TOAST-20 | Phase 54 | Pending |
-| TIP-01 | Phase 52 | Pending |
-| TIP-02 | Phase 52 | Pending |
-| TIP-03 | Phase 52 | Pending |
-| TIP-04 | Phase 52 | Pending |
-| TIP-05 | Phase 52 | Pending |
-| TIP-06 | Phase 52 | Pending |
-| TIP-07 | Phase 52 | Pending |
-| TIP-08 | Phase 52 | Pending |
-| TIP-09 | Phase 52 | Pending |
-| TIP-10 | Phase 52 | Pending |
-| TIP-11 | Phase 52 | Pending |
-| TIP-12 | Phase 52 | Pending |
-| TIP-13 | Phase 52 | Pending |
-| TIP-14 | Phase 52 | Pending |
-| TIP-15 | Phase 52 | Pending |
-| TIP-16 | Phase 52 | Pending |
-| TIP-17 | Phase 52 | Pending |
+| TIP-01 | Phase 52 | Complete |
+| TIP-02 | Phase 52 | Complete |
+| TIP-03 | Phase 52 | Complete |
+| TIP-04 | Phase 52 | Complete |
+| TIP-05 | Phase 52 | Complete |
+| TIP-06 | Phase 52 | Complete |
+| TIP-07 | Phase 52 | Complete |
+| TIP-08 | Phase 52 | Complete |
+| TIP-09 | Phase 52 | Complete |
+| TIP-10 | Phase 52 | Complete |
+| TIP-11 | Phase 52 | Complete |
+| TIP-12 | Phase 52 | Complete |
+| TIP-13 | Phase 52 | Complete |
+| TIP-14 | Phase 52 | Complete |
+| TIP-15 | Phase 52 | Complete |
+| TIP-16 | Phase 52 | Complete |
+| TIP-17 | Phase 52 | Complete |
 | POP-01 | Phase 53 | Pending |
 | POP-02 | Phase 53 | Pending |
 | POP-03 | Phase 53 | Pending |
