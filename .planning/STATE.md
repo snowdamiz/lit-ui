@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-30)
 ## Current Position
 
 Phase: 8 of 9 (Time Picker Advanced)
-Plan: 3 of 6 in current phase (3 executions complete)
+Plan: 5 of 6 in current phase (5 executions complete)
 Status: In progress
-Last activity: 2026-02-02 — Completed 49-03-PLAN.md
+Last activity: 2026-02-02 — Completed 49-05-PLAN.md
 
-Progress: [████████████████░░░░░░░░░░░░░░░░] 50% (3/6 plans in phase 49)
+Progress: [██████████████████████████░░░░░░] 83% (5/6 plans in phase 49)
 
 ## Performance Metrics
 
@@ -31,7 +31,7 @@ Progress: [████████████████░░░░░░░
 | 43    | 8     | 8     | 1.9 min |
 
 **Recent Trend:**
-- Last 3 plans: 1 min (48-04), 3 min (48-06), 1 min (49-02)
+- Last 3 plans: 1 min (49-02), 1 min (49-03), 1 min (49-04)
 - Trend: Consistent execution pace
 
 *Updated after each plan completion*
@@ -168,6 +168,9 @@ Recent decisions affecting current work:
 - **Phase 49-02**: Primary timezone defaults to browser local via resolvedOptions().timeZone
 - **Phase 49-02**: role="status" for screen reader timezone display updates
 - **Phase 49-02**: CSS custom properties --ui-time-picker-timezone-* for timezone theming
+- **Phase 49-04**: CSS scroll-snap handles all physics (no JS momentum/spring)
+- **Phase 49-04**: scrollend event with debounce fallback for older browsers
+- **Phase 49-04**: Padding items above/below allow first/last items to center in highlight
 
 ### Pending Todos
 
@@ -183,6 +186,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-02 (49-03 complete)
-Stopped at: Completed 49-03-PLAN.md (Time range slider component)
+Last session: 2026-02-02 (49-04 complete)
+Stopped at: Completed 49-04-PLAN.md (Scroll wheel component)
 Resume file: None
