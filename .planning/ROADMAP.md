@@ -8,7 +8,7 @@
 - ✅ **v4.0 Form Inputs** - Phases 25-27 (shipped 2026-01-26)
 - ✅ **v4.1 Select Component** - Phases 31-37 (shipped 2026-01-27)
 - ✅ **v4.2 Form Controls** - Phases 38-41 (shipped 2026-01-27)
-- 🚧 **v4.3 Date/Time Components** - Phases 42-50 (in progress)
+- ✅ **v4.3 Date/Time Components** - Phases 42-50 (shipped 2026-02-02)
 
 ## Phases
 
@@ -348,7 +348,8 @@ Plans:
 
 </details>
 
-### 🚧 v4.3 Date/Time Components (In Progress)
+<details>
+<summary>✅ v4.3 Date/Time Components (Phases 42-50) - SHIPPED 2026-02-02</summary>
 
 **Milestone Goal:** Add Calendar, Date Picker, Date Range Picker, and Time Picker components for complete date/time input capabilities.
 
@@ -525,12 +526,12 @@ Plans:
 **Plans**: 6 plans in 2 waves
 
 Plans:
-- [ ] 50-01-PLAN.md — Infrastructure: JSX types, CLI registry, navigation/routing, PrevNextNav chain
-- [ ] 50-02-PLAN.md — Calendar page audit and Phase 42-43 advanced feature documentation
-- [ ] 50-03-PLAN.md — Date Picker documentation page
-- [ ] 50-04-PLAN.md — Date Range Picker documentation page
-- [ ] 50-05-PLAN.md — Time Picker documentation page
-- [ ] 50-06-PLAN.md — Guide pages: Accessibility, Form Integration, Internationalization
+- [x] 50-01-PLAN.md — Infrastructure: JSX types, CLI registry, navigation/routing, PrevNextNav chain
+- [x] 50-02-PLAN.md — Calendar page audit and Phase 42-43 advanced feature documentation
+- [x] 50-03-PLAN.md — Date Picker documentation page
+- [x] 50-04-PLAN.md — Date Range Picker documentation page
+- [x] 50-05-PLAN.md — Time Picker documentation page
+- [x] 50-06-PLAN.md — Guide pages: Accessibility, Form Integration, Internationalization
 
 ## Progress
 
@@ -547,4 +548,6 @@ Phases execute in numeric order: 42 → 43 → 44 → 45 → 46 → 47 → 48 �
 | 47. Date Range Picker Advanced | v4.3 | 5/5 | Complete | 2026-01-31 |
 | 48. Time Picker Core | v4.3 | 6/6 | Complete | 2026-01-31 |
 | 49. Time Picker Advanced | v4.3 | 6/6 | Complete | 2026-02-02 |
-| 50. Documentation | v4.3 | 0/6 | Not started | - |
+| 50. Documentation | v4.3 | 6/6 | Complete | 2026-02-02 |
+
+</details>
