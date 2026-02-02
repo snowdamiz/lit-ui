@@ -4,7 +4,7 @@
 
 A framework-agnostic component library built on Lit.js, following ShadCN's philosophy of beautiful defaults and CLI-driven installation. Components work natively in React, Vue, Svelte, or plain HTML because they're standard web components underneath.
 
-Now with **dual distribution** (copy-source or npm), **SSR support** via Declarative Shadow DOM, **build-time theme customization** via visual configurator, **complete form toolkit** (Input, Textarea, Select, Checkbox, Radio, Switch with group containers), **date/time components** (Calendar, Date Picker, Date Range Picker, Time Picker), and **overlay/feedback primitives** (Toast, Tooltip, Popover with shared Floating UI infrastructure).
+Now with **dual distribution** (copy-source or npm), **SSR support** via Declarative Shadow DOM, **build-time theme customization** via visual configurator, **complete form toolkit** (Input, Textarea, Select, Checkbox, Radio, Switch with group containers), **date/time components** (Calendar, Date Picker, Date Range Picker, Time Picker), **overlay/feedback primitives** (Toast, Tooltip, Popover with shared Floating UI infrastructure), and **layout components** in progress (Accordion, Tabs).
 
 ## Core Value
 
@@ -83,7 +83,16 @@ Developers can use polished, accessible UI components in any framework without l
 
 ### Active
 
-(No active milestone — run `/gsd:new-milestone` to start next)
+**Current Milestone: v6.0 Layout Components**
+
+**Goal:** Add Accordion and Tabs layout components with full accessibility, animations, and multiple modes.
+
+- [ ] Accordion with single-expand and multi-expand modes, animated expand/collapse, keyboard navigation, disabled items
+- [ ] Tabs with horizontal and vertical orientation, automatic and manual activation, lazy loading, keyboard navigation, disabled tabs
+- [ ] @lit-ui/accordion and @lit-ui/tabs packages with SSR compatibility
+- [ ] CSS custom properties for theming (--ui-accordion-*, --ui-tabs-*)
+- [ ] CLI registry entries with copy-source templates
+- [ ] Documentation pages with interactive demos and API references
 
 ### Deferred
 
@@ -124,7 +133,6 @@ Developers can use polished, accessible UI components in any framework without l
 
 **Known limitations:**
 - No auto-update for installed components
-- Docs site phases 9-12 incomplete (Framework, Theming, Accessibility, Polish)
 - 30 CLI tests need update for CSS variable naming change (tech debt from v3.0)
 - CalendarMulti component exported but unused by other packages (available for custom use)
 - CLI registry.json has incorrect time-picker→calendar dependency (minor, causes unnecessary install)
@@ -206,4 +214,4 @@ Developers can use polished, accessible UI components in any framework without l
 - **v5.0 Overlay & Feedback Components** (2026-02-02): Toast, Tooltip, Popover with shared Floating UI infrastructure
 
 ---
-*Last updated: 2026-02-02 after v5.0 milestone*
+*Last updated: 2026-02-02 after v6.0 milestone started*

@@ -5,33 +5,22 @@
 See: .planning/PROJECT.md (updated 2026-02-02)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** Planning next milestone
+**Current focus:** v6.0 Layout Components (Accordion, Tabs)
 
 ## Current Position
 
-Phase: 55 of 55 (v5.0 complete)
-Plan: N/A
-Status: Milestone v5.0 shipped — ready for next milestone
-Last activity: 2026-02-02 — Completed quick-001 (Cmd+K command palette)
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements for v6.0
+Last activity: 2026-02-02 — Milestone v6.0 started
 
-Progress: ████████████████████████████████ 100% (v5.0)
+Progress: ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 0% (v6.0)
 
 ## Performance Metrics
 
 **Velocity (v5.0):**
 - Plans completed: 11
 - Total execution time: ~31 min
-- 51-01: 1m 18s
-- 51-02: ~2m
-- 52-01: 2m 45s
-- 52-02: 5m
-- 53-01: 3m 32s
-- 53-02: 2m 37s
-- 54-01: 3m 25s
-- 54-02: ~2m 10s
-- 55-01: 1m 9s
-- 55-02: 4m 12s
-- 55-03: 2m 44s
 
 ## Accumulated Context
 
@@ -61,5 +50,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-02
-Stopped at: Completed quick-001 (Cmd+K command palette)
+Stopped at: Started milestone v6.0
 Resume file: None
