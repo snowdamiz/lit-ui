@@ -20,6 +20,9 @@ import { SwitchPage } from './pages/components/SwitchPage'
 import { DatePickerPage } from './pages/components/DatePickerPage'
 import { DateRangePickerPage } from './pages/components/DateRangePickerPage'
 import { TimePickerPage } from './pages/components/TimePickerPage'
+import { TooltipPage } from './pages/components/TooltipPage'
+import { PopoverPage } from './pages/components/PopoverPage'
+import { ToastPage } from './pages/components/ToastPage'
 import { AccessibilityGuide } from './pages/AccessibilityGuide'
 import { FormIntegrationGuide } from './pages/FormIntegrationGuide'
 import { I18nGuide } from './pages/I18nGuide'
@@ -65,6 +68,9 @@ export default function App() {
             <Route path="components/select" element={<SelectPage />} />
             <Route path="components/switch" element={<SwitchPage />} />
             <Route path="components/time-picker" element={<TimePickerPage />} />
+            <Route path="components/tooltip" element={<TooltipPage />} />
+            <Route path="components/popover" element={<PopoverPage />} />
+            <Route path="components/toast" element={<ToastPage />} />
 
             {/* Catch-all for undefined routes */}
             <Route path="*" element={<Placeholder />} />

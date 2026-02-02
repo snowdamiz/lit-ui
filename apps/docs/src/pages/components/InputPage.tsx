@@ -650,7 +650,7 @@ export function InputPage() {
         <div className="divider-fade mb-8" />
         <PrevNextNav
           prev={{ title: 'Dialog', href: '/components/dialog' }}
-          next={{ title: 'Radio', href: '/components/radio' }}
+          next={{ title: 'Popover', href: '/components/popover' }}
         />
       </div>
     </FrameworkProvider>

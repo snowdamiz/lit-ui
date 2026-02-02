@@ -526,7 +526,7 @@ export function RadioPage() {
         {/* Navigation */}
         <div className="divider-fade mb-8" />
         <PrevNextNav
-          prev={{ title: 'Input', href: '/components/input' }}
+          prev={{ title: 'Popover', href: '/components/popover' }}
           next={{ title: 'Select', href: '/components/select' }}
         />
       </div>

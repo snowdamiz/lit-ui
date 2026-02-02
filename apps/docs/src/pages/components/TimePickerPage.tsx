@@ -714,7 +714,7 @@ export function TimePickerPage() {
         <div className="divider-fade mb-8" />
         <PrevNextNav
           prev={{ title: 'Textarea', href: '/components/textarea' }}
-          next={{ title: 'Theme Configurator', href: '/configurator' }}
+          next={{ title: 'Toast', href: '/components/toast' }}
         />
       </div>
     </FrameworkProvider>
