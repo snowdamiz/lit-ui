@@ -198,7 +198,30 @@ export class TimePicker extends TailwindElement {
    * - 'both': tabbed clock face and dropdown
    */
   @property({ type: String, attribute: 'interface-mode' })
-  interfaceMode: 'clock' | 'dropdown' | 'both' = 'both';
+  interfaceMode: 'clock' | 'dropdown' | 'both' | 'wheel' | 'range' = 'both';
+
+  /**
+   * Business hours range for visual highlighting.
+   * - `false` (default): no highlighting
+   * - `{ start: number; end: number }`: highlight hours in range (24h format)
+   */
+  @property({ attribute: false })
+  businessHours: { start: number; end: number } | false = false;
+
+  /**
+   * Additional IANA timezone identifiers for multi-timezone display.
+   * When set, a timezone comparison row appears in the popup.
+   * Example: ['America/Los_Angeles', 'Europe/London']
+   */
+  @property({ attribute: false })
+  additionalTimezones: string[] = [];
+
+  /**
+   * Enable voice input button (progressive enhancement).
+   * Button hidden when Web Speech API is unavailable.
+   */
+  @property({ type: Boolean })
+  voice = false;
 
   // ---------------------------------------------------------------------------
   // Internal state
@@ -848,6 +871,40 @@ export class TimePicker extends TailwindElement {
     this.closePopup();
   }
 
+  /**
+   * Handle scroll wheel value changes.
+   */
+  private handleScrollWheelChange(e: Event): void {
+    const detail = (e as CustomEvent).detail;
+    if (!detail?.value) return;
+    this.internalValue = detail.value as TimeValue;
+    this.syncValueFromInternal();
+  }
+
+  /**
+   * Handle voice input time selection.
+   */
+  private handleVoiceSelect(e: Event): void {
+    const detail = (e as CustomEvent).detail;
+    if (!detail?.value) return;
+    this.internalValue = detail.value as TimeValue;
+    this.syncValueFromInternal();
+    this.closePopup();
+  }
+
+  /**
+   * Handle range slider value changes.
+   */
+  private handleRangeChange(e: Event): void {
+    const detail = (e as CustomEvent).detail;
+    if (!detail) return;
+    // Range slider emits start/end, use startTime as the primary value
+    if (detail.startTime) {
+      this.internalValue = detail.startTime as TimeValue;
+      this.syncValueFromInternal();
+    }
+  }
+
   // ---------------------------------------------------------------------------
   // Value synchronization
   // ---------------------------------------------------------------------------
@@ -1066,6 +1123,16 @@ export class TimePicker extends TailwindElement {
               ${this.clockIcon}
             </svg>
           </button>
+
+          ${this.voice
+            ? html`
+                <lui-time-voice-input
+                  .locale=${this.locale}
+                  ?disabled=${this.disabled || this.readonly}
+                  @ui-voice-time-select=${this.handleVoiceSelect}
+                ></lui-time-voice-input>
+              `
+            : nothing}
         </div>
 
         ${this.hasError && this.internalError
@@ -1097,6 +1164,17 @@ export class TimePicker extends TailwindElement {
                 ${this.renderInterfaceTabs()}
                 ${this.renderActiveInterface()}
                 ${this.renderPresets()}
+                ${this.additionalTimezones.length > 0
+                  ? html`
+                      <lui-timezone-display
+                        .value=${this.internalValue}
+                        .locale=${this.locale}
+                        .hour12=${this.effectiveHour12}
+                        .primaryTimezone=${this.timezone}
+                        .additionalTimezones=${this.additionalTimezones}
+                      ></lui-timezone-display>
+                    `
+                  : nothing}
               </div>
             `
           : nothing}
@@ -1134,12 +1212,40 @@ export class TimePicker extends TailwindElement {
    * Render the active interface (clock face or dropdown).
    */
   private renderActiveInterface() {
+    const showWheel = this.interfaceMode === 'wheel';
+    const showRange = this.interfaceMode === 'range';
     const showClock =
       this.interfaceMode === 'clock' ||
       (this.interfaceMode === 'both' && this.activeInterface === 'clock');
     const showDropdown =
       this.interfaceMode === 'dropdown' ||
       (this.interfaceMode === 'both' && this.activeInterface === 'dropdown');
+
+    if (showWheel) {
+      return html`
+        <lui-time-scroll-wheel
+          .value=${this.internalValue}
+          .hour12=${this.effectiveHour12}
+          .step=${this.step}
+          ?disabled=${this.disabled}
+          @ui-scroll-wheel-change=${this.handleScrollWheelChange}
+        ></lui-time-scroll-wheel>
+      `;
+    }
+
+    if (showRange) {
+      return html`
+        <lui-time-range-slider
+          .startMinutes=${this.internalValue ? this.internalValue.hour * 60 + this.internalValue.minute : 540}
+          .endMinutes=${1020}
+          .step=${this.step}
+          .hour12=${this.effectiveHour12}
+          .locale=${this.locale}
+          ?disabled=${this.disabled}
+          @ui-time-range-change=${this.handleRangeChange}
+        ></lui-time-range-slider>
+      `;
+    }
 
     if (showClock) {
       return html`
@@ -1148,6 +1254,8 @@ export class TimePicker extends TailwindElement {
           .hour=${this.internalValue?.hour ?? 0}
           .minute=${this.internalValue?.minute ?? 0}
           .hour12=${this.effectiveHour12}
+          .step=${this.step}
+          .businessHours=${this.businessHours}
           ?disabled=${this.disabled}
           @clock-select=${this.handleClockSelect}
         ></lui-clock-face>
@@ -1163,6 +1271,7 @@ export class TimePicker extends TailwindElement {
           .locale=${this.locale}
           .minTime=${this.minTime}
           .maxTime=${this.maxTime}
+          .businessHours=${this.businessHours}
           ?disabled=${this.disabled}
           @ui-time-dropdown-select=${this.handleDropdownSelect}
         ></lui-time-dropdown>
