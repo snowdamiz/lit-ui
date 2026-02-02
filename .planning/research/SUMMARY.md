@@ -1,238 +1,258 @@
 # Project Research Summary
 
-**Project:** LitUI v4.3 - Date/Time Components
-**Domain:** Web component library (Lit.js) - Date/time input components
-**Researched:** 2026-01-30
+**Project:** LitUI v5.0 - Toast, Tooltip, and Popover Overlay Components
+**Domain:** Feedback/overlay web components for Shadow DOM-based Lit.js component library
+**Researched:** 2026-02-02
 **Confidence:** HIGH
 
 ## Executive Summary
 
-Date/time components are a fundamental part of modern form interfaces, used for booking systems, analytics dashboards, scheduling applications, and data entry. Research across authoritative sources (Nielsen Norman Group, WAI-ARIA APG, Material Design, USWDS) reveals that successful date/time components must balance three critical dimensions: **accessibility** (WCAG 2.1 keyboard navigation, screen reader support), **internationalization** (locale-aware formatting, first day of week, RTL support), and **Shadow DOM compatibility** (event retargeting, positioning, form integration).
+Toast, Tooltip, and Popover are overlay/feedback components that share positioning needs but have fundamentally different lifecycles and interaction models. The research reveals a zero-dependency approach: the existing `@floating-ui/dom` dependency (already used by Select, DatePicker, TimePicker) handles all positioning needs for Tooltip and Popover, while Toast requires no positioning library at all (viewport-anchored). The native Popover API (Baseline Widely Available, ~95% support) provides top-layer rendering for all three components, eliminating z-index battles and stacking context issues.
 
-The recommended approach for LitUI v4.3 is to use **date-fns v4.1.0** for date manipulation (modular, tree-shakeable, built-in timezone support in v4), **native Intl API** for localization (no additional dependencies), and **Floating UI** for dropdown positioning (already proven in Select component). Components should follow existing LitUI patterns: TailwindElement base class, ElementInternals for form participation, CSS custom properties for theming, and internal composition (Calendar composed by Date Picker, not slotted like Select/Option).
+The recommended architecture uses three separate packages with a thin shared positioning utility in `@lit-ui/core/floating`. Toast is architecturally distinct: it needs an imperative API (`toast.success('message')`) and a singleton container that auto-appends to document.body. Tooltip and Popover share positioning infrastructure but differ in trigger mechanisms (hover/focus vs click) and content models (text-only vs interactive). All three components leverage modern CSS `@starting-style` + `transition-behavior: allow-discrete` for enter/exit animations, following the exact pattern already established in LitUI's Dialog component.
 
-**Key risks** identified: Shadow DOM event retargeting breaks click-outside detection (use `event.composedPath()`), ARIA grid keyboard navigation requires roving tabindex pattern (only one cell has `tabindex="0"` at a time), and ISO 8601 form value format prevents timezone/date parsing bugs. **Mitigation**: All critical pitfalls have clear prevention strategies backed by authoritative sources. The research is HIGH confidence with verified sources (date-fns official, MDN, W3C WAI-ARIA APG).
+The most critical risks center on Shadow DOM limitations: ARIA attributes cannot cross shadow root boundaries (breaking tooltips for screen readers), Floating UI's `offsetParent` calculation fails in nested shadow roots without the `composed-offset-position` ponyfill, and toast live regions must exist in the DOM before content is injected. These pitfalls have specific, proven solutions documented in the research. Build order matters: Tooltip first (establishes shared positioning utility), Popover second (reuses utility, adds focus management), Toast last (most complex, standalone architecture).
 
 ## Key Findings
 
 ### Recommended Stack
 
-**Date manipulation library**: date-fns v4.1.0 — Modular, tree-shakeable, 200+ functions, native timezone support in v4, TypeScript-first, immutable/pure functions, zero dependencies. Alternative libraries (Moment.js, Luxon, Day.js) were rejected: Moment.js is deprecated, Luxon has 2-3x larger bundle, Day.js has unfixed timezone issues per community reports.
-
-**Localization**: Native Intl API — Universal browser support (Intl.DateTimeFormat, Intl.Locale.getWeekInfo()), no polyfill needed for modern browsers. Temporal API is NOT production-ready (only Chrome 144+, Firefox 139+, Safari/Edge missing as of 2026-01).
-
-**Form participation**: ElementInternals — Already proven in Input/Textarea components. Submit ISO 8601 format (YYYY-MM-DD for dates, HH:mm:ss for times) to match native `<input type="date">` behavior and avoid timezone bugs.
-
-**Accessibility**: WAI-ARIA APG Grid Pattern — No additional libraries needed. Calendar uses `role="grid"`, roving tabindex for keyboard navigation, `aria-live` regions for screen reader announcements.
-
-**Positioning**: Floating UI (already in Select) — Proven pattern for dropdown positioning. Use flip/shift middleware to prevent Shadow DOM clipping issues.
+**Zero new dependencies required.** All capabilities exist via existing dependencies and native browser APIs. The project already has `@floating-ui/dom` (^1.7.4) for Select/DatePicker positioning — Tooltip and Popover add the `arrow` and `autoUpdate` middleware from the same package. Toast needs no external dependencies. Native Popover API (`popover="manual"`) provides top-layer rendering for all three components. CSS `@starting-style` (~88% support, Baseline since August 2024) enables pure-CSS enter/exit animations. Pointer Events with `setPointerCapture` (pattern already proven in Time Picker's time-range-slider.ts) handles swipe-to-dismiss for toasts.
 
 **Core technologies:**
-- date-fns v4.1.0: Date manipulation, formatting, parsing — Modular, tree-shakeable, v4 has built-in timezone support
-- Intl.DateTimeFormat: Locale-aware formatting, month/day names — Browser-native, no dependencies
-- Floating UI: Calendar popover positioning — Reuses existing Select pattern, proven in production
-- CSS Grid: 7-column calendar layout — Natively handles calendar grid structure
-- ElementInternals: Form value submission — ISO 8601 format, matches native input behavior
+- `@floating-ui/dom` (^1.7.4, existing): Tooltip and Popover positioning with arrow middleware — zero new dependencies
+- Native Popover API (`popover="manual"`): Top-layer rendering for all three components, escapes z-index stacking contexts — ~95% browser support
+- CSS `@starting-style` + `transition-behavior: allow-discrete`: Enter/exit animations — ~88% support, fallback to `@keyframes` for older browsers
+- Pointer Events + `setPointerCapture`: Swipe-to-dismiss toasts — pattern exists in time-range-slider.ts and clock-face.ts
+
+**What NOT to add:**
+- React-specific toast libraries (Sonner, react-hot-toast): Framework-specific, incompatible with web components
+- Animation libraries (Motion One, GSAP): CSS handles all needed animations
+- Popover API polyfills: 95% support is sufficient, fallback to `position: fixed` is simpler than polyfill
+- Gesture libraries: Pointer Events pattern already exists in codebase
 
 ### Expected Features
 
 **Must have (table stakes):**
-- Month grid view with weekday headers — Users expect calendar layout, 7-column grid
-- Today indicator with aria-current="date" — Users need reference point
-- Selected date highlight — Visual feedback for current selection
-- Month/year navigation — Previous/next buttons, year selection
-- Keyboard navigation (arrows, Home/End, Page Up/Down) — WCAG 2.1 Level A requirement
-- Screen reader announcements — aria-live region for selections/month changes
-- Min/max date constraints — Disable invalid dates (past dates, booking cutoffs)
-- Disabled dates (weekends, holidays) — Business logic enforcement
-- First day of week localization — Sunday (US) vs Monday (EU) based on locale
-- Month/day names localization — Intl.DateTimeFormat for native language
-- Input field with formatted display — Text input for fast date entry
-- Form integration (ElementInternals) — Submit ISO 8601 format
-- Focus management — Trap focus in popup, return to trigger on close
-- Escape key closes, click outside closes — Standard UI patterns
+
+**Toast:**
+- Variant types (success, error, warning, info) with distinct colors and icons
+- Auto-dismiss with configurable duration (default 4-5s, 0 for persistent)
+- Programmatic imperative API (`toast.success('message')`) — signature pattern from Sonner
+- Six positioning options (top/bottom × left/center/right)
+- Manual dismiss button (closable by default)
+- Queue management and stacking (max 3-5 visible toasts)
+- Accessible live region (`role="status"` + `aria-live="polite"` for info, `role="alert"` + `aria-live="assertive"` for errors)
+- Enter/exit animations (slide-in, fade-out)
+- Description support (title + secondary text)
+
+**Tooltip:**
+- Hover trigger with delay (300-700ms prevents flicker on mouse pass-through)
+- Focus trigger (WAI-ARIA requirement: keyboard users must access tooltips)
+- Escape to dismiss
+- Positioning with collision avoidance (flip, shift via Floating UI)
+- Arrow indicator
+- `role="tooltip"` and `aria-describedby` (with Shadow DOM workaround)
+- 12 configurable placements (top/right/bottom/left with start/center/end alignment)
+- Non-interactive content only (WAI-ARIA constraint)
+
+**Popover:**
+- Click-to-toggle trigger
+- Escape to dismiss
+- Click-outside to dismiss (light dismiss)
+- Positioning with collision avoidance (same Floating UI stack as Select dropdown)
+- Optional arrow indicator
+- Focus management (move focus to popover on open, return to trigger on close)
+- `aria-expanded`, `aria-haspopup` on trigger; `role="dialog"` on content
+- Controlled and uncontrolled modes (same pattern as Dialog)
 
 **Should have (competitive):**
-- Quick presets (Today, Tomorrow, Next Week) — One-click common dates for efficiency
-- Hover preview for range selection — Show potential range before selecting end date
-- Range highlighting between start/end dates — Visual feedback for selected range
-- Two calendar display for ranges — Side-by-side months (NNG recommends)
-- Date range presets ("Last 7 days", "This month") — Common in analytics dashboards
-- Auto-resize textarea — Field-sizing: content with fallback for Safari/Firefox
-- Character counter with aria-describedby — Visual count for maxlength fields
-- Password visibility toggle — Built-in eye icon with aria-pressed
-- Search clear button — X icon appears when value is non-empty
-- Prefix/suffix slots — Icons, text, or buttons alongside input
+
+**Toast:**
+- Action buttons (Sonner's `toast('Deleted', { action: { label: 'Undo', onClick: fn } })` pattern)
+- Promise toast (`toast.promise(asyncFn, { loading, success, error })` — Sonner signature feature)
+- Swipe to dismiss (touch-friendly, Material and Sonner both support)
+- Pause on hover/focus (prevents dismissal while reading)
+- Custom content via slot (arbitrary HTML in toasts)
+
+**Tooltip:**
+- Delay group (skip delay for adjacent tooltips — Radix `skipDelayDuration` pattern)
+- Rich tooltip (title + description, Material Design 3 pattern)
+- Transform-origin awareness (animations from correct origin based on placement)
+
+**Popover:**
+- Portal rendering (escape overflow:hidden ancestors)
+- Anchor element (position relative to different element than trigger)
+- Nested popover support (Headless UI `Popover.Group` pattern)
+- Modal vs non-modal mode (non-modal default, modal for complex forms)
+- Native Popover API integration (`popover="auto"` for light-dismiss)
 
 **Defer (v2+):**
-- Natural language parsing ("tomorrow", "next week") — HIGH complexity, library dependency
-- Decade/century view — MEDIUM complexity, edge case for birthdates
-- Custom date cell rendering — HIGH complexity, slot API for badges/icons
-- Drag to select range — HIGH complexity, mouse events handling
-- Time zone conversion — HIGH complexity, multi-timezone display
-- Voice input support — VERY HIGH complexity, Web Speech API
-- Recurring time selection ("Every Monday at 2 PM") — VERY HIGH complexity, recurrence rules
+- Toast notification center/history (massive scope expansion, requires state management)
+- Rich media in toasts (images, progress bars — adds complexity without proportional value)
+- Interactive forms in toasts (violates WAI-ARIA, use Dialog instead)
+- Touch-triggered tooltips (unreliable UX on mobile)
 
 ### Architecture Approach
 
-**Key architectural decision**: Calendar Display is a standalone, reusable component (NOT a slotted child like Option). Date Picker and Date Range Picker compose Calendar internally (not via slots). This differs from Select/Option because calendar selection state is complex (selected date, hover date, focused date, visible month), calendar needs to work standalone (e.g., always-visible booking UI), and picker needs tight control for dropdown positioning and closing. Time Picker is a separate, simpler component.
-
-All components follow established LitUI patterns: Extend `TailwindElement` base class, use `ElementInternals` for form participation, use Floating UI for dropdown positioning (reusing Select pattern), CSS custom properties for theming (`--ui-calendar-*`, `--ui-date-picker-*`), and `isServer` guards for SSR compatibility.
-
-**Form value format**: Date Picker submits ISO 8601 (YYYY-MM-DD), Date Range Picker submits two ISO strings via hidden native inputs (ElementInternals limitation), Time Picker submits ISO 8601 time (HH:mm or HH:mm:ss).
+Three separate packages (`@lit-ui/toast`, `@lit-ui/tooltip`, `@lit-ui/popover`) with a shared positioning utility added to `@lit-ui/core/floating` export. Toast is architecturally distinct: it uses an imperative API with a singleton `<lui-toast-container>` that auto-appends to document.body, managing queue state and stacking. Tooltip and Popover render inline in their own Shadow DOM using `position: fixed` + Floating UI (same pattern as existing Select dropdown), but share positioning logic via the new `@lit-ui/core/floating` utility. All three use the native Popover API (`popover="manual"`) for top-layer rendering, ensuring overlays appear above all z-index content including the Dialog's `showModal()` top layer.
 
 **Major components:**
-1. Calendar Display (lui-calendar) — Standalone month grid, NOT form-associated, emits ui-date-select/ui-month-change events, used internally by pickers
-2. Date Picker (lui-date-picker) — Single date selection with input + dropdown calendar, form-associated, composes Calendar internally, submits ISO 8601 format
-3. Date Range Picker (lui-date-range-picker) — Start/end date selection, dual calendar display, form-associated via hidden inputs, range highlighting, hover preview
-4. Time Picker (lui-time-picker) — Hour/minute/second selection, 12/24 hour format, AM/PM selector, form-associated, submits ISO 8601 time format
+
+1. **Toast System** — Two-part architecture: `<lui-toast-container>` (manages queue, stacking, positioning, renders in top layer via `popover="manual"`) + `<lui-toast-item>` (individual toast with auto-dismiss, swipe-to-dismiss, variants). Imperative API (`toast()`, `toast.success()`, etc.) auto-creates container on first use. No Floating UI dependency (toasts are viewport-anchored, not element-anchored).
+
+2. **Tooltip** — Single `<lui-tooltip>` component wrapping a slotted trigger. Uses `@lit-ui/core/floating` utility with Floating UI's `arrow` and `autoUpdate` middleware. Hover/focus triggers with delay timers. No imperative API (purely declarative). Content renders in Shadow DOM with `position: fixed`.
+
+3. **Popover** — Single `<lui-popover>` component with named trigger slot. Reuses `@lit-ui/core/floating` for positioning (same infrastructure as Tooltip). Click trigger with light-dismiss via click-outside detection. Focus management pattern reused from Dialog (move focus on open, restore on close). Supports nested popovers via event composition path checking.
+
+4. **Shared Floating UI utility** — New `@lit-ui/core/floating` export wrapping `@floating-ui/dom` with `composed-offset-position` ponyfill to fix Shadow DOM `offsetParent` calculation. Abstracts `computePosition` + middleware setup (arrow, flip, shift, offset, size) and `autoUpdate` lifecycle. Tooltip and Popover both consume this; existing Select/DatePicker can optionally migrate later.
 
 ### Critical Pitfalls
 
-1. **Calendar popup positioning breaks with Shadow DOM stacking contexts** — Use @floating-ui/dom with flip/shift middleware, set popover to position: fixed with high z-index, test at viewport edges and in scrollable containers
-2. **Click-outside-to-close fails with event retargeting** — Use `event.composedPath()` instead of `event.target`, attach click listener to document, clean up in disconnectedCallback
-3. **ARIA grid keyboard navigation fails without roving tabindex** — Only one cell has tabindex="0" at a time, arrow keys move focus AND update tabindex programmatically, follow W3C ARIA APG Grid Pattern
-4. **Form value format mismatch (ISO8601 vs display format)** — Always store/submit ISO8601 (YYYY-MM-DD) without timezone, use date-fns for formatting, never use `Date.parse()` or `new Date(string)` (implementation-dependent)
-5. **Screen reader doesn't announce date changes** — Add aria-live region for announcements, update on date selection, each grid cell needs aria-label with full date (e.g., "Monday, January 15, 2026")
+1. **`aria-describedby` cannot cross Shadow DOM boundaries** — Tooltip text in Shadow DOM cannot be referenced by trigger in light DOM via IDREF. Screen readers never announce tooltips. **Prevention:** Use `ariaDescribedByElements` (Element Reflection API, Chromium/WebKit) or fallback to `aria-label` on trigger. Keep trigger and tooltip content in same DOM scope.
+
+2. **Toast `aria-live` region must exist before content injection** — Screen readers only monitor live regions present at page load. Dynamically creating the live region when the first toast appears causes silent toasts. **Prevention:** Mount empty `<lui-toast-container>` with `aria-live` region on first `toast()` call (before injecting content), never use `display: none` on the live region container (use `visibility: hidden` if needed).
+
+3. **Overlay trapped inside Shadow DOM stacking context** — Parent elements with `overflow: hidden`, `transform`, `filter`, or `z-index` create inescapable stacking contexts. Tooltips/popovers clipped or hidden. `z-index: 999999` cannot fix it. **Prevention:** Use native Popover API (`popover="manual"`) for top-layer rendering. Fallback to portal-to-body for unsupported browsers.
+
+4. **Floating UI `offsetParent` miscalculation in Shadow DOM** — Browsers return incorrect `offsetParent` inside shadow trees per CSS spec. Tooltips appear hundreds of pixels off. **Prevention:** Use `composed-offset-position` ponyfill in shared `@lit-ui/core/floating` utility. Configure Floating UI's `platform.getOffsetParent` to use ponyfill.
+
+5. **Toast queue race conditions during rapid fire** — Concurrent async operations (CSS transitions, timeouts) on multiple toasts cause overlapping, stuck, or memory-leaked toasts. **Prevention:** Implement toast queue as state machine with explicit states (queued, entering, visible, exiting, removed). Use Web Animations API's `.finished` Promise instead of `transitionend` events. Set max queue length (5-10).
 
 ## Implications for Roadmap
 
-Based on combined research from STACK, FEATURES, ARCHITECTURE, and PITFALLS, the recommended phase structure for v4.3:
+Based on research, suggested phase structure:
 
-### Phase 1: Calendar Display (Foundation)
-**Rationale:** Standalone component with no dependencies on other date/time components. Provides visual foundation for all date pickers. Can be used independently (e.g., always-visible booking UI). Validates CSS Grid layout and navigation patterns before adding complexity.
+### Phase 1: Shared Positioning Utility
+**Rationale:** Tooltip and Popover both depend on a shared Floating UI wrapper. Building this first avoids duplicating code and forces architectural decisions (Popover API strategy, `composed-offset-position` integration, `autoUpdate` lifecycle) that both components need.
 
-**Delivers:** Working `lui-calendar` component with month grid, today indicator, navigation, keyboard accessibility, screen reader support.
+**Delivers:** `@lit-ui/core/floating` export with `positionFloating()` and `autoUpdatePosition()` utilities wrapping `@floating-ui/dom` + `composed-offset-position` ponyfill.
 
-**Addresses:** FEATURES.md table stakes (month grid, today indicator, navigation, keyboard nav, screen reader announcements, min/max constraints, disabled dates, localization).
+**Addresses:** Pitfall 4 (offsetParent miscalculation in Shadow DOM), establishes pattern for Pitfall 3 (top-layer rendering via Popover API configuration).
 
-**Avoids:** PITFALLS.md #3 (ARIA grid without roving tabindex), #11 (focus management breaks after month nav), #7 (date parsing inconsistencies - use date-fns from start).
+**Complexity:** LOW — ~100 lines wrapping existing dependency.
 
-**Stack used:** date-fns v4.1.0 for date math, Intl API for localization, CSS Grid for layout.
+**Research flag:** Standard pattern (Floating UI is well-documented). No additional research needed.
 
-### Phase 2: Date Picker (Core UX)
-**Rationale:** Most common use case (single date selection). Builds on Calendar component. Introduces Floating UI dropdown positioning (reusing Select pattern). Introduces form participation for date values. Validates internal composition pattern (NOT slot-based).
+### Phase 2: Tooltip
+**Rationale:** Simplest overlay component. No imperative API, no portal, no focus management. Establishes hover/focus delay patterns, ARIA cross-shadow solutions, and CSS animation patterns that Popover and Toast will reuse.
 
-**Delivers:** Working `lui-date-picker` component with input field, calendar trigger, dropdown, form integration, text input parsing, validation.
+**Delivers:** `@lit-ui/tooltip` package with declarative wrapping API (`<lui-tooltip content="..."><button>Trigger</button></lui-tooltip>`). Hover/focus triggers, arrow positioning, delay groups, `@starting-style` animations.
 
-**Addresses:** FEATURES.md table stakes (input field, popup trigger, text input support, date format clarity, form integration, validation feedback, clear button, focus management, escape/click-outside closes).
+**Uses:** Phase 1's `@lit-ui/core/floating` utility, Floating UI's `arrow` and `autoUpdate` middleware.
 
-**Avoids:** PITFALLS.md #1 (popup positioning with Shadow DOM), #2 (click-outside fails with retargeting), #4 (ISO8601 format mismatch), #5 (screen reader announcements for picker), #14 (virtual keyboard covers calendar on mobile).
+**Addresses:** Pitfall 1 (ARIA cross-shadow via `aria-label` strategy), Pitfall 6 (hover intent with delay timers and pointerType detection), Pitfall 14 (positioning during scroll via `autoUpdate`).
 
-**Stack used:** Floating UI (existing), ElementInternals (existing pattern), date-fns for parsing.
+**Complexity:** MEDIUM — Shadow DOM ARIA workaround requires careful testing.
 
-### Phase 3: Time Picker (Simpler, Parallel)
-**Rationale:** Simpler than Date Range Picker (no calendar dependency). Can be built in parallel with Date Range Picker. Independent component with its own patterns. Useful standalone component.
+**Research flag:** Standard pattern (Radix/Floating UI docs cover this thoroughly). Skip phase-specific research.
 
-**Delivers:** Working `lui-time-picker` component with hour/minute inputs, AM/PM selector, 24-hour format, form integration, time validation.
+### Phase 3: Popover
+**Rationale:** Builds on Tooltip's positioning infrastructure, adds click trigger and focus management. Validates that shared utility works for multiple component types.
 
-**Addresses:** FEATURES.md table stakes (hour/minute inputs, AM/PM indicator, 24-hour format, clock face or dropdown, time validation, "Now" button, keyboard navigation, form integration).
+**Delivers:** `@lit-ui/popover` package with trigger slot API. Click-to-toggle, light-dismiss, focus management (non-modal default, modal option), nested popover support, controlled/uncontrolled modes.
 
-**Avoids:** PITFALLS.md #6 (DST transition causes invalid/impossible times), #4 (form value format - use HH:mm:ss), #7 (time parsing with date-fns).
+**Uses:** Phase 1's `@lit-ui/core/floating` utility (same as Tooltip), Dialog's focus restoration pattern.
 
-**Stack used:** date-fns for time manipulation, Intl API for locale-aware formatting.
+**Implements:** Click-outside detection via `composedPath()`, overlay stack registry for nested popovers.
 
-### Phase 4: Date Range Picker (Most Complex)
-**Rationale:** Most complex component (dual calendar state management). Benefits from lessons learned in Date Picker. Less common use case than single date picker. Requires dual calendar composition and range validation logic.
+**Addresses:** Pitfall 7 (click-outside with multiple overlays via overlay registry), Pitfall 8 (focus management — no auto-focus, return to trigger on close).
 
-**Delivers:** Working `lui-date-range-picker` component with start/end selection, range highlighting, hover preview, two calendar display, min/max range constraints, quick presets.
+**Complexity:** MEDIUM — Focus management and nested support add complexity over Tooltip.
 
-**Addresses:** FEATURES.md table stakes (start/end selection, range highlighting, two calendar display, hover preview, start/end visual distinction, swap out-of-order, min/max duration, range constraints, clear button, form integration).
+**Research flag:** Standard pattern (Headless UI, Radix patterns well-documented). Skip phase-specific research.
 
-**Avoids:** PITFALLS.md #10 (performance with large date ranges - virtualization if needed), #4 (form value format - hidden inputs for dual values), #6 (DST handling for time ranges).
+### Phase 4: Toast
+**Rationale:** Most architecturally complex (imperative API, queue management, portal). Independent of Tooltip/Popover code, so can be built in parallel if needed, but benefits from animation and `isServer` guard patterns established in Phases 2-3.
 
-**Stack used:** Calendar component (Phase 1), ElementInternals, hidden native inputs workaround.
+**Delivers:** `@lit-ui/toast` package with imperative API (`toast()`, `toast.success()`, etc.). Singleton `<lui-toast-container>` with queue management, stacking, positioning. `<lui-toast-item>` with variants, auto-dismiss, swipe-to-dismiss, action buttons.
 
-### Phase 5: Documentation and Testing
-**Rationale:** All components complete. Documentation is essential for adoption. Testing validates accessibility, cross-browser compatibility, and mobile behavior.
+**Addresses:** Pitfall 2 (aria-live region timing via early container mount), Pitfall 5 (queue race conditions via state machine), Pitfall 8 (never steal focus from toasts).
 
-**Delivers:** Documentation pages for all components, form integration examples, accessibility documentation, keyboard shortcuts docs, visual regression tests, screen reader testing.
+**Complexity:** HIGH — Imperative API design, queue state machine, swipe gesture handling (reuse Time Picker pattern).
 
-**Addresses:** FEATURES.md differentiators (quick presets, character counter, password visibility toggle - if built).
-
-**Testing coverage:** PITFALLS.md all 14 pitfalls verified (positioning, click-outside, keyboard nav, form format, screen readers, DST, parsing, i18n, performance, focus management, leap years, mobile touch, virtual keyboard).
+**Research flag:** **Needs deeper research during planning.** Toast queue state machine, imperative API crossing Shadow DOM boundaries, and swipe gesture thresholds warrant phase-specific research. Web.dev toast pattern and Sonner's source code are primary references.
 
 ### Phase Ordering Rationale
 
-- **Calendar first**: Validates core patterns (CSS Grid, keyboard navigation, i18n) before adding complexity. Reusable by all date pickers.
-- **Date Picker second**: Most common use case, proves internal composition pattern, introduces Floating UI + form integration.
-- **Time Picker third**: Simpler than range picker, can parallel-track with range picker development.
-- **Date Range Picker last**: Most complex (dual calendar, range validation), benefits from Date Picker lessons.
-- **Documentation final**: Requires all components to be complete, validates accessibility and cross-browser behavior.
-
-**Grouping based on architecture**:
-- Foundation (Phase 1): Core calendar patterns
-- Single selection (Phases 2-3): Date + Time pickers (can parallel-track)
-- Range selection (Phase 4): Builds on single selection patterns
-- Validation (Phase 5): Documentation, testing, examples
-
-**Pitfall avoidance by phase**:
-- Phase 1 addresses all accessibility pitfalls (#3, #5, #11) upfront
-- Phase 2 addresses Shadow DOM pitfalls (#1, #2) and form format (#4)
-- Phase 3 addresses time-specific pitfalls (#6, DST)
-- Phase 4 addresses performance (#10) and range-specific edge cases
-- Phase 5 validates all pitfalls with testing
+- **Shared utility first (Phase 1)** because both Tooltip and Popover depend on it. Building Tooltip without the shared utility would force refactoring when Popover is added.
+- **Tooltip before Popover (Phases 2-3)** because Tooltip is simpler (no focus management, no click-outside) and forces resolution of critical Shadow DOM ARIA issues (Pitfall 1) that affect both. Popover adds complexity incrementally.
+- **Toast last (Phase 4)** because it has zero code dependency on Tooltip/Popover (different positioning strategy, different lifecycle). However, it can start in parallel after Phase 1 if resources allow, since it shares only CSS animation patterns and `isServer` guards (conventions, not code).
+- **Dependency chain:** Phase 2 → Phase 1 (hard dependency). Phase 3 → Phase 1 (hard dependency). Phase 4 → none (can parallelize after Phase 1).
 
 ### Research Flags
 
-**Phases likely needing deeper research during planning:**
-- **Phase 1 (Calendar Display):** Keyboard navigation details from WAI-ARIA APG grid pattern, specific aria-label formats for screen readers
-- **Phase 2 (Date Picker):** Text input parsing with date-fns (multiple format support), Floating UI positioning with Shadow DOM edge cases
-- **Phase 3 (Time Picker):** DST boundary handling (spring-forward invalid times, fall-back ambiguity), time zone support if needed
-- **Phase 4 (Date Range Picker):** Range validation edge cases (month-crossing, disabled date ranges), performance optimization for large ranges
+**Phases needing deeper research during planning:**
+- **Phase 4 (Toast):** Queue state machine implementation, imperative API that works across frameworks, swipe-to-dismiss threshold tuning. Reference: web.dev toast component pattern, Sonner source code, existing time-range-slider.ts for swipe pattern.
 
 **Phases with standard patterns (skip research-phase):**
-- **Phase 5 (Documentation):** Well-documented pattern from existing components (Button, Dialog, Input), follow existing docs structure
+- **Phase 1 (Shared utility):** Floating UI wrapper — official docs and existing Select component provide complete pattern.
+- **Phase 2 (Tooltip):** Hover/focus tooltip — Radix UI Tooltip and Floating UI tooltip guide cover all patterns. Shadow DOM ARIA workaround documented in Nolan Lawson's article.
+- **Phase 3 (Popover):** Click popover with focus management — Headless UI Popover and Radix UI Popover provide proven patterns. Dialog component already has focus restoration pattern.
 
 ## Confidence Assessment
 
 | Area | Confidence | Notes |
 |------|------------|-------|
-| Stack | HIGH | date-fns v4.1.0 verified via official sources, Intl API has universal browser support, Floating UI proven in Select component |
-| Features | HIGH | Verified against NNG (Nielsen Norman Group), WAI-ARIA APG, Material Design, USWDS documentation |
-| Architecture | HIGH | Based on existing LitUI patterns (TailwindElement, ElementInternals), CSS Grid is standard for calendars, internal composition validated against Select/Option tradeoffs |
-| Pitfalls | HIGH | All 14 pitfalls verified with authoritative sources (W3C, MDN, Nolan Lawson, Flatpickr/PrimeVue issues), prevention strategies are explicit and actionable |
+| Stack | HIGH | All capabilities verified via existing dependency (`@floating-ui/dom` ^1.7.4), native browser APIs (Popover API ~95% support, Pointer Events 97%+), and existing codebase patterns (Dialog animations, Time Picker gestures). Zero new dependencies required. |
+| Features | HIGH | Feature landscape derived from authoritative sources (Sonner, Radix UI, Floating UI, Material Design 3, WAI-ARIA APG) with consistent patterns across all major libraries. Table stakes, differentiators, and anti-features validated against multiple implementations. |
+| Architecture | HIGH | Package structure follows existing LitUI conventions (TailwindElement base, Shadow DOM, SSR guards). Shared utility approach proven by existing Dialog/Select patterns. Native Popover API and Floating UI integration verified via official documentation and real-world web component library migrations (UI5, Shoelace). |
+| Pitfalls | HIGH | All critical pitfalls verified via authoritative sources (Nolan Lawson Shadow DOM ARIA analysis, Sara Soueidan live regions guide, Floating UI platform docs) and real-world bug reports (Angular Material #24919, Shoelace #1359, Floating UI #1345). Prevention strategies proven in production libraries. |
 
 **Overall confidence:** HIGH
 
 ### Gaps to Address
 
-- **date-fns bundle size impact**: Official sources cite 17.5KB gzipped for full library, but real usage varies (5-10 functions typical). Validate with actual build analysis during implementation.
-- **Mobile native inputs vs custom picker**: Research suggests using `<input type="date">` on mobile for better UX, but implementation pattern needs validation. Consider platform-specific rendering during Phase 2.
-- **Time zone support**: Time Picker timezone awareness is HIGH complexity. MVP should focus on local time only. Timezone support can be deferred to v2+ or addressed via date-fns-tz if user demand emerges.
-- **Temporal API future-proofing**: Temporal API is expected to reach Stage 4 in March 2026. Monitor for maturity. date-fns provides stable fallback until Temporal is production-ready.
+- **Browser support boundary:** Research assumes Popover API support (~95%) is acceptable. If LitUI targets browsers older than ~2 years, a fallback strategy (portal-to-body with manual light-dismiss) is needed. Decision required during Phase 1. **Recommendation:** Match Dialog's precedent (uses native `<dialog>` without fallback).
+
+- **Tooltip ARIA strategy:** Multiple approaches exist (Element Reflection API `ariaDescribedByElements`, `aria-label` fallback, visually-hidden light DOM span). Research recommends Element Reflection with `aria-label` fallback, but specific strategy should be prototyped in Phase 2 to validate screen reader behavior across VoiceOver, NVDA, and JAWS.
+
+- **Toast queue state machine:** Research identifies the need but does not specify exact state transitions. Phase 4 planning should define states (queued, entering, visible, exiting, removed) and valid transitions. Sonner's source code provides reference implementation.
+
+- **Swipe-to-dismiss thresholds:** Time Picker uses Pointer Events + `setPointerCapture`, but toast swipe thresholds (distance: ~40% of height, velocity: >0.11 px/ms) come from Sonner. Phase 4 should validate these feel correct for LitUI's design system via user testing.
 
 ## Sources
 
 ### Primary (HIGH confidence)
-- [date-fns GitHub Repository](https://github.com/date-fns/date-fns) — v4.1.0 with timezone support
-- [date-fns v4.0 Announcement](https://blog.date-fns.org/v40-with-time-zone-support/) — First-class timezone support verification
-- [MDN: Intl.DateTimeFormat](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat) — Browser compatibility for localization
-- [MDN: Intl.Locale.getWeekInfo()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Locale/getWeekInfo) — First day of week by locale
-- [WAI-ARIA Date Picker Dialog Example](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/examples/datepicker-dialog/) — Official accessibility pattern
-- [W3C WAI-ARIA APG: Grid Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/grid/) — Keyboard navigation for calendar grids
-- [Nielsen Norman Group: Date-Input Form Fields](https://www.nngroup.com/articles/date-input/) — UX best practices for date input
-- [24 Accessibility: Making a Better Calendar](https://www.24a11y.com/2018/a-new-day-making-a-better-calendar/) — Accessibility expert guidance
+
+**Stack research:**
+- [Floating UI - arrow middleware](https://floating-ui.com/docs/arrow) — Arrow positioning API
+- [Floating UI - autoUpdate](https://floating-ui.com/docs/autoupdate) — Auto-reposition on scroll/resize
+- [MDN - Popover API](https://developer.mozilla.org/en-US/docs/Web/API/Popover_API) — Native popover specification
+- [MDN - @starting-style](https://developer.mozilla.org/en-US/docs/Web/CSS/@starting-style) — CSS entry animation rule
+- [Can I Use - Popover API](https://caniuse.com/mdn-api_htmlelement_popover) — ~95% browser support
+- [Can I Use - @starting-style](https://caniuse.com/mdn-css_at-rules_starting-style) — ~88% browser support
+- [web.dev - Building a Toast Component](https://web.dev/articles/building/a-toast-component) — `<output>` element, accessibility
+- LitUI codebase: `packages/select/src/select.ts`, `packages/time-picker/src/time-range-slider.ts`, `packages/dialog/src/dialog.ts`
+
+**Features research:**
+- [Sonner GitHub](https://github.com/emilkowalski/sonner) — Toast API patterns
+- [Radix UI Tooltip](https://www.radix-ui.com/primitives/docs/components/tooltip) — Tooltip primitives
+- [Radix UI Popover](https://www.radix-ui.com/primitives/docs/components/popover) — Popover primitives
+- [Floating UI Tooltip](https://floating-ui.com/docs/tooltip) — Tooltip positioning/interaction
+- [WAI-ARIA APG Tooltip Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/tooltip/) — Accessibility spec
+- [MDN ARIA Live Regions](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Guides/Live_regions) — Toast accessibility
+- [Material Design 3 Snackbar](https://m3.material.io/components/snackbar/specs) — Snackbar specs
+
+**Architecture research:**
+- [Floating UI Platform docs](https://floating-ui.com/docs/platform) — `composed-offset-position` recommendation
+- [MDN Popover API](https://developer.mozilla.org/en-US/docs/Web/API/Popover_API) — Baseline Widely Available April 2025
+- [UI5 Web Components Popover API migration](https://sap.github.io/ui5-webcomponents/blog/releases/popover-api-in-v2/) — Real library migration
+- [Adobe Spectrum Toast](https://opensource.adobe.com/spectrum-web-components/components/toast/) — Web component reference
+
+**Pitfalls research:**
+- [Nolan Lawson: Shadow DOM and accessibility](https://nolanlawson.com/2022/11/28/shadow-dom-and-accessibility-the-trouble-with-aria/) — ARIA cross-root limitations
+- [Sara Soueidan: Accessible notifications with ARIA Live Regions](https://www.sarasoueidan.com/blog/accessible-notifications-with-aria-live-regions-part-1/) — Live region implementation
+- [Floating UI Shadow DOM issue #1345](https://github.com/floating-ui/floating-ui/issues/1345) — offsetParent bug reports
+- [Shoelace Alert live region issue #1359](https://github.com/shoelace-style/shoelace/issues/1359) — Real bug example
+- [Angular Material AriaDescriber bug #24919](https://github.com/angular/components/issues/24919) — ARIA cross-root failure
 
 ### Secondary (MEDIUM confidence)
-- [JavaScript Temporal in 2026](https://bryntum.com/blog/javascript-temporal-is-it-finally-here/) — Temporal API status (not production-ready)
-- [Nolan Lawson: Shadow DOM Problems](https://nolanlawson.com/2023/08/23/use-web-components-for-what-theyre-good-at/) — Shadow DOM event retargeting
-- [LamplightDev: Click Outside Web Component](https://lamplightdev.com/blog/2021/04/10/how-to-detect-clicks-outside-of-a-web-component/) — Click-outside detection pattern
-- [Flatpickr Shadow DOM Issue #1024](https://github.com/flatpickr/flatpickr/issues/1024) — Real-world positioning issues
-- [PrimeVue DatePicker in Web Components #7161](https://github.com/primefaces/primevue/issues/7161) — Stacking context problems
-- [Dev.to: Date/Timezone Best Practices](https://dev.to/kcsujeet/how-to-handle-date-and-time-correctly-to-avoid-timezone-bugs-4o03) — DST handling strategies
-- [Material Design Date Pickers](https://m2.material.io/components/date-pickers) — Design system patterns
-- [USWDS: Date Picker Accessibility Tests](https://designsystem.digital.gov/components/date-picker/accessibility-tests/) — Government standard validation
-
-### Tertiary (LOW confidence)
-- [NPM Trends: date-fns vs dayjs vs luxon vs moment](https://npmtrends.com/date-fns-vs-dayjs-vs-luxon-vs-moment) — Usage statistics (community preference)
-- [Reddit: Luxon vs date-fns](https://www.reddit.com/r/react/comments/1bpd2es/luxon_vs_datefns/) — Community feedback on timezone issues (unverified)
-- [You Don't Need Moment.js](https://github.com/you-dont-need/You-Dont-Need-Momentjs/blob/master/README.md) — Migration guidance (general consensus)
-- Bundle size claims for specific date-fns functions — Verify with actual build analysis during implementation
+- [Headless UI Popover](https://headlessui.com/v1/react/popover) — Popover patterns
+- [Igalia: Solving Cross-root ARIA Issues](https://blogs.igalia.com/mrego/solving-cross-root-aria-issues-in-shadow-dom/) — Element Reflection proposal
+- [Josh Comeau: What The Heck, z-index??](https://www.joshwcomeau.com/css/stacking-contexts/) — Stacking context explanation
+- [OddBird Popover Polyfill](https://popover.oddbird.net/) — Fallback option
 
 ---
-*Research completed: 2026-01-30*
+*Research completed: 2026-02-02*
 *Ready for roadmap: yes*
-*Critical risks identified: 14 pitfalls documented, all with prevention strategies*
-*Recommended stack: date-fns v4.1.0 + native Intl API + Floating UI*
-*Phase count: 5 phases (Foundation → Core UX → Time Picker → Range Picker → Docs/Testing)*

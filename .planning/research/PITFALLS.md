@@ -1,2283 +1,535 @@
-# Pitfalls Research
+# Domain Pitfalls: Toast, Tooltip, and Popover Overlay Components
 
-**Domain:** Lit.js Framework-Agnostic Component Library with Tailwind
-**Researched:** 2026-01-23
-**Confidence:** HIGH (verified against official docs and multiple sources)
+**Domain:** Overlay/feedback components in a Shadow DOM web component library (LitUI)
+**Researched:** 2026-02-02
+**Confidence:** HIGH (verified against existing codebase patterns + authoritative sources)
+
+---
 
 ## Critical Pitfalls
 
-### Pitfall 1: Tailwind CSS Fails Inside Shadow DOM
+Mistakes that cause rewrites, accessibility failures, or fundamental architecture problems.
 
-**What goes wrong:**
-Tailwind utility classes don't work inside Shadow DOM components. Styles defined in the global stylesheet (compiled Tailwind CSS) cannot penetrate the shadow boundary. Components render without any styling, appearing broken or unstyled.
+---
 
-**Why it happens:**
-Shadow DOM encapsulation prevents external stylesheets from affecting elements inside the shadow root. Tailwind's global CSS file exists in the light DOM's document head, completely isolated from shadow roots.
+### Pitfall 1: aria-describedby Cannot Cross Shadow DOM Boundaries
 
-**How to avoid:**
-1. **Constructable Stylesheets (Recommended):** Use `adoptedStyleSheets` API to share compiled Tailwind CSS across shadow roots without re-parsing:
+**Severity:** CRITICAL
+**Affects:** Tooltip, Popover
+**Phase:** Tooltip (must solve before shipping)
+
+**What goes wrong:** The standard tooltip pattern requires `aria-describedby` on the trigger element pointing to the tooltip's ID. When the tooltip content lives inside a Shadow DOM (as all LitUI components do), and the trigger lives in a different shadow root or the light DOM, the IDREF-based association silently fails. Screen readers never announce the tooltip content. The developer sees no error -- it just does not work.
+
+**Why it happens:** Shadow DOM encapsulation prevents ID references from crossing shadow root boundaries. This is by W3C spec design, not a bug. The `aria-describedby="tooltip-id"` attribute on a trigger element can only reference elements within the same shadow root or document scope.
+
+**Consequences:**
+- Tooltips are invisible to screen reader users -- a fundamental accessibility violation
+- No browser error or warning is surfaced, so it ships undetected
+- Popovers with `aria-labelledby` or `aria-describedby` pointing across roots also break
+
+**Prevention:**
+1. **Keep trigger and tooltip in the same DOM scope.** The tooltip component should render its tooltip content as a sibling to the slot where the trigger lives, within the same shadow root. Do NOT put the tooltip text in a nested shadow root.
+2. **Use `ariaDescribedByElements` (Element Reflection) where supported.** Chromium and WebKit support element reference properties that bypass the ID requirement: `triggerEl.ariaDescribedByElements = [tooltipEl]`. This works across shadow boundaries.
+3. **Fallback: use `aria-label` on the trigger** when the tooltip is purely descriptive (most common case). This avoids the cross-root reference entirely.
+4. **Test with screen readers in CI.** Automated accessibility testing (axe-core) catches missing ARIA associations.
+
+**Detection:** Test with VoiceOver/NVDA. If the tooltip text is never announced when the trigger is focused, this pitfall has occurred.
+
+**Sources:**
+- [Shadow DOM and accessibility: the trouble with ARIA](https://nolanlawson.com/2022/11/28/shadow-dom-and-accessibility-the-trouble-with-aria/) (HIGH confidence)
+- [Solving Cross-root ARIA Issues in Shadow DOM](https://blogs.igalia.com/mrego/solving-cross-root-aria-issues-in-shadow-dom/) (HIGH confidence)
+- [How Shadow DOM and accessibility are in conflict](https://alice.pages.igalia.com/blog/how-shadow-dom-and-accessibility-are-in-conflict/) (HIGH confidence)
+- [Angular Material AriaDescriber Shadow DOM bug](https://github.com/angular/components/issues/24919) (HIGH confidence -- real-world example of this exact failure)
+
+---
+
+### Pitfall 2: Toast aria-live Region Must Exist Before Content is Injected
+
+**Severity:** CRITICAL
+**Affects:** Toast
+**Phase:** Toast (foundational architecture decision)
+
+**What goes wrong:** A toast component renders an `aria-live="polite"` container only when a toast notification appears (e.g., dynamically creating the live region via `display: none` toggling or DOM insertion). Screen readers never announce the toast because the live region was not in the accessibility tree before content was injected.
+
+**Why it happens:** Screen readers build their model of live regions at page load or when elements first appear in the accessibility tree. A live region that transitions from `display: none` to `display: block` (or is dynamically inserted) at the moment content arrives is effectively "new" -- the screen reader has not registered it for monitoring. This is documented behavior across NVDA, JAWS, and VoiceOver.
+
+**Consequences:**
+- Toast notifications are completely silent for screen reader users
+- The toast appears to work visually, so it ships to production undetected
+- Retrofitting requires architectural change to the toast mounting strategy
+
+**Prevention:**
+1. **Mount an empty live region container at application startup**, not when the first toast appears. The `<lui-toast-region>` (or similar orchestrator element) should be placed in the document once and persist for the page lifetime.
+2. **Never use `display: none` or `aria-hidden="true"` on the live region container.** Use `visibility: hidden` or position it off-screen if it must be visually hidden when empty.
+3. **Clear then re-inject content** for repeated identical messages. If the same toast text is shown twice, screen readers may not re-announce it. Briefly clear the live region content before injecting the new message.
+4. **Use `role="status"` (polite) for informational toasts and `role="alert"` (assertive) only for error/critical toasts.** Overusing `role="alert"` is disruptive and violates WCAG guidance.
+
+**Detection:** Test with NVDA + Firefox and VoiceOver + Safari. If the first toast after page load is never announced, this pitfall has occurred.
+
+**LitUI-specific note:** The existing Dialog component uses the native `<dialog>` element which handles accessibility natively. Toasts have no equivalent native element -- the accessibility architecture must be built from scratch.
+
+**Sources:**
+- [Accessible notifications with ARIA Live Regions (Part 1)](https://www.sarasoueidan.com/blog/accessible-notifications-with-aria-live-regions-part-1/) (HIGH confidence)
+- [Accessible notifications with ARIA Live Regions (Part 2)](https://www.sarasoueidan.com/blog/accessible-notifications-with-aria-live-regions-part-2/) (HIGH confidence)
+- [Shoelace Alert live region issue #1359](https://github.com/shoelace-style/shoelace/issues/1359) (HIGH confidence -- web component library that hit this exact bug)
+- [MDN ARIA live regions](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Guides/Live_regions) (HIGH confidence)
+
+---
+
+### Pitfall 3: Overlay Trapped Inside Shadow DOM Stacking Context
+
+**Severity:** CRITICAL
+**Affects:** Tooltip, Popover, Toast
+**Phase:** Shared (architecture decision before any component)
+
+**What goes wrong:** A tooltip or popover renders inside its Shadow DOM host, but a parent element has `overflow: hidden`, `transform`, `filter`, `will-change`, or a `z-index` that creates a stacking context. The overlay is visually clipped or hidden behind other content. Setting `z-index: 999999` on the tooltip does nothing because z-index only competes within the same stacking context.
+
+**Why it happens:** CSS stacking contexts are inescapable. Once a parent creates one (even unintentionally, e.g., via `transform: translateZ(0)` for GPU acceleration), all descendants are confined to it. Shadow DOM does not change stacking context rules.
+
+**Consequences:**
+- Tooltips/popovers are cut off or invisible in common layouts (cards with `overflow: hidden`, scrollable containers, transformed elements)
+- Users report "tooltip doesn't show" in specific contexts that are hard to reproduce
+- No CSS-only fix exists once the overlay is inside the stacking context
+
+**Prevention:**
+1. **Use the Popover API (`popover` attribute) for top-layer rendering.** Elements with the `popover` attribute are promoted to the browser's top layer, escaping all stacking contexts. The Popover API is Baseline Widely Available as of April 2025. LitUI's Dialog already uses the top layer via `<dialog>.showModal()` -- tooltips and popovers should follow the same strategy.
+2. **Fallback for non-popover-API browsers:** Append the overlay to `document.body` (portal pattern). This is the pre-Popover-API standard workaround used by virtually all component libraries.
+3. **Use `strategy: 'fixed'` with Floating UI** (LitUI already does this in Select and DatePicker). Fixed positioning is relative to the viewport, not the parent, which avoids most `overflow: hidden` clipping.
+4. **Do NOT attempt to "fix" this with high z-index values.** It fundamentally cannot work across stacking contexts.
+
+**Detection:** Place the component inside a parent with `overflow: hidden; transform: scale(1);` and verify the overlay is still fully visible.
+
+**LitUI-specific note:** The existing Select component renders its dropdown inside the shadow root and uses `strategy: 'fixed'` -- this works for most cases but will fail inside transformed containers. The Popover API is the proper solution for new overlay components.
+
+**Sources:**
+- [What The Heck, z-index? (Josh Comeau)](https://www.joshwcomeau.com/css/stacking-contexts/) (HIGH confidence)
+- [UI5 Web Components Popover API migration](https://sap.github.io/ui5-webcomponents/blog/releases/popover-api-in-v2/) (HIGH confidence -- real library migration)
+- [Tooltip should use Popover API to avoid z-index issues (Primer)](https://github.com/primer/react/issues/2124) (HIGH confidence)
+
+---
+
+### Pitfall 4: Floating UI offsetParent Miscalculation in Shadow DOM
+
+**Severity:** CRITICAL
+**Affects:** Tooltip, Popover
+**Phase:** Shared (positioning infrastructure)
+
+**What goes wrong:** Floating UI uses `offsetParent` to calculate element positions. Inside Shadow DOM, browsers return incorrect `offsetParent` values per the CSS spec (Shadow DOM encapsulation hides the actual offset parent). Tooltips and popovers appear in the wrong position -- sometimes hundreds of pixels off.
+
+**Why it happens:** The CSS spec intentionally prevents `offsetParent` from leaking nodes inside shadow trees. Chrome 109+, Firefox, and Safari all follow this spec. Floating UI's default `getOffsetParent` implementation does not account for this.
+
+**Consequences:**
+- Overlays appear at wrong coordinates, sometimes off-screen
+- Only manifests when the component is nested inside other Shadow DOM components (which is the default in LitUI since everything extends TailwindElement with Shadow DOM)
+- Works in simple test cases, fails in real application layouts
+
+**Prevention:**
+1. **Install and configure `composed-offset-position` ponyfill.** This is Floating UI's official recommendation:
    ```typescript
-   import styles from './tailwind.css?inline';
-   const sheet = new CSSStyleSheet();
-   sheet.replaceSync(styles);
-   // In component: this.shadowRoot.adoptedStyleSheets = [sheet];
+   import { platform } from '@floating-ui/dom';
+   import { offsetParent } from 'composed-offset-position';
+
+   computePosition(reference, floating, {
+     platform: {
+       ...platform,
+       getOffsetParent: (element) =>
+         platform.getOffsetParent(element, offsetParent),
+     },
+   });
    ```
-2. **Build-time Scoping:** Use tools like `shadow-tailwind` to compile scoped Tailwind per component
-3. **Consider Light DOM:** For maximum Tailwind compatibility, use `createRenderRoot() { return this; }` to skip Shadow DOM (sacrifices encapsulation)
+2. **Create a shared `computeOverlayPosition` utility** in `@lit-ui/core` that all overlay components use, so this fix is applied consistently. The existing Select and DatePicker components could also benefit from this.
+3. **Use `strategy: 'fixed'`** as an additional safety measure (already done in existing components).
+4. **Note:** `composed-offset-position` does NOT work with closed shadow roots (only open). LitUI uses open shadow roots (Lit default), so this is fine.
 
-**Warning signs:**
-- Components render with correct HTML structure but no visual styling
-- Tailwind classes visible in DevTools but styles not applied
-- Dark mode/theme changes don't affect shadow DOM components
+**Detection:** Nest a tooltip inside 2-3 levels of LitUI Shadow DOM components and verify positioning accuracy.
 
-**Phase to address:**
-Phase 1 (Foundation) - Must solve this before any component development begins. This is architectural and affects every component.
+**LitUI-specific note:** The existing Select and DatePicker use `computePosition` directly without `composed-offset-position`. They currently rely on `strategy: 'fixed'` which masks the problem in most cases, but new overlay components should use the ponyfill from the start. Consider retrofitting existing components later.
 
 **Sources:**
-- [Tailwind Shadow DOM Discussion #1935](https://github.com/tailwindlabs/tailwindcss/discussions/1935)
-- [Tailwind v4 CSS Variables Discussion #15556](https://github.com/tailwindlabs/tailwindcss/discussions/15556)
+- [Floating UI Platform documentation](https://floating-ui.com/docs/platform) (HIGH confidence)
+- [Floating UI Shadow DOM offsetParent issue #1345](https://github.com/floating-ui/floating-ui/issues/1345) (HIGH confidence)
+- [Mozilla Bug 1583562: Incorrect offset measurement in shadow DOM](https://bugzilla.mozilla.org/show_bug.cgi?id=1583562) (HIGH confidence)
 
 ---
 
-### Pitfall 2: Tailwind v4 CSS Variables Use `:root` Not `:host`
+## High Pitfalls
 
-**What goes wrong:**
-Tailwind v4 generates CSS variables using the `:root` selector. Shadow DOM requires `:host` for these variables to be accessible. Color tokens, spacing scales, and theme values all break inside components.
-
-**Why it happens:**
-Tailwind v4 changed its architecture to be CSS-variable-first. The `:root` selector only applies to the document root, not shadow roots. This is a fundamental incompatibility with Shadow DOM.
-
-**How to avoid:**
-1. **Post-process CSS:** Transform `:root` to `:root, :host` in your build pipeline
-2. **Use CSS Parts:** Expose `::part()` selectors for external theming
-3. **Inject Variables:** Programmatically set CSS custom properties on shadow roots
-4. **Consider Tailwind v3:** v3 with purged CSS may be more Shadow DOM friendly (but loses v4 benefits)
-
-**Warning signs:**
-- Colors render as fallback values or transparent
-- Spacing utilities produce unexpected values
-- Theme switching has no effect on web components
-
-**Phase to address:**
-Phase 1 (Foundation) - Must establish CSS variable strategy before components.
-
-**Sources:**
-- [Tailwind v4 Shadow DOM Discussion](https://github.com/tailwindlabs/tailwindcss/discussions/15556)
+Mistakes that cause significant bugs, accessibility issues, or user experience failures.
 
 ---
 
-### Pitfall 3: Form Elements Don't Participate in Forms
+### Pitfall 5: Toast Queue Race Conditions During Rapid Fire
 
-**What goes wrong:**
-Input elements inside Shadow DOM are invisible to parent `<form>` elements. FormData doesn't include shadow DOM inputs. Form validation doesn't trigger. Form submission excludes component values entirely.
+**Severity:** HIGH
+**Affects:** Toast
+**Phase:** Toast
 
-**Why it happens:**
-HTMLFormElement only discovers input elements in its own DOM tree. Shadow DOM creates a separate DOM tree that forms cannot traverse. This is by design (encapsulation) but breaks form interactivity.
+**What goes wrong:** Multiple toasts are triggered in rapid succession (e.g., form validation showing 5 errors at once, or a WebSocket stream producing notifications). The toast queue manager tries to show, animate-out, and remove toasts concurrently. Toasts stack on top of each other, exit animations interrupt entry animations, or toasts get stuck in a partially-visible state.
 
-**How to avoid:**
-1. **Use ElementInternals API (Required):**
+**Why it happens:** Toast show/dismiss involves async operations (CSS transitions, `requestAnimationFrame`, timeouts). Without a proper state machine, concurrent operations interleave unpredictably. The `transitionend` event may not fire if the element is removed mid-transition or if the transition is interrupted.
+
+**Consequences:**
+- Visual glitches: toasts overlapping, jumping, or freezing mid-animation
+- Stuck toasts that never dismiss (timeout was cleared but never restarted)
+- Memory leaks from toast elements that were "dismissed" but never removed from DOM
+
+**Prevention:**
+1. **Implement a toast queue as a state machine** with explicit states: `queued`, `entering`, `visible`, `exiting`, `removed`. Only allow valid transitions.
+2. **Use the Web Animations API (`element.animate()`)** instead of CSS transitions for programmatic control. The returned `Animation` object has `.finished` (a Promise) and `.cancel()` for clean interruption.
+3. **Set a maximum queue length** (e.g., 5-10) and drop oldest toasts when exceeded. An unbounded queue is a memory leak waiting to happen.
+4. **Never rely on `transitionend` as the sole mechanism for state advancement.** Always pair it with a timeout fallback -- if `transitionend` does not fire within `duration + 100ms`, advance the state anyway.
+5. **Use `requestAnimationFrame` to batch DOM mutations** when adding/removing multiple toasts.
+
+**Detection:** Fire 20 toasts in a tight loop (e.g., in a `for` loop with no delay). Verify all 20 eventually show and dismiss cleanly.
+
+**LitUI-specific note:** The Dialog component does not have a queue -- it is a single modal. The calendar's `AnimationController` handles animation cancellation well (`this.currentAnimation?.cancel()`) and could serve as a reference pattern for toast animations.
+
+---
+
+### Pitfall 6: Tooltip Hover Intent -- Showing on Accidental Mouse Passes
+
+**Severity:** HIGH
+**Affects:** Tooltip
+**Phase:** Tooltip
+
+**What goes wrong:** A tooltip shows instantly on `mouseenter` with no delay. When the user moves their mouse across a toolbar with many tooltip-enabled buttons, every tooltip flashes briefly as the cursor crosses each element. This creates a jarring, distracting experience. On touch devices, a `mouseenter` is synthesized from touch events, causing tooltips to appear unexpectedly after a tap.
+
+**Why it happens:** The `mouseenter` event fires immediately when the cursor enters the element boundary, even if the user is just passing through. Touch devices synthesize mouse events to maintain compatibility, creating false hover states.
+
+**Consequences:**
+- Rapid tooltip flickering across dense UIs (toolbars, icon grids)
+- Tooltips appearing on mobile after tap, overlapping the element the user just tapped
+- Performance degradation from rapid Floating UI position calculations
+
+**Prevention:**
+1. **Add a show delay** (100-200ms). Only show the tooltip if the cursor is still over the element after the delay. Cancel on `mouseleave`.
+2. **Implement "warm-up" behavior:** After one tooltip has been shown, subsequent tooltips in the same area show with a shorter delay (or instantly). This is how native OS tooltips work.
+3. **Add a hide delay** (50-100ms). This prevents the tooltip from flickering when the cursor briefly leaves and re-enters (e.g., moving to the tooltip itself for interactive tooltips).
+4. **Detect touch devices** and use a different interaction model: long-press to show, tap-elsewhere to dismiss. Do NOT show tooltips on the synthetic `mouseenter` from a touch event. Use `pointerenter` with `pointerType` checking instead:
    ```typescript
-   static formAssociated = true;
+   handlePointerEnter(e: PointerEvent) {
+     if (e.pointerType === 'touch') return; // skip touch-synthesized hover
+     this.startShowDelay();
+   }
+   ```
+5. **Cancel pending show on `pointerleave`** and clear any running delay timers.
 
-   constructor() {
-     super();
-     this.internals = this.attachInternals();
+**Detection:** Move the cursor quickly across 5+ tooltip-enabled elements. None should flash their tooltip. On a touch device, tap a tooltip element -- no tooltip should appear (only on long-press).
+
+---
+
+### Pitfall 7: Click-Outside Detection Fails with Multiple Overlays
+
+**Severity:** HIGH
+**Affects:** Popover, Tooltip (interactive)
+**Phase:** Popover
+
+**What goes wrong:** A popover is open. The user clicks on a tooltip (or another popover) that is rendered in a different shadow root or appended to `document.body`. The first popover's click-outside handler sees the click as "outside" and closes it, even though the user clicked on related UI. Conversely, clicking inside a popover that was portaled to `document.body` might not register as "inside" via `composedPath()` because the DOM ancestry has changed.
+
+**Why it happens:** LitUI's existing click-outside pattern (`!e.composedPath().includes(this)`) checks if the click target is a DOM descendant of the component. When overlays are portaled to `document.body` or rendered in the top layer via the Popover API, the DOM ancestry no longer reflects the logical UI hierarchy.
+
+**Consequences:**
+- Popovers close unexpectedly when interacting with related overlays
+- Nested popover-in-popover scenarios break entirely
+- Users cannot interact with overlay content without the parent overlay closing
+
+**Prevention:**
+1. **Implement a global overlay stack/registry.** When a new overlay opens, it registers itself with a shared manager. Click-outside handlers consult the stack: only the topmost overlay should close on an outside click.
+2. **Use the Popover API's built-in light-dismiss behavior** (`popover="auto"`). The browser handles click-outside natively and correctly manages a stack of auto popovers -- clicking inside a nested popover does not close the parent.
+3. **For non-Popover-API fallback:** check `composedPath()` against ALL open overlay elements, not just `this`. A click is "inside" if it lands on any element in the overlay hierarchy.
+4. **Use `pointerdown` instead of `click`** for outside detection (prevents the overlay from closing and the click from also activating whatever is underneath).
+
+**LitUI-specific note:** The existing Select and DatePicker each have their own `handleDocumentClick` with `composedPath().includes(this)`. This works for single-overlay scenarios but will not scale to overlapping overlays. A shared overlay manager should be built before the Popover component.
+
+---
+
+### Pitfall 8: Focus Management -- Popover Steals Focus from Active Input
+
+**Severity:** HIGH
+**Affects:** Popover, Toast
+**Phase:** Popover
+
+**What goes wrong:** A popover opens (e.g., a rich tooltip or a contextual menu) and immediately moves focus into the popover. The user was typing in a form input -- their cursor position and selection are lost. Alternatively, a toast with an action button announces itself, and the user's focus is yanked to the toast.
+
+**Why it happens:** Dialog's focus-trapping pattern (`showModal()` moves focus into the dialog) is incorrectly applied to non-modal overlays. Popovers and toasts are non-modal by definition -- they should not steal or trap focus.
+
+**Consequences:**
+- Users lose their place in forms
+- Screen reader users are disoriented by unexpected focus movement
+- Keyboard users cannot dismiss the popover without tabbing through it first
+
+**Prevention:**
+1. **Popovers: Do NOT auto-focus on open.** Focus should remain on the trigger element. The user can Tab into the popover if it contains interactive content.
+2. **Toasts: NEVER steal focus.** Toast content is announced via `aria-live`, not by moving focus. If the toast has an action button, the user should be able to reach it via keyboard (e.g., F6 landmark navigation) but focus should not move automatically.
+3. **Focus restoration after popover close:** When a popover closes, return focus to the trigger element (LitUI's Dialog already does this via `triggerElement.focus()` -- reuse this pattern).
+4. **Focus trapping is ONLY for modals.** Popovers with `tabindex` content should allow Tab to naturally move in and out. Only trap focus if the popover is explicitly modal (in which case, use `<dialog>` or the Dialog component instead).
+5. **Exception: Popovers with complex forms** (e.g., a date picker popup) may move focus on open, but this should be opt-in via an attribute, not the default.
+
+**LitUI-specific note:** The Dialog component correctly uses `showModal()` for focus trapping and stores `triggerElement` for focus restoration. Popover should reuse the focus restoration logic but skip the trapping.
+
+---
+
+## Moderate Pitfalls
+
+Mistakes that cause technical debt, inconsistent behavior, or developer experience issues.
+
+---
+
+### Pitfall 9: Tooltip/Popover Event Listeners Not Cleaned Up on Disconnect
+
+**Severity:** MEDIUM
+**Affects:** Tooltip, Popover
+**Phase:** Tooltip, Popover
+
+**What goes wrong:** A tooltip component adds `mouseenter`/`mouseleave` listeners to the trigger element (possibly in the light DOM) and a `scroll`/`resize` listener on `window` for repositioning. When the component is removed from the DOM (e.g., in a SPA route change), `disconnectedCallback` does not clean up all listeners. If the component is in a list that virtualizes, it is connected/disconnected repeatedly, accumulating orphaned listeners.
+
+**Why it happens:** Listeners added to elements outside the component's shadow root (the trigger, `document`, `window`) are not automatically cleaned up when the component is removed. Arrow functions used as listeners cannot be removed by reference if not stored.
+
+**Prevention:**
+1. **Use an `AbortController` for all external listeners.** Create one in `connectedCallback`, pass `{ signal: this.abortController.signal }` to every `addEventListener`, and call `this.abortController.abort()` in `disconnectedCallback`. This guarantees cleanup of ALL listeners with one call.
+   ```typescript
+   private abortController?: AbortController;
+
+   connectedCallback() {
+     super.connectedCallback();
+     this.abortController = new AbortController();
+     document.addEventListener('click', this.handleOutsideClick, {
+       signal: this.abortController.signal
+     });
    }
 
-   // Set form value
-   this.internals.setFormValue(value);
-
-   // Set validity
-   this.internals.setValidity(flags, message, anchor);
+   disconnectedCallback() {
+     super.disconnectedCallback();
+     this.abortController?.abort();
+   }
    ```
-2. **Implement lifecycle hooks:** `formResetCallback()`, `formDisabledCallback()`, `formStateRestoreCallback()`
-3. **Always set `name` attribute** on form-associated components
+2. **Clean up Floating UI `autoUpdate`** if used. `autoUpdate()` returns a cleanup function that must be called when the overlay closes or the component disconnects. Store and call it.
+3. **Store all timer IDs** (show delay, hide delay, auto-dismiss) and clear them in `disconnectedCallback`.
 
-**Warning signs:**
-- Form submissions missing expected fields
-- `form.elements` doesn't include your components
-- Validation messages don't appear
-- Reset button doesn't affect custom inputs
-
-**Phase to address:**
-Phase 2 (Component Development) - Any form-related component (inputs, buttons with type="submit") must implement this. Critical for Button and future Input components.
-
-**Sources:**
-- [Form-associated custom elements - Hjorthhansen](https://www.hjorthhansen.dev/shadow-dom-form-participation/)
-- [ElementInternals API - Raymond Camden](https://www.raymondcamden.com/2023/05/24/adding-form-participation-support-to-web-components)
-- [Smashing Magazine - Shadow DOM](https://www.smashingmagazine.com/2025/07/web-components-working-with-shadow-dom/)
+**LitUI-specific note:** The existing Select removes its `document.addEventListener('click', ...)` in `disconnectedCallback` -- the pattern exists but uses manual add/remove. The `AbortController` pattern is cleaner and less error-prone for components with many listeners.
 
 ---
 
-### Pitfall 4: ARIA ID References Break Across Shadow Boundaries
+### Pitfall 10: SSR Renders Overlay in Visible/Open State
 
-**What goes wrong:**
-`aria-labelledby`, `aria-describedby`, `aria-controls`, and similar attributes reference element IDs. IDs inside shadow DOM aren't visible from outside (and vice versa). Screen readers can't establish relationships, breaking accessibility.
+**Severity:** MEDIUM
+**Affects:** Toast, Tooltip, Popover
+**Phase:** Shared
 
-**Why it happens:**
-Shadow DOM scopes IDs locally. An ID inside a shadow root is only unique within that shadow root. ARIA attributes expecting document-wide ID references cannot resolve cross-boundary references.
+**What goes wrong:** During server-side rendering with `@lit-labs/ssr`, the overlay component renders its template including the floating/overlay content. On the client before hydration, the user briefly sees tooltip text, popover content, or toast messages that should be hidden. After hydration, the content disappears as JavaScript takes control.
 
-**How to avoid:**
-1. **Keep ARIA pairs together:** If using `aria-labelledby`, ensure both the referencing element and the target are in the same DOM (both in shadow or both in light)
-2. **Use slots for labels:** Let consumers pass labels via slots, keeping label-input relationships in light DOM
-3. **Inline labels:** Use `aria-label` (string) instead of `aria-labelledby` (ID reference) when possible
-4. **Wait for AOM:** The Accessibility Object Model (AOM) will eventually allow direct element references, but it's not widely implemented yet
+**Why it happens:** Lit SSR renders the full template to HTML. If the component's `render()` method always includes the overlay markup (just hidden via CSS or JS-controlled attributes), that markup is in the server-rendered HTML. CSS that hides it (e.g., via `display: none` on a class toggled by state) works, but if hiding depends on JavaScript-set attributes or the Popover API's `hidden-until-found` behavior, it will be visible in the SSR output.
 
-**Warning signs:**
-- Screen readers announce elements without their labels
-- Accessibility audits fail on `aria-labelledby` references
-- Focus management breaks between components
+**Prevention:**
+1. **Conditionally render overlay content.** Use Lit's `nothing` sentinel or conditional rendering so the overlay markup is not in the template at all when closed:
+   ```typescript
+   render() {
+     return html`
+       <slot></slot>
+       ${this.open ? html`<div class="tooltip">...</div>` : nothing}
+     `;
+   }
+   ```
+2. **Guard all DOM APIs with `isServer` checks** (LitUI already does this consistently -- maintain the pattern).
+3. **For toast regions:** Render the empty container on the server (the `aria-live` region should exist early), but do not render any toast content.
+4. **Do NOT call `showPopover()`, `computePosition()`, or any positioning API** from methods that run during SSR. LitUI's existing pattern of guarding `updated()` with `if (isServer) return;` is correct -- apply it to all overlay components.
 
-**Phase to address:**
-Phase 2 (Component Development) - Must be considered for every component, especially Dialog which requires `aria-labelledby` for the title.
-
-**Sources:**
-- [Shadow DOM and ARIA - Nolan Lawson](https://nolanlawson.com/2022/11/28/shadow-dom-and-accessibility-the-trouble-with-aria/)
-- [Accessibility with ID Referencing - Cory Rylan](https://coryrylan.com/blog/accessibility-with-id-referencing-and-shadow-dom)
-- [Shadow DOM Accessibility Conflict - Alice Boxhall](https://alice.pages.igalia.com/blog/how-shadow-dom-and-accessibility-are-in-conflict/)
-
----
-
-### Pitfall 5: Event Retargeting Breaks Event Delegation
-
-**What goes wrong:**
-Events dispatched from within shadow DOM have their `event.target` changed to the host element when they cross the shadow boundary. External code trying to identify which element was clicked/interacted with gets the wrong target.
-
-**Why it happens:**
-Shadow DOM retargets events to preserve encapsulation. The browser doesn't want external code to know about internal structure. This is intentional but breaks common patterns like event delegation.
-
-**How to avoid:**
-1. **Use `event.composedPath()[0]`:** Get the original event target from the composed path
-2. **Dispatch custom events:** Create semantic events (`sl-change`, `lit-ui-select`) instead of relying on native events
-3. **Cache event.target immediately:** If debouncing, capture target before the debounce delay (target changes after propagation completes)
-4. **Add `composed: true` to custom events:** Ensure custom events cross shadow boundaries
-
-```typescript
-this.dispatchEvent(new CustomEvent('lit-ui-change', {
-  bubbles: true,
-  composed: true,  // Crosses shadow boundary
-  detail: { value: this.value }
-}));
-```
-
-**Warning signs:**
-- Click handlers report wrong elements
-- Debounced handlers lose track of what was clicked
-- Parent components can't distinguish which child triggered an event
-
-**Phase to address:**
-Phase 2 (Component Development) - Establish event naming conventions and patterns before building components.
-
-**Sources:**
-- [Lit Events Documentation](https://lit.dev/docs/components/events/)
-- [Shadow DOM Events Guide](https://javascript.info/shadow-dom-events)
-- [Event Propagation Deep Dive](https://pm.dartus.fr/blog/a-complete-guide-on-shadow-dom-and-event-propagation/)
+**LitUI-specific note:** The existing Dialog guards `showModal()` with `isServer` in `updated()`. Follow the exact same pattern for all overlay components.
 
 ---
 
-### Pitfall 6: SSR Renders Empty Components (FOUC/LCP Issues)
+### Pitfall 11: Multiple Tooltip Instances Competing for the Same Trigger
 
-**What goes wrong:**
-Server-side rendered pages show empty custom element tags until JavaScript loads. This causes Flash of Unstyled Content (FOUC) and kills Largest Contentful Paint (LCP) scores when critical content is inside web components.
+**Severity:** MEDIUM
+**Affects:** Tooltip
+**Phase:** Tooltip
 
-**Why it happens:**
-Web components require JavaScript to render their shadow DOM. Without JS, the browser sees `<lit-ui-button>` as an unknown element and renders nothing (or just slots). Lit SSR exists but is experimental and complex.
+**What goes wrong:** Two or more `<lui-tooltip>` elements target the same trigger element (e.g., due to a rendering bug, dynamic content, or nested components). Both try to show on hover, both add `aria-describedby`, and the result is overlapping tooltips, duplicate screen reader announcements, or one tooltip overwriting the other's ARIA attributes.
 
-**How to avoid:**
-1. **Avoid web components for above-fold critical content** where LCP matters
-2. **Use Declarative Shadow DOM (DSD):** Include shadow DOM HTML in server response (requires framework support)
-3. **Progressive enhancement:** Ensure components have meaningful light DOM fallback content
-4. **Use @lit-labs/ssr:** Experimental but functional for basic cases
-5. **Consider hybrid approach:** SSR wrapper with hydrating web component
+**Alternatively:** A tooltip wraps a slotted trigger element, but the trigger is moved in the DOM (e.g., by a framework reconciliation). The old tooltip still has listeners on the trigger; the new tooltip also adds listeners. Both fire.
 
-**Warning signs:**
-- Page loads with invisible buttons/dialogs
-- LCP scores significantly worse than framework alternatives
-- Content visible only after JS executes
-
-**Phase to address:**
-Phase 3 (CLI/Distribution) - Must document SSR limitations clearly. Consider if your target users need SSR (ShadCN targets Next.js users who expect SSR).
-
-**Sources:**
-- [Lit SSR Overview](https://lit.dev/docs/ssr/overview/)
-- [Lit SSR Authoring Guide](https://lit.dev/docs/ssr/authoring/)
-- [Shoelace LCP Discussion](https://github.com/shoelace-style/shoelace/discussions/2025)
+**Prevention:**
+1. **Design the tooltip API so the trigger is always a direct child (slotted).** This creates a 1:1 DOM relationship that cannot have conflicts:
+   ```html
+   <lui-tooltip text="Help text">
+     <button>Hover me</button>
+   </lui-tooltip>
+   ```
+2. **Clean up ARIA attributes on disconnect.** In `disconnectedCallback`, remove any `aria-describedby` the tooltip added to the trigger.
+3. **Use a WeakMap or WeakSet** to track which triggers have active tooltips, preventing double-binding.
+4. **If using an imperative API** (e.g., `tooltip.attach(element)`), validate that no other tooltip is already attached to that element and warn in dev mode.
 
 ---
 
-## Technical Debt Patterns
+### Pitfall 12: Popover API Fallback Strategy Creates Two Code Paths
 
-| Shortcut | Immediate Benefit | Long-term Cost | When Acceptable |
-|----------|-------------------|----------------|-----------------|
-| Skip Shadow DOM entirely | Full Tailwind compatibility | No style encapsulation, global CSS conflicts | Only if all consumers control their own CSS |
-| Inline all Tailwind in each component | No build complexity | Massive bundle size, duplicate CSS | Never at scale |
-| Use `setTimeout` for timing | Quick fix for race conditions | Flaky tests, unpredictable behavior | Never - use `updateComplete` |
-| Reflect all properties to attributes | Easy debugging in DevTools | Performance overhead, attribute bloat | Only for string/boolean config props |
-| Skip form association | Faster development | Forms don't work, accessibility broken | Never for form-related components |
-| Use legacy TypeScript decorators | More examples available | Future migration pain, larger output | Acceptable for now per Lit team recommendation |
+**Severity:** MEDIUM
+**Affects:** Popover, Tooltip
+**Phase:** Shared
 
----
+**What goes wrong:** The team builds a Popover component using the native Popover API (`popover="auto"`) for modern browsers, plus a JavaScript fallback for older browsers. The two paths have subtly different behavior: the native path gets top-layer rendering, automatic light-dismiss, and correct stacking; the fallback path uses `position: fixed` + manual click-outside + manual z-index. Bugs appear in only one path, and testing must cover both.
 
-## Integration Gotchas
+**Why it happens:** The Popover API handles a surprising number of behaviors automatically (top-layer promotion, light dismiss, focus management, stacking). Replicating all of these in JavaScript is non-trivial, and edge cases differ.
 
-| Integration | Common Mistake | Correct Approach |
-|-------------|----------------|------------------|
-| React (pre-19) | Passing objects as attributes | Use React 19+ which handles props correctly, or wrap components |
-| Vue | Not configuring custom elements | Add `app.config.compilerOptions.isCustomElement` to avoid warnings |
-| Svelte | Using camelCase props | Props must use lowercase/kebab-case due to Svelte bug with web components |
-| Forms | Expecting `FormData` to include shadow inputs | Implement `ElementInternals` with `formAssociated = true` |
-| Tailwind dark mode | Expecting `:root.dark` to work | Manually toggle class on shadow root or use CSS variables |
-| Angular | Importing in wrong module | Add `CUSTOM_ELEMENTS_SCHEMA` to module |
+**Prevention:**
+1. **Drop the fallback.** The Popover API is Baseline Widely Available (April 2025). As of February 2026, browser support is universal in current browser versions. Unless LitUI explicitly supports browsers older than ~2 years, a fallback is unnecessary complexity.
+2. **If a fallback IS required:** Use [OddBird's popover polyfill](https://popover.oddbird.net/) rather than building a custom one. It replicates the native behavior closely.
+3. **Feature-detect and document the support boundary:**
+   ```typescript
+   const supportsPopover = typeof HTMLElement.prototype.popover !== 'undefined';
+   ```
+4. **Do NOT mix native and custom light-dismiss logic.** If using `popover="auto"`, the browser handles click-outside. Do not also add a `document.addEventListener('click', ...)` handler -- they will conflict.
+
+**LitUI-specific note:** The existing Dialog uses native `<dialog>` with `showModal()` without a fallback -- this is the right precedent. New overlay components should similarly rely on modern APIs without fallbacks, matching the library's existing browser support posture.
 
 ---
 
-## Performance Traps
+### Pitfall 13: Animation Timing Mismatch Between Enter and Exit
 
-| Trap | Symptoms | Prevention | When It Breaks |
-|------|----------|------------|----------------|
-| Re-parsing Tailwind CSS per instance | Long initial paint, high memory | Use `adoptedStyleSheets` to share parsed CSS | 50+ component instances |
-| Reflecting all properties | Slow updates, attribute churn | Only reflect config properties, not state | Components with frequent updates |
-| Large shadow DOM trees | Slow renders, memory bloat | Flatten structure, use efficient selectors | Complex components with 100+ nodes |
-| Not batching updates | Multiple re-renders per change | Let Lit batch, use `updateComplete` | Rapid state changes |
-| Unbounded slot content | Memory leaks from detached nodes | Clear slots properly, use `slotchange` events | Dynamic slot content |
+**Severity:** MEDIUM
+**Affects:** Toast, Tooltip, Popover
+**Phase:** Shared
 
----
+**What goes wrong:** The enter animation (e.g., fade-in + scale) uses CSS `@starting-style` and `transition` on `[open]`. The exit animation relies on `transition-behavior: allow-discrete` to animate `display` changes. But the exit never plays because the element is removed from the DOM (or the `popover` is toggled) before the transition completes. The element just vanishes.
 
-## Security Mistakes
+**Why it happens:** `@starting-style` + `transition-behavior: allow-discrete` is the modern CSS pattern for animating overlay entry/exit (LitUI's Dialog already uses it). However, it requires that the element remain in the DOM during the exit transition. If JavaScript removes the element or changes `display: none` immediately, the exit transition is skipped.
 
-| Mistake | Risk | Prevention |
-|---------|------|------------|
-| Using `innerHTML` with user content | XSS attacks | Use Lit's `html` template literal which auto-escapes |
-| Exposing internal structure via parts | CSS injection, structure attacks | Limit `::part()` exposure, validate external styles |
-| Trusting slot content | Malicious HTML injection | Sanitize or validate slotted content if processing it |
-| Reflecting sensitive data to attributes | Data exposure in DOM | Never reflect passwords, tokens, or PII |
+**Prevention:**
+1. **Follow the Dialog pattern exactly.** LitUI's Dialog already handles this correctly with `@starting-style` for enter and `transition-behavior: allow-discrete` for exit. The native `<dialog>` and Popover API both support this pattern.
+2. **For toasts that are removed from DOM:** Use the Web Animations API or listen for `transitionend` before removing the element. The Dialog does not have this problem because it stays in the DOM (just closed), but toasts may be fully removed.
+3. **Always include `prefers-reduced-motion: reduce` handling** that disables transitions entirely (not just shortens them). LitUI already does this consistently -- maintain it.
+4. **For the Popover API:** `popover` elements animate naturally with `@starting-style` and `transition-behavior: allow-discrete` -- the same pattern as `<dialog>`. No special handling needed beyond what Dialog already does.
+
+**LitUI-specific note:** The Dialog's animation CSS is the template for all overlay animations. Reuse the exact `@starting-style` / `transition-behavior: allow-discrete` / `@media (prefers-reduced-motion)` pattern.
 
 ---
 
-## UX Pitfalls
+### Pitfall 14: Tooltip Positioning Fails During Scroll Without autoUpdate
 
-| Pitfall | User Impact | Better Approach |
-|---------|-------------|-----------------|
-| No loading state while JS loads | Invisible buttons, broken page | Use DSD or meaningful fallback content |
-| Flash of unstyled custom elements | Janky, unprofessional appearance | Hide with `:not(:defined)` CSS until upgraded |
-| Dialog without focus trap | Keyboard users escape dialog, get lost | Implement proper focus trapping with inert |
-| Missing keyboard support | Inaccessible to keyboard users | Test tab order, add key handlers for interactions |
-| Inconsistent event naming | Confusing API, hard to learn | Prefix all events (`lit-ui-*`), document clearly |
+**Severity:** MEDIUM
+**Affects:** Tooltip, Popover
+**Phase:** Tooltip, Popover
 
----
+**What goes wrong:** A tooltip is shown, then the user scrolls the page. The tooltip stays at its original viewport position while the trigger element scrolls away. The tooltip appears to "detach" from its trigger and float in space.
 
-## "Looks Done But Isn't" Checklist
+**Why it happens:** LitUI's existing Select and DatePicker call `computePosition` once when the dropdown opens but do NOT use Floating UI's `autoUpdate` to reposition during scroll/resize. For Select, this is acceptable because the dropdown is interacted with quickly. For tooltips (which may persist while the user scrolls) and popovers (which may contain forms the user scrolls past), this becomes visible.
 
-- [ ] **Button:** Often missing form participation (`type="submit"` doesn't submit) - verify `formAssociated` and `ElementInternals`
-- [ ] **Button:** Often missing disabled state styling and functionality - verify `formDisabledCallback` works
-- [ ] **Dialog:** Often missing focus trap - verify Tab key cycles within dialog
-- [ ] **Dialog:** Often missing `aria-labelledby` (or it's broken cross-boundary) - verify screen reader announces title
-- [ ] **Dialog:** Often missing backdrop click-to-close - verify `::backdrop` and click handler
-- [ ] **Dialog:** Often missing ESC key handler - verify keyboard dismissal
-- [ ] **Any component:** Often missing `:focus-visible` styles - verify keyboard focus is visible
-- [ ] **Any component:** Often missing high contrast mode support - verify in Windows High Contrast
-- [ ] **Form inputs:** Often missing validation states - verify `:invalid`, `:valid` pseudo-classes work
-- [ ] **Tailwind:** Often missing dark mode - verify theme switching affects shadow DOM
+**Prevention:**
+1. **Use `autoUpdate` for tooltips and popovers.** It returns a cleanup function:
+   ```typescript
+   private cleanupAutoUpdate?: () => void;
 
----
+   showOverlay() {
+     this.cleanupAutoUpdate = autoUpdate(
+       this.triggerEl,
+       this.overlayEl,
+       () => this.updatePosition()
+     );
+   }
 
-## Recovery Strategies
+   hideOverlay() {
+     this.cleanupAutoUpdate?.();
+   }
+   ```
+2. **Clean up in `disconnectedCallback`** -- if the component is removed while the overlay is open, the `autoUpdate` listener leaks.
+3. **Consider `autoUpdate` options** for performance: `{ ancestorScroll: true, ancestorResize: true, elementResize: false, layoutShift: false }` for tooltips (lightweight). Enable more options for popovers if needed.
+4. **Alternative: Close on scroll.** For simple tooltips, hiding the tooltip on scroll is acceptable and avoids the `autoUpdate` overhead. Many libraries do this.
 
-| Pitfall | Recovery Cost | Recovery Steps |
-|---------|---------------|----------------|
-| Wrong Tailwind approach | HIGH | Rebuild CSS pipeline, update all components |
-| Missing form association | MEDIUM | Add `formAssociated` to class, implement callbacks |
-| Broken ARIA references | MEDIUM | Restructure to keep pairs together, add inline labels |
-| Event naming inconsistency | HIGH | Breaking change for consumers, major version bump |
-| SSR not working | LOW | Document limitation, provide workarounds |
-| Performance issues at scale | MEDIUM | Audit `adoptedStyleSheets`, reduce reflections |
+**LitUI-specific note:** The DatePicker research (Phase 44) explicitly decided to skip `autoUpdate` and position once. Tooltips have different interaction patterns (longer visibility, scroll while visible) that justify the overhead.
 
 ---
 
-## Pitfall-to-Phase Mapping
+## Minor Pitfalls
 
-| Pitfall | Prevention Phase | Verification |
-|---------|------------------|--------------|
-| Tailwind in Shadow DOM | Phase 1 (Foundation) | Build a test component with Tailwind utilities, verify styles apply |
-| CSS Variables (:root vs :host) | Phase 1 (Foundation) | Verify color/spacing tokens resolve inside shadow root |
-| Form participation | Phase 2 (Button component) | Submit form containing custom button, verify FormData |
-| ARIA ID references | Phase 2 (Dialog component) | Run axe-core audit, test with screen reader |
-| Event retargeting | Phase 2 (First interactive component) | Add click handler in React/Vue parent, verify detail accessible |
-| SSR/FOUC | Phase 3 (Documentation) | Document clearly, provide `:not(:defined)` CSS snippet |
-| React 18 compatibility | Phase 3 (Framework testing) | Test in React 18 app, document wrapper requirement |
-| TypeScript decorators | Phase 1 (Foundation) | Choose decorator strategy, configure tsconfig properly |
+Mistakes that cause annoyance or minor inconsistency but are fixable without major rework.
+
+---
+
+### Pitfall 15: Toast Action Buttons Are Inaccessible to Keyboard Users
+
+**Severity:** LOW
+**Affects:** Toast
+**Phase:** Toast
+
+**What goes wrong:** A toast has an "Undo" action button, but because the toast is in an `aria-live` region and focus is never moved to it, keyboard users have no way to reach the button before the toast auto-dismisses.
+
+**Prevention:**
+1. **Extend auto-dismiss timer when the toast has interactive content.** Give the user more time.
+2. **Allow keyboard users to navigate to the toast region** via a landmark shortcut (the toast region should be an ARIA landmark with `role="region"` and `aria-label="Notifications"`).
+3. **Pause auto-dismiss on hover and focus.** If the user is interacting with the toast, do not dismiss it.
+4. **Consider whether the action should even be in a toast.** If the action is critical (e.g., "Undo delete"), an alert dialog is more accessible.
+
+---
+
+### Pitfall 16: Tooltip Text Truncation in Narrow Containers
+
+**Severity:** LOW
+**Affects:** Tooltip
+**Phase:** Tooltip
+
+**What goes wrong:** A long tooltip text overflows its container or wraps awkwardly because `max-width` was not set, or the tooltip was positioned near the viewport edge and Floating UI's `shift` middleware pushed it into a narrow space.
+
+**Prevention:**
+1. **Set a reasonable `max-width`** on tooltips (e.g., 250-300px via CSS custom property).
+2. **Use Floating UI's `size` middleware** to dynamically adjust width based on available space.
+3. **Allow multi-line wrapping** -- tooltips should wrap text, not truncate with ellipsis.
+
+---
+
+### Pitfall 17: Popover Arrow Does Not Track Position Flips
+
+**Severity:** LOW
+**Affects:** Popover, Tooltip
+**Phase:** Popover, Tooltip
+
+**What goes wrong:** A popover has a decorative arrow pointing at the trigger. When Floating UI's `flip` middleware moves the popover from bottom to top (because the viewport edge was reached), the arrow still points downward instead of upward. The visual looks broken.
+
+**Prevention:**
+1. **Use Floating UI's `arrow` middleware** which provides the correct arrow position and handles flips.
+2. **Rotate the arrow based on the resolved `placement`** returned by `computePosition`.
+3. **Consider CSS Anchor Positioning** for the arrow in the future -- it handles this natively. CSS Anchor Positioning reached cross-browser support in late 2025, but may still have edge cases. Floating UI remains the safer choice for now.
+
+---
+
+## Phase-Specific Warnings
+
+| Phase/Component | Likely Pitfall | Severity | Mitigation |
+|-----------------|---------------|----------|------------|
+| **Shared (before any component)** | Stacking context trapping (P3) | CRITICAL | Decide on Popover API as primary strategy |
+| **Shared (before any component)** | Floating UI offsetParent in Shadow DOM (P4) | CRITICAL | Build shared `computeOverlayPosition` utility with `composed-offset-position` |
+| **Shared (before any component)** | Fallback strategy complexity (P12) | MEDIUM | Decide on browser support boundary; prefer no fallback |
+| **Toast** | aria-live region timing (P2) | CRITICAL | Design toast region architecture (mount-at-startup) |
+| **Toast** | Queue race conditions (P5) | HIGH | Implement state machine for queue management |
+| **Toast** | Focus stealing (P8) | HIGH | Never auto-focus toasts |
+| **Toast** | Action button accessibility (P15) | LOW | Landmark navigation + pause on focus |
+| **Tooltip** | aria-describedby cross-shadow (P1) | CRITICAL | Keep trigger+tooltip in same scope; use aria-label fallback |
+| **Tooltip** | Hover intent / mobile touch (P6) | HIGH | Delay timers + pointerType detection |
+| **Tooltip** | Listener cleanup (P9) | MEDIUM | AbortController pattern |
+| **Tooltip** | Multiple instances competing (P11) | MEDIUM | 1:1 slot-based trigger design |
+| **Tooltip** | Positioning during scroll (P14) | MEDIUM | autoUpdate or close-on-scroll |
+| **Popover** | Click-outside with multiple overlays (P7) | HIGH | Overlay stack registry or Popover API auto light-dismiss |
+| **Popover** | Focus management (P8) | HIGH | No auto-focus; reuse Dialog's focus restoration |
+| **All overlays** | SSR visible flash (P10) | MEDIUM | Conditional rendering with `nothing` |
+| **All overlays** | Animation enter/exit mismatch (P13) | MEDIUM | Follow Dialog's @starting-style pattern |
 
 ---
 
 ## Sources
 
-### Official Documentation
-- [Lit Events Documentation](https://lit.dev/docs/components/events/) - HIGH confidence
-- [Lit SSR Authoring Guide](https://lit.dev/docs/ssr/authoring/) - HIGH confidence
-- [Lit Reactive Properties](https://lit.dev/docs/components/properties/) - HIGH confidence
-
-### GitHub Discussions
-- [Tailwind Shadow DOM Discussion #1935](https://github.com/tailwindlabs/tailwindcss/discussions/1935) - MEDIUM confidence
-- [Tailwind v4 CSS Variables #15556](https://github.com/tailwindlabs/tailwindcss/discussions/15556) - MEDIUM confidence
-- [Shoelace LCP Performance #2025](https://github.com/shoelace-style/shoelace/discussions/2025) - MEDIUM confidence
-
-### Community Resources
-- [Shadow DOM and ARIA - Nolan Lawson](https://nolanlawson.com/2022/11/28/shadow-dom-and-accessibility-the-trouble-with-aria/) - MEDIUM confidence
-- [Form-associated custom elements - Hjorthhansen](https://www.hjorthhansen.dev/shadow-dom-form-participation/) - MEDIUM confidence
-- [Custom Elements Everywhere](https://custom-elements-everywhere.com/) - HIGH confidence (framework compatibility scores)
-- [Shadow DOM Events Guide](https://pm.dartus.fr/blog/a-complete-guide-on-shadow-dom-and-event-propagation/) - MEDIUM confidence
-
-### Framework Integration
-- [React 19 Web Components Support](https://react.dev/blog/2024/12/05/react-19) - HIGH confidence
-- [ShadCN/UI Architecture](https://ui.shadcn.com/docs) - HIGH confidence (for CLI/copy-source patterns)
-
----
-
-# v2.0 NPM + SSR Pitfalls
-
-**Focus:** Adding NPM package distribution and SSR to existing Lit 3.x + Tailwind v4 library
-**Researched:** 2026-01-24
-**Confidence:** HIGH (verified against official Lit docs and multiple sources)
-
-This section covers pitfalls specific to the v2.0 milestone: adding NPM package mode and SSR compatibility to the existing copy-source library.
-
----
-
-## Critical Pitfalls (NPM + SSR)
-
-Issues that cause production failures, rewrites, or significant architectural changes.
-
----
-
-### NPM-1: Bundling Before Publishing Causes Duplicate Lit Versions
-
-**What happens:** Pre-bundling components includes Lit in the published package. When users install your package, npm cannot deduplicate Lit with their existing installation. This results in multiple Lit versions loading simultaneously, causing the "Multiple versions of Lit loaded" warning and potential runtime bugs.
-
-**Warning signs:**
-- Browser console shows: `window.litElementVersions`, `window.reactiveElementVersions`, or `window.litHtmlVersions` contain multiple entries
-- Users report "Multiple versions of Lit loaded" warnings
-- Lit-html templates behave unexpectedly or fail to update
-- Package size unexpectedly large after `npm pack`
-
-**Prevention:**
-- Configure Vite/Rollup to externalize `lit` and all `@lit/*` packages
-- In `vite.config.ts` library mode: `build.rollupOptions.external: ['lit', /^lit\//, /^@lit\//]`
-- Keep `lit` as `peerDependency`, not `dependency`
-- Never use bundler's "standalone" or "iife" output for NPM packages
-- Test with `npm ls lit` in a consuming project to verify deduplication
-
-**Phase to address:** NPM Package Build Configuration (early phase - foundational)
-
-**Confidence:** HIGH - [Lit Publishing Docs](https://lit.dev/docs/tools/publishing/)
-
----
-
-### NPM-2: Constructable Stylesheets Break SSR
-
-**What happens:** The current TailwindElement uses `new CSSStyleSheet()` and `adoptedStyleSheets` which require DOM APIs unavailable during server rendering. Declarative Shadow DOM has no way to serialize constructable stylesheets.
-
-**Warning signs:**
-- `ReferenceError: CSSStyleSheet is not defined` during SSR
-- Server renders empty shadow roots (no styles)
-- Components flash unstyled then restyle on hydration (severe FOUC)
-- Styles work in dev (client-only) but fail in production (SSR)
-
-**Prevention:**
-- Detect SSR environment: `typeof document === 'undefined'` or `typeof window === 'undefined'`
-- For SSR: inline styles as `<style>` elements inside declarative shadow DOM template
-- For CSR: continue using constructable stylesheets for performance (shared across instances)
-- Use conditional logic pattern:
-  ```typescript
-  if (isServer) {
-    // Return lit-html template with inline <style>
-  } else {
-    // Use adoptedStyleSheets
-  }
-  ```
-- Test with `@lit-labs/ssr` before claiming SSR support
-
-**Phase to address:** SSR Infrastructure (dedicated SSR phase - cannot be retrofitted easily)
-
-**Confidence:** HIGH - [web.dev DSD article](https://web.dev/articles/declarative-shadow-dom), [Lit SSR Docs](https://lit.dev/docs/ssr/overview/)
-
----
-
-### NPM-3: CSS @property Rules Don't Work in Shadow DOM
-
-**What happens:** The codebase already extracts `@property` rules and injects them into the document. However, with SSR, the document-level injection happens in `connectedCallback` (client-side). Server-rendered components have no `@property` registration, causing Tailwind utilities like `shadow-*` and `ring-*` to break completely on initial render.
-
-**Warning signs:**
-- Box shadows and rings render as `none` or transparent on SSR pages
-- Styles work after hydration but not on initial server render
-- Tailwind v4 utilities that depend on `@property` (gradients, transforms, shadows) malfunction
-
-**Prevention:**
-- Include fallback values in all CSS that uses `@property`-dependent custom properties
-- In `host-defaults.css`, ensure all `--tw-*` variables have explicit fallbacks
-- For SSR, consider inlining the `@property` declarations in the rendered HTML's `<head>`
-- Test SSR output with JavaScript disabled to catch missing fallbacks
-
-**Phase to address:** SSR Styling (same phase as constructable stylesheets fix)
-
-**Confidence:** HIGH - [Tailwind Shadow DOM Discussion](https://github.com/tailwindlabs/tailwindcss/discussions/16772)
-
----
-
-### NPM-4: Hydration Module Load Order Causes Double Rendering
-
-**What happens:** If component JavaScript loads before hydration support is installed, Lit creates new shadow roots instead of adopting server-rendered declarative shadow DOM. This causes duplicate content, flash of unstyled content, or "Shadow root cannot be created on a host which already hosts a shadow tree" errors.
-
-**Warning signs:**
-- Content appears, disappears, then reappears (double render)
-- Console error: "Shadow root cannot be created on a host which already hosts a shadow tree"
-- SSR'd content flickers or shifts significantly on page load
-- Components work fine without SSR but break when server-rendered
-
-**Prevention:**
-- Load `@lit-labs/ssr-client/lit-element-hydrate-support.js` BEFORE any Lit imports
-- In HTML: place hydrate support script tag before component bundles
-- Use `defer` or dynamic imports to ensure correct load order
-- Document this requirement clearly for library consumers
-- Example:
-  ```html
-  <script type="module" src="@lit-labs/ssr-client/lit-element-hydrate-support.js"></script>
-  <script type="module" src="your-components.js"></script>
-  ```
-
-**Phase to address:** SSR Client Integration (late SSR phase - requires SSR infrastructure first)
-
-**Confidence:** HIGH - [Lit SSR Client Usage](https://lit.dev/docs/ssr/client-usage/)
-
----
-
-### NPM-5: ElementInternals Not Available During SSR
-
-**What happens:** Form-associated custom elements use `this.attachInternals()` in the constructor. This API requires DOM and throws during server rendering. The Button component uses ElementInternals for form submission.
-
-**Warning signs:**
-- `TypeError: this.attachInternals is not a function` during SSR
-- Server-side rendering crashes when processing form components
-- Form participation works client-side but SSR fails
-
-**Prevention:**
-- Guard `attachInternals()` call: only execute when DOM is available
-- Pattern:
-  ```typescript
-  constructor() {
-    super();
-    if (typeof window !== 'undefined') {
-      this.internals = this.attachInternals();
-    }
-  }
-  ```
-- Form participation is inherently client-side; accept that form submission requires JS
-- Document that SSR renders visual state only; form behavior requires hydration
-
-**Phase to address:** SSR Component Compatibility (during component SSR adaptation)
-
-**Confidence:** HIGH - [WebKit ElementInternals Article](https://webkit.org/blog/13711/elementinternals-and-form-associated-custom-elements/)
-
----
-
-### NPM-6: Vite ?inline Imports Break NPM Package
-
-**What happens:** The codebase uses `import tailwindStyles from '../styles/tailwind.css?inline'`. This is a Vite-specific feature. When published to NPM, consumers using other bundlers (Webpack, esbuild, Rollup without Vite) cannot resolve `?inline` queries.
-
-**Warning signs:**
-- `Module not found: Can't resolve './styles/tailwind.css?inline'`
-- Package works in your Vite project but fails for users
-- Build errors in non-Vite environments
-
-**Prevention:**
-- For NPM package: process CSS at build time, not import time
-- Options:
-  1. Use Vite library mode with CSS handling plugins (`vite-plugin-lib-inject-css`)
-  2. Pre-process CSS into a JS string constant during build
-  3. Use rollup's `string` plugin to inline CSS files
-- Alternative: publish processed CSS as separate file with documented import pattern
-- Test package in Webpack and esbuild projects before release
-
-**Phase to address:** NPM Package Build Configuration (early - affects entire build pipeline)
-
-**Confidence:** HIGH - Direct observation of codebase + bundler compatibility research
-
----
-
-## Moderate Pitfalls (NPM + SSR)
-
-Issues that cause delays, confusion, or technical debt but are recoverable.
-
----
-
-### NPM-7: Missing File Extensions in Imports
-
-**What happens:** TypeScript allows omitting `.js` extensions. Published packages without extensions require complex import maps or don't work in browsers/Deno without bundlers.
-
-**Warning signs:**
-- Package works with bundlers but fails with native ES modules
-- Import maps grow excessively large
-- Deno or browser direct import fails
-
-**Prevention:**
-- Configure TypeScript to require extensions: `"moduleResolution": "NodeNext"` or `"Bundler"`
-- Use ESLint rule to enforce extensions in imports
-- Add `.js` extensions to all relative imports (even for `.ts` files)
-- Verify with `tsc --noEmit` and test native browser import
-
-**Phase to address:** NPM Package Build Configuration
-
-**Confidence:** HIGH - [Lit Publishing Docs](https://lit.dev/docs/tools/publishing/)
-
----
-
-### NPM-8: :host-context(.dark) Limited Browser Support in SSR
-
-**What happens:** Dark mode relies on `:host-context(.dark)`. While modern browsers support this, Firefox only added support recently (2023). SSR clients with older browsers may have broken dark mode.
-
-**Warning signs:**
-- Dark mode works in Chrome/Safari but not Firefox (older versions)
-- SSR'd dark mode content displays incorrectly
-- Users report "dark mode doesn't work" on specific browsers
-
-**Prevention:**
-- Check browser support matrix for your target audience
-- Consider CSS custom properties alternative that inherits through shadow DOM
-- Pattern: `color: var(--text-color)` where `--text-color` is set on `:root` or `.dark`
-- Provide polyfill documentation or fallback patterns
-- Alternative: use `@media (prefers-color-scheme: dark)` which has broader support
-
-**Phase to address:** SSR Styling or Documentation (depends on target browser matrix)
-
-**Confidence:** MEDIUM - Browser support is improving; may be non-issue for modern-only targets
-
----
-
-### NPM-9: Custom Element Registration Side Effects Break Tree Shaking
-
-**What happens:** Using `@customElement('ui-button')` decorator registers the element as a side effect of importing the module. Bundlers may tree-shake away unused components OR fail to tree-shake used components (include everything).
-
-**Warning signs:**
-- Users importing one component get entire library bundled
-- OR users' builds exclude components they imported
-- Package size complaints from users
-
-**Prevention:**
-- Separate registration from class definition:
-  ```typescript
-  // button.ts - no side effects
-  export class Button extends TailwindElement { ... }
-
-  // button.define.ts - side effect
-  import { Button } from './button.js';
-  customElements.define('ui-button', Button);
-  ```
-- In `package.json`, specify `"sideEffects": ["*.define.js"]`
-- Offer both patterns: auto-registration and manual registration
-- Document both import patterns for users
-
-**Phase to address:** NPM Package Architecture (early - affects file structure)
-
-**Confidence:** HIGH - [Lit Tree Shaking Discussion](https://github.com/lit/lit/discussions/4772)
-
----
-
-### NPM-10: CSS Duplication in SSR Output
-
-**What happens:** Declarative Shadow DOM cannot share stylesheets like constructable stylesheets can. Server-rendering 50 buttons means duplicating the entire Tailwind CSS 50 times in HTML, bloating page size.
-
-**Warning signs:**
-- SSR'd pages are unexpectedly large (megabytes)
-- First Contentful Paint delayed due to HTML size
-- Network tab shows huge HTML responses
-
-**Prevention:**
-- Minimize CSS per component (use CSS variables for theming)
-- Consider extracting shared styles to document `<head>` for SSR
-- Use `::part()` pseudo-element for external styling
-- Implement CSS deduplication strategy:
-  - Shared base styles in `<head>`
-  - Component-specific styles only in shadow DOM
-- Accept some duplication as tradeoff for encapsulation
-
-**Phase to address:** SSR Optimization (later phase - after basic SSR works)
-
-**Confidence:** MEDIUM - [DSD style sharing article](https://eisenbergeffect.medium.com/sharing-styles-in-declarative-shadow-dom-c5bf84ffd311)
-
----
-
-### NPM-11: Package.json exports Field Misconfiguration
-
-**What happens:** Modern Node.js and bundlers use `exports` field for module resolution. Incorrect configuration causes "Module not found" errors or wrong module loaded.
-
-**Warning signs:**
-- Package works in some projects but not others
-- TypeScript types don't resolve
-- Subpath imports (`@lit-ui/button`) fail
-- "ERR_PACKAGE_PATH_NOT_EXPORTED" errors
-
-**Prevention:**
-- Define complete exports map including types:
-  ```json
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    },
-    "./button": {
-      "types": "./dist/button/index.d.ts",
-      "import": "./dist/button/index.js"
-    }
-  }
-  ```
-- Use `arethetypeswrong` tool to validate package.json
-- Test with `npm pack` and install tarball in test project
-- Test with TypeScript `moduleResolution: "NodeNext"` and `"Bundler"`
-
-**Phase to address:** NPM Package Configuration
-
-**Confidence:** HIGH - [Snyk npm package article](https://snyk.io/blog/building-npm-package-compatible-with-esm-and-cjs-2024/)
-
----
-
-### NPM-12: defer-hydration Not Removed on Property-Heavy Components
-
-**What happens:** Lit SSR adds `defer-hydration` attribute to prevent premature rendering. If not properly removed, components never hydrate. Complex property initialization can cause hydration to hang.
-
-**Warning signs:**
-- Components render but don't respond to interaction
-- `defer-hydration` attribute persists in DOM
-- Event handlers don't fire
-- Component appears "frozen"
-
-**Prevention:**
-- Ensure hydration support module is loaded (see pitfall NPM-4)
-- Avoid heavy computation in `connectedCallback` that might block hydration
-- Test hydration with various property combinations
-- Check that `defer-hydration` is removed after page load
-
-**Phase to address:** SSR Testing (validation phase)
-
-**Confidence:** MEDIUM - [Lit SSR defer-hydration docs](https://lit.dev/docs/ssr/client-usage/)
-
----
-
-## Minor Pitfalls (NPM + SSR)
-
-Issues that cause annoyance but are quickly fixable.
-
----
-
-### NPM-13: Missing TypeScript HTMLElementTagNameMap Declaration
-
-**What happens:** TypeScript users don't get type hints when using custom elements. `document.querySelector('ui-button')` returns `Element | null` instead of `Button | null`.
-
-**Warning signs:**
-- TypeScript users complain about lack of type inference
-- Must manually cast: `document.querySelector('ui-button') as Button`
-
-**Prevention:**
-- Already implemented in codebase - verify it's exported in `.d.ts`
-- Ensure declaration is in published types:
-  ```typescript
-  declare global {
-    interface HTMLElementTagNameMap {
-      'ui-button': Button;
-    }
-  }
-  ```
-
-**Phase to address:** NPM Package Build Configuration (types generation)
-
-**Confidence:** HIGH - Codebase already has this pattern
-
----
-
-### NPM-14: Forgetting to Externalize Peer Dependencies
-
-**What happens:** `lit` is a peer dependency but gets included in bundle anyway because Vite/Rollup wasn't configured correctly.
-
-**Warning signs:**
-- Published package larger than expected
-- `npm ls` shows duplicate lit in consumer projects
-
-**Prevention:**
-- Double-check `rollupOptions.external` in Vite config
-- Verify bundle size before publishing
-- Run `npm pack && tar -tf lit-ui-*.tgz` to inspect contents
-
-**Phase to address:** NPM Package Build Configuration
-
-**Confidence:** HIGH - Common oversight
-
----
-
-### NPM-15: FOUC on First Page Load Without Preload
-
-**What happens:** Users see unstyled custom element content briefly before JavaScript loads and applies styles.
-
-**Warning signs:**
-- Custom element content flashes or shifts
-- `:not(:defined)` styles not applied
-
-**Prevention:**
-- Add `:not(:defined)` CSS to hide unregistered elements:
-  ```css
-  ui-button:not(:defined) { visibility: hidden; }
-  ```
-- Preload component JavaScript: `<link rel="modulepreload" href="components.js">`
-- SSR with Declarative Shadow DOM includes styles inline (solves for SSR case)
-
-**Phase to address:** Documentation or CLI Generated CSS
-
-**Confidence:** HIGH - [FOUC in Web Components article](https://www.jacobmilhorn.com/posts/solving-fouc-in-web-components/)
-
----
-
-## Phase-Specific Warnings Summary (NPM + SSR)
-
-| Phase Topic | Likely Pitfall | Priority |
-|-------------|---------------|----------|
-| NPM Build Config | NPM-1 Bundling Lit, NPM-6 ?inline imports, NPM-7 Extensions, NPM-9 Side effects | HIGH |
-| Package.json Setup | NPM-11 Exports field, NPM-14 Externals, NPM-13 Types | HIGH |
-| SSR Infrastructure | NPM-2 Constructable stylesheets, NPM-5 ElementInternals | CRITICAL |
-| SSR Styling | NPM-3 @property rules, NPM-8 :host-context, NPM-10 CSS duplication | HIGH |
-| SSR Client Integration | NPM-4 Hydration order, NPM-12 defer-hydration | HIGH |
-| Documentation | NPM-15 FOUC, consumer guidance | MEDIUM |
-
----
-
-## Sources (NPM + SSR)
-
-**Official Documentation:**
-- [Lit Publishing Guide](https://lit.dev/docs/tools/publishing/)
-- [Lit SSR Overview](https://lit.dev/docs/ssr/overview/)
-- [Lit SSR Client Usage](https://lit.dev/docs/ssr/client-usage/)
-
-**Web Standards:**
-- [Declarative Shadow DOM (web.dev)](https://web.dev/articles/declarative-shadow-dom)
-- [ElementInternals (WebKit)](https://webkit.org/blog/13711/elementinternals-and-form-associated-custom-elements/)
-
-**Community Resources:**
-- [Web Components Tailwind SSR (Konnor Rogers)](https://www.konnorrogers.com/posts/2023/web-components-tailwind-and-ssr)
-- [Tailwind Shadow DOM @property issue](https://github.com/tailwindlabs/tailwindcss/discussions/16772)
-- [Multiple Lit Versions](https://lit.dev/docs/tools/development/)
-- [Sharing Styles in DSD](https://eisenbergeffect.medium.com/sharing-styles-in-declarative-shadow-dom-c5bf84ffd311)
-- [Solving FOUC in Web Components](https://www.jacobmilhorn.com/posts/solving-fouc-in-web-components/)
-- [NPM Package ESM/CJS (Snyk)](https://snyk.io/blog/building-npm-package-compatible-with-esm-and-cjs-2024/)
-- [Lit Tree Shaking Discussion](https://github.com/lit/lit/discussions/4772)
-
----
-
-# v3.0 Theme Customization Pitfalls
-
-**Focus:** Adding visual theme configurator and design token system to existing library
-**Researched:** 2026-01-25
-**Confidence:** HIGH (verified with existing codebase patterns and authoritative sources)
-
-This section covers pitfalls specific to the v3.0 milestone: adding theme customization with a visual configurator, design token system, CLI token parameters, and generated CSS.
-
----
-
-## Critical Pitfalls (Theme Customization)
-
-High-impact mistakes that cause rewrites or major architectural issues.
-
----
-
-### THEME-1: @theme Directive Scope in Imported Files
-
-**What goes wrong:** Tailwind CSS v4's `@theme` directive only works in the main entry file that Tailwind directly processes. When a file containing `@theme` is imported via `@import` from another CSS file, the directive is not recognized.
-
-**Why it happens:** Tailwind v4's CSS-first configuration processes `@theme` blocks during compilation, but only in the primary entry point. Imported files don't receive the same processing.
-
-**Consequences:**
-- Custom tokens defined in imported files produce no utility classes
-- Theme variables appear undefined in the inspector
-- Components can't use token-based utilities like `bg-brand-500`
-
-**Warning signs:**
-- Tailwind utilities showing "undefined" in browser inspector
-- Token-based classes having no effect
-- Working in development but failing in build
-
-**Prevention:**
-- Define ALL `@theme` tokens in the main CSS entry file (currently `tailwind.css`)
-- For generated token files, use `:root` with CSS custom properties instead of `@theme`
-- Structure: `@theme` in entry file references `:root` variables from generated file
-
-**Which phase should address:** Phase 1 (Token System Architecture) - establish correct file structure from the start.
-
-**Source:** [Tailwind CSS GitHub Issue #18966](https://github.com/tailwindlabs/tailwindcss/issues/18966)
-
----
-
-### THEME-2: CSS Custom Properties vs @theme Confusion
-
-**What goes wrong:** Using `:root` for tokens that should generate Tailwind utilities, or using `@theme` for values that should just be CSS variables.
-
-**Why it happens:** Tailwind v4 has two distinct mechanisms:
-- `@theme` - Creates CSS variables AND generates utility classes
-- `:root` - Creates CSS variables only (no utilities)
-
-**Consequences:**
-- Missing utility classes for theming (if used `:root` when `@theme` needed)
-- Unnecessary utility class bloat (if used `@theme` when `:root` sufficient)
-- Confusion about which tokens are "themeable" vs "configurable"
-
-**Warning signs:**
-- Unable to use `bg-{token}` syntax in templates
-- Generated CSS much larger than expected
-- Inconsistent token access patterns across components
-
-**Prevention:**
-- Use `@theme` for primitive tokens that need utilities (colors, spacing, radii)
-- Use `:root` for semantic/component tokens (--ui-button-radius)
-- Document which layer each token belongs to
-- The existing `tailwind.css` pattern is correct: `@theme` for primitives, `:root` for component tokens
-
-**Which phase should address:** Phase 1 (Token System Architecture)
-
-**Source:** [Tailwind CSS Theme Documentation](https://tailwindcss.com/docs/theme)
-
----
-
-### THEME-3: Token Names Become API (Breaking Changes)
-
-**What goes wrong:** Changing token names after users have customized them breaks their configurations.
-
-**Why it happens:** Token names like `--color-primary` or `--ui-button-radius` become part of your public API. Users override these in their projects. Encoded configs reference these names.
-
-**Consequences:**
-- User customizations silently stop working
-- Encoded CLI configs become invalid
-- Migration required for every token name change
-- Support burden explaining "why did my theme break?"
-
-**Warning signs:**
-- Desire to "clean up" or "rename" tokens after v1
-- Adding new token variants that change naming patterns
-- Component redesigns requiring different token structure
-
-**Prevention:**
-- Treat token names as permanent API from day one
-- Use semantic naming that won't need to change (`--color-primary` not `--color-blue`)
-- Document token naming convention before implementation
-- For new tokens: add new names, deprecate old ones, support both
-- Include version field in encoded config for migration
-
-**Which phase should address:** Phase 1 (Token System Architecture) - naming convention must be finalized before implementation.
-
-**Source:** [Adobe Spectrum token migration experience](https://medium.com/@NateBaldwin/component-level-design-tokens-are-they-worth-it-d1ae4c6b19d4)
-
----
-
-### THEME-4: Exposing Too Many Customizable Tokens
-
-**What goes wrong:** Making every possible value a customizable token leads to:
-- Users overriding values that break accessibility (contrast, touch targets)
-- Inconsistent results across different customizations
-- Bloated generated CSS files
-- Overwhelming configurator UI
-
-**Why it happens:** Desire for "maximum flexibility" without considering consequences.
-
-**Consequences:**
-- Accessibility violations when users customize poorly
-- Brand dilution (defeats purpose of design system)
-- Hard to maintain consistency across components
-- Generated token file becomes unwieldy
-- Encoded config too large for URL
-
-**Warning signs:**
-- Token count growing unbounded
-- Users asking "which tokens should I customize?"
-- Accessibility issues in customized themes
-- Config encoding hitting URL length limits
-
-**Prevention:**
-- Layer tokens: primitive (internal) -> semantic (safe to customize) -> component (internal)
-- Only expose semantic tokens to configurator
-- Document which tokens are "safe" to customize
-- Current codebase has good pattern: `--color-primary` (expose) vs `--ui-button-primary-bg: var(--color-primary)` (internal)
-- Limit configurator to semantic tokens only
-
-**Which phase should address:** Phase 2 (Design Token Definitions) - define what's exposed vs internal.
-
-**Source:** [Nucleus Design System - CSS Custom Properties](https://blog.nucleus.design/be-aware-of-css-custom-properties/)
-
----
-
-### THEME-5: @theme inline vs static vs Default Mode Confusion
-
-**What goes wrong:** Misunderstanding when to use `@theme inline`, `@theme static`, or plain `@theme`.
-
-**Why it happens:** Tailwind v4 has three modes:
-- `@theme` (default): Generate utilities, tree-shake unused variables
-- `@theme static`: Generate ALL variables regardless of usage
-- `@theme inline`: Use variable VALUE instead of reference (for referencing other variables)
-
-**Consequences:**
-- Missing CSS variables in production (tree-shaken away)
-- Variables referencing other variables not resolving
-- Unexpected values in generated CSS
-- JavaScript theme access failing
-
-**Warning signs:**
-- Token works in dev but not production
-- Token shows `var(--color-primary)` instead of actual color value
-- Generated CSS much smaller than expected
-- `getComputedStyle()` returns wrong values
-
-**Prevention:**
-- Use `@theme static` for tokens that might be accessed via JavaScript or inline styles
-- Use `@theme inline` when defining tokens that reference other tokens:
-  ```css
-  @theme inline {
-    --font-sans: var(--font-inter);  /* Uses value, not reference */
-  }
-  ```
-- For generated token file that users might customize: use `static` to ensure all tokens included
-
-**Which phase should address:** Phase 1 (Token System Architecture) and Phase 3 (CSS Generation)
-
-**Source:** [Tailwind CSS Theme Documentation](https://tailwindcss.com/docs/theme)
-
----
-
-## Shadow DOM Integration Pitfalls
-
-CSS isolation issues when adding theme customization to existing Shadow DOM components.
-
----
-
-### THEME-6: Generated Token File Must Reach Shadow DOM
-
-**What goes wrong:** User's generated `lit-ui-tokens.css` file defines `:root` variables, but components in Shadow DOM can't access them if file isn't loaded at document level.
-
-**Why it happens:** Shadow DOM inherits CSS custom properties from the document, but only if those properties are defined on an ancestor element. If the token file is imported inside a component, it doesn't reach `:root`.
-
-**Consequences:**
-- Custom theme tokens not applied to components
-- Components showing default theme despite custom tokens
-- Token file loaded but having no effect
-
-**Warning signs:**
-- Tokens work in configurator preview but not in actual project
-- Computed styles show default values not custom values
-- Token file definitely loaded but no visual change
-
-**Prevention:**
-- Token file MUST be imported at document level (e.g., in app's main CSS)
-- Document this requirement clearly for CLI users
-- Consider having CLI add import statement to user's main CSS
-- Test token file loading in real project, not just isolated component
-
-**Which phase should address:** Phase 3 (CLI Token Parameter) and Phase 4 (Component Integration)
-
----
-
-### THEME-7: @property Rules Still Don't Work in Shadow DOM
-
-**What goes wrong:** Any new `@property` declarations for custom tokens won't work inside Shadow DOM. This is already handled for existing tokens, but new token categories may introduce new `@property` needs.
-
-**Why it happens:** W3C specification limitation. `@property` only works at document level.
-
-**Consequences:**
-- Advanced token features (animations, gradients) may not work correctly in components
-- Fallback values required for all `@property`-dependent tokens
-
-**Warning signs:**
-- New token category working in light DOM but not components
-- Gradient or animation tokens behaving unexpectedly
-
-**Prevention:**
-- Extend existing pattern in `tailwind-element.ts` to extract new `@property` rules
-- Include fallback values in all `@property`-dependent token definitions
-- Test all new tokens inside Shadow DOM, not just light DOM previews
-
-**Which phase should address:** Phase 4 (Component Integration) - verify new tokens work correctly.
-
----
-
-### THEME-8: Dark Mode Token Overrides Must Use Same Pattern
-
-**What goes wrong:** Adding custom tokens without corresponding dark mode overrides leaves dark mode broken.
-
-**Why it happens:** Current system uses `.dark` selector to override token values. New tokens need same treatment.
-
-**Consequences:**
-- Custom theme looks good in light mode, broken in dark mode
-- Accessibility issues with insufficient contrast in dark mode
-- Inconsistent dark mode appearance
-
-**Warning signs:**
-- Configurator preview only shows light mode
-- Dark mode testing reveals broken colors
-- Users report "dark mode doesn't work with my theme"
-
-**Prevention:**
-- Every customizable token must have dark mode variant
-- Configurator should show both light and dark previews
-- Validate contrast ratios in both modes
-- Include dark mode overrides in generated token file
-
-**Which phase should address:** Phase 2 (Design Token Definitions) and Phase 5 (Docs Configurator)
-
----
-
-## Encoding/CLI Pitfalls
-
-URL encoding, CLI parameter, and config persistence issues.
-
----
-
-### THEME-9: URL-Unsafe Characters in Base64
-
-**What goes wrong:** Standard Base64 uses `+`, `/`, and `=` which break URLs or require extra escaping.
-
-**Why it happens:** Base64 was designed for data encoding, not URL safety.
-
-**Consequences:**
-- Encoded config corrupted when copied/pasted
-- URL parsing errors in browsers or servers
-- Config truncated at special characters
-- Shareable links broken
-
-**Warning signs:**
-- Config works when short but breaks when longer
-- Different behavior in different browsers
-- `+` becoming spaces, `/` breaking path parsing
-- Config works in CLI but not in URL
-
-**Prevention:**
-- Use URL-safe Base64 (Base64URL): replaces `+` with `-`, `/` with `_`, omits padding `=`
-- Implementation:
-  ```javascript
-  // Encode
-  btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-  // Decode
-  atob(str.replace(/-/g, '+').replace(/_/g, '/'));
-  ```
-- Test with configs containing all character types
-- Use established library like `base64url` npm package
-
-**Which phase should address:** Phase 3 (CLI Token Parameter)
-
-**Source:** [Base64URL Guide](https://thetexttool.com/blog/base64-vs-base58-vs-base64url)
-
----
-
-### THEME-10: Config Size Exceeds URL Length Limits
-
-**What goes wrong:** Encoded theme config makes URL too long for browsers or servers.
-
-**Why it happens:**
-- Browser URL limits: ~2,000-8,000 characters depending on browser
-- Server URL limits: Often 2KB-8KB
-- Full design token set can easily exceed this when Base64 encoded
-
-**Consequences:**
-- URL truncated, config corrupted
-- Server rejecting request with 414 URI Too Long
-- "URL too long" errors
-- Shareable links broken for complex themes
-
-**Warning signs:**
-- Works with simple themes but fails with full customization
-- Different behavior on different servers/CDNs
-- Config cut off mid-value
-- Works locally but fails in production
-
-**Prevention:**
-- Compress before encoding: LZW or similar lightweight algorithm
-- Only include CHANGED values (diff from defaults) - critical optimization
-- Add config size check with user warning in configurator
-- Show warning when generated URL exceeds safe limits
-- Libraries: `lz-string`, `json-url`, `pako`
-
-**Which phase should address:** Phase 3 (CLI Token Parameter)
-
-**Source:** [json-url GitHub](https://github.com/masotime/json-url)
-
----
-
-### THEME-11: Config Schema Versioning
-
-**What goes wrong:** Changing config schema breaks old encoded configs.
-
-**Why it happens:** As token system evolves, config format may change. Old bookmarked URLs or shared configs become invalid.
-
-**Consequences:**
-- Old shared URLs stop working
-- CLI errors when parsing outdated config
-- User frustration with broken bookmarks
-- Support burden for "my config doesn't work anymore"
-
-**Warning signs:**
-- Adding new token categories
-- Renaming config fields
-- Changing encoding/compression algorithm
-- Any structural change to config format
-
-**Prevention:**
-- Include version number in encoded config header
-- Maintain backward compatibility for at least 2 major versions
-- Document migration path for breaking changes
-- Validate config version before processing
-- Show user-friendly error for outdated config versions
-
-**Which phase should address:** Phase 3 (CLI Token Parameter) - build versioning from start.
-
----
-
-### THEME-12: CLI Config Decoding Error Handling
-
-**What goes wrong:** Corrupted or invalid config causes CLI crash instead of graceful error.
-
-**Why it happens:** URL-encoded configs can be truncated, corrupted, or manually edited incorrectly.
-
-**Consequences:**
-- Poor user experience with cryptic error messages
-- Users confused about what went wrong
-- No recovery path for invalid configs
-
-**Warning signs:**
-- No try/catch around decode logic
-- Generic "parse error" messages
-- Stack traces exposed to users
-
-**Prevention:**
-- Wrap all decode/parse operations in try/catch
-- Provide specific error messages: "Config appears truncated", "Invalid config version"
-- Suggest running with defaults on error
-- Log detailed error for debugging, show user-friendly message
-- Validate config structure after decode
-
-**Which phase should address:** Phase 3 (CLI Token Parameter)
-
----
-
-## Configurator UX Pitfalls
-
-Visual theme configurator issues.
-
----
-
-### THEME-13: Flash of Unstyled Content (FOUC) in Live Preview
-
-**What goes wrong:** Live preview shows unstyled content briefly when theme changes.
-
-**Why it happens:**
-- CSS custom property updates may not apply instantly to all components
-- Component re-renders not synchronized with style updates
-- Style injection timing issues
-- Large token set takes time to apply
-
-**Consequences:**
-- Poor UX in theme configurator
-- Jarring visual experience when changing colors
-- Users unsure if change applied correctly
-
-**Warning signs:**
-- Brief flash between theme changes
-- Components flickering during updates
-- Delay between picker change and preview update
-- Different components updating at different times
-
-**Prevention:**
-- Update CSS variables on `:root`, not individual components
-- Use CSS transitions for smooth color changes
-- Consider brief `opacity: 0` during transition if flash unavoidable
-- Debounce rapid changes (e.g., while dragging color picker)
-- Batch token updates, apply all at once
-
-**Which phase should address:** Phase 5 (Docs Configurator)
-
----
-
-### THEME-14: Color Picker Color Space Mismatches
-
-**What goes wrong:** Colors look different in color picker vs rendered components.
-
-**Why it happens:** Current system uses OKLCH color space for wide gamut support. Standard color pickers use sRGB or HSL. Conversion between spaces can produce visible differences.
-
-**Consequences:**
-- User picks a color, sees different color in preview
-- Confusion about "correct" color value
-- Mismatch between design tool colors and web colors
-
-**Warning signs:**
-- Same hex value looks different in picker vs preview
-- OKLCH values hard for users to understand
-- Export to design tools produces different colors
-
-**Prevention:**
-- Use color picker that supports OKLCH natively (e.g., Culori-based)
-- Show both OKLCH and hex values
-- Consider offering multiple color input formats
-- Document color space usage for users
-- Test with wide gamut displays
-
-**Which phase should address:** Phase 5 (Docs Configurator)
-
----
-
-### THEME-15: Accessibility of Generated Themes
-
-**What goes wrong:** User creates theme with insufficient color contrast, breaking accessibility.
-
-**Why it happens:** Configurator allows any color combination. Users may not understand WCAG contrast requirements.
-
-**Consequences:**
-- Inaccessible themes distributed
-- Legal liability for some users
-- Poor UX for users with visual impairments
-
-**Warning signs:**
-- No contrast validation in configurator
-- Light text on light backgrounds
-- Small text with insufficient contrast
-
-**Prevention:**
-- Show real-time contrast ratio warnings in configurator
-- Flag combinations that fail WCAG AA
-- Consider "accessibility mode" that limits choices to accessible combinations
-- Include accessibility notes in generated CSS comments
-- Test configurator output with axe-core
-
-**Which phase should address:** Phase 5 (Docs Configurator)
-
----
-
-## SSR/Build Integration Pitfalls
-
-Server-side rendering and build process issues.
-
----
-
-### THEME-16: Generated CSS Not Available During SSR
-
-**What goes wrong:** User-generated token CSS file not present when SSR runs.
-
-**Why it happens:** CLI generates CSS at install time, but SSR server may not have access or file path differs between build and runtime.
-
-**Consequences:**
-- SSR output missing custom theme
-- Components render with default theme server-side
-- Hydration shows theme flash as custom tokens apply
-
-**Warning signs:**
-- Production SSR looking different from local dev
-- Theme working client-side but not in initial HTML
-- Initial page load shows default theme, then switches
-
-**Prevention:**
-- Generated token file must be in build output, not gitignored
-- Document file path requirements clearly
-- Verify file path works in both dev and production
-- Test SSR specifically with custom tokens applied
-
-**Which phase should address:** Phase 4 (Component Integration) and documentation
-
----
-
-### THEME-17: Token File Not Included in Build
-
-**What goes wrong:** `lit-ui-tokens.css` excluded from build by bundler configuration.
-
-**Why it happens:** Bundler may not process CSS files that aren't explicitly imported, or may tree-shake "unused" CSS.
-
-**Consequences:**
-- Production build missing custom theme entirely
-- Works in development, breaks in production
-
-**Warning signs:**
-- Vite/Webpack excluding CSS files
-- Token file not in dist folder
-- CSS optimization removing "unused" tokens
-
-**Prevention:**
-- Document explicit import requirement
-- Consider having CLI modify user's build config
-- Test production build, not just development
-- Add verification step to CLI
-
-**Which phase should address:** Phase 3 (CLI Token Parameter) - documentation
-
----
-
-## Prevention Strategies Summary
-
-### Strategy 1: Token System Architecture Review
-
-Before implementation, validate:
-- [ ] `@theme` in main entry file only
-- [ ] `:root` for component tokens (no utility generation needed)
-- [ ] Token naming convention finalized (won't change)
-- [ ] Layer structure: primitives -> semantic -> component
-- [ ] Which tokens exposed to configurator vs internal
-- [ ] Dark mode variants for all customizable tokens
-- [ ] Version field planned for config encoding
-
-### Strategy 2: Encoding Safety Checks
-
-Implement in CLI:
-- [ ] Use URL-safe Base64 encoding (Base64URL)
-- [ ] Compress config before encoding (lz-string or similar)
-- [ ] Include version number in encoded config
-- [ ] Store only DIFF from defaults, not full config
-- [ ] Validate config size before generating URL
-- [ ] Warn user if URL exceeds safe limits (~2000 chars)
-- [ ] Graceful error handling for corrupt configs
-
-### Strategy 3: Shadow DOM Compatibility Testing
-
-Test each token system feature:
-- [ ] Generated token values cascade into Shadow DOM
-- [ ] Dark mode tokens apply correctly in Shadow DOM
-- [ ] New `@property` rules extracted and applied to document
-- [ ] SSR output includes correct token values
-- [ ] Hydration completes without visible theme flash
-
-### Strategy 4: Configurator UX Validation
-
-Before shipping configurator:
-- [ ] Color picker supports OKLCH or converts correctly
-- [ ] Live preview updates smoothly without FOUC
-- [ ] Contrast ratio warnings for accessibility
-- [ ] Both light and dark mode previews
-- [ ] Copy command includes all customizations
-- [ ] Generated URL doesn't exceed limits
-
----
-
-## Phase-Specific Warnings (Theme Customization)
-
-| Phase | Likely Pitfall | Priority | Mitigation |
-|-------|---------------|----------|------------|
-| Token System Architecture | THEME-1 @theme scope, THEME-2 @theme vs :root | CRITICAL | Validate file structure, test early |
-| Design Token Definitions | THEME-3 naming, THEME-4 over-exposure, THEME-8 dark mode | HIGH | Finalize names, define exposure policy |
-| CLI Token Parameter | THEME-9 encoding, THEME-10 size, THEME-11 versioning, THEME-12 errors | HIGH | URL-safe Base64, compression, diffing, error handling |
-| Component Integration | THEME-6 document level, THEME-7 @property, THEME-16 SSR | HIGH | Test in Shadow DOM, document requirements |
-| Docs Configurator | THEME-13 FOUC, THEME-14 colors, THEME-15 accessibility | MEDIUM | Debounce, OKLCH support, contrast checks |
-
----
-
-## Sources (Theme Customization)
-
-### Authoritative
-- [Tailwind CSS v4 Theme Documentation](https://tailwindcss.com/docs/theme)
-- [Tailwind CSS v4 Announcement](https://tailwindcss.com/blog/tailwindcss-v4)
-- [web.dev - Constructable Stylesheets](https://web.dev/articles/constructable-stylesheets)
-- [MDN - Shadow DOM](https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_shadow_DOM)
-
-### Issues and Discussions
-- [Tailwind @theme in imported files - Issue #18966](https://github.com/tailwindlabs/tailwindcss/issues/18966)
-- [ShadCN tailwind-merge with custom tokens - Discussion #6939](https://github.com/shadcn-ui/ui/discussions/6939)
-- [ShadCN shareable themes feature request - Issue #3016](https://github.com/shadcn-ui/ui/issues/3016)
-
-### Community Insights
-- [Nucleus Design System - CSS Custom Properties Gotchas](https://blog.nucleus.design/be-aware-of-css-custom-properties/)
-- [Component-level Design Tokens - Nate Baldwin](https://medium.com/@NateBaldwin/component-level-design-tokens-are-they-worth-it-d1ae4c6b19d4)
-- [Design Tokens Problems - Andre Torgal](https://andretorgal.com/posts/2025-01/the-problem-with-design-tokens)
-- [FOUC in Next.js 2025](https://dev.to/amritapadhy/understanding-fixing-fouc-in-nextjs-app-router-2025-guide-ojk)
-- [Base64URL Encoding Guide](https://thetexttool.com/blog/base64-vs-base58-vs-base64url)
-- [json-url - Compact JSON encoding](https://github.com/masotime/json-url)
-- [Tailwind CSS Best Practices 2025](https://www.frontendtools.tech/blog/tailwind-css-best-practices-design-system-patterns)
-
----
-
-# v4.0 Form Inputs Pitfalls
-
-**Focus:** Adding Input and Textarea components with ElementInternals validation and form participation
-**Researched:** 2026-01-26
-**Confidence:** HIGH (verified against MDN, WebKit blog, Lit SSR docs, and multiple authoritative sources)
-
-This section covers pitfalls specific to the v4.0 milestone: building form Input and Textarea components that integrate with native form validation and ElementInternals.
-
----
-
-## Critical Pitfalls (Form Inputs)
-
-High-impact mistakes that break form functionality or require architectural changes.
-
----
-
-### INPUT-1: setValidity() vs setCustomValidity() Confusion
-
-**What goes wrong:** Using `setCustomValidity()` (the HTMLInputElement method) instead of `setValidity()` (the ElementInternals method) for form-associated custom elements.
-
-**Why it happens:** Native `<input>` elements use `setCustomValidity(message)` which is a simple string-based API. ElementInternals uses a completely different signature: `setValidity(flags, message, anchor)` with a ValidityState-like flags object.
-
-**Consequences:**
-- Validation appears to work but doesn't integrate with form submission
-- Custom validity messages not displayed
-- Form submits despite invalid state
-- `checkValidity()` returns wrong results
-
-**Warning signs:**
-- Calling `this.setCustomValidity()` in component code
-- Validation messages not appearing
-- Form `reportValidity()` not showing errors
-
-**Prevention:**
-```typescript
-// WRONG - this is for native elements
-this.setCustomValidity('Value is required');
-
-// CORRECT - ElementInternals API
-this.internals.setValidity(
-  { valueMissing: true },           // ValidityState flags
-  'This field is required',          // Custom message
-  this.shadowRoot.querySelector('input')  // Anchor for popup
-);
-
-// To clear validity:
-this.internals.setValidity({});
-```
-
-**Phase to address:** Component implementation - establish validation pattern early
-
-**Source:** [MDN setValidity](https://developer.mozilla.org/en-US/docs/Web/API/ElementInternals/setValidity), [CSS-Tricks ElementInternals](https://css-tricks.com/creating-custom-form-controls-with-elementinternals/)
-
----
-
-### INPUT-2: Not Providing Validation Anchor Element
-
-**What goes wrong:** Calling `setValidity()` without the third `anchor` parameter causes browser validation UI to point at wrong element or not appear at all.
-
-**Why it happens:** The anchor parameter is "optional" in the spec but critical for UX. Without it, browsers don't know where to position the validation tooltip.
-
-**Consequences:**
-- `reportValidity()` shows error but UI points to wrong location
-- Validation bubble appears at top-left corner of viewport
-- Poor accessibility - screen readers don't associate error with input
-- User confusion about which field has the error
-
-**Warning signs:**
-- Validation errors appearing in unexpected locations
-- No visible validation UI despite invalid state
-- Errors positioned outside component boundaries
-
-**Prevention:**
-```typescript
-private handleValidation(): void {
-  const input = this.shadowRoot?.querySelector('input');
-  if (!input) return;
-
-  if (this.value === '' && this.required) {
-    // ALWAYS provide anchor as third parameter
-    this.internals?.setValidity(
-      { valueMissing: true },
-      'Please fill out this field',
-      input  // <- Critical: anchor element for validation UI
-    );
-  } else {
-    this.internals?.setValidity({});
-  }
-}
-```
-
-**Phase to address:** Component implementation - include anchor from start
-
-**Source:** [WebKit ElementInternals](https://webkit.org/blog/13711/elementinternals-and-form-associated-custom-elements/)
-
----
-
-### INPUT-3: Forgetting to Clear Validity State
-
-**What goes wrong:** Setting custom validity but never clearing it, causing the field to remain permanently invalid.
-
-**Why it happens:** Developers call `setValidity({ customError: true }, 'message')` but don't call `setValidity({})` when the error condition is resolved.
-
-**Consequences:**
-- Field shows as invalid even after user corrects input
-- Form cannot submit despite valid data
-- User frustration trying to "fix" correct input
-
-**Warning signs:**
-- Field stays red/invalid after entering valid data
-- Form submission always fails
-- Manual inspection shows validity never resets
-
-**Prevention:**
-```typescript
-private validate(): void {
-  const input = this.shadowRoot?.querySelector('input');
-  const value = this.value.trim();
-
-  // Check all validation conditions
-  if (this.required && !value) {
-    this.internals?.setValidity(
-      { valueMissing: true },
-      'This field is required',
-      input
-    );
-    return;
-  }
-
-  if (this.pattern && value && !new RegExp(this.pattern).test(value)) {
-    this.internals?.setValidity(
-      { patternMismatch: true },
-      this.title || 'Please match the requested format',
-      input
-    );
-    return;
-  }
-
-  // CRITICAL: Clear validity when all checks pass
-  this.internals?.setValidity({});
-}
-```
-
-**Phase to address:** Component implementation - validation state machine
-
-**Source:** [DEV Community ElementInternals](https://dev.to/stuffbreaker/custom-forms-with-web-components-and-elementinternals-4jaj)
-
----
-
-### INPUT-4: Missing formResetCallback Implementation
-
-**What goes wrong:** Form reset button doesn't clear custom input values because `formResetCallback()` isn't implemented.
-
-**Why it happens:** Unlike native inputs which automatically reset, form-associated custom elements must explicitly handle reset via the lifecycle callback.
-
-**Consequences:**
-- `<form>.reset()` has no effect on custom inputs
-- Reset button appears broken to users
-- Inconsistent behavior with native form elements
-
-**Warning signs:**
-- Clicking form reset button leaves custom inputs unchanged
-- Native inputs reset but custom ones retain values
-- No `formResetCallback` method in component
-
-**Prevention:**
-```typescript
-export class Input extends TailwindElement {
-  static formAssociated = true;
-
-  private _defaultValue = '';
-  private internals: ElementInternals | null = null;
-
-  @property({ type: String })
-  value = '';
-
-  connectedCallback(): void {
-    super.connectedCallback();
-    // Capture initial value for reset
-    this._defaultValue = this.value;
-  }
-
-  // REQUIRED: Handle form reset
-  formResetCallback(): void {
-    this.value = this._defaultValue;
-    this.internals?.setFormValue(this._defaultValue);
-    this.internals?.setValidity({});
-  }
-}
-```
-
-**Phase to address:** Component implementation - form lifecycle callbacks
-
-**Source:** [Stencil Form-Associated](https://stenciljs.com/docs/form-associated), [web.dev Form Controls](https://web.dev/articles/more-capable-form-controls)
-
----
-
-### INPUT-5: formStateRestoreCallback WebKit Limitations
-
-**What goes wrong:** Browser state restoration (back/forward navigation) or autocomplete fails because WebKit only supports string state, not FormData.
-
-**Why it happens:** The spec allows `setFormValue(value, state)` where state can be string, File, or FormData. WebKit currently only supports string for state.
-
-**Consequences:**
-- State not restored correctly in Safari after navigation
-- Autocomplete doesn't work properly in Safari
-- Complex state (multiple values) cannot be preserved cross-browser
-
-**Warning signs:**
-- State restoration works in Chrome but not Safari
-- Passing FormData as second argument to setFormValue
-- Autocomplete regression reports from Safari users
-
-**Prevention:**
-```typescript
-// Set both value and state (use string for Safari compatibility)
-this.internals?.setFormValue(this.value, this.value);
-
-formStateRestoreCallback(state: string | FormData | File, reason: string): void {
-  // Handle both "restore" (navigation) and "autocomplete" reasons
-  // state is ALWAYS a string in Safari, check type for other browsers
-  if (typeof state === 'string') {
-    this.value = state;
-  } else if (state instanceof FormData) {
-    // Non-Safari browsers may pass FormData
-    this.value = state.get(this.name) as string || '';
-  }
-
-  this.internals?.setFormValue(this.value);
-}
-```
-
-**Phase to address:** Component implementation - test cross-browser
-
-**Source:** [WebKit ElementInternals](https://webkit.org/blog/13711/elementinternals-and-form-associated-custom-elements/)
-
----
-
-### INPUT-6: Not Syncing Value with setFormValue
-
-**What goes wrong:** Input value changes but `setFormValue()` isn't called, so FormData excludes the updated value.
-
-**Why it happens:** Native inputs automatically sync with forms. Custom elements must manually call `setFormValue()` whenever the value changes.
-
-**Consequences:**
-- Form submission includes stale or empty values
-- FormData doesn't reflect current input state
-- Silent data loss on form submission
-
-**Warning signs:**
-- Submitted form data doesn't match displayed values
-- `new FormData(form)` shows wrong values
-- Value property updated but form unaware
-
-**Prevention:**
-```typescript
-@property({ type: String })
-get value(): string {
-  return this._value;
-}
-set value(val: string) {
-  const oldVal = this._value;
-  this._value = val;
-  // ALWAYS sync with form when value changes
-  this.internals?.setFormValue(val);
-  this.requestUpdate('value', oldVal);
-}
-
-// Also sync on input events
-private handleInput(e: Event): void {
-  const input = e.target as HTMLInputElement;
-  this.value = input.value;  // Setter handles setFormValue
-  this.validate();
-}
-```
-
-**Phase to address:** Component implementation - value binding pattern
-
-**Source:** [MDN setFormValue](https://developer.mozilla.org/en-US/docs/Web/API/ElementInternals/setFormValue)
-
----
-
-### INPUT-7: ElementInternals SSR Crash
-
-**What goes wrong:** Calling `attachInternals()` during server-side rendering throws because the API requires DOM.
-
-**Why it happens:** ElementInternals is inherently a client-side API. During SSR, there's no document or form to associate with.
-
-**Consequences:**
-- SSR crashes with `TypeError: this.attachInternals is not a function`
-- Server-side rendering of pages containing form components fails
-- Build errors in Next.js/Astro/etc. with SSR enabled
-
-**Warning signs:**
-- SSR build fails when adding form components
-- Works in client-only mode but breaks with SSR
-- Error mentions `attachInternals` not being a function
-
-**Prevention:**
-```typescript
-constructor() {
-  super();
-  // Guard with isServer OR environment check
-  if (!isServer && typeof window !== 'undefined') {
-    this.internals = this.attachInternals();
-  }
-}
-
-// In methods that use internals, use optional chaining
-private validate(): void {
-  // internals is null during SSR - this is safe
-  this.internals?.setValidity(...);
-  this.internals?.setFormValue(this.value);
-}
-```
-
-**Note:** The existing Button component already uses this pattern with `isServer` from Lit.
-
-**Phase to address:** Component implementation - follow existing Button pattern
-
-**Source:** [Lit SSR Authoring](https://lit.dev/docs/ssr/authoring/)
-
----
-
-## Moderate Pitfalls (Form Inputs)
-
-Issues that cause delays or technical debt but are recoverable.
-
----
-
-### INPUT-8: aria-describedby Broken Across Shadow Boundary
-
-**What goes wrong:** Error messages use `aria-describedby` to associate with the input, but the ID reference breaks across shadow DOM boundaries.
-
-**Why it happens:** Shadow DOM scopes IDs locally. An ID inside shadow DOM can't be referenced from outside, and vice versa.
-
-**Consequences:**
-- Screen readers don't announce error messages
-- Accessibility audit failures
-- Form appears inaccessible to assistive technology users
-
-**Warning signs:**
-- axe-core reports missing aria-describedby references
-- Screen reader doesn't read error when focusing input
-- ARIA IDs resolve to null in accessibility tree
-
-**Prevention:**
-```typescript
-// Keep error message and input in SAME shadow DOM
-render() {
-  const errorId = `${this.id}-error`;
-
-  return html`
-    <input
-      aria-invalid=${this.invalid ? 'true' : 'false'}
-      aria-describedby=${this.invalid ? errorId : nothing}
-    />
-    ${this.invalid && this.errorMessage
-      ? html`<span id=${errorId} class="error" role="alert">
-          ${this.errorMessage}
-        </span>`
-      : nothing
-    }
-  `;
-}
-```
-
-**Alternative approach - use aria-label instead of ID reference:**
-```typescript
-// When error must be in light DOM
-<lui-input aria-label="Email address - Error: Invalid format"></lui-input>
-```
-
-**Phase to address:** Component implementation - accessibility
-
-**Source:** [Nolan Lawson - Shadow DOM ARIA](https://nolanlawson.com/2022/11/28/shadow-dom-and-accessibility-the-trouble-with-aria/), [Igalia Cross-Root ARIA](https://blogs.igalia.com/mrego/solving-cross-root-aria-issues-in-shadow-dom/)
-
----
-
-### INPUT-9: Textarea Auto-Resize Doesn't Shrink
-
-**What goes wrong:** Textarea grows to fit content but doesn't shrink when content is deleted.
-
-**Why it happens:** Setting `height = scrollHeight` works for growing, but `scrollHeight` doesn't decrease when content is removed - it reflects the current rendered height.
-
-**Consequences:**
-- Textarea becomes permanently expanded after typing long content
-- Deleting text leaves huge empty textarea
-- Poor UX, appears buggy
-
-**Warning signs:**
-- Textarea expands but never contracts
-- `scrollHeight` always returns current height, not content height
-
-**Prevention:**
-```typescript
-private autoResize(): void {
-  const textarea = this.shadowRoot?.querySelector('textarea');
-  if (!textarea) return;
-
-  // CRITICAL: Reset height BEFORE measuring scrollHeight
-  textarea.style.height = 'auto';
-
-  // Now scrollHeight reflects actual content height
-  textarea.style.height = `${textarea.scrollHeight}px`;
-}
-
-// Call on input and value change
-private handleInput(e: Event): void {
-  const textarea = e.target as HTMLTextAreaElement;
-  this.value = textarea.value;
-  this.autoResize();
-}
-
-updated(changedProps: Map<string, unknown>): void {
-  if (changedProps.has('value')) {
-    this.autoResize();
-  }
-}
-```
-
-**Alternative CSS-only approach (Chrome only):**
-```css
-textarea {
-  field-sizing: content;  /* New CSS property, limited support */
-}
-```
-
-**Phase to address:** Textarea component implementation
-
-**Source:** [CSS-Tricks Auto-Growing Textarea](https://css-tricks.com/auto-growing-inputs-textareas/), [Simon Willison TIL](https://til.simonwillison.net/css/resizing-textarea)
-
----
-
-### INPUT-10: Textarea Pre-populated Content Not Sized Correctly
-
-**What goes wrong:** Textarea with initial value (from SSR or property) doesn't auto-resize on page load.
-
-**Why it happens:** Auto-resize logic typically binds to `input` event, which doesn't fire on initial render.
-
-**Consequences:**
-- Pre-filled textareas show scrollbars or are truncated
-- Content hidden until user types
-- SSR output shows wrong size
-
-**Warning signs:**
-- Textarea has scrollbar immediately on page load
-- Content only fully visible after typing
-- Different sizing in SSR vs client render
-
-**Prevention:**
-```typescript
-firstUpdated(): void {
-  // Size textarea after first render
-  this.autoResize();
-}
-
-updated(changedProps: Map<string, unknown>): void {
-  if (changedProps.has('value')) {
-    // Resize when value changes (including initial hydration)
-    this.autoResize();
-  }
-}
-
-// For SSR, also check after hydration
-connectedCallback(): void {
-  super.connectedCallback();
-
-  if (!isServer) {
-    // Wait for render then resize
-    this.updateComplete.then(() => this.autoResize());
-  }
-}
-```
-
-**Phase to address:** Textarea component implementation
-
-**Source:** [CodeStudy Auto-Resize](https://www.codestudy.net/blog/creating-a-textarea-with-auto-resize/)
-
----
-
-### INPUT-11: Password Visibility Toggle Security
-
-**What goes wrong:** Password visibility toggle reveals password to shoulder-surfers or screen captures.
-
-**Why it happens:** Common feature, but has security implications if not implemented carefully.
-
-**Consequences:**
-- Passwords visible in screenshots/recordings
-- Shoulder-surfing risk in public spaces
-- Password managers may not recognize toggled field
-
-**Warning signs:**
-- No timeout for visibility
-- Password remains visible indefinitely
-- Toggle state persists across page navigation
-
-**Prevention:**
-```typescript
-// Implement auto-hide timeout
-private showPassword = false;
-private hideTimeout: number | null = null;
-
-private toggleVisibility(): void {
-  this.showPassword = !this.showPassword;
-
-  if (this.showPassword) {
-    // Auto-hide after 5 seconds
-    this.hideTimeout = window.setTimeout(() => {
-      this.showPassword = false;
-      this.requestUpdate();
-    }, 5000);
-  } else if (this.hideTimeout) {
-    clearTimeout(this.hideTimeout);
-    this.hideTimeout = null;
-  }
-
-  this.requestUpdate();
-}
-
-// Clear on blur for additional security
-private handleBlur(): void {
-  if (this.showPassword) {
-    this.showPassword = false;
-    if (this.hideTimeout) {
-      clearTimeout(this.hideTimeout);
-    }
-    this.requestUpdate();
-  }
-}
-
-render() {
-  return html`
-    <input type=${this.showPassword ? 'text' : 'password'} />
-  `;
-}
-```
-
-**Phase to address:** Password input implementation
-
-**Source:** [Kenan Yusuf - Password Visibility](https://kyusuf.com/post/password-visibility-toggles)
-
----
-
-### INPUT-12: Password Autocomplete Attribute Missing
-
-**What goes wrong:** Browsers warn about missing autocomplete attribute, or password managers don't work correctly.
-
-**Why it happens:** Password fields should specify `autocomplete="current-password"` or `autocomplete="new-password"` for proper password manager integration.
-
-**Consequences:**
-- Chrome DevTools warnings
-- Password managers don't offer to save/fill
-- Poor UX for users relying on password managers
-
-**Warning signs:**
-- Console warnings about autocomplete
-- Password manager doesn't detect login form
-- "Save password?" prompt doesn't appear
-
-**Prevention:**
-```typescript
-@property({ type: String })
-autocomplete: 'current-password' | 'new-password' | 'off' = 'current-password';
-
-render() {
-  return html`
-    <input
-      type=${this.type}
-      autocomplete=${this.type === 'password' ? this.autocomplete : 'on'}
-    />
-  `;
-}
-```
-
-**Document for users:**
-- Use `autocomplete="current-password"` for login forms
-- Use `autocomplete="new-password"` for registration/change password
-- Use `autocomplete="off"` only when genuinely needed (rare)
-
-**Phase to address:** Password input implementation
-
-**Source:** [MDN Autocomplete](https://developer.mozilla.org/en-US/docs/Web/Security/Practical_implementation_guides/Turning_off_form_autocompletion), [Vaadin Issue #2126](https://github.com/vaadin/web-components/issues/2126)
-
----
-
-### INPUT-13: Native Validation UI Conflict
-
-**What goes wrong:** Both native browser validation UI AND custom error messages appear, creating confusing double validation.
-
-**Why it happens:** Browser shows validation bubble on `reportValidity()`, while component also renders its own error message.
-
-**Consequences:**
-- Duplicate error messages confusing users
-- Inconsistent styling between native bubble and custom message
-- Z-index/positioning conflicts
-
-**Warning signs:**
-- Two error messages appearing for same field
-- Native bubble overlapping custom message
-- Different messages in bubble vs inline error
-
-**Prevention:**
-```typescript
-// Option 1: Use only browser validation UI (simpler)
-checkValidity(): boolean {
-  return this.internals?.checkValidity() ?? true;
-}
-
-reportValidity(): boolean {
-  return this.internals?.reportValidity() ?? true;
-}
-
-// Option 2: Suppress native UI, use only custom messages
-// Set novalidate on form or intercept submission
-private handleInvalid(e: Event): void {
-  e.preventDefault();  // Suppress native UI
-  this.showError = true;  // Show custom message instead
-}
-
-render() {
-  return html`
-    <input @invalid=${this.handleInvalid} />
-    ${this.showError ? html`<span class="error">${this.errorMessage}</span>` : nothing}
-  `;
-}
-```
-
-**Recommendation:** For consistency with library design, use custom error messages and document that forms should use `novalidate` attribute.
-
-**Phase to address:** Component implementation - decide validation UI strategy
-
-**Source:** [SitePoint Constraint Validation](https://www.sitepoint.com/html5-forms-javascript-constraint-validation-api/)
-
----
-
-### INPUT-14: jsdom Testing Limitations
-
-**What goes wrong:** Unit tests using jsdom fail because ElementInternals is not implemented.
-
-**Why it happens:** jsdom doesn't support ElementInternals API. Tests throw `TypeError: this.internals.setFormValue is not a function`.
-
-**Consequences:**
-- Unit tests fail or require extensive mocking
-- CI pipeline breaks
-- Can't test form functionality in Node environment
-
-**Warning signs:**
-- Tests pass locally (browser) but fail in CI (jsdom)
-- ElementInternals errors in test output
-- Mocking becomes extremely complex
-
-**Prevention:**
-```typescript
-// Option 1: Use polyfill in test setup
-// npm install element-internals-polyfill
-import 'element-internals-polyfill';
-
-// Option 2: Conditional mocking in tests
-beforeEach(() => {
-  if (!('ElementInternals' in window)) {
-    // Minimal mock for testing
-    window.ElementInternals = class MockInternals {
-      setFormValue() {}
-      setValidity() {}
-      checkValidity() { return true; }
-    } as any;
-  }
-});
-
-// Option 3: Use browser-based testing (Playwright/Puppeteer)
-// Skip jsdom entirely for form component tests
-```
-
-**Recommendation:** Use `@open-wc/testing` with Playwright for form component tests, or use the element-internals-polyfill.
-
-**Phase to address:** Testing infrastructure - before writing component tests
-
-**Source:** [jsdom Issue #3831](https://github.com/jsdom/jsdom/issues/3831), [element-internals-polyfill](https://github.com/calebdwilliams/element-internals-polyfill)
-
----
-
-## Minor Pitfalls (Form Inputs)
-
-Issues that cause annoyance but are quickly fixable.
-
----
-
-### INPUT-15: Name Attribute Not Reflected
-
-**What goes wrong:** Setting `name` property doesn't add `name` attribute to host element, confusing form serialization debugging.
-
-**Why it happens:** By default, Lit properties don't reflect to attributes unless explicitly configured.
-
-**Consequences:**
-- DevTools doesn't show name attribute
-- FormData debugging harder
-- Potential issues with form libraries expecting attribute
-
-**Prevention:**
-```typescript
-@property({ type: String, reflect: true })
-name = '';
-```
-
-**Phase to address:** Component implementation - property definitions
-
----
-
-### INPUT-16: Validation Timing Issues
-
-**What goes wrong:** Validation runs too early (before user finishes typing) or too late (after form submission).
-
-**Why it happens:** Unclear when to trigger validation - on input, blur, or submit?
-
-**Consequences:**
-- Premature errors annoying users
-- Delayed errors cause form submission failures
-- Inconsistent UX
-
-**Prevention:**
-```typescript
-// Validate on blur (field loses focus)
-@property({ type: Boolean })
-touched = false;
-
-private handleBlur(): void {
-  this.touched = true;
-  this.validate();
-}
-
-private handleInput(): void {
-  // Only show errors if already touched
-  if (this.touched) {
-    this.validate();
-  }
-  // Always update form value
-  this.internals?.setFormValue(this.value);
-}
-
-// Or use validateOnInput property for immediate validation
-@property({ type: Boolean, attribute: 'validate-on-input' })
-validateOnInput = false;
-```
-
-**Phase to address:** Component implementation - validation strategy
-
----
-
-### INPUT-17: Missing Disabled/Readonly Styling
-
-**What goes wrong:** Disabled or readonly inputs look identical to enabled inputs.
-
-**Why it happens:** Custom styling doesn't account for all states.
-
-**Consequences:**
-- Users try to interact with disabled fields
-- Confusion about why input won't accept text
-- Accessibility issues - state not communicated visually
-
-**Prevention:**
-```typescript
-static styles = css`
-  :host([disabled]) input {
-    opacity: 0.5;
-    cursor: not-allowed;
-    background-color: var(--ui-input-disabled-bg);
-  }
-
-  :host([readonly]) input {
-    background-color: var(--ui-input-readonly-bg);
-    border-style: dashed;
-  }
-`;
-
-render() {
-  return html`
-    <input
-      ?disabled=${this.disabled}
-      ?readonly=${this.readonly}
-      aria-disabled=${this.disabled ? 'true' : nothing}
-      aria-readonly=${this.readonly ? 'true' : nothing}
-    />
-  `;
-}
-```
-
-**Phase to address:** Component styling
-
----
-
-### INPUT-18: formDisabledCallback Not Implemented
-
-**What goes wrong:** Disabling a fieldset doesn't disable contained custom inputs.
-
-**Why it happens:** Form-associated custom elements receive `formDisabledCallback(disabled)` when their disabled state changes due to fieldset or form changes.
-
-**Consequences:**
-- Inputs in disabled fieldset remain interactive
-- Inconsistent behavior with native inputs
-
-**Prevention:**
-```typescript
-formDisabledCallback(disabled: boolean): void {
-  this.disabled = disabled;
-  this.requestUpdate();
-}
-```
-
-**Phase to address:** Component implementation - form callbacks
-
----
-
-## Phase-Specific Warnings Summary (Form Inputs)
-
-| Phase | Likely Pitfall | Priority | Mitigation |
-|-------|---------------|----------|------------|
-| Component Architecture | INPUT-7 SSR crash, INPUT-6 value sync | CRITICAL | Guard attachInternals, sync on every change |
-| Validation Implementation | INPUT-1 setValidity API, INPUT-2 anchor, INPUT-3 clear state | CRITICAL | Study ElementInternals API carefully |
-| Form Lifecycle | INPUT-4 formResetCallback, INPUT-5 restore callback, INPUT-18 disabled | HIGH | Implement all 4 callbacks |
-| Accessibility | INPUT-8 aria-describedby | HIGH | Keep ARIA pairs in same DOM |
-| Textarea Specific | INPUT-9 resize shrink, INPUT-10 initial size | MEDIUM | Reset height before measuring |
-| Password Specific | INPUT-11 security, INPUT-12 autocomplete | MEDIUM | Auto-hide timeout, proper autocomplete |
-| Testing | INPUT-14 jsdom | HIGH | Use polyfill or browser testing |
-| UX Polish | INPUT-13 validation UI, INPUT-16 timing | MEDIUM | Choose one validation UI approach |
-
----
-
-## Integration with Existing LitUI Patterns
-
-### Pattern Alignment
-
-The existing Button component establishes these patterns that Input/Textarea should follow:
-
-| Pattern | Button Implementation | Input Should Do |
-|---------|----------------------|-----------------|
-| SSR guard | `if (!isServer) { this.internals = this.attachInternals(); }` | Same pattern |
-| Static styles | `static override styles = [...tailwindBaseStyles, css\`...\`]` | Same pattern |
-| Form association | `static formAssociated = true` | Same pattern |
-| Custom events | `this.dispatchEvent(new CustomEvent('lui-click', { composed: true }))` | `lui-input`, `lui-change` events |
-| CSS custom properties | `--ui-button-*` variables | `--ui-input-*`, `--ui-textarea-*` |
-
-### New Patterns for Inputs
-
-Patterns that Button doesn't need but Input/Textarea require:
-
-| Pattern | Why Needed | Implementation |
-|---------|-----------|----------------|
-| Value sync | Inputs have changing values | `setFormValue()` on every change |
-| Validation state | Inputs can be invalid | `setValidity()` with proper flags |
-| Form reset | Inputs need reset behavior | `formResetCallback()` with default value |
-| State restore | Inputs need state preservation | `formStateRestoreCallback()` |
-| Validation anchor | Error UI positioning | Third param to `setValidity()` |
-
----
-
-## Sources (Form Inputs)
-
-### Official Documentation (HIGH confidence)
-- [MDN ElementInternals](https://developer.mozilla.org/en-US/docs/Web/API/ElementInternals)
-- [MDN setValidity](https://developer.mozilla.org/en-US/docs/Web/API/ElementInternals/setValidity)
-- [MDN setFormValue](https://developer.mozilla.org/en-US/docs/Web/API/ElementInternals/setFormValue)
-- [WebKit ElementInternals Blog](https://webkit.org/blog/13711/elementinternals-and-form-associated-custom-elements/)
-- [Lit SSR Authoring](https://lit.dev/docs/ssr/authoring/)
-- [HTML Standard - Custom Elements](https://html.spec.whatwg.org/multipage/custom-elements.html)
-
-### Implementation Guides (MEDIUM confidence)
-- [CSS-Tricks ElementInternals](https://css-tricks.com/creating-custom-form-controls-with-elementinternals/)
-- [DEV Community ElementInternals](https://dev.to/stuffbreaker/custom-forms-with-web-components-and-elementinternals-4jaj)
-- [web.dev More Capable Form Controls](https://web.dev/articles/more-capable-form-controls)
-- [Benny Powers Form-Associated Custom Elements](https://bennypowers.dev/posts/form-associated-custom-elements/)
-- [Stencil Form-Associated](https://stenciljs.com/docs/form-associated)
-
-### Accessibility (MEDIUM confidence)
-- [Nolan Lawson - Shadow DOM ARIA](https://nolanlawson.com/2022/11/28/shadow-dom-and-accessibility-the-trouble-with-aria/)
-- [Igalia Cross-Root ARIA](https://blogs.igalia.com/mrego/solving-cross-root-aria-issues-in-shadow-dom/)
-- [MDN aria-invalid](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Attributes/aria-invalid)
-- [MDN aria-errormessage](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Attributes/aria-errormessage)
-
-### Textarea Specific (MEDIUM confidence)
-- [CSS-Tricks Auto-Growing Textarea](https://css-tricks.com/auto-growing-inputs-textareas/)
-- [Simon Willison TIL](https://til.simonwillison.net/css/resizing-textarea)
-- [WHATWG Textarea Sizing Issue](https://github.com/whatwg/html/issues/6807)
-
-### Testing (MEDIUM confidence)
-- [jsdom ElementInternals Issue](https://github.com/jsdom/jsdom/issues/3831)
-- [element-internals-polyfill](https://github.com/calebdwilliams/element-internals-polyfill)
-
----
-*Pitfalls research for: Lit.js Framework-Agnostic Component Library*
-*Original research: 2026-01-23*
-*NPM + SSR research added: 2026-01-24*
-*Theme Customization research added: 2026-01-25*
-*Form Inputs research added: 2026-01-26*
+### Primary (HIGH confidence)
+- [Floating UI Platform docs -- Shadow DOM offsetParent fix](https://floating-ui.com/docs/platform) -- Official recommendation for `composed-offset-position`
+- [Nolan Lawson: Shadow DOM and accessibility](https://nolanlawson.com/2022/11/28/shadow-dom-and-accessibility-the-trouble-with-aria/) -- Authoritative analysis of ARIA cross-root limitations
+- [Sara Soueidan: Accessible notifications with ARIA Live Regions](https://www.sarasoueidan.com/blog/accessible-notifications-with-aria-live-regions-part-1/) -- Definitive guide to live region implementation
+- [MDN: ARIA live regions](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Guides/Live_regions) -- Official documentation
+- [MDN: Popover API](https://developer.mozilla.org/en-US/docs/Web/API/Popover_API) -- Official API documentation
+- [Can I Use: Popover API](https://caniuse.com/mdn-api_htmlelement_popover) -- Browser support data
+- LitUI codebase: `packages/dialog/src/dialog.ts`, `packages/select/src/select.ts`, `packages/core/src/tailwind-element.ts` -- Existing patterns
+
+### Secondary (MEDIUM confidence)
+- [UI5 Web Components: Popover API migration](https://sap.github.io/ui5-webcomponents/blog/releases/popover-api-in-v2/) -- Real-world web component library migration
+- [Igalia: Solving Cross-root ARIA Issues in Shadow DOM](https://blogs.igalia.com/mrego/solving-cross-root-aria-issues-in-shadow-dom/) -- Cross-root ARIA reference target proposal status
+- [Shoelace Alert live region issue](https://github.com/shoelace-style/shoelace/issues/1359) -- Web component library that encountered the live region pitfall
+- [Floating UI Shadow DOM issues #1345, #2934](https://github.com/floating-ui/floating-ui/issues/1345) -- Real bug reports of positioning failures
+- [Josh Comeau: What The Heck, z-index??](https://www.joshwcomeau.com/css/stacking-contexts/) -- Stacking context explanation
+- [Can I Use: CSS Anchor Positioning](https://caniuse.com/css-anchor-positioning) -- Future positioning alternative
+- [OddBird Popover Polyfill](https://popover.oddbird.net/) -- Fallback option if needed
