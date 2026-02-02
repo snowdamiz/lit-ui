@@ -137,9 +137,11 @@ export async function copyComponentFiles(
 
   for (const file of files) {
     // Look up template by file stem (e.g., "checkbox-group" from "checkbox-group.ts")
-    // Falls back to component name for single-file components
+    // Tries: 1) exact stem, 2) componentName/stem (namespaced), 3) component name (single-file fallback)
     const fileStem = parse(file.path).name;
-    const template = getComponentTemplate(fileStem) ?? getComponentTemplate(componentName);
+    const template = getComponentTemplate(fileStem)
+      ?? getComponentTemplate(`${componentName}/${fileStem}`)
+      ?? getComponentTemplate(componentName);
     if (!template) {
       throw new Error(`Component template not found: ${fileStem} (component: ${componentName})`);
     }

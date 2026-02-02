@@ -158,6 +158,21 @@
       "dependencies": ["@floating-ui/dom", "composed-offset-position"],
       "peerDependencies": ["lit"],
       "registryDependencies": []
+    },
+    {
+      "name": "toast",
+      "description": "Toast notification system with imperative API, queue management, and swipe-to-dismiss",
+      "files": [
+        { "path": "components/toast/types.ts", "type": "component" },
+        { "path": "components/toast/icons.ts", "type": "component" },
+        { "path": "components/toast/state.ts", "type": "component" },
+        { "path": "components/toast/api.ts", "type": "component" },
+        { "path": "components/toast/toast.ts", "type": "component" },
+        { "path": "components/toast/toaster.ts", "type": "component" }
+      ],
+      "dependencies": ["lit"],
+      "peerDependencies": ["lit"],
+      "registryDependencies": []
     }
   ]
 }

@@ -5662,6 +5662,984 @@ declare global {
 `;
 
 /**
+ * Toast types template
+ */
+export const TOAST_TYPES_TEMPLATE = `export type ToastVariant = 'default' | 'success' | 'error' | 'warning' | 'info' | 'loading';
+export type ToastPosition = 'top-left' | 'top-center' | 'top-right' | 'bottom-left' | 'bottom-center' | 'bottom-right';
+
+export interface ToastAction {
+  label: string;
+  onClick: () => void;
+}
+
+export interface ToastOptions {
+  id?: string;
+  variant?: ToastVariant;
+  title?: string;
+  description?: string;
+  duration?: number;        // ms, default 5000, 0 = persistent
+  dismissible?: boolean;    // default true, show close X
+  action?: ToastAction;
+  position?: ToastPosition; // only used if toaster not already configured
+  onDismiss?: () => void;
+  onAutoClose?: () => void;
+}
+
+export interface ToastData extends Required<Pick<ToastOptions, 'id' | 'variant' | 'dismissible'>> {
+  title?: string;
+  description?: string;
+  duration: number;
+  action?: ToastAction;
+  position: ToastPosition;
+  onDismiss?: () => void;
+  onAutoClose?: () => void;
+  createdAt: number;
+  // Promise toast support
+  promiseState?: 'loading' | 'success' | 'error';
+  promiseMessages?: { loading: string; success: string | ((data: unknown) => string); error: string | ((err: unknown) => string) };
+}
+
+export type Subscriber = () => void;
+`;
+
+/**
+ * Toast icons template
+ */
+export const TOAST_ICONS_TEMPLATE = `import { html, nothing, type TemplateResult } from 'lit';
+import type { ToastVariant } from './types.js';
+
+/**
+ * Inline SVG icon templates for toast variants.
+ * Each SVG is 20x20, stroke-based, using currentColor.
+ * The containing element sets color via CSS custom properties.
+ */
+export const toastIcons: Record<ToastVariant, TemplateResult | typeof nothing> = {
+  default: nothing,
+
+  success: html\`
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+      fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+      aria-hidden="true" class="toast-icon">
+      <circle cx="12" cy="12" r="10"/>
+      <path d="m9 12 2 2 4-4"/>
+    </svg>
+  \`,
+
+  error: html\`
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+      fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+      aria-hidden="true" class="toast-icon">
+      <circle cx="12" cy="12" r="10"/>
+      <path d="m15 9-6 6"/>
+      <path d="m9 9 6 6"/>
+    </svg>
+  \`,
+
+  warning: html\`
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+      fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+      aria-hidden="true" class="toast-icon">
+      <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
+      <path d="M12 9v4"/>
+      <path d="M12 17h.01"/>
+    </svg>
+  \`,
+
+  info: html\`
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+      fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+      aria-hidden="true" class="toast-icon">
+      <circle cx="12" cy="12" r="10"/>
+      <path d="M12 16v-4"/>
+      <path d="M12 8h.01"/>
+    </svg>
+  \`,
+
+  loading: html\`
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+      fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+      aria-hidden="true" class="toast-icon toast-icon-loading">
+      <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+    </svg>
+  \`,
+};
+`;
+
+/**
+ * Toast state template
+ */
+export const TOAST_STATE_TEMPLATE = `import type { ToastData, Subscriber } from './types.js';
+
+/**
+ * Singleton state manager for toast notifications.
+ * Connects the imperative toast() API to the <lui-toaster> web component
+ * via the observer pattern (subscribe/notify).
+ */
+class ToastState {
+  private _toasts: ToastData[] = [];
+  private _subscribers = new Set<Subscriber>();
+
+  get toasts(): readonly ToastData[] {
+    return this._toasts;
+  }
+
+  subscribe(fn: Subscriber): () => void {
+    this._subscribers.add(fn);
+    return () => this._subscribers.delete(fn);
+  }
+
+  private _notify(): void {
+    this._subscribers.forEach(fn => fn());
+  }
+
+  add(toast: ToastData): void {
+    this._toasts = [toast, ...this._toasts];
+    this._notify();
+  }
+
+  dismiss(id: string): void {
+    const toast = this._toasts.find(t => t.id === id);
+    this._toasts = this._toasts.filter(t => t.id !== id);
+    toast?.onDismiss?.();
+    this._notify();
+  }
+
+  dismissAll(): void {
+    this._toasts.forEach(t => t.onDismiss?.());
+    this._toasts = [];
+    this._notify();
+  }
+
+  update(id: string, updates: Partial<ToastData>): void {
+    this._toasts = this._toasts.map(t =>
+      t.id === id ? { ...t, ...updates } : t
+    );
+    this._notify();
+  }
+}
+
+export const toastState = new ToastState();
+`;
+
+/**
+ * Toast API template
+ */
+export const TOAST_API_TEMPLATE = `import { toastState } from './state.js';
+import type { ToastData, ToastOptions } from './types.js';
+
+let idCounter = 0;
+
+function generateId(): string {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    return crypto.randomUUID();
+  }
+  return \\\`toast-\\\${++idCounter}\\\`;
+}
+
+function ensureToaster(): void {
+  if (typeof document === 'undefined') return;
+  if (!document.querySelector('lui-toaster')) {
+    const el = document.createElement('lui-toaster');
+    document.body.appendChild(el);
+  }
+}
+
+/**
+ * Imperative toast API.
+ *
+ * @example
+ * \\\`\\\`\\\`ts
+ * import { toast } from './api.js';
+ * toast('Hello world');
+ * toast.success('Saved!');
+ * toast.error('Something went wrong');
+ * toast.promise(fetchData(), { loading: 'Loading...', success: 'Done!', error: 'Failed' });
+ * \\\`\\\`\\\`
+ */
+export function toast(
+  messageOrOptions: string | ToastOptions,
+  options?: ToastOptions,
+): string {
+  // SSR guard
+  if (typeof document === 'undefined') return '';
+
+  const opts: ToastOptions = typeof messageOrOptions === 'string'
+    ? { ...options, title: messageOrOptions }
+    : messageOrOptions;
+
+  const id = opts.id ?? generateId();
+
+  const data: ToastData = {
+    id,
+    variant: opts.variant ?? 'default',
+    title: opts.title,
+    description: opts.description,
+    duration: opts.duration ?? 5000,
+    dismissible: opts.dismissible ?? true,
+    action: opts.action,
+    position: opts.position ?? 'bottom-right',
+    onDismiss: opts.onDismiss,
+    onAutoClose: opts.onAutoClose,
+    createdAt: Date.now(),
+  };
+
+  ensureToaster();
+  toastState.add(data);
+  return id;
+}
+
+toast.success = (message: string, opts?: ToastOptions): string =>
+  toast(message, { ...opts, variant: 'success' });
+
+toast.error = (message: string, opts?: ToastOptions): string =>
+  toast(message, { ...opts, variant: 'error' });
+
+toast.warning = (message: string, opts?: ToastOptions): string =>
+  toast(message, { ...opts, variant: 'warning' });
+
+toast.info = (message: string, opts?: ToastOptions): string =>
+  toast(message, { ...opts, variant: 'info' });
+
+toast.dismiss = (id: string): void => toastState.dismiss(id);
+
+toast.dismissAll = (): void => toastState.dismissAll();
+
+toast.promise = <T>(
+  promise: Promise<T>,
+  messages: {
+    loading: string;
+    success: string | ((data: T) => string);
+    error: string | ((err: unknown) => string);
+  },
+  opts?: ToastOptions,
+): Promise<T> => {
+  const id = toast(messages.loading, { ...opts, variant: 'loading', duration: 0 });
+  promise.then(
+    (data) => toastState.update(id, {
+      variant: 'success',
+      title: typeof messages.success === 'function' ? messages.success(data) : messages.success,
+      promiseState: 'success',
+      duration: opts?.duration ?? 5000,
+      createdAt: Date.now(),
+    }),
+    (err) => toastState.update(id, {
+      variant: 'error',
+      title: typeof messages.error === 'function' ? messages.error(err) : messages.error,
+      promiseState: 'error',
+      duration: opts?.duration ?? 5000,
+      createdAt: Date.now(),
+    }),
+  );
+  return promise;
+};
+`;
+
+/**
+ * Toast element template (lui-toast)
+ */
+export const TOAST_ELEMENT_TEMPLATE = `/**
+ * lui-toast - An individual toast notification element
+ *
+ * Features:
+ * - Auto-dismiss timer with pause on hover/focus
+ * - Swipe-to-dismiss via Pointer Events with velocity threshold
+ * - Close button for manual dismiss
+ * - Action button with callback
+ * - Accessible: role=status/alert based on variant
+ * - Title + description text support
+ * - Custom content via slot
+ * - CSS custom properties for theming
+ * - Reduced motion support
+ * - AbortController cleanup
+ *
+ * @slot - Default slot for custom content
+ * @fires toast-close - When toast should be removed (detail: { id, reason })
+ */
+
+import { LitElement, html, css, nothing } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
+import { toastIcons } from './icons.js';
+import type { ToastAction, ToastVariant, ToastPosition } from './types.js';
+
+@customElement('lui-toast')
+export class Toast extends LitElement {
+  // ---------------------------------------------------------------------------
+  // Public properties
+  // ---------------------------------------------------------------------------
+
+  @property({ type: String, attribute: 'toast-id' })
+  toastId = '';
+
+  @property({ type: String, reflect: true })
+  variant: ToastVariant = 'default';
+
+  @property({ type: String, attribute: 'toast-title' })
+  toastTitle?: string;
+
+  @property({ type: String })
+  description?: string;
+
+  @property({ type: Number })
+  duration = 5000;
+
+  @property({ type: Boolean })
+  dismissible = true;
+
+  /** Set via property only (not attribute) */
+  @property({ attribute: false })
+  action?: ToastAction;
+
+  @property({ type: String })
+  position: ToastPosition = 'bottom-right';
+
+  /** Callback when auto-close fires */
+  @property({ attribute: false })
+  onAutoClose?: () => void;
+
+  // ---------------------------------------------------------------------------
+  // Internal state
+  // ---------------------------------------------------------------------------
+
+  private _remaining = 0;
+  private _startTime = 0;
+  private _timerId: ReturnType<typeof setTimeout> | null = null;
+  private _paused = false;
+  private _swiping = false;
+  private _swipeX = 0;
+  private _swipeStartX = 0;
+  private _swipeStartTime = 0;
+  private _abortController?: AbortController;
+
+  // ---------------------------------------------------------------------------
+  // Styles
+  // ---------------------------------------------------------------------------
+
+  static override styles = [
+    css\`
+      :host {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+        padding: var(--ui-toast-padding, 0.875rem 1rem);
+        background: var(--ui-toast-bg, #fff);
+        color: var(--ui-toast-text, #1a1a1a);
+        border: 1px solid var(--ui-toast-border, #e5e5e5);
+        border-radius: var(--ui-toast-radius, 0.5rem);
+        box-shadow: var(--ui-toast-shadow, 0 4px 12px rgba(0,0,0,0.1));
+        max-width: var(--ui-toast-max-width, 420px);
+        width: 100%;
+        position: relative;
+        touch-action: pan-y;
+        cursor: grab;
+        user-select: none;
+        box-sizing: border-box;
+        pointer-events: auto;
+        font-family: system-ui, -apple-system, sans-serif;
+        font-size: 0.875rem;
+      }
+
+      /* Variant backgrounds and borders */
+      :host([variant="success"]) {
+        background: var(--ui-toast-success-bg, #f0fdf4);
+        border-color: var(--ui-toast-success-border, #bbf7d0);
+      }
+      :host([variant="error"]) {
+        background: var(--ui-toast-error-bg, #fef2f2);
+        border-color: var(--ui-toast-error-border, #fecaca);
+      }
+      :host([variant="warning"]) {
+        background: var(--ui-toast-warning-bg, #fffbeb);
+        border-color: var(--ui-toast-warning-border, #fde68a);
+      }
+      :host([variant="info"]) {
+        background: var(--ui-toast-info-bg, #eff6ff);
+        border-color: var(--ui-toast-info-border, #bfdbfe);
+      }
+
+      /* Variant icon colors */
+      :host([variant="success"]) .toast-icon-wrapper { color: var(--ui-toast-success-icon, #16a34a); }
+      :host([variant="error"]) .toast-icon-wrapper { color: var(--ui-toast-error-icon, #dc2626); }
+      :host([variant="warning"]) .toast-icon-wrapper { color: var(--ui-toast-warning-icon, #d97706); }
+      :host([variant="info"]) .toast-icon-wrapper { color: var(--ui-toast-info-icon, #2563eb); }
+      :host([variant="loading"]) .toast-icon-wrapper { color: var(--ui-toast-info-icon, #2563eb); }
+
+      .toast-icon-wrapper {
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        padding-top: 0.125rem;
+      }
+
+      .toast-icon-loading {
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+
+      .toast-content {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .toast-title {
+        font-weight: 600;
+        line-height: 1.4;
+      }
+
+      .toast-description {
+        margin-top: 0.25rem;
+        font-size: 0.875rem;
+        opacity: 0.9;
+        line-height: 1.4;
+      }
+
+      .toast-action {
+        appearance: none;
+        background: none;
+        border: none;
+        color: inherit;
+        font: inherit;
+        font-size: 0.875rem;
+        font-weight: 600;
+        text-decoration: underline;
+        text-underline-offset: 2px;
+        cursor: pointer;
+        padding: 0;
+        margin-top: 0.5rem;
+      }
+
+      .toast-action:hover {
+        opacity: 0.8;
+      }
+
+      .toast-close {
+        appearance: none;
+        background: none;
+        border: none;
+        color: inherit;
+        cursor: pointer;
+        padding: 0.25rem;
+        margin: -0.25rem -0.25rem -0.25rem 0;
+        flex-shrink: 0;
+        opacity: 0.5;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 0.25rem;
+        transition: opacity 150ms;
+      }
+
+      .toast-close:hover {
+        opacity: 1;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .toast-icon-loading {
+          animation: none;
+        }
+      }
+    \`,
+  ];
+
+  // ---------------------------------------------------------------------------
+  // Lifecycle
+  // ---------------------------------------------------------------------------
+
+  override connectedCallback(): void {
+    super.connectedCallback();
+    this._abortController = new AbortController();
+    const signal = this._abortController.signal;
+
+    // Start auto-dismiss timer
+    this._remaining = this.duration;
+    if (this.duration > 0) {
+      this._startTimer();
+    }
+
+    // Pointer events for swipe-to-dismiss
+    this.addEventListener('pointerdown', this._handlePointerDown, { signal });
+    this.addEventListener('pointermove', this._handlePointerMove, { signal });
+    this.addEventListener('pointerup', this._handlePointerUp, { signal });
+    this.addEventListener('pointercancel', this._handlePointerUp, { signal });
+
+    // Pause on hover
+    this.addEventListener('pointerenter', this._handlePointerEnter, { signal });
+    this.addEventListener('pointerleave', this._handlePointerLeave, { signal });
+
+    // Pause on focus
+    this.addEventListener('focusin', this._handleFocusIn, { signal });
+    this.addEventListener('focusout', this._handleFocusOut, { signal });
+  }
+
+  override disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this._abortController?.abort();
+    this._clearTimer();
+  }
+
+  // ---------------------------------------------------------------------------
+  // Timer management
+  // ---------------------------------------------------------------------------
+
+  private _startTimer(): void {
+    this._startTime = Date.now();
+    this._timerId = setTimeout(() => this._handleAutoClose(), this._remaining);
+  }
+
+  private _pauseTimer(): void {
+    if (this._timerId === null) return;
+    clearTimeout(this._timerId);
+    this._timerId = null;
+    this._remaining -= (Date.now() - this._startTime);
+    if (this._remaining < 0) this._remaining = 0;
+    this._paused = true;
+  }
+
+  private _resumeTimer(): void {
+    if (!this._paused || this._remaining <= 0 || this.duration === 0) return;
+    this._paused = false;
+    this._startTimer();
+  }
+
+  private _clearTimer(): void {
+    if (this._timerId !== null) {
+      clearTimeout(this._timerId);
+      this._timerId = null;
+    }
+  }
+
+  private _handleAutoClose(): void {
+    this.onAutoClose?.();
+    this.dispatchEvent(new CustomEvent('toast-close', {
+      bubbles: true,
+      composed: true,
+      detail: { id: this.toastId, reason: 'auto' },
+    }));
+  }
+
+  // ---------------------------------------------------------------------------
+  // Swipe-to-dismiss
+  // ---------------------------------------------------------------------------
+
+  private _handlePointerDown = (e: PointerEvent): void => {
+    if (e.button !== 0) return; // only primary button
+    this._swipeStartX = e.clientX;
+    this._swipeStartTime = Date.now();
+    this._swipeX = 0;
+    this._swiping = true;
+    this.setPointerCapture(e.pointerId);
+    this._pauseTimer();
+  };
+
+  private _handlePointerMove = (e: PointerEvent): void => {
+    if (!this._swiping) return;
+    this._swipeX = e.clientX - this._swipeStartX;
+    this.style.transform = \\\`translateX(\\\${this._swipeX}px)\\\`;
+    this.style.opacity = String(1 - Math.abs(this._swipeX) / 200);
+  };
+
+  private _handlePointerUp = (e: PointerEvent): void => {
+    if (!this._swiping) return;
+    this._swiping = false;
+    this.releasePointerCapture(e.pointerId);
+
+    const distance = Math.abs(this._swipeX);
+    const elapsed = Date.now() - this._swipeStartTime;
+    const velocity = elapsed > 0 ? distance / elapsed : 0; // px/ms
+
+    if (distance > 80 || velocity > 0.11) {
+      // Dismiss via swipe
+      this.dispatchEvent(new CustomEvent('toast-close', {
+        bubbles: true,
+        composed: true,
+        detail: { id: this.toastId, reason: 'swipe' },
+      }));
+    } else {
+      // Snap back
+      this.style.transition = 'transform 200ms ease-out, opacity 200ms ease-out';
+      this.style.transform = '';
+      this.style.opacity = '';
+      // Remove transition after snap back completes
+      const cleanup = () => {
+        this.style.transition = '';
+        this.removeEventListener('transitionend', cleanup);
+      };
+      this.addEventListener('transitionend', cleanup, { once: true });
+      this._resumeTimer();
+    }
+  };
+
+  // ---------------------------------------------------------------------------
+  // Hover/focus pause
+  // ---------------------------------------------------------------------------
+
+  private _handlePointerEnter = (): void => {
+    if (!this._swiping) {
+      this._pauseTimer();
+    }
+  };
+
+  private _handlePointerLeave = (): void => {
+    if (!this._swiping) {
+      this._resumeTimer();
+    }
+  };
+
+  private _handleFocusIn = (): void => {
+    this._pauseTimer();
+  };
+
+  private _handleFocusOut = (): void => {
+    if (!this._swiping) {
+      this._resumeTimer();
+    }
+  };
+
+  // ---------------------------------------------------------------------------
+  // Close / Action handlers
+  // ---------------------------------------------------------------------------
+
+  private _handleClose(): void {
+    this.dispatchEvent(new CustomEvent('toast-close', {
+      bubbles: true,
+      composed: true,
+      detail: { id: this.toastId, reason: 'dismiss' },
+    }));
+  }
+
+  private _handleAction(): void {
+    this.action?.onClick();
+    this.dispatchEvent(new CustomEvent('toast-close', {
+      bubbles: true,
+      composed: true,
+      detail: { id: this.toastId, reason: 'action' },
+    }));
+  }
+
+  // ---------------------------------------------------------------------------
+  // Render
+  // ---------------------------------------------------------------------------
+
+  override render() {
+    // Accessibility: error gets role="alert" (implies assertive), others get role="status" + polite
+    const isError = this.variant === 'error';
+    const icon = toastIcons[this.variant];
+
+    return html\\\`
+      <div
+        class="toast-inner"
+        role=\\\${isError ? 'alert' : 'status'}
+        aria-live=\\\${isError ? nothing : 'polite'}
+        aria-atomic="true"
+        style="display:contents"
+      >
+        \\\${icon !== nothing
+          ? html\\\`<div class="toast-icon-wrapper">\\\${icon}</div>\\\`
+          : nothing}
+
+        <div class="toast-content">
+          \\\${this.toastTitle
+            ? html\\\`<div class="toast-title">\\\${this.toastTitle}</div>\\\`
+            : nothing}
+          \\\${this.description
+            ? html\\\`<div class="toast-description">\\\${this.description}</div>\\\`
+            : nothing}
+          <slot></slot>
+          \\\${this.action
+            ? html\\\`<button class="toast-action" @click=\\\${this._handleAction}>\\\${this.action.label}</button>\\\`
+            : nothing}
+        </div>
+
+        \\\${this.dismissible
+          ? html\\\`
+            <button class="toast-close" @click=\\\${this._handleClose} aria-label="Close notification">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                aria-hidden="true">
+                <path d="M18 6 6 18"/>
+                <path d="m6 6 12 12"/>
+              </svg>
+            </button>
+          \\\`
+          : nothing}
+      </div>
+    \\\`;
+  }
+}
+
+// TypeScript global interface declaration for HTMLElementTagNameMap
+declare global {
+  interface HTMLElementTagNameMap {
+    'lui-toast': Toast;
+  }
+}
+`;
+
+/**
+ * Toast toaster template (lui-toaster)
+ */
+export const TOAST_TOASTER_TEMPLATE = `/**
+ * lui-toaster - Container element for toast notifications
+ *
+ * Features:
+ * - Subscribes to singleton toastState for reactive rendering
+ * - Queue management with configurable maxVisible
+ * - 6 position options via CSS positioning
+ * - Top-layer rendering via popover="manual"
+ * - Pre-registered accessible live regions
+ * - Enter/exit animations with @starting-style
+ * - SSR safe with isServer guard
+ */
+
+import { LitElement, html, css, nothing } from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
+import { repeat } from 'lit/directives/repeat.js';
+import { toastState } from './state.js';
+import type { ToastData, ToastPosition } from './types.js';
+
+const isServer = typeof document === 'undefined';
+
+@customElement('lui-toaster')
+export class Toaster extends LitElement {
+  // ---------------------------------------------------------------------------
+  // Public properties
+  // ---------------------------------------------------------------------------
+
+  @property({ type: String, reflect: true })
+  position: ToastPosition = 'bottom-right';
+
+  @property({ type: Number, attribute: 'max-visible' })
+  maxVisible = 3;
+
+  @property({ type: Number })
+  gap = 12;
+
+  // ---------------------------------------------------------------------------
+  // Internal state
+  // ---------------------------------------------------------------------------
+
+  @state()
+  private _toasts: ToastData[] = [];
+
+  private _unsubscribe: (() => void) | null = null;
+  private _exitingIds = new Set<string>();
+  private _popoverEl: HTMLElement | null = null;
+
+  // ---------------------------------------------------------------------------
+  // Derived
+  // ---------------------------------------------------------------------------
+
+  private get _visibleToasts(): ToastData[] {
+    return this._toasts.slice(0, this.maxVisible);
+  }
+
+  private get _isTopPosition(): boolean {
+    return this.position.startsWith('top');
+  }
+
+  // ---------------------------------------------------------------------------
+  // Styles
+  // ---------------------------------------------------------------------------
+
+  static override styles = [
+    css\`
+      :host {
+        display: contents;
+      }
+
+      .toaster-wrapper {
+        /* Override UA popover styles */
+        margin: 0;
+        border: none;
+        padding: 0;
+        background: transparent;
+        overflow: visible;
+        /* Layout */
+        position: fixed;
+        z-index: var(--ui-toast-z-index, 9999);
+        display: flex;
+        flex-direction: column;
+        gap: var(--ui-toast-gap, 12px);
+        pointer-events: none;
+        max-height: 100vh;
+        width: var(--ui-toast-max-width, 420px);
+      }
+
+      /* Bottom positions: newest at bottom (column-reverse stacks upward) */
+      :host([position="bottom-right"]) .toaster-wrapper,
+      :host([position="bottom-left"]) .toaster-wrapper,
+      :host([position="bottom-center"]) .toaster-wrapper {
+        flex-direction: column-reverse;
+      }
+
+      /* Position mapping */
+      :host([position="bottom-right"]) .toaster-wrapper { bottom: 1rem; right: 1rem; }
+      :host([position="bottom-left"]) .toaster-wrapper { bottom: 1rem; left: 1rem; }
+      :host([position="bottom-center"]) .toaster-wrapper { bottom: 1rem; left: 50%; transform: translateX(-50%); }
+      :host([position="top-right"]) .toaster-wrapper { top: 1rem; right: 1rem; }
+      :host([position="top-left"]) .toaster-wrapper { top: 1rem; left: 1rem; }
+      :host([position="top-center"]) .toaster-wrapper { top: 1rem; left: 50%; transform: translateX(-50%); }
+
+      /* Toast entry/exit animations */
+      lui-toast {
+        opacity: 0;
+        transition:
+          opacity 200ms ease-out,
+          transform 200ms ease-out;
+      }
+
+      lui-toast[data-open] {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      @starting-style {
+        lui-toast[data-open] {
+          opacity: 0;
+        }
+      }
+
+      /* Exiting state */
+      lui-toast[data-exiting] {
+        opacity: 0;
+        transition:
+          opacity 150ms ease-in,
+          transform 150ms ease-in;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        lui-toast,
+        lui-toast[data-open],
+        lui-toast[data-exiting] {
+          transition: none;
+        }
+      }
+
+      /* Screen reader only */
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border-width: 0;
+      }
+    \`,
+  ];
+
+  // ---------------------------------------------------------------------------
+  // Lifecycle
+  // ---------------------------------------------------------------------------
+
+  override connectedCallback(): void {
+    super.connectedCallback();
+    if (isServer) return;
+
+    this._unsubscribe = toastState.subscribe(() => {
+      this._toasts = [...toastState.toasts];
+      // Show popover if we have toasts
+      if (this._toasts.length > 0) {
+        this.updateComplete.then(() => this._showPopover());
+      }
+    });
+  }
+
+  override disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this._unsubscribe?.();
+    this._unsubscribe = null;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Popover management
+  // ---------------------------------------------------------------------------
+
+  private _showPopover(): void {
+    if (!this._popoverEl) {
+      this._popoverEl = this.renderRoot.querySelector<HTMLElement>('.toaster-wrapper');
+    }
+    if (this._popoverEl && !this._popoverEl.matches(':popover-open')) {
+      try {
+        this._popoverEl.showPopover();
+      } catch {
+        // Already showing or not supported
+      }
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Event handlers
+  // ---------------------------------------------------------------------------
+
+  private _handleToastClose(e: CustomEvent<{ id: string; reason: string }>): void {
+    const { id } = e.detail;
+    toastState.dismiss(id);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Render
+  // ---------------------------------------------------------------------------
+
+  override render() {
+    const visible = this._visibleToasts;
+
+    return html\\\`
+      <!-- Pre-registered live regions for accessibility -->
+      <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
+        \\\${visible
+          .filter(t => t.variant !== 'error')
+          .map(t => html\\\`<div>\\\${t.title ?? ''}\\\${t.description ? \\\` \\\${t.description}\\\` : ''}</div>\\\`)}
+      </div>
+      <div role="alert" aria-atomic="true" class="sr-only">
+        \\\${visible
+          .filter(t => t.variant === 'error')
+          .map(t => html\\\`<div>\\\${t.title ?? ''}\\\${t.description ? \\\` \\\${t.description}\\\` : ''}</div>\\\`)}
+      </div>
+
+      <div
+        class="toaster-wrapper"
+        popover="manual"
+        part="container"
+      >
+        \\\${repeat(
+          visible,
+          (t) => t.id,
+          (t) => html\\\`
+            <lui-toast
+              toast-id=\\\${t.id}
+              variant=\\\${t.variant}
+              toast-title=\\\${t.title ?? ''}
+              description=\\\${t.description ?? ''}
+              .duration=\\\${t.duration}
+              .dismissible=\\\${t.dismissible}
+              .action=\\\${t.action}
+              .position=\\\${this.position}
+              .onAutoClose=\\\${t.onAutoClose}
+              data-open
+              @toast-close=\\\${this._handleToastClose}
+            >
+            </lui-toast>
+          \\\`,
+        )}
+      </div>
+    \\\`;
+  }
+}
+
+// TypeScript global interface declaration for HTMLElementTagNameMap
+declare global {
+  interface HTMLElementTagNameMap {
+    'lui-toaster': Toaster;
+  }
+}
+`;
+
+/**
  * Map of component names to their templates
  */
 export const COMPONENT_TEMPLATES: Record<string, string> = {
@@ -5678,6 +6656,12 @@ export const COMPONENT_TEMPLATES: Record<string, string> = {
   tooltip: TOOLTIP_TEMPLATE,
   'tooltip/delay-group': TOOLTIP_DELAY_GROUP_TEMPLATE,
   popover: POPOVER_TEMPLATE,
+  'toast/types': TOAST_TYPES_TEMPLATE,
+  'toast/icons': TOAST_ICONS_TEMPLATE,
+  'toast/state': TOAST_STATE_TEMPLATE,
+  'toast/api': TOAST_API_TEMPLATE,
+  toast: TOAST_ELEMENT_TEMPLATE,
+  'toast/toaster': TOAST_TOASTER_TEMPLATE,
 };
 
 /**
