@@ -590,7 +590,7 @@ export function DialogPage() {
         {/* Navigation */}
         <div className="divider-fade mb-8" />
         <PrevNextNav
-          prev={{ title: 'Checkbox', href: '/components/checkbox' }}
+          prev={{ title: 'Date Range Picker', href: '/components/date-range-picker' }}
           next={{ title: 'Input', href: '/components/input' }}
         />
       </div>

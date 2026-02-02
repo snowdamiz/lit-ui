@@ -17,6 +17,12 @@ import { RadioPage } from './pages/components/RadioPage'
 import { TextareaPage } from './pages/components/TextareaPage'
 import { SelectPage } from './pages/components/SelectPage'
 import { SwitchPage } from './pages/components/SwitchPage'
+import { DatePickerPage } from './pages/components/DatePickerPage'
+import { DateRangePickerPage } from './pages/components/DateRangePickerPage'
+import { TimePickerPage } from './pages/components/TimePickerPage'
+import { AccessibilityGuide } from './pages/AccessibilityGuide'
+import { FormIntegrationGuide } from './pages/FormIntegrationGuide'
+import { I18nGuide } from './pages/I18nGuide'
 import { ConfiguratorPage } from './pages/configurator/ConfiguratorPage'
 
 export default function App() {
@@ -39,6 +45,9 @@ export default function App() {
             <Route path="guides/ssr" element={<SSRGuide />} />
             <Route path="guides/migration" element={<MigrationGuide />} />
             <Route path="guides/agent-skills" element={<AgentSkillsGuide />} />
+            <Route path="guides/accessibility" element={<AccessibilityGuide />} />
+            <Route path="guides/form-integration" element={<FormIntegrationGuide />} />
+            <Route path="guides/i18n" element={<I18nGuide />} />
 
             {/* Tools */}
             <Route path="configurator" element={<ConfiguratorPage />} />
@@ -47,12 +56,15 @@ export default function App() {
             <Route path="components/button" element={<ButtonPage />} />
             <Route path="components/calendar" element={<CalendarPage />} />
             <Route path="components/checkbox" element={<CheckboxPage />} />
+            <Route path="components/date-picker" element={<DatePickerPage />} />
+            <Route path="components/date-range-picker" element={<DateRangePickerPage />} />
             <Route path="components/dialog" element={<DialogPage />} />
             <Route path="components/input" element={<InputPage />} />
             <Route path="components/radio" element={<RadioPage />} />
             <Route path="components/textarea" element={<TextareaPage />} />
             <Route path="components/select" element={<SelectPage />} />
             <Route path="components/switch" element={<SwitchPage />} />
+            <Route path="components/time-picker" element={<TimePickerPage />} />
 
             {/* Catch-all for undefined routes */}
             <Route path="*" element={<Placeholder />} />

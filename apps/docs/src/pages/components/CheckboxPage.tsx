@@ -636,8 +636,8 @@ export function CheckboxPage() {
         {/* Navigation */}
         <div className="divider-fade mb-8" />
         <PrevNextNav
-          prev={{ title: 'Button', href: '/components/button' }}
-          next={{ title: 'Dialog', href: '/components/dialog' }}
+          prev={{ title: 'Calendar', href: '/components/calendar' }}
+          next={{ title: 'Date Picker', href: '/components/date-picker' }}
         />
       </div>
     </FrameworkProvider>

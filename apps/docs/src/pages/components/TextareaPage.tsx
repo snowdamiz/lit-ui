@@ -639,7 +639,7 @@ export function TextareaPage() {
         <div className="divider-fade mb-8" />
         <PrevNextNav
           prev={{ title: 'Switch', href: '/components/switch' }}
-          next={{ title: 'Theme Configurator', href: '/configurator' }}
+          next={{ title: 'Time Picker', href: '/components/time-picker' }}
         />
       </div>
     </FrameworkProvider>
