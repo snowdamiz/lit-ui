@@ -49,12 +49,11 @@ Plans:
   3. Moving between adjacent tooltips skips the show delay (delay group behavior), and touch devices do not trigger tooltips
   4. The tooltip component ships as `@lit-ui/tooltip` with CSS custom properties for theming, SSR safety, and proper listener cleanup via AbortController
   5. CLI registry entry exists with a copy-source template for the tooltip package
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 52-01: TBD
-- [ ] 52-02: TBD
-- [ ] 52-03: TBD
+- [ ] 52-01-PLAN.md — Tooltip package scaffolding, delay group module, and full tooltip component implementation (TIP-01 through TIP-16)
+- [ ] 52-02-PLAN.md — CLI registry entry, copy-source template, and full workspace build verification (TIP-17)
 
 ### Phase 53: Popover
 **Goal**: Users can create interactive overlay content that opens on click, manages focus correctly, and supports nesting -- serving as the foundation for menus, dropdowns, and custom overlays
@@ -114,7 +113,7 @@ Phases execute in numeric order: 51 -> 52 -> 53 -> 54 -> 55
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 51. Shared Infrastructure | v5.0 | 2/2 | Complete | 2026-02-02 |
-| 52. Tooltip | v5.0 | 0/TBD | Not started | - |
+| 52. Tooltip | v5.0 | 0/2 | Planning complete | - |
 | 53. Popover | v5.0 | 0/TBD | Not started | - |
 | 54. Toast | v5.0 | 0/TBD | Not started | - |
 | 55. Documentation | v5.0 | 0/TBD | Not started | - |
