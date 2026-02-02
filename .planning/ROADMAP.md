@@ -65,12 +65,11 @@ Plans:
   3. Nested popovers work correctly -- opening a child keeps the parent open, and closing a parent closes all children
   4. Both controlled (`open` property + `open-changed` event) and uncontrolled modes work, with an optional modal mode that traps focus
   5. The component ships as `@lit-ui/popover` with CSS custom properties, SSR safety, AbortController cleanup, and CLI registry entry
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 53-01: TBD
-- [ ] 53-02: TBD
-- [ ] 53-03: TBD
+- [ ] 53-01-PLAN.md — Popover package scaffolding and full component implementation (POP-01 through POP-17)
+- [ ] 53-02-PLAN.md — CLI registry entry, copy-source template, and full workspace build verification (POP-18)
 
 ### Phase 54: Toast
 **Goal**: Developers can trigger toast notifications from any framework using a simple imperative API, with queuing, auto-dismiss, swipe gestures, and full accessibility
