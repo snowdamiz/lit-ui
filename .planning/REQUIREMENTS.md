@@ -16,26 +16,26 @@ Requirements for overlay and feedback components milestone. Each maps to roadmap
 
 ### Toast
 
-- [ ] **TOAST-01**: Variant types — success, error, warning, info, default — with distinct colors and icons
-- [ ] **TOAST-02**: Auto-dismiss with configurable duration (default 5s), 0 for persistent
-- [ ] **TOAST-03**: Imperative API — `toast()`, `toast.success()`, `toast.error()`, `toast.warning()`, `toast.info()`, `toast.dismiss()`, `toast.dismissAll()`
-- [ ] **TOAST-04**: Declarative `<lui-toaster>` container element that auto-creates on first imperative call if not present
-- [ ] **TOAST-05**: 6 position options — top-left, top-center, top-right, bottom-left, bottom-center, bottom-right
-- [ ] **TOAST-06**: Dismiss button (close X) on each toast, configurable via `dismissible` option
-- [ ] **TOAST-07**: Stacking/queue management with configurable `maxVisible` (default 3), remaining queued
-- [ ] **TOAST-08**: Accessible live region — `role="status"` with `aria-live="polite"` for info, `role="alert"` with `aria-live="assertive"` for errors
-- [ ] **TOAST-09**: Enter/exit animations — slide-in/fade-in on appear, fade-out on dismiss, respects `prefers-reduced-motion`
-- [ ] **TOAST-10**: Description support — title + optional body text per toast
-- [ ] **TOAST-11**: Action buttons — single action per toast (e.g., Undo, Retry) with callback
-- [ ] **TOAST-12**: Promise toast — `toast.promise(asyncFn, { loading, success, error })` auto-transitions through states
-- [ ] **TOAST-13**: Swipe-to-dismiss via Pointer Events with `setPointerCapture`, velocity-based threshold
-- [ ] **TOAST-14**: Pause auto-dismiss on hover and focus
-- [ ] **TOAST-15**: Custom content via slot for arbitrary HTML beyond text
-- [ ] **TOAST-16**: Theme-aware — respects light/dark mode via CSS custom properties
-- [ ] **TOAST-17**: Top-layer rendering via `popover="manual"` to display above dialogs
-- [ ] **TOAST-18**: SSR safe — toast API is no-op during server rendering, container is client-only
-- [ ] **TOAST-19**: Framework-agnostic imperative API works from vanilla JS, React, Vue, Svelte equally
-- [ ] **TOAST-20**: CLI registry entry with copy-source template and npm package `@lit-ui/toast`
+- [x] **TOAST-01**: Variant types — success, error, warning, info, default — with distinct colors and icons
+- [x] **TOAST-02**: Auto-dismiss with configurable duration (default 5s), 0 for persistent
+- [x] **TOAST-03**: Imperative API — `toast()`, `toast.success()`, `toast.error()`, `toast.warning()`, `toast.info()`, `toast.dismiss()`, `toast.dismissAll()`
+- [x] **TOAST-04**: Declarative `<lui-toaster>` container element that auto-creates on first imperative call if not present
+- [x] **TOAST-05**: 6 position options — top-left, top-center, top-right, bottom-left, bottom-center, bottom-right
+- [x] **TOAST-06**: Dismiss button (close X) on each toast, configurable via `dismissible` option
+- [x] **TOAST-07**: Stacking/queue management with configurable `maxVisible` (default 3), remaining queued
+- [x] **TOAST-08**: Accessible live region — `role="status"` with `aria-live="polite"` for info, `role="alert"` with `aria-live="assertive"` for errors
+- [x] **TOAST-09**: Enter/exit animations — slide-in/fade-in on appear, fade-out on dismiss, respects `prefers-reduced-motion`
+- [x] **TOAST-10**: Description support — title + optional body text per toast
+- [x] **TOAST-11**: Action buttons — single action per toast (e.g., Undo, Retry) with callback
+- [x] **TOAST-12**: Promise toast — `toast.promise(asyncFn, { loading, success, error })` auto-transitions through states
+- [x] **TOAST-13**: Swipe-to-dismiss via Pointer Events with `setPointerCapture`, velocity-based threshold
+- [x] **TOAST-14**: Pause auto-dismiss on hover and focus
+- [x] **TOAST-15**: Custom content via slot for arbitrary HTML beyond text
+- [x] **TOAST-16**: Theme-aware — respects light/dark mode via CSS custom properties
+- [x] **TOAST-17**: Top-layer rendering via `popover="manual"` to display above dialogs
+- [x] **TOAST-18**: SSR safe — toast API is no-op during server rendering, container is client-only
+- [x] **TOAST-19**: Framework-agnostic imperative API works from vanilla JS, React, Vue, Svelte equally
+- [x] **TOAST-20**: CLI registry entry with copy-source template and npm package `@lit-ui/toast`
 
 ### Tooltip
 
