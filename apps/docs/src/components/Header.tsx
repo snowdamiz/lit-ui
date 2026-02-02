@@ -1,8 +1,26 @@
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router'
+import { Search } from 'lucide-react'
 import { MobileNav } from './MobileNav'
 import { ThemeToggle } from './ThemeToggle'
+import { CommandPalette } from './CommandPalette'
+
+const isMac = typeof navigator !== 'undefined' && /Mac|iPod|iPhone|iPad/.test(navigator.platform)
 
 export function Header() {
+  const [commandPaletteOpen, setCommandPaletteOpen] = useState(false)
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault()
+        setCommandPaletteOpen(true)
+      }
+    }
+    document.addEventListener('keydown', handler)
+    return () => document.removeEventListener('keydown', handler)
+  }, [])
+
   return (
     <header className="fixed top-0 left-0 right-0 h-16 z-50 bg-white dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800">
       <div className="h-full px-4 md:px-6 flex items-center justify-between">
@@ -19,6 +37,17 @@ export function Header() {
           <span className="text-sm font-medium text-gray-400 dark:text-gray-500 tracking-wide">/ DOCS</span>
         </Link>
         <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setCommandPaletteOpen(true)}
+            className="hidden sm:flex items-center gap-2 rounded-lg border border-gray-200 dark:border-gray-800 px-3 py-1.5 text-sm text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100 transition-colors cursor-pointer"
+          >
+            <Search className="h-3.5 w-3.5" />
+            <span>Search...</span>
+            <kbd className="ml-auto rounded bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 text-xs font-mono">
+              {isMac ? 'Cmd K' : 'Ctrl K'}
+            </kbd>
+          </button>
           <a
             href="https://github.com/snowdamiz/lit-ui"
             target="_blank"
@@ -38,6 +67,7 @@ export function Header() {
           <MobileNav />
         </div>
       </div>
+      <CommandPalette open={commandPaletteOpen} onOpenChange={setCommandPaletteOpen} />
     </header>
   )
 }
