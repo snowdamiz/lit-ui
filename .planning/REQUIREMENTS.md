@@ -111,14 +111,14 @@ Requirements for v4.3 milestone - complete date/time input capabilities. Each ma
 - [x] **TP-13**: Enter key confirms time selection
 - [x] **TP-14**: Component integrates with forms via ElementInternals
 - [x] **TP-15**: Form value submits as ISO 8601 time format (HH:mm:ss)
-- [ ] **TP-16**: Time interval prop controls minute precision (15, 30, 60)
-- [ ] **TP-17**: Business hours highlight (9 AM - 5 PM) with different style
-- [ ] **TP-18**: Time range slider provides visual duration selection
-- [ ] **TP-19**: Multi-timezone display shows local + selected timezone
-- [ ] **TP-20**: Voice input accepts "3 PM tomorrow" via Web Speech API
-- [ ] **TP-21**: Mobile scrolling wheels provide iOS-style time selection
-- [ ] **TP-22**: Component respects dark mode via :host-context(.dark)
-- [ ] **TP-23**: Component renders via SSR with Declarative Shadow DOM
+- [x] **TP-16**: Time interval prop controls minute precision (15, 30, 60)
+- [x] **TP-17**: Business hours highlight (9 AM - 5 PM) with different style
+- [x] **TP-18**: Time range slider provides visual duration selection
+- [x] **TP-19**: Multi-timezone display shows local + selected timezone
+- [x] **TP-20**: Voice input accepts "3 PM tomorrow" via Web Speech API
+- [x] **TP-21**: Mobile scrolling wheels provide iOS-style time selection
+- [x] **TP-22**: Component respects dark mode via :host-context(.dark)
+- [x] **TP-23**: Component renders via SSR with Declarative Shadow DOM
 
 ## Future Requirements
 
@@ -263,14 +263,14 @@ Which phases cover which requirements. Updated during roadmap creation.
 | TP-13 | Phase 48 | Pending |
 | TP-14 | Phase 48 | Pending |
 | TP-15 | Phase 48 | Pending |
-| TP-16 | Phase 49 | Pending |
-| TP-17 | Phase 49 | Pending |
-| TP-18 | Phase 49 | Pending |
-| TP-19 | Phase 49 | Pending |
-| TP-20 | Phase 49 | Pending |
-| TP-21 | Phase 49 | Pending |
-| TP-22 | Phase 49 | Pending |
-| TP-23 | Phase 49 | Pending |
+| TP-16 | Phase 49 | Complete |
+| TP-17 | Phase 49 | Complete |
+| TP-18 | Phase 49 | Complete |
+| TP-19 | Phase 49 | Complete |
+| TP-20 | Phase 49 | Complete |
+| TP-21 | Phase 49 | Complete |
+| TP-22 | Phase 49 | Complete |
+| TP-23 | Phase 49 | Complete |
 
 **Coverage:**
 - v4.3 requirements: 96 total
