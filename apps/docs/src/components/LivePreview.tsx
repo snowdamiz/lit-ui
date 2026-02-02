@@ -14,6 +14,9 @@ import '@lit-ui/select';
 import '@lit-ui/switch';
 import '@lit-ui/textarea';
 import '@lit-ui/calendar';
+import '@lit-ui/date-picker';
+import '@lit-ui/date-range-picker';
+import '@lit-ui/time-picker';
 
 // TypeScript JSX declaration for lui-button and lui-input
 declare global {
@@ -173,6 +176,67 @@ declare global {
           value?: string;
           label?: string;
           size?: 'sm' | 'md' | 'lg';
+        },
+        HTMLElement
+      >;
+      'lui-date-picker': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement> & {
+          value?: string;
+          name?: string;
+          locale?: string;
+          placeholder?: string;
+          'helper-text'?: string;
+          'min-date'?: string;
+          'max-date'?: string;
+          label?: string;
+          error?: string;
+          required?: boolean;
+          disabled?: boolean;
+          inline?: boolean;
+        },
+        HTMLElement
+      >;
+      'lui-date-range-picker': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement> & {
+          'start-date'?: string;
+          'end-date'?: string;
+          name?: string;
+          locale?: string;
+          placeholder?: string;
+          'helper-text'?: string;
+          'min-date'?: string;
+          'max-date'?: string;
+          'min-days'?: number;
+          'max-days'?: number;
+          label?: string;
+          error?: string;
+          required?: boolean;
+          disabled?: boolean;
+          comparison?: boolean;
+          'compare-start-date'?: string;
+          'compare-end-date'?: string;
+        },
+        HTMLElement
+      >;
+      'lui-time-picker': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement> & {
+          value?: string;
+          name?: string;
+          label?: string;
+          placeholder?: string;
+          required?: boolean;
+          disabled?: boolean;
+          readonly?: boolean;
+          hour12?: boolean;
+          locale?: string;
+          step?: number;
+          'min-time'?: string;
+          'max-time'?: string;
+          'allow-overnight'?: boolean;
+          'show-timezone'?: boolean;
+          timezone?: string;
+          voice?: boolean;
+          'interface-mode'?: 'clock' | 'dropdown' | 'both' | 'wheel' | 'range';
         },
         HTMLElement
       >;

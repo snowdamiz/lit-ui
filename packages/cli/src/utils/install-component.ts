@@ -15,6 +15,10 @@ export const componentToPackage: Record<string, string> = {
   checkbox: '@lit-ui/checkbox',
   radio: '@lit-ui/radio',
   switch: '@lit-ui/switch',
+  calendar: '@lit-ui/calendar',
+  'date-picker': '@lit-ui/date-picker',
+  'date-range-picker': '@lit-ui/date-range-picker',
+  'time-picker': '@lit-ui/time-picker',
 };
 
 /**

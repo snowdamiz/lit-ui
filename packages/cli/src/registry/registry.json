@@ -97,6 +97,47 @@
       ],
       "dependencies": ["date-fns"],
       "registryDependencies": []
+    },
+    {
+      "name": "date-picker",
+      "description": "Accessible date picker with calendar popup, text input parsing, and form participation",
+      "files": [
+        { "path": "components/date-picker/date-picker.ts", "type": "component" },
+        { "path": "components/date-picker/date-input-parser.ts", "type": "component" },
+        { "path": "components/date-picker/natural-language.ts", "type": "component" },
+        { "path": "components/date-picker/preset-types.ts", "type": "component" }
+      ],
+      "dependencies": ["date-fns", "@floating-ui/dom"],
+      "registryDependencies": ["calendar"]
+    },
+    {
+      "name": "date-range-picker",
+      "description": "Accessible date range picker with dual calendars, comparison mode, and ISO 8601 interval submission",
+      "files": [
+        { "path": "components/date-range-picker/date-range-picker.ts", "type": "component" },
+        { "path": "components/date-range-picker/range-utils.ts", "type": "component" },
+        { "path": "components/date-range-picker/range-preset-types.ts", "type": "component" }
+      ],
+      "dependencies": ["date-fns", "@floating-ui/dom"],
+      "registryDependencies": ["calendar"]
+    },
+    {
+      "name": "time-picker",
+      "description": "Accessible time picker with clock face, dropdown, voice input, and timezone support",
+      "files": [
+        { "path": "components/time-picker/time-picker.ts", "type": "component" },
+        { "path": "components/time-picker/time-input.ts", "type": "component" },
+        { "path": "components/time-picker/clock-face.ts", "type": "component" },
+        { "path": "components/time-picker/time-dropdown.ts", "type": "component" },
+        { "path": "components/time-picker/time-utils.ts", "type": "component" },
+        { "path": "components/time-picker/time-presets.ts", "type": "component" },
+        { "path": "components/time-picker/timezone-display.ts", "type": "component" },
+        { "path": "components/time-picker/time-range-slider.ts", "type": "component" },
+        { "path": "components/time-picker/time-scroll-wheel.ts", "type": "component" },
+        { "path": "components/time-picker/time-voice-input.ts", "type": "component" }
+      ],
+      "dependencies": ["@floating-ui/dom"],
+      "registryDependencies": ["calendar"]
     }
   ]
 }
