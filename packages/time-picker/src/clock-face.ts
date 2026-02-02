@@ -92,6 +92,14 @@ export class ClockFace extends TailwindElement {
       :host-context(.dark) .clock-tick {
         fill: var(--ui-time-picker-clock-text, #d1d5db);
       }
+
+      .business-indicator {
+        fill: var(--ui-time-picker-business-hour-accent, #22c55e);
+      }
+
+      :host-context(.dark) .business-indicator {
+        fill: var(--ui-time-picker-business-hour-accent, #4ade80);
+      }
     `,
   ];
 
@@ -107,11 +115,36 @@ export class ClockFace extends TailwindElement {
   /** Whether to show 12-hour or 24-hour display */
   @property({ type: Boolean, attribute: 'hour12' }) hour12 = false;
 
+  /** Minute step interval (controls snapping and label rendering in minute mode) */
+  @property({ type: Number }) step = 1;
+
+  /** Business hours range for visual indicator (false = disabled) */
+  @property({ attribute: false }) businessHours: { start: number; end: number } | false = false;
+
   /** Disabled state */
   @property({ type: Boolean, reflect: true }) disabled = false;
 
   /** Whether the user is currently dragging on the clock face */
   @state() private _dragging = false;
+
+  // ─── Interval snapping ─────────────────────────────────────────────
+
+  /**
+   * Snap a minute value to the nearest step interval.
+   * If step <= 1, returns minute unchanged.
+   */
+  private _snapToInterval(minute: number): number {
+    if (this.step <= 1) return minute;
+    return Math.round(minute / this.step) * this.step % 60;
+  }
+
+  /**
+   * Check if a given 24-hour value falls within business hours range.
+   */
+  private _isBusinessHour(hour24: number): boolean {
+    if (!this.businessHours) return false;
+    return hour24 >= this.businessHours.start && hour24 < this.businessHours.end;
+  }
 
   // ─── Hour mode rendering ───────────────────────────────────────────
 
@@ -128,6 +161,8 @@ export class ClockFace extends TailwindElement {
    */
   private _renderHour12() {
     const selected = this.hour === 0 ? 12 : this.hour > 12 ? this.hour - 12 : this.hour;
+    // Determine AM/PM context from current hour for business hours check
+    const isPM = this.hour >= 12;
     const items = [];
 
     for (let i = 1; i <= 12; i++) {
@@ -135,11 +170,21 @@ export class ClockFace extends TailwindElement {
       const pos = polarToCartesian(angle, OUTER_NUMBER_RADIUS);
       const isSelected = i === selected;
 
+      // Map display hour to 24-hour for business hours check
+      const hour24 = isPM ? (i === 12 ? 12 : i + 12) : (i === 12 ? 0 : i);
+      const isBusiness = this._isBusinessHour(hour24);
+
       items.push(svg`
         ${isSelected ? svg`
           <circle
             cx="${pos.x}" cy="${pos.y}" r="${MARKER_RADIUS}"
             fill="var(--ui-time-picker-primary, var(--ui-primary, #3b82f6))"
+          />
+        ` : ''}
+        ${isBusiness && !isSelected ? svg`
+          <circle
+            class="business-indicator"
+            cx="${pos.x}" cy="${pos.y + MARKER_RADIUS + 4}" r="3"
           />
         ` : ''}
         <text
@@ -167,12 +212,19 @@ export class ClockFace extends TailwindElement {
       const angle = i * 30;
       const pos = polarToCartesian(angle, OUTER_NUMBER_RADIUS);
       const isSelected = this.hour === i;
+      const isBusiness = this._isBusinessHour(i);
 
       items.push(svg`
         ${isSelected ? svg`
           <circle
             cx="${pos.x}" cy="${pos.y}" r="${MARKER_RADIUS}"
             fill="var(--ui-time-picker-primary, var(--ui-primary, #3b82f6))"
+          />
+        ` : ''}
+        ${isBusiness && !isSelected ? svg`
+          <circle
+            class="business-indicator"
+            cx="${pos.x}" cy="${pos.y + MARKER_RADIUS + 4}" r="3"
           />
         ` : ''}
         <text
@@ -194,12 +246,19 @@ export class ClockFace extends TailwindElement {
       const angle = position * 30;
       const pos = polarToCartesian(angle, INNER_NUMBER_RADIUS);
       const isSelected = this.hour === num;
+      const isBusiness = this._isBusinessHour(num);
 
       items.push(svg`
         ${isSelected ? svg`
           <circle
             cx="${pos.x}" cy="${pos.y}" r="${MARKER_RADIUS}"
             fill="var(--ui-time-picker-primary, var(--ui-primary, #3b82f6))"
+          />
+        ` : ''}
+        ${isBusiness && !isSelected ? svg`
+          <circle
+            class="business-indicator"
+            cx="${pos.x}" cy="${pos.y + MARKER_RADIUS + 4}" r="3"
           />
         ` : ''}
         <text
@@ -220,15 +279,14 @@ export class ClockFace extends TailwindElement {
   private _renderMinuteMode() {
     const items = [];
 
-    for (let i = 0; i < 60; i++) {
-      const angle = i * 6;
-      const isMajor = i % 5 === 0;
-      const pos = polarToCartesian(angle, OUTER_NUMBER_RADIUS);
-      const isSelected = this.minute === i;
-
-      if (isMajor) {
-        // Major label every 5 minutes
+    if (this.step > 1) {
+      // Step-aware rendering: only show labels at step interval positions
+      for (let i = 0; i < 60; i += this.step) {
+        const angle = i * 6;
+        const pos = polarToCartesian(angle, OUTER_NUMBER_RADIUS);
+        const isSelected = this.minute === i;
         const label = String(i).padStart(2, '0');
+
         items.push(svg`
           ${isSelected ? svg`
             <circle
@@ -244,20 +302,48 @@ export class ClockFace extends TailwindElement {
             fill="${isSelected ? 'white' : ''}"
           >${label}</text>
         `);
-      } else {
-        // Minor tick: small dot
-        items.push(svg`
-          ${isSelected ? svg`
+      }
+    } else {
+      // Default rendering: 60 positions with ticks and labels
+      for (let i = 0; i < 60; i++) {
+        const angle = i * 6;
+        const isMajor = i % 5 === 0;
+        const pos = polarToCartesian(angle, OUTER_NUMBER_RADIUS);
+        const isSelected = this.minute === i;
+
+        if (isMajor) {
+          // Major label every 5 minutes
+          const label = String(i).padStart(2, '0');
+          items.push(svg`
+            ${isSelected ? svg`
+              <circle
+                cx="${pos.x}" cy="${pos.y}" r="${MARKER_RADIUS}"
+                fill="var(--ui-time-picker-primary, var(--ui-primary, #3b82f6))"
+              />
+            ` : ''}
+            <text
+              class="number-text ${isSelected ? '' : 'clock-number'}"
+              x="${pos.x}" y="${pos.y}"
+              text-anchor="middle" dominant-baseline="central"
+              font-size="14"
+              fill="${isSelected ? 'white' : ''}"
+            >${label}</text>
+          `);
+        } else {
+          // Minor tick: small dot
+          items.push(svg`
+            ${isSelected ? svg`
+              <circle
+                cx="${pos.x}" cy="${pos.y}" r="${MARKER_RADIUS}"
+                fill="var(--ui-time-picker-primary, var(--ui-primary, #3b82f6))"
+              />
+            ` : ''}
             <circle
-              cx="${pos.x}" cy="${pos.y}" r="${MARKER_RADIUS}"
-              fill="var(--ui-time-picker-primary, var(--ui-primary, #3b82f6))"
+              class="clock-tick"
+              cx="${pos.x}" cy="${pos.y}" r="1"
             />
-          ` : ''}
-          <circle
-            class="clock-tick"
-            cx="${pos.x}" cy="${pos.y}" r="1"
-          />
-        `);
+          `);
+        }
       }
     }
 
@@ -386,7 +472,7 @@ export class ClockFace extends TailwindElement {
     if (this.mode === 'minute') {
       // Each minute = 6 degrees
       const minute = Math.round(angle / 6) % 60;
-      return minute;
+      return this._snapToInterval(minute);
     }
 
     // Hour mode
