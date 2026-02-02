@@ -126,75 +126,75 @@ Deferred to later milestones. Tracked but not in current roadmap.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| INFRA-01 | TBD | Pending |
-| INFRA-02 | TBD | Pending |
-| INFRA-03 | TBD | Pending |
-| INFRA-04 | TBD | Pending |
-| TOAST-01 | TBD | Pending |
-| TOAST-02 | TBD | Pending |
-| TOAST-03 | TBD | Pending |
-| TOAST-04 | TBD | Pending |
-| TOAST-05 | TBD | Pending |
-| TOAST-06 | TBD | Pending |
-| TOAST-07 | TBD | Pending |
-| TOAST-08 | TBD | Pending |
-| TOAST-09 | TBD | Pending |
-| TOAST-10 | TBD | Pending |
-| TOAST-11 | TBD | Pending |
-| TOAST-12 | TBD | Pending |
-| TOAST-13 | TBD | Pending |
-| TOAST-14 | TBD | Pending |
-| TOAST-15 | TBD | Pending |
-| TOAST-16 | TBD | Pending |
-| TOAST-17 | TBD | Pending |
-| TOAST-18 | TBD | Pending |
-| TOAST-19 | TBD | Pending |
-| TOAST-20 | TBD | Pending |
-| TIP-01 | TBD | Pending |
-| TIP-02 | TBD | Pending |
-| TIP-03 | TBD | Pending |
-| TIP-04 | TBD | Pending |
-| TIP-05 | TBD | Pending |
-| TIP-06 | TBD | Pending |
-| TIP-07 | TBD | Pending |
-| TIP-08 | TBD | Pending |
-| TIP-09 | TBD | Pending |
-| TIP-10 | TBD | Pending |
-| TIP-11 | TBD | Pending |
-| TIP-12 | TBD | Pending |
-| TIP-13 | TBD | Pending |
-| TIP-14 | TBD | Pending |
-| TIP-15 | TBD | Pending |
-| TIP-16 | TBD | Pending |
-| TIP-17 | TBD | Pending |
-| POP-01 | TBD | Pending |
-| POP-02 | TBD | Pending |
-| POP-03 | TBD | Pending |
-| POP-04 | TBD | Pending |
-| POP-05 | TBD | Pending |
-| POP-06 | TBD | Pending |
-| POP-07 | TBD | Pending |
-| POP-08 | TBD | Pending |
-| POP-09 | TBD | Pending |
-| POP-10 | TBD | Pending |
-| POP-11 | TBD | Pending |
-| POP-12 | TBD | Pending |
-| POP-13 | TBD | Pending |
-| POP-14 | TBD | Pending |
-| POP-15 | TBD | Pending |
-| POP-16 | TBD | Pending |
-| POP-17 | TBD | Pending |
-| POP-18 | TBD | Pending |
-| DOCS-01 | TBD | Pending |
-| DOCS-02 | TBD | Pending |
-| DOCS-03 | TBD | Pending |
-| DOCS-04 | TBD | Pending |
+| INFRA-01 | Phase 51 | Pending |
+| INFRA-02 | Phase 51 | Pending |
+| INFRA-03 | Phase 51 | Pending |
+| INFRA-04 | Phase 51 | Pending |
+| TOAST-01 | Phase 54 | Pending |
+| TOAST-02 | Phase 54 | Pending |
+| TOAST-03 | Phase 54 | Pending |
+| TOAST-04 | Phase 54 | Pending |
+| TOAST-05 | Phase 54 | Pending |
+| TOAST-06 | Phase 54 | Pending |
+| TOAST-07 | Phase 54 | Pending |
+| TOAST-08 | Phase 54 | Pending |
+| TOAST-09 | Phase 54 | Pending |
+| TOAST-10 | Phase 54 | Pending |
+| TOAST-11 | Phase 54 | Pending |
+| TOAST-12 | Phase 54 | Pending |
+| TOAST-13 | Phase 54 | Pending |
+| TOAST-14 | Phase 54 | Pending |
+| TOAST-15 | Phase 54 | Pending |
+| TOAST-16 | Phase 54 | Pending |
+| TOAST-17 | Phase 54 | Pending |
+| TOAST-18 | Phase 54 | Pending |
+| TOAST-19 | Phase 54 | Pending |
+| TOAST-20 | Phase 54 | Pending |
+| TIP-01 | Phase 52 | Pending |
+| TIP-02 | Phase 52 | Pending |
+| TIP-03 | Phase 52 | Pending |
+| TIP-04 | Phase 52 | Pending |
+| TIP-05 | Phase 52 | Pending |
+| TIP-06 | Phase 52 | Pending |
+| TIP-07 | Phase 52 | Pending |
+| TIP-08 | Phase 52 | Pending |
+| TIP-09 | Phase 52 | Pending |
+| TIP-10 | Phase 52 | Pending |
+| TIP-11 | Phase 52 | Pending |
+| TIP-12 | Phase 52 | Pending |
+| TIP-13 | Phase 52 | Pending |
+| TIP-14 | Phase 52 | Pending |
+| TIP-15 | Phase 52 | Pending |
+| TIP-16 | Phase 52 | Pending |
+| TIP-17 | Phase 52 | Pending |
+| POP-01 | Phase 53 | Pending |
+| POP-02 | Phase 53 | Pending |
+| POP-03 | Phase 53 | Pending |
+| POP-04 | Phase 53 | Pending |
+| POP-05 | Phase 53 | Pending |
+| POP-06 | Phase 53 | Pending |
+| POP-07 | Phase 53 | Pending |
+| POP-08 | Phase 53 | Pending |
+| POP-09 | Phase 53 | Pending |
+| POP-10 | Phase 53 | Pending |
+| POP-11 | Phase 53 | Pending |
+| POP-12 | Phase 53 | Pending |
+| POP-13 | Phase 53 | Pending |
+| POP-14 | Phase 53 | Pending |
+| POP-15 | Phase 53 | Pending |
+| POP-16 | Phase 53 | Pending |
+| POP-17 | Phase 53 | Pending |
+| POP-18 | Phase 53 | Pending |
+| DOCS-01 | Phase 55 | Pending |
+| DOCS-02 | Phase 55 | Pending |
+| DOCS-03 | Phase 55 | Pending |
+| DOCS-04 | Phase 55 | Pending |
 
 **Coverage:**
 - v5.0 requirements: 63 total
-- Mapped to phases: 0 (pending roadmap)
-- Unmapped: 63 (pending roadmap)
+- Mapped to phases: 63
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-02*
-*Last updated: 2026-02-02 after initial definition*
+*Last updated: 2026-02-02 after roadmap creation*
