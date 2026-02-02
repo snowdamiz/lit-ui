@@ -35,6 +35,12 @@ importers:
       '@lit-ui/core':
         specifier: workspace:*
         version: link:../../packages/core
+      '@lit-ui/date-picker':
+        specifier: workspace:*
+        version: link:../../packages/date-picker
+      '@lit-ui/date-range-picker':
+        specifier: workspace:*
+        version: link:../../packages/date-range-picker
       '@lit-ui/dialog':
         specifier: workspace:*
         version: link:../../packages/dialog
@@ -56,6 +62,9 @@ importers:
       '@lit-ui/textarea':
         specifier: workspace:*
         version: link:../../packages/textarea
+      '@lit-ui/time-picker':
+        specifier: workspace:*
+        version: link:../../packages/time-picker
       '@lit-ui/toast':
         specifier: workspace:*
         version: link:../../packages/toast
