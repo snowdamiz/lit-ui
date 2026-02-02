@@ -17,6 +17,9 @@ import '@lit-ui/calendar';
 import '@lit-ui/date-picker';
 import '@lit-ui/date-range-picker';
 import '@lit-ui/time-picker';
+import '@lit-ui/tooltip';
+import '@lit-ui/popover';
+import '@lit-ui/toast';
 
 // TypeScript JSX declaration for lui-button and lui-input
 declare global {
@@ -253,6 +256,52 @@ declare global {
           timezone?: string;
           voice?: boolean;
           'interface-mode'?: 'clock' | 'dropdown' | 'both' | 'wheel' | 'range';
+        },
+        HTMLElement
+      >;
+      'lui-tooltip': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement> & {
+          content?: string;
+          placement?: string;
+          'show-delay'?: number;
+          'hide-delay'?: number;
+          arrow?: boolean;
+          offset?: number;
+          rich?: boolean;
+          'tooltip-title'?: string;
+          disabled?: boolean;
+        },
+        HTMLElement
+      >;
+      'lui-popover': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement> & {
+          placement?: string;
+          open?: boolean;
+          arrow?: boolean;
+          modal?: boolean;
+          offset?: number;
+          'match-trigger-width'?: boolean;
+          disabled?: boolean;
+        },
+        HTMLElement
+      >;
+      'lui-toaster': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement> & {
+          position?: string;
+          'max-visible'?: number;
+          gap?: number;
+        },
+        HTMLElement
+      >;
+      'lui-toast': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement> & {
+          'toast-id'?: string;
+          variant?: string;
+          'toast-title'?: string;
+          description?: string;
+          duration?: number;
+          dismissible?: boolean;
+          position?: string;
         },
         HTMLElement
       >;
