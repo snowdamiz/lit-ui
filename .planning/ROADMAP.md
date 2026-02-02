@@ -33,11 +33,11 @@ This milestone adds three overlay/feedback primitives -- Toast, Tooltip, and Pop
   2. Floating UI positioning works correctly inside nested Shadow DOM trees (composed-offset-position integration verified)
   3. CSS custom property token namespaces are defined for toast, tooltip, and popover (`--ui-toast-*`, `--ui-tooltip-*`, `--ui-popover-*`)
   4. A shared CSS animation pattern using `@starting-style` + `transition-behavior: allow-discrete` is available and follows Dialog's established approach
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 51-01: TBD
-- [ ] 51-02: TBD
+- [ ] 51-01-PLAN.md — Floating UI wrapper with Shadow DOM platform fix (`@lit-ui/core/floating` entry point)
+- [ ] 51-02-PLAN.md — CSS design tokens for tooltip/popover/toast and overlay animation pattern
 
 ### Phase 52: Tooltip
 **Goal**: Users can wrap any element with `<lui-tooltip>` to display accessible, well-positioned hint text on hover and keyboard focus
@@ -113,7 +113,7 @@ Phases execute in numeric order: 51 -> 52 -> 53 -> 54 -> 55
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
-| 51. Shared Infrastructure | v5.0 | 0/TBD | Not started | - |
+| 51. Shared Infrastructure | v5.0 | 0/2 | Planned | - |
 | 52. Tooltip | v5.0 | 0/TBD | Not started | - |
 | 53. Popover | v5.0 | 0/TBD | Not started | - |
 | 54. Toast | v5.0 | 0/TBD | Not started | - |
