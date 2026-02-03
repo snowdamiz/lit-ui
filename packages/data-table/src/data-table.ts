@@ -27,16 +27,20 @@ import {
   TableController,
   getCoreRowModel,
   getSortedRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
   flexRender,
   type RowData,
   type Table,
   type Header,
   type Cell,
   type Row,
+  type Column,
   type SortingState,
+  type PaginationState,
 } from '@tanstack/lit-table';
 import { VirtualizerController } from '@tanstack/lit-virtual';
-import type { ColumnDef, LoadingState, EmptyStateType, RowSelectionState, SelectionChangeEvent, ColumnFiltersState } from './types.js';
+import type { ColumnDef, LoadingState, EmptyStateType, RowSelectionState, SelectionChangeEvent, ColumnFiltersState, PaginationChangeEvent, FilterChangeEvent } from './types.js';
 import { KeyboardNavigationManager, type GridPosition } from './keyboard-navigation.js';
 import { createSelectionColumn } from './selection-column.js';
 
@@ -227,19 +231,65 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
   @property({ type: Boolean, attribute: 'preserve-selection-on-filter' })
   preserveSelectionOnFilter = false;
 
+  // ==========================================================================
+  // Filtering properties
+  // ==========================================================================
+
   /**
-   * Column filters state (used for selection clearing detection).
-   * Full implementation in Phase 63.
+   * Column filters state.
+   * Array of filter objects with column ID and filter value.
+   * Integrates with TanStack Table's filtering system.
    */
   @property({ type: Array })
   columnFilters: ColumnFiltersState = [];
 
   /**
-   * Global filter string (used for selection clearing detection).
-   * Full implementation in Phase 63.
+   * Global filter string.
+   * Searches across all filterable columns when set.
    */
   @property({ type: String, attribute: 'global-filter' })
   globalFilter = '';
+
+  /**
+   * Enable manual/server-side filtering mode.
+   * When true, filtering is handled externally and ui-filter-change events are emitted.
+   * When false (default), client-side filtering is performed via getFilteredRowModel.
+   */
+  @property({ type: Boolean, attribute: 'manual-filtering' })
+  manualFiltering = false;
+
+  // ==========================================================================
+  // Pagination properties
+  // ==========================================================================
+
+  /**
+   * Current pagination state.
+   * Includes pageIndex (0-based) and pageSize.
+   */
+  @property({ type: Object })
+  pagination: PaginationState = { pageIndex: 0, pageSize: 25 };
+
+  /**
+   * Enable manual/server-side pagination mode.
+   * When true, pagination is handled externally and ui-pagination-change events are emitted.
+   * When false (default), client-side pagination is performed via getPaginationRowModel.
+   */
+  @property({ type: Boolean, attribute: 'manual-pagination' })
+  manualPagination = false;
+
+  /**
+   * Total page count for server-side pagination.
+   * Required when manualPagination is true for proper page navigation.
+   */
+  @property({ type: Number, attribute: 'page-count' })
+  pageCount?: number;
+
+  /**
+   * Available page size options for pagination controls.
+   * @default [10, 25, 50, 100]
+   */
+  @property({ type: Array, attribute: false })
+  pageSizeOptions = [10, 25, 50, 100];
 
   /**
    * Previous filter state for change detection.
@@ -512,6 +562,46 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
   }
 
   /**
+   * Dispatch pagination change event.
+   */
+  private dispatchPaginationChange(pagination: PaginationState): void {
+    const event = new CustomEvent('ui-pagination-change', {
+      detail: {
+        pageIndex: pagination.pageIndex,
+        pageSize: pagination.pageSize,
+        pageCount: this.pageCount,
+      } satisfies PaginationChangeEvent,
+      bubbles: true,
+      composed: true,
+    });
+    this.dispatchEvent(event);
+  }
+
+  /**
+   * Dispatch filter change event with both column and global filter state.
+   * @param columnFilters - Current column filters state
+   * @param globalFilter - Current global filter string
+   * @param changedColumn - Column ID that changed (undefined if global filter changed)
+   */
+  private dispatchFilterChange(
+    columnFilters: ColumnFiltersState,
+    globalFilter: string,
+    changedColumn?: string
+  ): void {
+    const event = new CustomEvent('ui-filter-change', {
+      detail: {
+        columnFilters,
+        globalFilter,
+        changedColumn,
+        isGlobalFilter: changedColumn === undefined,
+      } satisfies FilterChangeEvent,
+      bubbles: true,
+      composed: true,
+    });
+    this.dispatchEvent(event);
+  }
+
+  /**
    * Get all rows between two row IDs (inclusive).
    * Used for shift+click range selection.
    */
@@ -632,10 +722,7 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
    * For server-side: emits event for parent to handle.
    */
   private handleSelectAll(table: Table<TData>, totalCount: number): void {
-    // Check if manual pagination is enabled (will be added in Phase 63)
-    const manualPagination = false; // Placeholder until Phase 63
-
-    if (manualPagination) {
+    if (this.manualPagination) {
       // Server-side: emit event with intent
       const event = new CustomEvent('ui-select-all-requested', {
         detail: { totalCount },
@@ -1433,6 +1520,7 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
       state: {
         sorting: this.sorting,
         rowSelection: this.rowSelection,
+        pagination: this.pagination,
       },
       onSortingChange: (updater) => {
         const newSorting =
@@ -1446,11 +1534,20 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
         this.rowSelection = newSelection;
         this.dispatchSelectionChange(table, newSelection, 'user');
       },
+      onPaginationChange: (updater) => {
+        const newPagination =
+          typeof updater === 'function' ? updater(this.pagination) : updater;
+        this.pagination = newPagination;
+        this.dispatchPaginationChange(newPagination);
+      },
       getRowId: (row) => String(row[this.rowIdKey as keyof TData]),
       enableRowSelection: this.enableSelection,
       getCoreRowModel: getCoreRowModel(),
       getSortedRowModel: this.manualSorting ? undefined : getSortedRowModel(),
+      getPaginationRowModel: this.manualPagination ? undefined : getPaginationRowModel(),
       manualSorting: this.manualSorting,
+      manualPagination: this.manualPagination,
+      pageCount: this.pageCount,
     });
 
     // Calculate total counts for ARIA

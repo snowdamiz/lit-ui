@@ -32,6 +32,17 @@ export type {
 };
 
 /**
+ * Filter type indicator for column-specific filter UI.
+ *
+ * Used in column meta to specify which filter component to render:
+ * - 'text': Text input with case-insensitive contains (TanStack `includesString`)
+ * - 'number': Min/max range inputs (TanStack `inNumberRange`)
+ * - 'date': Date range picker (custom range filter)
+ * - 'select': Multi-select dropdown (TanStack `arrIncludesSome`)
+ */
+export type FilterType = 'text' | 'number' | 'date' | 'select';
+
+/**
  * LitUI-specific column meta extensions.
  *
  * These will be added to TanStack's column meta for features
@@ -45,6 +56,25 @@ export interface LitUIColumnMeta<TData extends RowData = RowData> {
   // - editComponent?: 'input' | 'select' | 'date' | TemplateResult
   // - filterComponent?: TemplateResult
   // - pinnedPosition?: 'left' | 'right'
+
+  /**
+   * Filter type for this column. Determines which filter UI component is rendered.
+   * If not specified, filtering is determined by column's enableColumnFilter.
+   */
+  filterType?: FilterType;
+
+  /**
+   * Options for select-type filters (enum columns).
+   * Each string represents a valid value that can be selected.
+   */
+  filterOptions?: string[];
+
+  /**
+   * Enable or disable filtering for this column. Defaults to true for filterable columns.
+   * Set to false to explicitly disable filtering even when table has filtering enabled.
+   */
+  enableFiltering?: boolean;
+
   /** Placeholder to satisfy generic constraint */
   _litui?: TData;
 }
@@ -255,4 +285,36 @@ export interface SelectionChangeEvent<TData extends RowData = RowData> {
   selectedCount: number;
   /** Reason for the change */
   reason?: 'user' | 'select-all' | 'clear' | 'filter-changed';
+}
+
+/**
+ * Event detail for pagination change events.
+ *
+ * Emitted when pagination state changes via navigation or page size selection.
+ * Used for both client-side and server-side pagination modes.
+ */
+export interface PaginationChangeEvent {
+  /** Current page index (0-based) */
+  pageIndex: number;
+  /** Current page size */
+  pageSize: number;
+  /** Total page count (if known) */
+  pageCount?: number;
+}
+
+/**
+ * Event detail for filter change events.
+ *
+ * Emitted when column filters or global filter changes.
+ * Provides both TanStack state and change context for handlers.
+ */
+export interface FilterChangeEvent {
+  /** Current column filters state (TanStack format) */
+  columnFilters: ColumnFiltersState;
+  /** Current global filter string */
+  globalFilter: string;
+  /** Column ID that changed (undefined if global filter changed) */
+  changedColumn?: string;
+  /** True if the global filter changed, false if a column filter changed */
+  isGlobalFilter: boolean;
 }
