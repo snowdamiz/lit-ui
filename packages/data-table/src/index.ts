@@ -33,3 +33,6 @@ export { createSelectionColumn } from './selection-column.js';
 
 // Pagination components
 export * from './pagination/index.js';
+
+// Filter components
+export * from './filters/index.js';
