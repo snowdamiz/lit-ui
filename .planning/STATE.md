@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-02)
 ## Current Position
 
 Phase: 56 of 60 (Accordion Core)
-Plan: 1 of 2 in current phase
-Status: In progress
-Last activity: 2026-02-03 — Completed 56-01-PLAN.md
+Plan: 2 of 2 in current phase
+Status: Phase complete
+Last activity: 2026-02-03 — Completed 56-02-PLAN.md
 
-Progress: ████░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 12.5% (v6.0)
+Progress: █████░░░░░░░░░░░░░░░░░░░░░░░░░░░ 18.75% (v6.0)
 
 ## Performance Metrics
 
@@ -34,6 +34,9 @@ Recent decisions affecting current work:
 - ARIA ID references must stay within shadow DOM boundary (shadow-internal IDs, slotted content)
 - SSR slotchange workaround: manually dispatch slotchange in firstUpdated() after hydration
 - Private getExpandedSet() instead of public getter to avoid api-extractor crash on Set<string> in DTS rollup
+- Roving tabindex pattern reused from RadioGroup for accordion keyboard nav
+- Disabled items use cursor:not-allowed + opacity instead of pointer-events:none to remain focusable
+- aria-disabled uses lit `nothing` sentinel to omit attribute when not disabled
 
 ### Pending Todos
 
@@ -57,5 +60,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-03
-Stopped at: Completed 56-01-PLAN.md
+Stopped at: Completed 56-02-PLAN.md (Phase 56 complete)
 Resume file: None
