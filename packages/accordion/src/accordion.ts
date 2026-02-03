@@ -134,9 +134,11 @@ export class Accordion extends TailwindElement {
   protected override updated(changedProperties: PropertyValues): void {
     if (changedProperties.has('value')) {
       this.syncChildStates();
+      this.updateRovingTabindex();
     }
     if (changedProperties.has('disabled')) {
       this.syncDisabledState();
+      this.updateRovingTabindex();
     }
   }
 
@@ -152,6 +154,68 @@ export class Accordion extends TailwindElement {
     ) as AccordionItem[];
     this.syncChildStates();
     this.syncDisabledState();
+    this.updateRovingTabindex();
+  }
+
+  /**
+   * Handle keyboard navigation on the accordion container.
+   * ArrowDown/ArrowUp move focus between enabled items with wrapping.
+   * Home/End jump to first/last enabled item.
+   * Enter/Space are NOT handled here — they trigger the button's native click.
+   */
+  private handleKeyDown(e: KeyboardEvent): void {
+    const keys = ['ArrowDown', 'ArrowUp', 'Home', 'End'];
+    if (!keys.includes(e.key)) return;
+    e.preventDefault();
+
+    const enabledItems = this.items.filter((i) => !i.disabled);
+    if (enabledItems.length === 0) return;
+
+    const currentIndex = enabledItems.findIndex((i) => i.tabIndex === 0);
+    const idx = currentIndex === -1 ? 0 : currentIndex;
+    let nextIndex: number;
+
+    switch (e.key) {
+      case 'ArrowDown':
+        nextIndex = (idx + 1) % enabledItems.length;
+        break;
+      case 'ArrowUp':
+        nextIndex = (idx - 1 + enabledItems.length) % enabledItems.length;
+        break;
+      case 'Home':
+        nextIndex = 0;
+        break;
+      case 'End':
+        nextIndex = enabledItems.length - 1;
+        break;
+      default:
+        return;
+    }
+
+    // Update roving tabindex
+    for (const item of this.items) {
+      item.tabIndex = -1;
+    }
+    enabledItems[nextIndex].tabIndex = 0;
+    enabledItems[nextIndex].focusHeader();
+  }
+
+  /**
+   * Update roving tabindex so exactly one enabled item has tabindex=0.
+   * Priority: first expanded enabled item, otherwise first enabled item.
+   */
+  private updateRovingTabindex(): void {
+    const enabledItems = this.items.filter((i) => !i.disabled);
+    if (enabledItems.length === 0) return;
+
+    const expanded = this.getExpandedSet();
+    const focusTarget =
+      enabledItems.find((i) => expanded.has(i.value)) ?? enabledItems[0];
+
+    for (const item of this.items) {
+      item.tabIndex = -1;
+    }
+    focusTarget.tabIndex = 0;
   }
 
   /**
@@ -233,7 +297,10 @@ export class Accordion extends TailwindElement {
 
   override render() {
     return html`
-      <div @ui-accordion-toggle=${this.handleItemToggle}>
+      <div
+        @ui-accordion-toggle=${this.handleItemToggle}
+        @keydown=${this.handleKeyDown}
+      >
         <slot @slotchange=${this.handleSlotChange}></slot>
       </div>
     `;

@@ -14,7 +14,7 @@
  * @slot default - Content for the collapsible panel
  */
 
-import { html, css } from 'lit';
+import { html, css, nothing } from 'lit';
 import { property } from 'lit/decorators.js';
 import { TailwindElement, tailwindBaseStyles } from '@lit-ui/core';
 import { dispatchCustomEvent } from '@lit-ui/core';
@@ -69,8 +69,9 @@ export class AccordionItem extends TailwindElement {
         display: block;
       }
 
-      :host([disabled]) {
-        pointer-events: none;
+      :host([disabled]) .header-button {
+        cursor: not-allowed;
+        opacity: 0.5;
       }
 
       .header-button {
@@ -126,6 +127,17 @@ export class AccordionItem extends TailwindElement {
   ];
 
   /**
+   * Focus the header button programmatically.
+   * Used by parent accordion for roving tabindex keyboard navigation.
+   */
+  focusHeader(): void {
+    const btn = this.shadowRoot?.querySelector(
+      '.header-button'
+    ) as HTMLElement | null;
+    btn?.focus();
+  }
+
+  /**
    * Handle click on the header button.
    * Dispatches ui-accordion-toggle internal event for parent to handle.
    * Does NOT self-toggle expanded state.
@@ -143,6 +155,7 @@ export class AccordionItem extends TailwindElement {
           class="header-button"
           aria-expanded="${this.expanded ? 'true' : 'false'}"
           aria-controls="${this.itemId}-panel"
+          aria-disabled="${this.disabled ? 'true' : nothing}"
           tabindex="-1"
           @click=${this.handleToggle}
         >
