@@ -239,3 +239,20 @@ export interface SortChangeEvent {
   /** Helper format for REST APIs */
   sortParams: Array<{ column: string; direction: 'asc' | 'desc' }>;
 }
+
+/**
+ * Event detail for selection change events.
+ *
+ * Emitted when row selection state changes via checkbox interactions.
+ * Provides both the raw selection state and convenience arrays.
+ */
+export interface SelectionChangeEvent<TData extends RowData = RowData> {
+  /** Row selection state (row IDs mapped to boolean) */
+  rowSelection: RowSelectionState;
+  /** Array of currently selected row objects */
+  selectedRows: TData[];
+  /** Number of selected rows */
+  selectedCount: number;
+  /** Reason for the change */
+  reason?: 'user' | 'select-all' | 'clear' | 'filter-changed';
+}

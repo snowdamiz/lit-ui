@@ -36,8 +36,9 @@ import {
   type SortingState,
 } from '@tanstack/lit-table';
 import { VirtualizerController } from '@tanstack/lit-virtual';
-import type { ColumnDef, LoadingState, EmptyStateType } from './types.js';
+import type { ColumnDef, LoadingState, EmptyStateType, RowSelectionState, SelectionChangeEvent } from './types.js';
 import { KeyboardNavigationManager, type GridPosition } from './keyboard-navigation.js';
+import { createSelectionColumn } from './selection-column.js';
 
 /**
  * A high-performance data table component with TanStack Table integration.
@@ -185,6 +186,27 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
   @property({ type: Boolean, attribute: 'manual-sorting' })
   manualSorting = false;
 
+  /**
+   * Enable row selection with checkbox column.
+   * When true, adds a checkbox column as the first column.
+   */
+  @property({ type: Boolean, attribute: 'enable-selection' })
+  enableSelection = false;
+
+  /**
+   * Current row selection state.
+   * Maps row IDs to selection status.
+   */
+  @property({ type: Object })
+  rowSelection: RowSelectionState = {};
+
+  /**
+   * Property key to use as row ID for selection tracking.
+   * Defaults to 'id'. Must be a unique identifier for each row.
+   */
+  @property({ attribute: 'row-id-key' })
+  rowIdKey = 'id';
+
   // ==========================================================================
   // Lifecycle methods
   // ==========================================================================
@@ -200,13 +222,19 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
       this.initVirtualizer();
     }
 
-    // Update keyboard navigation bounds when data or columns change
-    if (changedProperties.has('data') || changedProperties.has('columns')) {
+    // Update keyboard navigation bounds when data, columns, or selection state changes
+    if (
+      changedProperties.has('data') ||
+      changedProperties.has('columns') ||
+      changedProperties.has('enableSelection')
+    ) {
       const maxHeightPx = parseInt(this.maxHeight, 10) || 400;
       const visibleRowCount = Math.floor(maxHeightPx / (this.rowHeight || 48));
+      // Account for selection column when enabled
+      const colCount = this.enableSelection ? this.columns.length + 1 : this.columns.length;
       this.navManager.setBounds({
         rowCount: this.data.length,
-        colCount: this.columns.length,
+        colCount,
         visibleRowCount,
       });
     }
@@ -334,12 +362,23 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
    * Announce position change to screen readers via live region.
    */
   private announcePosition(pos: GridPosition): void {
-    const column = this.columns[pos.col];
-    const colHeader = column?.header;
-    const headerText =
-      typeof colHeader === 'function' ? 'Column' : String(colHeader || 'Column');
+    // Account for selection column offset
+    const effectiveColIndex = this.enableSelection ? pos.col - 1 : pos.col;
+    const effectiveColCount = this.enableSelection
+      ? this.columns.length + 1
+      : this.columns.length;
 
-    this._announcement = `Row ${pos.row + 1} of ${this.data.length}, ${headerText}, Column ${pos.col + 1} of ${this.columns.length}`;
+    let headerText: string;
+    if (this.enableSelection && pos.col === 0) {
+      headerText = 'Selection';
+    } else {
+      const column = this.columns[effectiveColIndex];
+      const colHeader = column?.header;
+      headerText =
+        typeof colHeader === 'function' ? 'Column' : String(colHeader || 'Column');
+    }
+
+    this._announcement = `Row ${pos.row + 1} of ${this.data.length}, ${headerText}, Column ${pos.col + 1} of ${effectiveColCount}`;
   }
 
   // ==========================================================================
@@ -358,6 +397,28 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
           direction: s.desc ? 'desc' : 'asc',
         })),
       },
+      bubbles: true,
+      composed: true,
+    });
+    this.dispatchEvent(event);
+  }
+
+  /**
+   * Dispatch selection change event with selected rows and count.
+   */
+  private dispatchSelectionChange(
+    table: Table<TData>,
+    rowSelection: RowSelectionState,
+    reason: SelectionChangeEvent<TData>['reason']
+  ): void {
+    const selectedRows = table.getSelectedRowModel().rows.map((r) => r.original);
+    const event = new CustomEvent('ui-selection-change', {
+      detail: {
+        rowSelection,
+        selectedRows,
+        selectedCount: selectedRows.length,
+        reason,
+      } satisfies SelectionChangeEvent<TData>,
       bubbles: true,
       composed: true,
     });
@@ -1059,13 +1120,29 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
     `,
   ];
 
+  /**
+   * Get effective columns including selection column if enabled.
+   * The selection column is prepended when enableSelection is true.
+   */
+  private getEffectiveColumns(): ColumnDef<TData, unknown>[] {
+    if (!this.enableSelection) {
+      return this.columns;
+    }
+
+    return [createSelectionColumn<TData>(), ...this.columns];
+  }
+
   override render() {
+    // Get effective columns (includes selection column when enabled)
+    const effectiveColumns = this.getEffectiveColumns();
+
     // Create table instance via controller
     const table = this.tableController.table({
-      columns: this.columns,
+      columns: effectiveColumns,
       data: this.data,
       state: {
         sorting: this.sorting,
+        rowSelection: this.rowSelection,
       },
       onSortingChange: (updater) => {
         const newSorting =
@@ -1073,6 +1150,14 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
         this.sorting = newSorting;
         this.dispatchSortChange(newSorting);
       },
+      onRowSelectionChange: (updater) => {
+        const newSelection =
+          typeof updater === 'function' ? updater(this.rowSelection) : updater;
+        this.rowSelection = newSelection;
+        this.dispatchSelectionChange(table, newSelection, 'user');
+      },
+      getRowId: (row) => String(row[this.rowIdKey as keyof TData]),
+      enableRowSelection: this.enableSelection,
       getCoreRowModel: getCoreRowModel(),
       getSortedRowModel: this.manualSorting ? undefined : getSortedRowModel(),
       manualSorting: this.manualSorting,
@@ -1080,7 +1165,7 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
 
     // Calculate total counts for ARIA
     const rowCount = this.data.length + 1; // +1 for header row
-    const colCount = this.columns.length;
+    const colCount = effectiveColumns.length;
 
     return html`
       <div
