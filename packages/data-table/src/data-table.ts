@@ -329,37 +329,41 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
       });
     }
 
-    // SEL-06: Clear selection when filters change (unless configured to preserve)
-    if (
-      this.enableSelection &&
-      !this.preserveSelectionOnFilter &&
-      (changedProperties.has('columnFilters') || changedProperties.has('globalFilter'))
-    ) {
+    // Handle filter changes: reset pagination and optionally clear selection
+    if (changedProperties.has('columnFilters') || changedProperties.has('globalFilter')) {
       const currentFilterState = JSON.stringify({
         columnFilters: this.columnFilters,
         globalFilter: this.globalFilter,
       });
 
       if (this._previousFilterState && currentFilterState !== this._previousFilterState) {
-        // Filters changed - clear selection
-        this.rowSelection = {};
-        this.lastSelectedRowId = null;
+        // Reset to first page when filters change (prevents empty page display)
+        if (this.pagination.pageIndex !== 0) {
+          this.pagination = { ...this.pagination, pageIndex: 0 };
+          this.dispatchPaginationChange(this.pagination);
+        }
 
-        // Get table instance to dispatch proper event
-        const effectiveColumns = this.getEffectiveColumns();
-        const table = this.tableController.table({
-          columns: effectiveColumns,
-          data: this.data,
-          state: {
-            sorting: this.sorting,
-            rowSelection: {},
-          },
-          getRowId: (r) => String(r[this.rowIdKey as keyof TData]),
-          enableRowSelection: this.enableSelection,
-          getCoreRowModel: getCoreRowModel(),
-        });
+        // SEL-06: Clear selection when filters change (unless configured to preserve)
+        if (this.enableSelection && !this.preserveSelectionOnFilter) {
+          this.rowSelection = {};
+          this.lastSelectedRowId = null;
 
-        this.dispatchSelectionChange(table, {}, 'filter-changed');
+          // Get table instance to dispatch proper event
+          const effectiveColumns = this.getEffectiveColumns();
+          const table = this.tableController.table({
+            columns: effectiveColumns,
+            data: this.data,
+            state: {
+              sorting: this.sorting,
+              rowSelection: {},
+            },
+            getRowId: (r) => String(r[this.rowIdKey as keyof TData]),
+            enableRowSelection: this.enableSelection,
+            getCoreRowModel: getCoreRowModel(),
+          });
+
+          this.dispatchSelectionChange(table, {}, 'filter-changed');
+        }
       }
 
       this._previousFilterState = currentFilterState;
@@ -756,6 +760,28 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
         return `minmax(${minSize}px, ${maxSize}px)`;
       })
       .join(' ');
+  }
+
+  /**
+   * Get total row count for pagination display.
+   * Uses totalRowCount prop for server-side, or filtered row count for client-side.
+   */
+  public getTotalRowCount(table: Table<TData>): number {
+    if (this.manualPagination) {
+      return this.totalRowCount ?? this.data.length;
+    }
+    // For client-side, use filtered row count
+    return table.getFilteredRowModel().rows.length;
+  }
+
+  /**
+   * Get page count based on mode.
+   */
+  public getPageCount(table: Table<TData>): number {
+    if (this.manualPagination && this.pageCount !== undefined) {
+      return this.pageCount;
+    }
+    return table.getPageCount();
   }
 
   /**
