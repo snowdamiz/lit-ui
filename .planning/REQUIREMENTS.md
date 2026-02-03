@@ -195,15 +195,108 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CORE-01 | TBD | Pending |
-| CORE-02 | TBD | Pending |
-| ... | ... | ... |
+| CORE-01 | 61 | Pending |
+| CORE-02 | 61 | Pending |
+| CORE-03 | 61 | Pending |
+| CORE-04 | 61 | Pending |
+| CORE-05 | 61 | Pending |
+| CORE-06 | 61 | Pending |
+| CORE-07 | 61 | Pending |
+| CORE-08 | 61 | Pending |
+| CORE-09 | 61 | Pending |
+| VIRT-01 | 61 | Pending |
+| VIRT-02 | 61 | Pending |
+| VIRT-03 | 61 | Pending |
+| VIRT-04 | 61 | Pending |
+| SORT-01 | 62 | Pending |
+| SORT-02 | 62 | Pending |
+| SORT-03 | 62 | Pending |
+| SORT-04 | 62 | Pending |
+| SORT-05 | 62 | Pending |
+| SEL-01 | 62 | Pending |
+| SEL-02 | 62 | Pending |
+| SEL-03 | 62 | Pending |
+| SEL-04 | 62 | Pending |
+| SEL-05 | 62 | Pending |
+| SEL-06 | 62 | Pending |
+| FILT-01 | 63 | Pending |
+| FILT-02 | 63 | Pending |
+| FILT-03 | 63 | Pending |
+| FILT-04 | 63 | Pending |
+| FILT-05 | 63 | Pending |
+| FILT-06 | 63 | Pending |
+| FILT-07 | 63 | Pending |
+| FILT-08 | 63 | Pending |
+| PAGE-01 | 63 | Pending |
+| PAGE-02 | 63 | Pending |
+| PAGE-03 | 63 | Pending |
+| PAGE-04 | 63 | Pending |
+| ASYNC-01 | 63 | Pending |
+| ASYNC-02 | 63 | Pending |
+| ASYNC-03 | 63 | Pending |
+| ASYNC-04 | 63 | Pending |
+| ASYNC-05 | 63 | Pending |
+| COL-01 | 64 | Pending |
+| COL-02 | 64 | Pending |
+| COL-03 | 64 | Pending |
+| COL-04 | 64 | Pending |
+| COL-05 | 64 | Pending |
+| COL-06 | 64 | Pending |
+| COL-07 | 64 | Pending |
+| COL-08 | 64 | Pending |
+| EDIT-01 | 65 | Pending |
+| EDIT-02 | 65 | Pending |
+| EDIT-03 | 65 | Pending |
+| EDIT-04 | 65 | Pending |
+| EDIT-05 | 65 | Pending |
+| EDIT-06 | 65 | Pending |
+| EDIT-07 | 65 | Pending |
+| ROWEDIT-01 | 65 | Pending |
+| ROWEDIT-02 | 65 | Pending |
+| ROWEDIT-03 | 65 | Pending |
+| ROWEDIT-04 | 65 | Pending |
+| ROWEDIT-05 | 65 | Pending |
+| ROWEDIT-06 | 65 | Pending |
+| CELL-01 | 66 | Pending |
+| CELL-02 | 66 | Pending |
+| CELL-03 | 66 | Pending |
+| CELL-04 | 66 | Pending |
+| ACT-01 | 66 | Pending |
+| ACT-02 | 66 | Pending |
+| ACT-03 | 66 | Pending |
+| ACT-04 | 66 | Pending |
+| BULK-01 | 66 | Pending |
+| BULK-02 | 66 | Pending |
+| BULK-03 | 66 | Pending |
+| BULK-04 | 66 | Pending |
+| BULK-05 | 66 | Pending |
+| EXP-01 | 67 | Pending |
+| EXP-02 | 67 | Pending |
+| EXP-03 | 67 | Pending |
+| EXP-04 | 67 | Pending |
+| EXPAND-01 | 67 | Pending |
+| EXPAND-02 | 67 | Pending |
+| EXPAND-03 | 67 | Pending |
+| EXPAND-04 | 67 | Pending |
+| EXPAND-05 | 67 | Pending |
+| PKG-01 | 68 | Pending |
+| PKG-02 | 68 | Pending |
+| PKG-03 | 68 | Pending |
+| PKG-04 | 68 | Pending |
+| PKG-05 | 68 | Pending |
+| PKG-06 | 68 | Pending |
+| CLI-01 | 68 | Pending |
+| CLI-02 | 68 | Pending |
+| CLI-03 | 68 | Pending |
+| CLI-04 | 68 | Pending |
+| CLI-05 | 68 | Pending |
+| CLI-06 | 68 | Pending |
 
 **Coverage:**
 - v7.0 requirements: 76 total
-- Mapped to phases: 0 (pending roadmap)
-- Unmapped: 76
+- Mapped to phases: 76
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-02*
-*Last updated: 2026-02-02 after initial definition*
+*Last updated: 2026-02-02 after roadmap creation*
