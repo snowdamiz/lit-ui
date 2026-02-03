@@ -36,7 +36,7 @@ import {
   type SortingState,
 } from '@tanstack/lit-table';
 import { VirtualizerController } from '@tanstack/lit-virtual';
-import type { ColumnDef, LoadingState, EmptyStateType, RowSelectionState, SelectionChangeEvent } from './types.js';
+import type { ColumnDef, LoadingState, EmptyStateType, RowSelectionState, SelectionChangeEvent, ColumnFiltersState } from './types.js';
 import { KeyboardNavigationManager, type GridPosition } from './keyboard-navigation.js';
 import { createSelectionColumn } from './selection-column.js';
 
@@ -220,6 +220,33 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
   @property({ type: Number, attribute: 'total-row-count' })
   totalRowCount?: number;
 
+  /**
+   * Whether to preserve selection when filters change.
+   * Default: false (selection clears on filter change).
+   */
+  @property({ type: Boolean, attribute: 'preserve-selection-on-filter' })
+  preserveSelectionOnFilter = false;
+
+  /**
+   * Column filters state (used for selection clearing detection).
+   * Full implementation in Phase 63.
+   */
+  @property({ type: Array })
+  columnFilters: ColumnFiltersState = [];
+
+  /**
+   * Global filter string (used for selection clearing detection).
+   * Full implementation in Phase 63.
+   */
+  @property({ type: String, attribute: 'global-filter' })
+  globalFilter = '';
+
+  /**
+   * Previous filter state for change detection.
+   */
+  @state()
+  private _previousFilterState = '';
+
   // ==========================================================================
   // Lifecycle methods
   // ==========================================================================
@@ -251,6 +278,52 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
         visibleRowCount,
       });
     }
+
+    // SEL-06: Clear selection when filters change (unless configured to preserve)
+    if (
+      this.enableSelection &&
+      !this.preserveSelectionOnFilter &&
+      (changedProperties.has('columnFilters') || changedProperties.has('globalFilter'))
+    ) {
+      const currentFilterState = JSON.stringify({
+        columnFilters: this.columnFilters,
+        globalFilter: this.globalFilter,
+      });
+
+      if (this._previousFilterState && currentFilterState !== this._previousFilterState) {
+        // Filters changed - clear selection
+        this.rowSelection = {};
+        this.lastSelectedRowId = null;
+
+        // Get table instance to dispatch proper event
+        const effectiveColumns = this.getEffectiveColumns();
+        const table = this.tableController.table({
+          columns: effectiveColumns,
+          data: this.data,
+          state: {
+            sorting: this.sorting,
+            rowSelection: {},
+          },
+          getRowId: (r) => String(r[this.rowIdKey as keyof TData]),
+          enableRowSelection: this.enableSelection,
+          getCoreRowModel: getCoreRowModel(),
+        });
+
+        this.dispatchSelectionChange(table, {}, 'filter-changed');
+      }
+
+      this._previousFilterState = currentFilterState;
+    }
+  }
+
+  /**
+   * Initialize previous filter state on first render.
+   */
+  override firstUpdated(): void {
+    this._previousFilterState = JSON.stringify({
+      columnFilters: this.columnFilters,
+      globalFilter: this.globalFilter,
+    });
   }
 
   /**
