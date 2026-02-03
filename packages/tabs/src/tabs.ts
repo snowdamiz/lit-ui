@@ -312,21 +312,80 @@ export class Tabs extends TailwindElement {
       }
 
       .tablist {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--ui-tabs-list-gap);
+        padding: var(--ui-tabs-list-padding);
+        background: var(--ui-tabs-list-bg);
+        border-radius: var(--ui-tabs-list-radius);
+      }
+
+      :host([orientation='vertical']) .tablist {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      :host([orientation='vertical']) .tabs-wrapper {
         display: flex;
+        gap: 1rem;
       }
 
       .tab-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        white-space: nowrap;
         border: none;
-        background: transparent;
-        cursor: pointer;
+        background: var(--ui-tabs-tab-bg);
+        color: var(--ui-tabs-tab-text);
         font-family: inherit;
-        font-size: inherit;
-        padding: 0.5rem 1rem;
+        font-size: var(--ui-tabs-tab-font-size);
+        font-weight: var(--ui-tabs-tab-font-weight);
+        padding: var(--ui-tabs-tab-padding);
+        border-radius: var(--ui-tabs-tab-radius);
+        cursor: pointer;
+        transition:
+          color var(--ui-tabs-transition),
+          background var(--ui-tabs-transition),
+          box-shadow var(--ui-tabs-transition);
+      }
+
+      .tab-button:hover:not([aria-disabled='true']) {
+        color: var(--ui-tabs-tab-hover-text);
+        background: var(--ui-tabs-tab-hover-bg);
+      }
+
+      .tab-button.tab-active {
+        color: var(--ui-tabs-tab-active-text);
+        background: var(--ui-tabs-tab-active-bg);
+        box-shadow: var(--ui-tabs-tab-active-shadow);
+      }
+
+      .tab-button[aria-disabled='true'] {
+        cursor: not-allowed;
+        opacity: 0.5;
       }
 
       .tab-button:focus-visible {
-        outline: 2px solid currentColor;
-        outline-offset: -2px;
+        outline: none;
+        box-shadow: 0 0 0 2px var(--ui-tabs-ring);
+      }
+
+      .tab-button.tab-active:focus-visible {
+        box-shadow:
+          var(--ui-tabs-tab-active-shadow),
+          0 0 0 2px var(--ui-tabs-ring);
+      }
+
+      .panels-container {
+        padding: var(--ui-tabs-panel-padding);
+        color: var(--ui-tabs-panel-text);
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .tab-button {
+          transition-duration: 0ms;
+        }
       }
     `,
   ];

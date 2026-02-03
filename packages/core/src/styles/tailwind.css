@@ -234,6 +234,14 @@
   --ui-accordion-header-hover-bg: var(--color-gray-800);
   --ui-accordion-border: var(--color-gray-800);
   --ui-accordion-panel-text: var(--color-gray-400);
+
+  /* Tabs dark mode */
+  --ui-tabs-list-bg: var(--color-gray-800);
+  --ui-tabs-tab-text: var(--color-gray-400);
+  --ui-tabs-tab-hover-text: var(--color-gray-50);
+  --ui-tabs-tab-active-text: var(--color-gray-50);
+  --ui-tabs-tab-active-bg: var(--color-gray-900);
+  --ui-tabs-panel-text: var(--color-gray-50);
 }
 
 /* ==========================================================================
@@ -777,6 +785,44 @@
 
   /* Focus */
   --ui-accordion-ring: var(--color-ring, var(--ui-color-ring));
+
+  /* -------------------------------------------------------------------------
+   * Tabs Component
+   * ------------------------------------------------------------------------- */
+
+  /* Layout */
+  --ui-tabs-border: var(--color-border, var(--ui-color-border));
+
+  /* Tab list */
+  --ui-tabs-list-bg: var(--color-muted, var(--ui-color-muted));
+  --ui-tabs-list-padding: 0.25rem;
+  --ui-tabs-list-radius: 0.375rem;
+  --ui-tabs-list-gap: 0.25rem;
+
+  /* Tab button */
+  --ui-tabs-tab-padding: 0.5rem 1rem;
+  --ui-tabs-tab-radius: 0.25rem;
+  --ui-tabs-tab-font-size: 0.875rem;
+  --ui-tabs-tab-font-weight: 500;
+  --ui-tabs-tab-text: var(--color-muted-foreground, var(--ui-color-muted-foreground));
+  --ui-tabs-tab-bg: transparent;
+  --ui-tabs-tab-hover-text: var(--color-foreground, var(--ui-color-foreground));
+  --ui-tabs-tab-hover-bg: transparent;
+
+  /* Active tab */
+  --ui-tabs-tab-active-text: var(--color-foreground, var(--ui-color-foreground));
+  --ui-tabs-tab-active-bg: var(--color-background, white);
+  --ui-tabs-tab-active-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+
+  /* Panel */
+  --ui-tabs-panel-padding: 1rem 0;
+  --ui-tabs-panel-text: var(--color-foreground, var(--ui-color-foreground));
+
+  /* Focus */
+  --ui-tabs-ring: var(--color-ring, var(--ui-color-ring));
+
+  /* Transition */
+  --ui-tabs-transition: 150ms;
 }
 
 /* ==========================================================================
