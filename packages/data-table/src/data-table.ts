@@ -563,6 +563,8 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
       }
 
       .data-table-container {
+        display: flex;
+        flex-direction: column;
         width: 100%;
         border: 1px solid var(--ui-data-table-border-color);
         border-radius: var(--ui-radius, 0.5rem);
@@ -570,6 +572,7 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
       }
 
       .data-table-header {
+        flex-shrink: 0;
         position: sticky;
         top: 0;
         z-index: 10;
@@ -614,6 +617,7 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
       }
 
       .data-table-body {
+        flex: 1;
         overflow-y: auto;
         overflow-x: hidden;
       }
@@ -626,6 +630,123 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
       .virtual-row {
         /* Override last-child border-bottom rule for virtual rows */
         border-bottom: 1px solid var(--ui-data-table-border-color) !important;
+      }
+
+      /* Skeleton Loading Styles */
+      .skeleton-cell {
+        padding: var(--ui-data-table-cell-padding);
+      }
+
+      .skeleton-pulse {
+        height: 1em;
+        background: linear-gradient(
+          90deg,
+          var(--ui-data-table-skeleton-base, #e4e4e7) 25%,
+          var(--ui-data-table-skeleton-highlight, #f4f4f5) 50%,
+          var(--ui-data-table-skeleton-base, #e4e4e7) 75%
+        );
+        background-size: 200% 100%;
+        animation: skeleton-pulse 1.5s ease-in-out infinite;
+        border-radius: 4px;
+      }
+
+      :host-context(.dark) .skeleton-pulse {
+        --ui-data-table-skeleton-base: #3f3f46;
+        --ui-data-table-skeleton-highlight: #52525b;
+      }
+
+      @keyframes skeleton-pulse {
+        0% {
+          background-position: 200% 0;
+        }
+        100% {
+          background-position: -200% 0;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .skeleton-pulse {
+          animation: none;
+          background: var(--ui-data-table-skeleton-base, #e4e4e7);
+        }
+      }
+
+      /* Empty State Styles */
+      .empty-state-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 200px;
+      }
+
+      .empty-state-cell {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        text-align: center;
+      }
+
+      .empty-state-icon {
+        color: var(--ui-data-table-header-text);
+        margin-bottom: 1rem;
+        opacity: 0.5;
+      }
+
+      .empty-state-message {
+        font-size: 1rem;
+        font-weight: 500;
+        color: var(--ui-data-table-text-color);
+        margin: 0 0 0.5rem 0;
+      }
+
+      .empty-state-description {
+        font-size: 0.875rem;
+        color: var(--ui-data-table-header-text);
+        margin: 0;
+      }
+
+      /* Updating Overlay Styles */
+      .data-table-container {
+        position: relative;
+      }
+
+      .updating-overlay {
+        position: absolute;
+        inset: 0;
+        background: var(--ui-data-table-overlay-bg, rgba(255, 255, 255, 0.7));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 20;
+      }
+
+      :host-context(.dark) .updating-overlay {
+        --ui-data-table-overlay-bg: rgba(9, 9, 11, 0.7);
+      }
+
+      .updating-spinner {
+        width: 24px;
+        height: 24px;
+        border: 2px solid var(--ui-data-table-border-color);
+        border-top-color: var(--color-primary, #3b82f6);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .updating-spinner {
+          animation: none;
+          border-top-color: var(--ui-data-table-border-color);
+          opacity: 0.5;
+        }
       }
     `,
   ];
