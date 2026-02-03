@@ -1149,11 +1149,49 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
    *
    * NOTE: With virtualization, only visible rows can be measured.
    * This provides "best effort" sizing based on visible content.
+   * For large datasets, the width may not fit all data perfectly.
+   * Manual resize is available for fine-tuning.
    *
    * @param column - The column to auto-fit
    */
   private autoFitColumn(column: Column<TData, unknown>): void {
-    // Placeholder - will be implemented in Task 3
+    // Get all visible cells for this column
+    const columnCells = this.shadowRoot?.querySelectorAll(
+      `.data-table-cell[data-column-id="${column.id}"]`
+    );
+
+    if (!columnCells || columnCells.length === 0) return;
+
+    // Initialize max width
+    let maxWidth = 0;
+
+    // Measure header content
+    const headerCell = this.shadowRoot?.querySelector(
+      `.data-table-header-cell[data-column-id="${column.id}"]`
+    );
+    if (headerCell) {
+      const headerContent = headerCell.querySelector('.header-content');
+      if (headerContent) {
+        // Add padding (32px = 16px left + 16px right from cell padding)
+        maxWidth = Math.max(maxWidth, headerContent.scrollWidth + 32);
+      }
+    }
+
+    // Measure visible body cells (virtualized)
+    columnCells.forEach((cell) => {
+      maxWidth = Math.max(maxWidth, cell.scrollWidth + 32);
+    });
+
+    // Apply min/max constraints (COL-03: minimum 50px)
+    const minSize = column.columnDef.minSize ?? 50;
+    const maxSize = column.columnDef.maxSize ?? 500;
+    const fitWidth = Math.max(minSize, Math.min(maxSize, maxWidth));
+
+    // Update sizing state
+    this.columnSizing = {
+      ...this.columnSizing,
+      [column.id]: fitWidth,
+    };
   }
 
   /**
@@ -1217,6 +1255,7 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
         role="gridcell"
         aria-colindex="${colIndex + 1}"
         class="data-table-cell"
+        data-column-id="${cell.column.id}"
         tabindex="${isFocused ? '0' : '-1'}"
         @click=${() => this.handleCellClick(rowIndex, colIndex)}
       >
