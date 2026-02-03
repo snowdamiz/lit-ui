@@ -292,12 +292,19 @@ export class Accordion extends TailwindElement {
       :host([disabled]) {
         opacity: 0.5;
       }
+
+      .accordion-wrapper {
+        border: var(--ui-accordion-border-width) solid var(--ui-accordion-border);
+        border-radius: var(--ui-accordion-radius);
+        overflow: hidden;
+      }
     `,
   ];
 
   override render() {
     return html`
       <div
+        class="accordion-wrapper"
         @ui-accordion-toggle=${this.handleItemToggle}
         @keydown=${this.handleKeyDown}
       >

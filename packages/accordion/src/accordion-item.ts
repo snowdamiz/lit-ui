@@ -67,6 +67,12 @@ export class AccordionItem extends TailwindElement {
     css`
       :host {
         display: block;
+        border-bottom: var(--ui-accordion-border-width) solid
+          var(--ui-accordion-border);
+      }
+
+      :host(:last-of-type) {
+        border-bottom: none;
       }
 
       :host([disabled]) .header-button {
