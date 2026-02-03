@@ -558,11 +558,14 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
    * Render a data row.
    */
   private renderRow(row: Row<TData>, rowIndex: number): TemplateResult {
+    const isSelected = row.getIsSelected();
+
     return html`
       <div
         role="row"
         aria-rowindex="${rowIndex + 2}"
-        class="data-table-row"
+        aria-selected="${isSelected}"
+        class="data-table-row ${isSelected ? 'selected' : ''}"
         data-row-id="${row.id}"
       >
         ${row.getVisibleCells().map((cell, colIndex) =>
@@ -754,12 +757,14 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
         role="rowgroup"
         style="max-height: ${this.maxHeight}; overflow-y: auto;"
       >
-        ${rows.map(
-          (row, rowIndex) => html`
+        ${rows.map((row, rowIndex) => {
+          const isSelected = row.getIsSelected();
+          return html`
             <div
               role="row"
               aria-rowindex="${rowIndex + 2}"
-              class="data-table-row"
+              aria-selected="${isSelected}"
+              class="data-table-row ${isSelected ? 'selected' : ''}"
               style="grid-template-columns: ${gridTemplateColumns}"
               data-row-id="${row.id}"
             >
@@ -767,8 +772,8 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
                 this.renderCell(cell, rowIndex, colIndex)
               )}
             </div>
-          `
-        )}
+          `;
+        })}
       </div>
       ${this.renderUpdatingOverlay()}
     `;
@@ -797,11 +802,13 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
             const row = rows[virtualRow.index];
             if (!row) return nothing;
 
+            const isSelected = row.getIsSelected();
             return html`
               <div
                 role="row"
                 aria-rowindex="${virtualRow.index + 2}"
-                class="data-table-row virtual-row"
+                aria-selected="${isSelected}"
+                class="data-table-row virtual-row ${isSelected ? 'selected' : ''}"
                 style="
                   grid-template-columns: ${gridTemplateColumns};
                   position: absolute;
@@ -970,6 +977,28 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
         background: var(--color-primary, #3b82f6);
         color: var(--color-primary-foreground, #ffffff);
         border-radius: 50%;
+      }
+
+      /* Selection column styles */
+      .data-table-cell:first-child lui-checkbox,
+      .data-table-header-cell:first-child lui-checkbox {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* Selected row highlight */
+      .data-table-row.selected {
+        background: var(--ui-data-table-selected-bg, rgba(59, 130, 246, 0.1));
+      }
+
+      .data-table-row.selected:hover {
+        background: var(--ui-data-table-selected-hover-bg, rgba(59, 130, 246, 0.15));
+      }
+
+      :host-context(.dark) .data-table-row.selected {
+        --ui-data-table-selected-bg: rgba(59, 130, 246, 0.2);
+        --ui-data-table-selected-hover-bg: rgba(59, 130, 246, 0.25);
       }
 
       .data-table-body {
