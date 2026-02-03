@@ -1092,6 +1092,71 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
   }
 
   /**
+   * Render resize handle for column resizing.
+   * Returns empty template if column cannot be resized.
+   *
+   * @param header - The header to render resize handle for
+   */
+  private renderResizeHandle(header: Header<TData, unknown>): TemplateResult {
+    if (!header.column.getCanResize()) {
+      return html``;
+    }
+
+    const isResizing = header.column.getIsResizing();
+    const handler = header.getResizeHandler();
+    const columnHeader = header.column.columnDef.header;
+    const headerLabel = typeof columnHeader === 'string' ? columnHeader : 'column';
+
+    return html`
+      <div
+        class="column-resize-handle ${isResizing ? 'is-resizing' : ''}"
+        @mousedown=${handler}
+        @touchstart=${handler}
+        @dblclick=${(e: MouseEvent) => {
+          e.stopPropagation();
+          this.autoFitColumn(header.column);
+        }}
+        @keydown=${(e: KeyboardEvent) => {
+          if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+            e.preventDefault();
+            const delta = e.key === 'ArrowLeft' ? -10 : 10;
+            const minSize = header.column.columnDef.minSize ?? 50;
+            const maxSize = header.column.columnDef.maxSize ?? 500;
+            const newSize = Math.max(
+              minSize,
+              Math.min(maxSize, header.column.getSize() + delta)
+            );
+            this.columnSizing = {
+              ...this.columnSizing,
+              [header.column.id]: newSize,
+            };
+          }
+        }}
+        role="separator"
+        aria-orientation="vertical"
+        aria-valuenow="${header.column.getSize()}"
+        aria-valuemin="${header.column.columnDef.minSize ?? 50}"
+        aria-valuemax="${header.column.columnDef.maxSize ?? 500}"
+        aria-label="Resize ${headerLabel} column"
+        tabindex="0"
+      ></div>
+    `;
+  }
+
+  /**
+   * Auto-fit column width to content.
+   * Measures visible cells and adjusts column width to fit content.
+   *
+   * NOTE: With virtualization, only visible rows can be measured.
+   * This provides "best effort" sizing based on visible content.
+   *
+   * @param column - The column to auto-fit
+   */
+  private autoFitColumn(column: Column<TData, unknown>): void {
+    // Placeholder - will be implemented in Task 3
+  }
+
+  /**
    * Render a header cell using flexRender.
    * Sortable headers have click handlers and visual indicators.
    */
@@ -1122,12 +1187,14 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
         aria-sort=${ariaSort}
         class="data-table-header-cell ${canSort ? 'sortable' : ''}"
         id="${this.tableId}-header-${header.id}"
+        data-column-id="${header.column.id}"
         tabindex="-1"
         @click=${canSort ? header.column.getToggleSortingHandler() : nothing}
       >
         <span class="header-content">${headerContent}</span>
         ${canSort ? this.renderSortIndicator(sortDirection, sortIndex) : nothing}
         ${this.renderFilterIndicator(header.column)}
+        ${this.renderResizeHandle(header)}
       </div>
     `;
   }
@@ -1175,6 +1242,26 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
         ${row.getVisibleCells().map((cell, colIndex) =>
           this.renderCell(cell, rowIndex, colIndex)
         )}
+      </div>
+    `;
+  }
+
+  /**
+   * Render toolbar with column picker and slot for custom controls.
+   * Only renders if showColumnPicker is true or there's slotted content.
+   */
+  private renderToolbar(table: Table<TData>): TemplateResult {
+    if (!this.showColumnPicker) {
+      return html``;
+    }
+
+    return html`
+      <div class="data-table-toolbar">
+        <slot name="toolbar-start"></slot>
+        <div class="toolbar-spacer"></div>
+        <slot name="toolbar-end">
+          ${this.showColumnPicker ? renderColumnPicker(table) : nothing}
+        </slot>
       </div>
     `;
   }
@@ -1475,6 +1562,7 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
 
   static override styles = [
     ...tailwindBaseStyles,
+    columnPickerStyles,
     css`
       :host {
         display: block;
@@ -1507,6 +1595,20 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
         border: 1px solid var(--ui-data-table-border-color);
         border-radius: var(--ui-radius, 0.5rem);
         overflow: hidden;
+      }
+
+      /* Toolbar styles */
+      .data-table-toolbar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        border-bottom: 1px solid var(--ui-data-table-border-color);
+        background: var(--ui-data-table-header-bg);
+      }
+
+      .toolbar-spacer {
+        flex: 1;
       }
 
       .data-table-header {
@@ -2058,6 +2160,7 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
         aria-busy="${this.loading !== 'idle' ? 'true' : 'false'}"
         @keydown=${this.handleKeyDown}
       >
+        ${this.renderToolbar(table)}
         ${this.renderHeader(table)}
         ${this.renderSelectionBanner(table)}
         ${this.renderBody(table)}
