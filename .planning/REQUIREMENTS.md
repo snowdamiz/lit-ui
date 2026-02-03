@@ -57,13 +57,13 @@ Requirements for the Layout Components milestone. Each maps to roadmap phases.
 
 ### Tabs — Polish
 
-- [ ] **TABS-16**: Animated active indicator (sliding underline) that transitions between tabs
-- [ ] **TABS-17**: Active indicator repositions on window resize via ResizeObserver
-- [ ] **TABS-18**: Lazy rendering of tab panels (content rendered on first activation, preserved after)
-- [ ] **TABS-19**: Overflow scroll with navigation buttons when tabs exceed container width
-- [ ] **TABS-20**: data-state attribute ("active"/"inactive") on tabs and panels for CSS-only styling
-- [ ] **TABS-21**: SSR compatible via Declarative Shadow DOM with slotchange hydration workaround
-- [ ] **TABS-22**: Tab panel sets tabindex="0" when it contains no focusable elements
+- [x] **TABS-16**: Animated active indicator (sliding underline) that transitions between tabs
+- [x] **TABS-17**: Active indicator repositions on window resize via ResizeObserver
+- [x] **TABS-18**: Lazy rendering of tab panels (content rendered on first activation, preserved after)
+- [x] **TABS-19**: Overflow scroll with navigation buttons when tabs exceed container width
+- [x] **TABS-20**: data-state attribute ("active"/"inactive") on tabs and panels for CSS-only styling
+- [x] **TABS-21**: SSR compatible via Declarative Shadow DOM with slotchange hydration workaround
+- [x] **TABS-22**: Tab panel sets tabindex="0" when it contains no focusable elements
 
 ### Tabs — Theming
 
@@ -73,7 +73,7 @@ Requirements for the Layout Components milestone. Each maps to roadmap phases.
 ### Integration
 
 - [x] **INTG-01**: @lit-ui/accordion package with peer deps on lit and @lit-ui/core
-- [ ] **INTG-02**: @lit-ui/tabs package with peer deps on lit and @lit-ui/core
+- [x] **INTG-02**: @lit-ui/tabs package with peer deps on lit and @lit-ui/core
 - [ ] **INTG-03**: CLI copy-source templates for accordion (namespaced: accordion/accordion, accordion/accordion-item)
 - [ ] **INTG-04**: CLI copy-source templates for tabs (namespaced: tabs/tabs, tabs/tab-panel)
 - [ ] **INTG-05**: CLI registry entries for accordion and tabs with correct dependencies
@@ -149,17 +149,17 @@ Which phases cover which requirements. Updated during roadmap creation.
 | TABS-13 | Phase 58 | Complete |
 | TABS-14 | Phase 58 | Complete |
 | TABS-15 | Phase 58 | Complete |
-| TABS-16 | Phase 59 | Pending |
-| TABS-17 | Phase 59 | Pending |
-| TABS-18 | Phase 59 | Pending |
-| TABS-19 | Phase 59 | Pending |
-| TABS-20 | Phase 59 | Pending |
-| TABS-21 | Phase 59 | Pending |
-| TABS-22 | Phase 59 | Pending |
+| TABS-16 | Phase 59 | Complete |
+| TABS-17 | Phase 59 | Complete |
+| TABS-18 | Phase 59 | Complete |
+| TABS-19 | Phase 59 | Complete |
+| TABS-20 | Phase 59 | Complete |
+| TABS-21 | Phase 59 | Complete |
+| TABS-22 | Phase 59 | Complete |
 | TABS-23 | Phase 58 | Complete |
 | TABS-24 | Phase 58 | Complete |
 | INTG-01 | Phase 57 | Complete |
-| INTG-02 | Phase 59 | Pending |
+| INTG-02 | Phase 59 | Complete |
 | INTG-03 | Phase 60 | Pending |
 | INTG-04 | Phase 60 | Pending |
 | INTG-05 | Phase 60 | Pending |
@@ -174,4 +174,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-02-02*
-*Last updated: 2026-02-03 after Phase 58 completion*
+*Last updated: 2026-02-03 after Phase 59 completion*
