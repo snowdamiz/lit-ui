@@ -31,6 +31,9 @@ export {
 // Selection column factory
 export { createSelectionColumn } from './selection-column.js';
 
+// Column picker for visibility toggle
+export { renderColumnPicker, columnPickerStyles } from './column-picker.js';
+
 // Pagination components
 export * from './pagination/index.js';
 
