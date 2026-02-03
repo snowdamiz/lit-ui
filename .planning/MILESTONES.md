@@ -1,5 +1,33 @@
 # Project Milestones: LitUI
 
+## v6.0 Layout Components (Shipped: 2026-02-02)
+
+**Delivered:** Accordion and Tabs layout components with full accessibility, CSS Grid animation, multiple expansion/activation modes, animated indicators, lazy rendering, overflow handling, SSR compatibility, and CLI/documentation integration — bringing the component library to 20 publishable packages.
+
+**Phases completed:** 56-60 (10 plans total)
+
+**Key accomplishments:**
+
+- Accordion component with single/multi-expand modes, CSS Grid height animation (0fr/1fr), roving tabindex keyboard navigation, full ARIA accessibility, animated chevron indicator, lazy mounting, and SSR via Declarative Shadow DOM
+- Tabs component with container-rendered tablist, automatic/manual activation modes, horizontal/vertical orientation, sliding active indicator with ResizeObserver, lazy panel rendering, overflow scroll with navigation buttons, and SSR compatibility
+- 34+ CSS custom property tokens across both components with dark mode support via :host-context(.dark) and prefers-reduced-motion
+- @lit-ui/accordion and @lit-ui/tabs publishable packages with peer dependencies on lit and @lit-ui/core, TypeScript types, and JSX declarations
+- CLI copy-source templates with CSS variable fallbacks for standalone usage, registry expanded to 19 components total
+- Documentation pages for both components with interactive demos, full API references, CSS property tables, and WAI-ARIA APG accessibility notes
+
+**Stats:**
+
+- 63 files created/modified
+- ~63,697 lines TypeScript/CSS (total project)
+- 5 phases, 10 plans
+- 1 day (2026-02-02)
+
+**Git range:** `feat(56-01)` → `docs(60)`
+
+**What's next:** Next milestone TBD
+
+---
+
 ## v5.0 Overlay & Feedback Components (Shipped: 2026-02-02)
 
 **Delivered:** Toast, Tooltip, and Popover overlay components with shared Floating UI infrastructure, imperative toast API, full accessibility, and CLI distribution — bringing the component library to 15 publishable packages.

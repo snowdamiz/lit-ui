@@ -4,23 +4,24 @@
 
 A framework-agnostic component library built on Lit.js, following ShadCN's philosophy of beautiful defaults and CLI-driven installation. Components work natively in React, Vue, Svelte, or plain HTML because they're standard web components underneath.
 
-Now with **dual distribution** (copy-source or npm), **SSR support** via Declarative Shadow DOM, **build-time theme customization** via visual configurator, **complete form toolkit** (Input, Textarea, Select, Checkbox, Radio, Switch with group containers), **date/time components** (Calendar, Date Picker, Date Range Picker, Time Picker), **overlay/feedback primitives** (Toast, Tooltip, Popover with shared Floating UI infrastructure), and **layout components** in progress (Accordion, Tabs).
+Now with **dual distribution** (copy-source or npm), **SSR support** via Declarative Shadow DOM, **build-time theme customization** via visual configurator, **complete form toolkit** (Input, Textarea, Select, Checkbox, Radio, Switch with group containers), **date/time components** (Calendar, Date Picker, Date Range Picker, Time Picker), **overlay/feedback primitives** (Toast, Tooltip, Popover with shared Floating UI infrastructure), and **layout components** (Accordion, Tabs).
 
 ## Core Value
 
 Developers can use polished, accessible UI components in any framework without lock-in — one component library that works everywhere.
 
-## Current State (v5.0)
+## Current State (v6.0)
 
-- ~58,660 lines TypeScript/CSS across packages and apps
+- ~63,697 lines TypeScript/CSS across packages and apps
 - Tech stack: Lit.js 3, Tailwind CSS v4, Vite, TypeScript, pnpm workspaces, colorjs.io, Floating UI, @tanstack/lit-virtual, date-fns, composed-offset-position
-- 18 publishable packages: @lit-ui/core, @lit-ui/button, @lit-ui/dialog, @lit-ui/input, @lit-ui/textarea, @lit-ui/select, @lit-ui/checkbox, @lit-ui/radio, @lit-ui/switch, @lit-ui/calendar, @lit-ui/date-picker, @lit-ui/date-range-picker, @lit-ui/time-picker, @lit-ui/tooltip, @lit-ui/popover, @lit-ui/toast, @lit-ui/ssr, lit-ui (CLI)
+- 20 publishable packages: @lit-ui/core, @lit-ui/button, @lit-ui/dialog, @lit-ui/input, @lit-ui/textarea, @lit-ui/select, @lit-ui/checkbox, @lit-ui/radio, @lit-ui/switch, @lit-ui/calendar, @lit-ui/date-picker, @lit-ui/date-range-picker, @lit-ui/time-picker, @lit-ui/tooltip, @lit-ui/popover, @lit-ui/toast, @lit-ui/accordion, @lit-ui/tabs, @lit-ui/ssr, lit-ui (CLI)
 - Framework examples: Next.js App Router, Astro, Express/Node.js
 - Distribution: copy-source (CLI) or npm packages with SSR support
 - Theme customization: Visual configurator + CLI `--theme` parameter
 - Form components: Input, Textarea, Select (single, multi, combobox, async), Checkbox (with group), Radio (with group), Switch, Date Picker, Date Range Picker, Time Picker
 - Date/time components: Calendar (standalone), Date Picker (with natural language), Date Range Picker (with comparison mode), Time Picker (with clock face, voice input, scroll wheels)
 - Overlay/feedback components: Tooltip (hover/focus with delay groups), Popover (click-toggle with focus management), Toast (imperative API with queue management)
+- Layout components: Accordion (single/multi-expand, CSS Grid animation, lazy mounting), Tabs (automatic/manual activation, horizontal/vertical, animated indicator, overflow scroll)
 
 ## Requirements
 
@@ -80,19 +81,16 @@ Developers can use polished, accessible UI components in any framework without l
 - ✓ Toast with imperative API, singleton state manager, queue management, swipe-to-dismiss, promise mode, top-layer rendering — v5.0
 - ✓ Documentation pages for Toast, Tooltip, Popover with interactive demos and API references — v5.0
 - ✓ CLI registry expanded to 15 components with copy-source templates for all overlay components — v5.0
+- ✓ Accordion with single/multi-expand modes, CSS Grid animation, keyboard navigation, chevron indicator, lazy mounting, SSR — v6.0
+- ✓ Tabs with horizontal/vertical orientation, automatic/manual activation, animated indicator, overflow scroll, lazy rendering, SSR — v6.0
+- ✓ @lit-ui/accordion and @lit-ui/tabs packages with peer dependencies, types, JSX declarations — v6.0
+- ✓ 34+ CSS custom properties for accordion and tabs theming (--ui-accordion-*, --ui-tabs-*) with dark mode — v6.0
+- ✓ CLI registry expanded to 19 components with copy-source templates for accordion and tabs — v6.0
+- ✓ Documentation pages for Accordion and Tabs with interactive demos, API references, and accessibility notes — v6.0
 
 ### Active
 
-**Current Milestone: v6.0 Layout Components**
-
-**Goal:** Add Accordion and Tabs layout components with full accessibility, animations, and multiple modes.
-
-- [ ] Accordion with single-expand and multi-expand modes, animated expand/collapse, keyboard navigation, disabled items
-- [ ] Tabs with horizontal and vertical orientation, automatic and manual activation, lazy loading, keyboard navigation, disabled tabs
-- [ ] @lit-ui/accordion and @lit-ui/tabs packages with SSR compatibility
-- [ ] CSS custom properties for theming (--ui-accordion-*, --ui-tabs-*)
-- [ ] CLI registry entries with copy-source templates
-- [ ] Documentation pages with interactive demos and API references
+No active milestone. Run `/gsd:new-milestone` to start next milestone.
 
 ### Deferred
 
@@ -200,6 +198,13 @@ Developers can use polished, accessible UI components in any framework without l
 | Namespaced template keys for toast | Bare fileStem too generic for multi-file components | ✓ Good — prevents future collisions |
 | CSS var() fallbacks in copy-source templates | Standalone usage without token system needs defaults | ✓ Good — visual correctness without setup |
 | @starting-style entry only (no exit animation) for toast | Simpler initial implementation | — Pending — may add animated exit later |
+| CSS Grid 0fr/1fr for accordion animation | Cross-browser height animation without JS measurement | ✓ Good — smooth, no layout thrashing |
+| Parent-child container pattern reuse | Same discovery/state pattern as RadioGroup/CheckboxGroup | ✓ Good — consistent architecture |
+| Container-rendered tablist in shadow DOM | ARIA roles stay in single shadow root | ✓ Good — correct ARIA, simpler state |
+| _focusedValue separate from active value | Manual activation needs independent focus tracking | ✓ Good — clean separation of concerns |
+| CSS transition indicator (no JS animation) | Consistent with project's CSS-first approach | ✓ Good — no runtime overhead |
+| Lazy panels return `nothing` | Zero DOM footprint for unmounted panels | ✓ Good — minimal memory usage |
+| Scroll buttons aria-hidden + tabindex=-1 | Keep scroll nav out of keyboard tab order | ✓ Good — clean tab flow |
 
 ## Shipped Milestones
 
@@ -212,6 +217,7 @@ Developers can use polished, accessible UI components in any framework without l
 - **v4.2 Form Controls** (2026-01-27): Checkbox, Radio, Switch with group containers, completing form primitives
 - **v4.3 Date/Time Components** (2026-02-02): Calendar, Date Picker, Date Range Picker, Time Picker with full accessibility
 - **v5.0 Overlay & Feedback Components** (2026-02-02): Toast, Tooltip, Popover with shared Floating UI infrastructure
+- **v6.0 Layout Components** (2026-02-02): Accordion, Tabs with full accessibility, animations, SSR, CLI, documentation
 
 ---
-*Last updated: 2026-02-02 after v6.0 milestone started*
+*Last updated: 2026-02-02 after v6.0 milestone*
