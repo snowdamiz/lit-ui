@@ -10,20 +10,20 @@
 
 **Milestone:** v7.0 Data Table
 **Phase:** 61 - Core Table Shell & Virtualization
-**Plan:** Not started
-**Status:** Phase pending
+**Plan:** 1 of 5 complete
+**Status:** In progress
 
 **Progress:**
 ```
-Milestone: [--------] 0%
-Phase:     [--------] 0%
+Milestone: [#-------] 12.5%
+Phase:     [##------] 20%
 ```
 
 ## Performance Metrics
 
 | Metric | Value |
 |--------|-------|
-| Plans completed | 0 |
+| Plans completed | 1 |
 | Requirements satisfied | 0/76 |
 | Phases completed | 0/8 |
 
@@ -39,6 +39,9 @@ Phase:     [--------] 0%
 | Fixed 48px row height | Variable heights break virtual scroll performance | Research |
 | Container-rendered grid | ARIA IDs work in single shadow root | Research |
 | Client/server dual mode | manual=false for local, manual=true for callbacks | Research |
+| Type alias for ColumnDef | TanStack's ColumnDef is union type, cannot extend with interface | 61-01 |
+| LitUI extensions via meta | Column customizations (editable, filter) go in meta property | 61-01 |
+| Re-export TanStack utilities | Developer convenience - single import source | 61-01 |
 
 ### Architecture Notes
 *Technical context that spans multiple plans.*
@@ -48,6 +51,7 @@ Phase:     [--------] 0%
 - Row/cell rendering as templates in container shadow DOM (NOT separate custom elements)
 - Scroll architecture: separate containers for header and body with synchronized scrollLeft
 - Form integration via ElementInternals (for inline editing validation)
+- ColumnDef<TData, TValue> is type alias (not interface) due to TanStack union type structure
 
 ### TODOs
 *Items to address that emerged during work.*
@@ -75,16 +79,17 @@ Phase:     [--------] 0%
 ### Last Session
 *Summary of previous session's work. Updated at session end.*
 
-- Roadmap created with 8 phases (61-68) covering 76 requirements
-- Research summary integrated into phase structure
-- Phase ordering follows research recommendation: virtualization first, editing last
+- Completed 61-01-PLAN.md: Package foundation for @lit-ui/data-table
+- Installed @tanstack/lit-table@8.21.3 and @tanstack/lit-virtual@3.13.19
+- Created type definitions: ColumnDef, DataTableState, LoadingState, event types
+- Fixed ColumnDef type approach (type alias vs interface extension)
 
 ### Next Actions
 *Clear starting point for next session.*
 
-1. Run `/gsd:plan-phase 61` to create plans for Core Table Shell & Virtualization
-2. Begin with TanStack Table/Virtual integration spike
-3. Establish CSS Grid layout and ARIA grid structure
+1. Execute 61-02-PLAN.md: DataTable component with TableController and VirtualizerController
+2. Implement CSS Grid layout with ARIA grid roles
+3. Add sticky header and virtual row rendering
 
 ### Open Questions
 *Unresolved questions needing user input.*
@@ -93,4 +98,4 @@ Phase:     [--------] 0%
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-02-02*
+*Last updated: 2026-02-03*
