@@ -9,22 +9,22 @@
 ## Current Position
 
 **Milestone:** v7.0 Data Table
-**Phase:** 61 - Core Table Shell & Virtualization
-**Plan:** 5 of 5 complete
-**Status:** Phase complete
+**Phase:** 62 - Sorting & Selection
+**Plan:** 1 of 5 complete
+**Status:** In progress
 
 **Progress:**
 ```
 Milestone: [####----] 50%
-Phase:     [##########] 100%
+Phase:     [##--------] 20%
 ```
 
 ## Performance Metrics
 
 | Metric | Value |
 |--------|-------|
-| Plans completed | 5 |
-| Requirements satisfied | 9/76 |
+| Plans completed | 6 |
+| Requirements satisfied | 14/76 |
 | Phases completed | 1/8 |
 
 ## Accumulated Context
@@ -51,6 +51,9 @@ Phase:     [##########] 100%
 | Header cells not focusable | Data rows only in grid navigation per W3C APG | 61-05 |
 | Focus outline -2px offset | Stays inside cell boundaries for clean appearance | 61-05 |
 | Announcement format | "Row X of Y, ColumnHeader, Column X of Y" for screen readers | 61-05 |
+| aria-sort on primary only | Avoid screen reader confusion with multi-sort | 62-01 |
+| Priority badge from 2+ | Primary sort has no badge, secondary shows "2", etc. | 62-01 |
+| Unsorted indicator visible | Faded bi-directional arrow for discoverability | 62-01 |
 
 ### Architecture Notes
 *Technical context that spans multiple plans.*
@@ -63,6 +66,7 @@ Phase:     [##########] 100%
 - ColumnDef<TData, TValue> is type alias (not interface) due to TanStack union type structure
 - Loading states: loading='loading' shows skeleton, loading='updating' shows overlay
 - Keyboard navigation: KeyboardNavigationManager utility handles position calculation, DataTable handles focus
+- Sorting: getSortedRowModel for client-side, manualSorting=true for server-side with ui-sort-change events
 
 ### TODOs
 *Items to address that emerged during work.*
@@ -90,19 +94,18 @@ Phase:     [##########] 100%
 ### Last Session
 *Summary of previous session's work. Updated at session end.*
 
-- Completed 61-05-PLAN.md: Keyboard navigation and focus management
-- Created KeyboardNavigationManager utility for ARIA grid navigation
-- Integrated keyboard handling with arrow keys, Home/End, PageUp/PageDown
-- Implemented roving tabindex pattern for focus management
-- Added ARIA live region for screen reader announcements
-- Phase 61 complete - all 5 plans executed
+- Completed 62-01-PLAN.md: Column sorting integration
+- Added TanStack Table getSortedRowModel for client-side sorting
+- Implemented sortable header cells with click handlers
+- Added sort direction indicators with multi-sort priority badges
+- Server-side sorting mode via manual-sorting attribute
 
 ### Next Actions
 *Clear starting point for next session.*
 
-1. Plan Phase 62: Sorting & Filtering
-2. Research TanStack Table sorting/filtering features
-3. Design column header sort indicators
+1. Execute 62-02-PLAN.md: Column filtering
+2. Implement global filter and column filters
+3. Add filter UI in column headers
 
 ### Open Questions
 *Unresolved questions needing user input.*
