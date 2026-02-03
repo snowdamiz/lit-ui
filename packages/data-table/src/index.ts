@@ -27,3 +27,6 @@ export {
   type GridPosition,
   type GridBounds,
 } from './keyboard-navigation.js';
+
+// Selection column factory
+export { createSelectionColumn } from './selection-column.js';
