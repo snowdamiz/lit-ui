@@ -74,12 +74,12 @@ Requirements for the Layout Components milestone. Each maps to roadmap phases.
 
 - [x] **INTG-01**: @lit-ui/accordion package with peer deps on lit and @lit-ui/core
 - [x] **INTG-02**: @lit-ui/tabs package with peer deps on lit and @lit-ui/core
-- [ ] **INTG-03**: CLI copy-source templates for accordion (namespaced: accordion/accordion, accordion/accordion-item)
-- [ ] **INTG-04**: CLI copy-source templates for tabs (namespaced: tabs/tabs, tabs/tab-panel)
-- [ ] **INTG-05**: CLI registry entries for accordion and tabs with correct dependencies
-- [ ] **INTG-06**: CSS variable fallbacks in copy-source templates for standalone usage
-- [ ] **INTG-07**: Documentation page for Accordion with interactive demos and API reference
-- [ ] **INTG-08**: Documentation page for Tabs with interactive demos and API reference
+- [x] **INTG-03**: CLI copy-source templates for accordion (namespaced: accordion/accordion, accordion/accordion-item)
+- [x] **INTG-04**: CLI copy-source templates for tabs (namespaced: tabs/tabs, tabs/tab-panel)
+- [x] **INTG-05**: CLI registry entries for accordion and tabs with correct dependencies
+- [x] **INTG-06**: CSS variable fallbacks in copy-source templates for standalone usage
+- [x] **INTG-07**: Documentation page for Accordion with interactive demos and API reference
+- [x] **INTG-08**: Documentation page for Tabs with interactive demos and API reference
 
 ## Future Requirements
 

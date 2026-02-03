@@ -7,7 +7,7 @@ Deliver Accordion and Tabs layout components following the established parent-ch
 ## Milestones
 
 - v1.0 through v5.0: Shipped (see MILESTONES.md)
-- v6.0 Layout Components: Phases 56-60 (in progress)
+- v6.0 Layout Components: Phases 56-60 (complete)
 
 ## Phases
 
@@ -19,7 +19,7 @@ Deliver Accordion and Tabs layout components following the established parent-ch
 - [x] **Phase 57: Accordion Polish & Package** - Visual refinements, lazy mounting, SSR compatibility, and publishable package
 - [x] **Phase 58: Tabs Core** - Fully accessible tabs with automatic/manual activation, horizontal/vertical orientation, and keyboard navigation
 - [x] **Phase 59: Tabs Polish & Package** - Active indicator animation, lazy rendering, overflow scroll, SSR compatibility, and publishable package
-- [ ] **Phase 60: CLI & Documentation** - CLI templates, registry entries, and documentation pages for both components
+- [x] **Phase 60: CLI & Documentation** - CLI templates, registry entries, and documentation pages for both components
 
 ## Phase Details
 
@@ -97,8 +97,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 60-01-PLAN.md — CLI copy-source templates and registry entries for accordion and tabs
-- [ ] 60-02-PLAN.md — Documentation pages with interactive demos and API references
+- [x] 60-01-PLAN.md — CLI copy-source templates and registry entries for accordion and tabs
+- [x] 60-02-PLAN.md — Documentation pages with interactive demos and API references
 
 ## Progress
 
@@ -111,4 +111,4 @@ Phases execute in numeric order: 56 -> 57 -> 58 -> 59 -> 60
 | 57. Accordion Polish & Package | 2/2 | ✓ Complete | 2026-02-03 |
 | 58. Tabs Core | 2/2 | ✓ Complete | 2026-02-03 |
 | 59. Tabs Polish & Package | 2/2 | ✓ Complete | 2026-02-03 |
-| 60. CLI & Documentation | 0/2 | Not started | - |
+| 60. CLI & Documentation | 2/2 | ✓ Complete | 2026-02-03 |
