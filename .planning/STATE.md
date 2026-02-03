@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-02)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** Planning next milestone
+**Current focus:** Milestone v7.0 Data Table — defining requirements
 
 ## Current Position
 
-Phase: 60 of 60 (CLI & Documentation) — v6.0 complete
-Plan: N/A
-Status: Milestone v6.0 shipped, ready for next milestone
-Last activity: 2026-02-02 — v6.0 Layout Components milestone complete
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-02-02 — Milestone v7.0 started
 
-Progress: ████████████████████████████████ 100% (v6.0)
+Progress: ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 0%
 
 ## Performance Metrics
 
@@ -27,7 +27,7 @@ Progress: ███████████████████████�
 ### Decisions
 
 Decisions are logged in PROJECT.md Key Decisions table.
-No pending decisions — milestone complete.
+No pending decisions — milestone just started.
 
 ### Pending Todos
 
@@ -51,5 +51,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-02
-Stopped at: v6.0 milestone archived and tagged
+Stopped at: Milestone v7.0 started, proceeding to research
 Resume file: None

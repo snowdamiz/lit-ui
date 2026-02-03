@@ -10,6 +10,19 @@ Now with **dual distribution** (copy-source or npm), **SSR support** via Declara
 
 Developers can use polished, accessible UI components in any framework without lock-in — one component library that works everywhere.
 
+## Current Milestone: v7.0 Data Table
+
+**Goal:** A full-featured data table for admin dashboards — handling massive datasets (100K+ rows) with sorting, filtering, inline editing (cell and row modes), selection with bulk actions, and column customization, all framework-agnostic.
+
+**Target features:**
+- Virtual scrolling for 100K+ rows (DOM recycling via @tanstack/lit-virtual)
+- Sorting — single/multi-column, ascending/descending, server-side support
+- Filtering — per-column filters, global search, server-side support
+- Inline editing — cell-level click-to-edit AND row-level edit mode
+- Selection — row checkboxes, select all, bulk actions (delete, export, custom)
+- Column customization — reorder, resize, show/hide, persist preferences
+- Data source — local data binding for simple cases, async callbacks for server-side
+
 ## Current State (v6.0)
 
 - ~63,697 lines TypeScript/CSS across packages and apps
@@ -90,7 +103,11 @@ Developers can use polished, accessible UI components in any framework without l
 
 ### Active
 
-No active milestone. Run `/gsd:new-milestone` to start next milestone.
+- [ ] Data Table component with virtual scrolling, sorting, filtering, inline editing, selection, column customization
+- [ ] Server-side data operations via async callbacks
+- [ ] @lit-ui/data-table package with SSR support
+- [ ] CLI integration with copy-source templates
+- [ ] Documentation with interactive demos and accessibility notes
 
 ### Deferred
 
@@ -220,4 +237,4 @@ No active milestone. Run `/gsd:new-milestone` to start next milestone.
 - **v6.0 Layout Components** (2026-02-02): Accordion, Tabs with full accessibility, animations, SSR, CLI, documentation
 
 ---
-*Last updated: 2026-02-02 after v6.0 milestone*
+*Last updated: 2026-02-02 after v7.0 milestone started*
