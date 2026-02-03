@@ -14,6 +14,15 @@ Phases progress from foundational architecture (virtualization, ARIA grid) throu
 
 **Dependencies:** None (foundation phase)
 
+**Plans:** 5 plans
+
+Plans:
+- [ ] 61-01-PLAN.md — Package setup with types and TanStack dependencies
+- [ ] 61-02-PLAN.md — Core DataTable component with TableController
+- [ ] 61-03-PLAN.md — Virtual scrolling with VirtualizerController
+- [ ] 61-04-PLAN.md — Loading and empty states
+- [ ] 61-05-PLAN.md — ARIA grid keyboard navigation
+
 **Requirements:**
 - CORE-01: Data Table renders columns and rows from column definition array
 - CORE-02: Header row is fixed/sticky during vertical scroll
@@ -244,7 +253,7 @@ Phases progress from foundational architecture (virtualization, ARIA grid) throu
 
 | Phase | Name | Status | Plans |
 |-------|------|--------|-------|
-| 61 | Core Table Shell & Virtualization | Pending | 0/0 |
+| 61 | Core Table Shell & Virtualization | Planned | 0/5 |
 | 62 | Sorting & Selection | Pending | 0/0 |
 | 63 | Filtering & Pagination | Pending | 0/0 |
 | 64 | Column Customization | Pending | 0/0 |
@@ -257,4 +266,4 @@ Phases progress from foundational architecture (virtualization, ARIA grid) throu
 
 ---
 *Roadmap created: 2026-02-02*
-*Last updated: 2026-02-02*
+*Last updated: 2026-02-03*
