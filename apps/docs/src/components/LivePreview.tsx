@@ -19,12 +19,55 @@ import '@lit-ui/date-range-picker';
 import '@lit-ui/time-picker';
 import '@lit-ui/tooltip';
 import '@lit-ui/popover';
+import '@lit-ui/accordion';
+import '@lit-ui/tabs';
 import '@lit-ui/toast';
 
 // TypeScript JSX declaration for lui-button and lui-input
 declare global {
   namespace JSX {
     interface IntrinsicElements {
+      'lui-accordion': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement> & {
+          value?: string;
+          'default-value'?: string;
+          multiple?: boolean;
+          collapsible?: boolean;
+          disabled?: boolean;
+        },
+        HTMLElement
+      >;
+      'lui-accordion-item': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement> & {
+          value?: string;
+          expanded?: boolean;
+          disabled?: boolean;
+          'heading-level'?: number;
+          lazy?: boolean;
+        },
+        HTMLElement
+      >;
+      'lui-tabs': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement> & {
+          value?: string;
+          'default-value'?: string;
+          disabled?: boolean;
+          label?: string;
+          orientation?: 'horizontal' | 'vertical';
+          'activation-mode'?: 'automatic' | 'manual';
+        },
+        HTMLElement
+      >;
+      'lui-tab-panel': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement> & {
+          value?: string;
+          label?: string;
+          disabled?: boolean;
+          active?: boolean;
+          lazy?: boolean;
+        },
+        HTMLElement
+      >;
       'lui-button': React.DetailedHTMLProps<
         React.HTMLAttributes<HTMLElement> & {
           variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive';

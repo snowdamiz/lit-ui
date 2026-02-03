@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@lit-ui/accordion": "workspace:*",
     "@lit-ui/button": "workspace:*",
     "@lit-ui/calendar": "workspace:*",
     "@lit-ui/checkbox": "workspace:*",
@@ -22,6 +23,7 @@
     "@lit-ui/radio": "workspace:*",
     "@lit-ui/select": "workspace:*",
     "@lit-ui/switch": "workspace:*",
+    "@lit-ui/tabs": "workspace:*",
     "@lit-ui/textarea": "workspace:*",
     "@lit-ui/time-picker": "workspace:*",
     "@lit-ui/toast": "workspace:*",
