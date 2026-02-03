@@ -800,6 +800,36 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
   }
 
   /**
+   * Render filter indicator icon when column has an active filter.
+   * Shows a funnel icon with tooltip indicating the column is filtered.
+   */
+  private renderFilterIndicator(column: Column<TData, unknown>): TemplateResult {
+    const filterValue = column.getFilterValue();
+
+    // Don't show indicator if no filter value
+    if (
+      filterValue === undefined ||
+      filterValue === null ||
+      filterValue === '' ||
+      (Array.isArray(filterValue) && filterValue.length === 0)
+    ) {
+      return html``;
+    }
+
+    return html`
+      <span
+        class="filter-indicator"
+        aria-label="Column is filtered"
+        title="Column has active filter"
+      >
+        <svg viewBox="0 0 16 16" aria-hidden="true">
+          <path d="M1.5 1.5h13L9 7v5.5l-2 1.5V7L1.5 1.5z" fill="currentColor" />
+        </svg>
+      </span>
+    `;
+  }
+
+  /**
    * Render a header cell using flexRender.
    * Sortable headers have click handlers and visual indicators.
    */
@@ -835,6 +865,7 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
       >
         <span class="header-content">${headerContent}</span>
         ${canSort ? this.renderSortIndicator(sortDirection, sortIndex) : nothing}
+        ${this.renderFilterIndicator(header.column)}
       </div>
     `;
   }
@@ -1288,6 +1319,19 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
         background: var(--color-primary, #3b82f6);
         color: var(--color-primary-foreground, #ffffff);
         border-radius: 50%;
+      }
+
+      /* Filter indicator styles */
+      .filter-indicator {
+        display: inline-flex;
+        align-items: center;
+        color: var(--color-primary, #3b82f6);
+        margin-left: 4px;
+      }
+
+      .filter-indicator svg {
+        width: 12px;
+        height: 12px;
       }
 
       /* Selection column styles */
