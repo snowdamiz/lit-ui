@@ -56,9 +56,9 @@ Plans:
 **Plans:** 3 plans
 
 Plans:
-- [ ] 62-01-PLAN.md — Sorting with TanStack integration and visual indicators
-- [ ] 62-02-PLAN.md — Row selection core with checkbox column
-- [ ] 62-03-PLAN.md — Selection enhancements (range, banner, filter clearing)
+- [x] 62-01-PLAN.md — Sorting with TanStack integration and visual indicators
+- [x] 62-02-PLAN.md — Row selection core with checkbox column
+- [x] 62-03-PLAN.md — Selection enhancements (range, banner, filter clearing)
 
 **Requirements:**
 - SORT-01: User can click column header to sort by that column (ascending/descending toggle)
@@ -261,7 +261,7 @@ Plans:
 | Phase | Name | Status | Plans |
 |-------|------|--------|-------|
 | 61 | Core Table Shell & Virtualization | ✓ Complete | 5/5 |
-| 62 | Sorting & Selection | In Progress | 0/3 |
+| 62 | Sorting & Selection | ✓ Complete | 3/3 |
 | 63 | Filtering & Pagination | Pending | 0/0 |
 | 64 | Column Customization | Pending | 0/0 |
 | 65 | Inline Editing | Pending | 0/0 |
