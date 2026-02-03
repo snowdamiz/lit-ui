@@ -39,21 +39,21 @@ Requirements for the Layout Components milestone. Each maps to roadmap phases.
 
 ### Tabs — Core
 
-- [ ] **TABS-01**: Tabs container renders tablist with tab buttons from slotted TabPanel metadata
-- [ ] **TABS-02**: Tab panels show/hide based on active tab selection
-- [ ] **TABS-03**: Automatic activation mode (arrow key focus change immediately activates tab)
-- [ ] **TABS-04**: Manual activation mode (arrow keys move focus, Enter/Space activates)
-- [ ] **TABS-05**: Horizontal orientation with Left/Right arrow key navigation
-- [ ] **TABS-06**: Vertical orientation with Up/Down arrow key navigation
-- [ ] **TABS-07**: Arrow key navigation wraps from last to first and vice versa
-- [ ] **TABS-08**: Home/End keys jump to first/last non-disabled tab
-- [ ] **TABS-09**: Tab from tablist moves focus to active panel content
-- [ ] **TABS-10**: Tabs have role="tablist", role="tab", role="tabpanel" with aria-selected, aria-controls, aria-labelledby
-- [ ] **TABS-11**: aria-orientation set correctly based on orientation property
-- [ ] **TABS-12**: Individual tabs can be disabled (skipped in keyboard navigation)
-- [ ] **TABS-13**: Tabs support controlled mode (value attribute) and uncontrolled mode (default-value)
-- [ ] **TABS-14**: Tabs dispatch ui-change event on tab switch
-- [ ] **TABS-15**: Tab panels discovered via slotchange, handles dynamic add/remove
+- [x] **TABS-01**: Tabs container renders tablist with tab buttons from slotted TabPanel metadata
+- [x] **TABS-02**: Tab panels show/hide based on active tab selection
+- [x] **TABS-03**: Automatic activation mode (arrow key focus change immediately activates tab)
+- [x] **TABS-04**: Manual activation mode (arrow keys move focus, Enter/Space activates)
+- [x] **TABS-05**: Horizontal orientation with Left/Right arrow key navigation
+- [x] **TABS-06**: Vertical orientation with Up/Down arrow key navigation
+- [x] **TABS-07**: Arrow key navigation wraps from last to first and vice versa
+- [x] **TABS-08**: Home/End keys jump to first/last non-disabled tab
+- [x] **TABS-09**: Tab from tablist moves focus to active panel content
+- [x] **TABS-10**: Tabs have role="tablist", role="tab", role="tabpanel" with aria-selected, aria-controls, aria-labelledby
+- [x] **TABS-11**: aria-orientation set correctly based on orientation property
+- [x] **TABS-12**: Individual tabs can be disabled (skipped in keyboard navigation)
+- [x] **TABS-13**: Tabs support controlled mode (value attribute) and uncontrolled mode (default-value)
+- [x] **TABS-14**: Tabs dispatch ui-change event on tab switch
+- [x] **TABS-15**: Tab panels discovered via slotchange, handles dynamic add/remove
 
 ### Tabs — Polish
 
@@ -67,8 +67,8 @@ Requirements for the Layout Components milestone. Each maps to roadmap phases.
 
 ### Tabs — Theming
 
-- [ ] **TABS-23**: CSS custom properties for tabs theming (--ui-tabs-*)
-- [ ] **TABS-24**: Dark mode support via :host-context(.dark)
+- [x] **TABS-23**: CSS custom properties for tabs theming (--ui-tabs-*)
+- [x] **TABS-24**: Dark mode support via :host-context(.dark)
 
 ### Integration
 
@@ -128,27 +128,27 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ACRD-13 | Phase 56 | Complete |
 | ACRD-14 | Phase 56 | Complete |
 | ACRD-15 | Phase 56 | Complete |
-| ACRD-16 | Phase 57 | Pending |
-| ACRD-17 | Phase 57 | Pending |
-| ACRD-18 | Phase 57 | Pending |
-| ACRD-19 | Phase 57 | Pending |
+| ACRD-16 | Phase 57 | Complete |
+| ACRD-17 | Phase 57 | Complete |
+| ACRD-18 | Phase 57 | Complete |
+| ACRD-19 | Phase 57 | Complete |
 | ACRD-20 | Phase 56 | Complete |
 | ACRD-21 | Phase 56 | Complete |
-| TABS-01 | Phase 58 | Pending |
-| TABS-02 | Phase 58 | Pending |
-| TABS-03 | Phase 58 | Pending |
-| TABS-04 | Phase 58 | Pending |
-| TABS-05 | Phase 58 | Pending |
-| TABS-06 | Phase 58 | Pending |
-| TABS-07 | Phase 58 | Pending |
-| TABS-08 | Phase 58 | Pending |
-| TABS-09 | Phase 58 | Pending |
-| TABS-10 | Phase 58 | Pending |
-| TABS-11 | Phase 58 | Pending |
-| TABS-12 | Phase 58 | Pending |
-| TABS-13 | Phase 58 | Pending |
-| TABS-14 | Phase 58 | Pending |
-| TABS-15 | Phase 58 | Pending |
+| TABS-01 | Phase 58 | Complete |
+| TABS-02 | Phase 58 | Complete |
+| TABS-03 | Phase 58 | Complete |
+| TABS-04 | Phase 58 | Complete |
+| TABS-05 | Phase 58 | Complete |
+| TABS-06 | Phase 58 | Complete |
+| TABS-07 | Phase 58 | Complete |
+| TABS-08 | Phase 58 | Complete |
+| TABS-09 | Phase 58 | Complete |
+| TABS-10 | Phase 58 | Complete |
+| TABS-11 | Phase 58 | Complete |
+| TABS-12 | Phase 58 | Complete |
+| TABS-13 | Phase 58 | Complete |
+| TABS-14 | Phase 58 | Complete |
+| TABS-15 | Phase 58 | Complete |
 | TABS-16 | Phase 59 | Pending |
 | TABS-17 | Phase 59 | Pending |
 | TABS-18 | Phase 59 | Pending |
@@ -156,9 +156,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | TABS-20 | Phase 59 | Pending |
 | TABS-21 | Phase 59 | Pending |
 | TABS-22 | Phase 59 | Pending |
-| TABS-23 | Phase 58 | Pending |
-| TABS-24 | Phase 58 | Pending |
-| INTG-01 | Phase 57 | Pending |
+| TABS-23 | Phase 58 | Complete |
+| TABS-24 | Phase 58 | Complete |
+| INTG-01 | Phase 57 | Complete |
 | INTG-02 | Phase 59 | Pending |
 | INTG-03 | Phase 60 | Pending |
 | INTG-04 | Phase 60 | Pending |
@@ -174,4 +174,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-02-02*
-*Last updated: 2026-02-03 after Phase 56 completion*
+*Last updated: 2026-02-03 after Phase 58 completion*

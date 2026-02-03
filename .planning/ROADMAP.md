@@ -17,7 +17,7 @@ Deliver Accordion and Tabs layout components following the established parent-ch
 
 - [x] **Phase 56: Accordion Core** - Fully accessible accordion with single/multi-expand, keyboard navigation, and CSS Grid animation
 - [x] **Phase 57: Accordion Polish & Package** - Visual refinements, lazy mounting, SSR compatibility, and publishable package
-- [ ] **Phase 58: Tabs Core** - Fully accessible tabs with automatic/manual activation, horizontal/vertical orientation, and keyboard navigation
+- [x] **Phase 58: Tabs Core** - Fully accessible tabs with automatic/manual activation, horizontal/vertical orientation, and keyboard navigation
 - [ ] **Phase 59: Tabs Polish & Package** - Active indicator animation, lazy rendering, overflow scroll, SSR compatibility, and publishable package
 - [ ] **Phase 60: CLI & Documentation** - CLI templates, registry entries, and documentation pages for both components
 
@@ -67,8 +67,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 58-01-PLAN.md — Package scaffold, TabPanel element, Tabs container with tablist rendering and active tab state
-- [ ] 58-02-PLAN.md — Keyboard navigation, activation modes, orientation, ARIA, disabled tabs, and CSS theming
+- [x] 58-01-PLAN.md — Package scaffold, TabPanel element, Tabs container with tablist rendering and active tab state
+- [x] 58-02-PLAN.md — Keyboard navigation, activation modes, orientation, ARIA, disabled tabs, and CSS theming
 
 ### Phase 59: Tabs Polish & Package
 **Goal**: Tabs have animated indicator, lazy rendering, overflow handling, SSR compatibility, and ship as a publishable @lit-ui/tabs package
@@ -109,6 +109,6 @@ Phases execute in numeric order: 56 -> 57 -> 58 -> 59 -> 60
 |-------|----------------|--------|-----------|
 | 56. Accordion Core | 2/2 | ✓ Complete | 2026-02-03 |
 | 57. Accordion Polish & Package | 2/2 | ✓ Complete | 2026-02-03 |
-| 58. Tabs Core | 0/2 | Not started | - |
+| 58. Tabs Core | 2/2 | ✓ Complete | 2026-02-03 |
 | 59. Tabs Polish & Package | 0/2 | Not started | - |
 | 60. CLI & Documentation | 0/2 | Not started | - |
