@@ -33,11 +33,11 @@ Deliver Accordion and Tabs layout components following the established parent-ch
   3. User can navigate between accordion headers using arrow keys (with wrapping) and Home/End, and toggle panels with Enter/Space
   4. Screen reader announces aria-expanded state, heading level, and panel association (aria-controls/aria-labelledby) correctly
   5. Accordion renders with project-consistent CSS custom properties (--ui-accordion-*) and responds to dark mode
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 56-01: Accordion container and item elements with single/multi-expand state management
-- [ ] 56-02: Keyboard navigation, ARIA attributes, disabled states, and CSS theming
+- [ ] 56-01-PLAN.md — Package scaffold, AccordionItem element, Accordion container with single/multi-expand state management
+- [ ] 56-02-PLAN.md — Keyboard navigation, ARIA attributes, disabled states, and CSS custom property theming with dark mode
 
 ### Phase 57: Accordion Polish & Package
 **Goal**: Accordion has visual polish, SSR compatibility, and ships as a publishable @lit-ui/accordion package
