@@ -26,7 +26,7 @@
  */
 
 import { html, css, nothing, isServer, type PropertyValues } from 'lit';
-import { property } from 'lit/decorators.js';
+import { property, state } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import { TailwindElement, tailwindBaseStyles } from '@lit-ui/core';
 import { dispatchCustomEvent } from '@lit-ui/core';
@@ -69,6 +69,18 @@ export class Tabs extends TailwindElement {
    * Tracks container resize to reposition indicator.
    */
   private resizeObserver: ResizeObserver | null = null;
+
+  /**
+   * Whether the left scroll button should be visible.
+   */
+  @state()
+  private _showScrollLeft = false;
+
+  /**
+   * Whether the right scroll button should be visible.
+   */
+  @state()
+  private _showScrollRight = false;
 
   /**
    * Active tab value (controlled mode).
@@ -144,13 +156,19 @@ export class Tabs extends TailwindElement {
         slot.dispatchEvent(new Event('slotchange'));
       }
 
-      // Set up ResizeObserver for indicator repositioning
+      // Set up ResizeObserver for indicator repositioning and scroll buttons
       const tablist = this.shadowRoot?.querySelector('.tablist') as HTMLElement | null;
       if (tablist) {
-        this.resizeObserver = new ResizeObserver(() => this.updateIndicator());
+        this.resizeObserver = new ResizeObserver(() => {
+          this.updateIndicator();
+          this.updateScrollButtons();
+        });
         this.resizeObserver.observe(tablist);
       }
-      this.updateComplete.then(() => this.updateIndicator());
+      this.updateComplete.then(() => {
+        this.updateIndicator();
+        this.updateScrollButtons();
+      });
     }
   }
 
@@ -191,6 +209,38 @@ export class Tabs extends TailwindElement {
   }
 
   /**
+   * Check if the tablist overflows and update scroll button visibility.
+   */
+  private updateScrollButtons(): void {
+    if (isServer) return;
+    if (this.orientation === 'vertical') {
+      this._showScrollLeft = false;
+      this._showScrollRight = false;
+      return;
+    }
+    const tablist = this.shadowRoot?.querySelector('.tablist') as HTMLElement | null;
+    if (!tablist) return;
+
+    this._showScrollLeft = tablist.scrollLeft > 1;
+    this._showScrollRight =
+      tablist.scrollLeft + tablist.clientWidth < tablist.scrollWidth - 1;
+  }
+
+  /**
+   * Scroll the tablist in the given direction.
+   */
+  private scrollTabs(direction: 'left' | 'right'): void {
+    const tablist = this.shadowRoot?.querySelector('.tablist') as HTMLElement | null;
+    if (!tablist) return;
+
+    const scrollAmount = tablist.clientWidth * 0.75;
+    tablist.scrollBy({
+      left: direction === 'left' ? -scrollAmount : scrollAmount,
+      behavior: 'smooth',
+    });
+  }
+
+  /**
    * Sync panel states when value changes.
    * In automatic mode, keep _focusedValue in sync with active value.
    */
@@ -227,7 +277,10 @@ export class Tabs extends TailwindElement {
     this._focusedValue = this.value;
     this.syncPanelStates();
     this.requestUpdate();
-    this.updateComplete.then(() => this.updateIndicator());
+    this.updateComplete.then(() => {
+      this.updateIndicator();
+      this.updateScrollButtons();
+    });
   }
 
   /**
@@ -409,14 +462,31 @@ export class Tabs extends TailwindElement {
         pointer-events: none;
       }
 
+      .tablist-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+      }
+
       .tablist {
         position: relative;
-        display: inline-flex;
+        display: flex;
         align-items: center;
         gap: var(--ui-tabs-list-gap);
         padding: var(--ui-tabs-list-padding);
         background: var(--ui-tabs-list-bg);
         border-radius: var(--ui-tabs-list-radius);
+        overflow-x: auto;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+      }
+
+      .tablist::-webkit-scrollbar {
+        display: none;
+      }
+
+      :host([orientation='vertical']) .tablist-wrapper {
+        display: contents;
       }
 
       :host([orientation='vertical']) .tablist {
@@ -476,6 +546,26 @@ export class Tabs extends TailwindElement {
           0 0 0 2px var(--ui-tabs-ring);
       }
 
+      .scroll-button {
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: var(--ui-tabs-scroll-button-size, 2rem);
+        height: var(--ui-tabs-scroll-button-size, 2rem);
+        border: none;
+        background: var(--ui-tabs-list-bg);
+        color: var(--ui-tabs-tab-text);
+        cursor: pointer;
+        border-radius: var(--ui-tabs-tab-radius);
+        transition: color var(--ui-tabs-transition), background var(--ui-tabs-transition);
+      }
+
+      .scroll-button:hover {
+        color: var(--ui-tabs-tab-hover-text);
+        background: var(--ui-tabs-tab-hover-bg);
+      }
+
       .panels-container {
         padding: var(--ui-tabs-panel-padding);
         color: var(--ui-tabs-panel-text);
@@ -519,39 +609,68 @@ export class Tabs extends TailwindElement {
         class="tabs-wrapper"
         @ui-tab-panel-update=${() => this.requestUpdate()}
       >
-        <div
-          class="tablist"
-          role="tablist"
-          aria-orientation="${this.orientation}"
-          aria-label="${this.label || nothing}"
-          @keydown=${this.handleKeyDown}
-        >
-          ${this.panels.map(
-            (panel) => html`
-              <button
-                id="${this.tabsId}-tab-${panel.value}"
-                role="tab"
-                aria-selected="${panel.value === this.value ? 'true' : 'false'}"
-                aria-controls="${this.tabsId}-panel-${panel.value}"
-                aria-disabled="${panel.disabled ? 'true' : nothing}"
-                data-state="${panel.value === this.value ? 'active' : 'inactive'}"
-                tabindex="${this.getTabIndex(panel)}"
-                class="tab-button ${panel.value === this.value
-                  ? 'tab-active'
-                  : ''}"
-                @click=${() => this.handleTabClick(panel.value, panel.disabled)}
-              >
-                ${panel.label}
-              </button>
-            `
-          )}
+        <div class="tablist-wrapper">
+          ${this._showScrollLeft ? html`
+            <button
+              class="scroll-button scroll-left"
+              aria-hidden="true"
+              tabindex="-1"
+              @click=${() => this.scrollTabs('left')}
+            >
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" aria-hidden="true" width="16" height="16">
+                <path d="M10 4l-4 4 4 4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          ` : nothing}
+
           <div
-            class="tab-indicator"
-            style=${styleMap({
-              ...this._indicatorStyle,
-              opacity: this._indicatorReady ? '1' : '0',
-            })}
-          ></div>
+            class="tablist"
+            role="tablist"
+            aria-orientation="${this.orientation}"
+            aria-label="${this.label || nothing}"
+            @keydown=${this.handleKeyDown}
+            @scroll=${this.updateScrollButtons}
+          >
+            ${this.panels.map(
+              (panel) => html`
+                <button
+                  id="${this.tabsId}-tab-${panel.value}"
+                  role="tab"
+                  aria-selected="${panel.value === this.value ? 'true' : 'false'}"
+                  aria-controls="${this.tabsId}-panel-${panel.value}"
+                  aria-disabled="${panel.disabled ? 'true' : nothing}"
+                  data-state="${panel.value === this.value ? 'active' : 'inactive'}"
+                  tabindex="${this.getTabIndex(panel)}"
+                  class="tab-button ${panel.value === this.value
+                    ? 'tab-active'
+                    : ''}"
+                  @click=${() => this.handleTabClick(panel.value, panel.disabled)}
+                >
+                  ${panel.label}
+                </button>
+              `
+            )}
+            <div
+              class="tab-indicator"
+              style=${styleMap({
+                ...this._indicatorStyle,
+                opacity: this._indicatorReady ? '1' : '0',
+              })}
+            ></div>
+          </div>
+
+          ${this._showScrollRight ? html`
+            <button
+              class="scroll-button scroll-right"
+              aria-hidden="true"
+              tabindex="-1"
+              @click=${() => this.scrollTabs('right')}
+            >
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" aria-hidden="true" width="16" height="16">
+                <path d="M6 4l4 4-4 4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          ` : nothing}
         </div>
         <div class="panels-container">
           <slot @slotchange=${this.handleSlotChange}></slot>

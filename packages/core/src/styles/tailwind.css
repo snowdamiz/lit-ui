@@ -830,6 +830,9 @@
   --ui-tabs-indicator-height: 2px;
   --ui-tabs-indicator-radius: 9999px;
   --ui-tabs-indicator-transition: 200ms;
+
+  /* Scroll buttons */
+  --ui-tabs-scroll-button-size: 2rem;
 }
 
 /* ==========================================================================
