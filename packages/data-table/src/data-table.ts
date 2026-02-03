@@ -26,12 +26,14 @@ import { TailwindElement, tailwindBaseStyles } from '@lit-ui/core';
 import {
   TableController,
   getCoreRowModel,
+  getSortedRowModel,
   flexRender,
   type RowData,
   type Table,
   type Header,
   type Cell,
   type Row,
+  type SortingState,
 } from '@tanstack/lit-table';
 import { VirtualizerController } from '@tanstack/lit-virtual';
 import type { ColumnDef, LoadingState, EmptyStateType } from './types.js';
@@ -166,6 +168,22 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
    */
   @property({ type: String, attribute: 'max-height' })
   maxHeight = '400px';
+
+  /**
+   * Current sorting state.
+   * Array of sort objects with column ID and direction.
+   * Supports multi-column sorting via Shift+click.
+   */
+  @property({ type: Array })
+  sorting: SortingState = [];
+
+  /**
+   * Enable manual/server-side sorting mode.
+   * When true, sorting is handled externally and ui-sort-change events are emitted.
+   * When false (default), client-side sorting is performed via getSortedRowModel.
+   */
+  @property({ type: Boolean, attribute: 'manual-sorting' })
+  manualSorting = false;
 
   // ==========================================================================
   // Lifecycle methods
@@ -327,6 +345,24 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
   // ==========================================================================
   // Helper methods
   // ==========================================================================
+
+  /**
+   * Dispatch sort change event with both TanStack and REST API formats.
+   */
+  private dispatchSortChange(sorting: SortingState): void {
+    const event = new CustomEvent('ui-sort-change', {
+      detail: {
+        sorting,
+        sortParams: sorting.map((s) => ({
+          column: s.id,
+          direction: s.desc ? 'desc' : 'asc',
+        })),
+      },
+      bubbles: true,
+      composed: true,
+    });
+    this.dispatchEvent(event);
+  }
 
   /**
    * Compute CSS Grid template columns from column definitions.
@@ -913,7 +949,18 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
     const table = this.tableController.table({
       columns: this.columns,
       data: this.data,
+      state: {
+        sorting: this.sorting,
+      },
+      onSortingChange: (updater) => {
+        const newSorting =
+          typeof updater === 'function' ? updater(this.sorting) : updater;
+        this.sorting = newSorting;
+        this.dispatchSortChange(newSorting);
+      },
       getCoreRowModel: getCoreRowModel(),
+      getSortedRowModel: this.manualSorting ? undefined : getSortedRowModel(),
+      manualSorting: this.manualSorting,
     });
 
     // Calculate total counts for ARIA

@@ -226,3 +226,16 @@ export interface ServerSideConfig {
   /** Total page count (alternative to rowCount) */
   pageCount?: number;
 }
+
+/**
+ * Event detail for sort change events.
+ *
+ * Emitted when sorting state changes via column header clicks.
+ * Includes both TanStack format and REST API helper format.
+ */
+export interface SortChangeEvent {
+  /** Current sorting state array (TanStack format) */
+  sorting: SortingState;
+  /** Helper format for REST APIs */
+  sortParams: Array<{ column: string; direction: 'asc' | 'desc' }>;
+}
