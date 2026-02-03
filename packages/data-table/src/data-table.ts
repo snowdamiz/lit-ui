@@ -1,9 +1,12 @@
 /**
  * lui-data-table - A high-performance data table with virtual scrolling
  *
- * Features (Phase 61):
+ * Features:
  * - Renders columns and rows from column definitions
  * - TanStack Table for headless state management
+ * - Virtual scrolling for 100K+ rows
+ * - Column resize, reorder, and visibility customization
+ * - localStorage persistence with optional server-side callback
  * - Div-based layout with ARIA grid pattern
  * - CSS Grid for column sizing
  * - SSR compatible via isServer guards
@@ -13,10 +16,24 @@
  * <lui-data-table
  *   .columns=${columns}
  *   .data=${data}
+ *   persistence-key="users-table"
+ *   enable-column-resizing
+ *   enable-column-reorder
+ *   show-column-picker
+ *   sticky-first-column
  * ></lui-data-table>
  * ```
  *
  * @slot - Optional slot for custom content (e.g., toolbar, pagination)
+ *
+ * @fires ui-sort-change - When sorting state changes
+ * @fires ui-selection-change - When row selection changes
+ * @fires ui-filter-change - When column or global filter changes
+ * @fires ui-pagination-change - When pagination state changes
+ * @fires ui-column-visibility-change - When column visibility changes
+ * @fires ui-column-order-change - When column order changes
+ * @fires ui-column-preferences-change - When column sizing/order/visibility changes
+ * @fires ui-column-preferences-reset - When preferences are reset via resetColumnPreferences()
  */
 
 import { html, css, nothing, isServer, type TemplateResult, type PropertyValues } from 'lit';
@@ -1051,6 +1068,29 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
     }
 
     this.lastSelectedRowId = row.id;
+  }
+
+  /**
+   * Reset column preferences to defaults.
+   * Clears localStorage and resets sizing, order, and visibility.
+   */
+  public resetColumnPreferences(): void {
+    // Clear localStorage
+    if (this.persistenceKey) {
+      clearPreferences(this.persistenceKey);
+    }
+
+    // Reset state to defaults
+    this.columnSizing = {};
+    this.columnOrder = [];
+    this.columnVisibility = {};
+
+    // Dispatch event for tracking
+    this.dispatchEvent(new CustomEvent('ui-column-preferences-reset', {
+      detail: { tableId: this.persistenceKey },
+      bubbles: true,
+      composed: true,
+    }));
   }
 
   /**
