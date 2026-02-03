@@ -10,21 +10,21 @@
 
 **Milestone:** v7.0 Data Table
 **Phase:** 62 - Sorting & Selection
-**Plan:** 1 of 5 complete
+**Plan:** 2 of 5 complete
 **Status:** In progress
 
 **Progress:**
 ```
 Milestone: [####----] 50%
-Phase:     [##--------] 20%
+Phase:     [####------] 40%
 ```
 
 ## Performance Metrics
 
 | Metric | Value |
 |--------|-------|
-| Plans completed | 6 |
-| Requirements satisfied | 14/76 |
+| Plans completed | 7 |
+| Requirements satisfied | 17/76 |
 | Phases completed | 1/8 |
 
 ## Accumulated Context
@@ -54,6 +54,9 @@ Phase:     [##--------] 20%
 | aria-sort on primary only | Avoid screen reader confusion with multi-sort | 62-01 |
 | Priority badge from 2+ | Primary sort has no badge, secondary shows "2", etc. | 62-01 |
 | Unsorted indicator visible | Faded bi-directional arrow for discoverability | 62-01 |
+| Selection column 48px fixed | Consistent checkbox sizing, no sort/filter/resize | 62-02 |
+| Page-level select all | Header checkbox toggles current page, not all data | 62-02 |
+| Row ID tracking via rowIdKey | Selection persists across pagination via unique IDs | 62-02 |
 
 ### Architecture Notes
 *Technical context that spans multiple plans.*
@@ -67,6 +70,7 @@ Phase:     [##--------] 20%
 - Loading states: loading='loading' shows skeleton, loading='updating' shows overlay
 - Keyboard navigation: KeyboardNavigationManager utility handles position calculation, DataTable handles focus
 - Sorting: getSortedRowModel for client-side, manualSorting=true for server-side with ui-sort-change events
+- Selection: enableRowSelection + getRowId for persistent selection, createSelectionColumn factory for checkbox column
 
 ### TODOs
 *Items to address that emerged during work.*
@@ -94,16 +98,16 @@ Phase:     [##--------] 20%
 ### Last Session
 *Summary of previous session's work. Updated at session end.*
 
-- Completed 62-01-PLAN.md: Column sorting integration
-- Added TanStack Table getSortedRowModel for client-side sorting
-- Implemented sortable header cells with click handlers
-- Added sort direction indicators with multi-sort priority badges
-- Server-side sorting mode via manual-sorting attribute
+- Completed 62-02-PLAN.md: Row selection
+- Added optional selection checkbox column via enable-selection attribute
+- Created createSelectionColumn factory with header/row checkboxes
+- Integrated rowSelection state with TanStack Table
+- Added selected row highlighting and aria-selected
 
 ### Next Actions
 *Clear starting point for next session.*
 
-1. Execute 62-02-PLAN.md: Column filtering
+1. Execute 62-03-PLAN.md: Column filtering
 2. Implement global filter and column filters
 3. Add filter UI in column headers
 
