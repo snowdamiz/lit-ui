@@ -413,16 +413,28 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
 
       this._previousFilterState = currentFilterState;
     }
+
+    // Trigger fetch when dataCallback is first set after initial render
+    if (changedProperties.has('dataCallback') && this.dataCallback && !changedProperties.get('dataCallback')) {
+      this.loading = 'loading';
+      this.fetchData();
+    }
   }
 
   /**
-   * Initialize previous filter state on first render.
+   * Initialize previous filter state on first render and trigger initial fetch.
    */
   override firstUpdated(): void {
     this._previousFilterState = JSON.stringify({
       columnFilters: this.columnFilters,
       globalFilter: this.globalFilter,
     });
+
+    // Initial fetch if dataCallback is provided
+    if (this.dataCallback) {
+      this.loading = 'loading'; // Initial load shows skeleton
+      this.fetchData();
+    }
   }
 
   /**
@@ -1212,9 +1224,46 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
   }
 
   /**
+   * Render error state with retry button.
+   */
+  private renderErrorState(): TemplateResult {
+    if (!this.errorState) return html``;
+
+    return html`
+      <div class="error-state-container">
+        <div class="error-state" role="alert" aria-live="polite">
+          <div class="error-state-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="12"/>
+              <circle cx="12" cy="16" r="1" fill="currentColor" stroke="none"/>
+            </svg>
+          </div>
+          <p class="error-state-message">${this.errorState.message}</p>
+          <p class="error-state-description">Unable to load data. Please try again.</p>
+          ${this.errorState.canRetry ? html`
+            <button
+              type="button"
+              class="error-retry-button"
+              @click=${this.handleRetry}
+            >
+              Retry
+            </button>
+          ` : nothing}
+        </div>
+      </div>
+    `;
+  }
+
+  /**
    * Render the body row group with virtualization.
    */
   private renderBody(table: Table<TData>): TemplateResult {
+    // Show error state first if present
+    if (this.errorState) {
+      return this.renderErrorState();
+    }
+
     // Show skeleton during initial loading
     if (this.loading === 'loading') {
       return this.renderSkeletonRows();
@@ -1630,6 +1679,66 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
         font-size: 0.875rem;
         color: var(--ui-data-table-header-text);
         margin: 0;
+      }
+
+      /* Error State Styles */
+      .error-state-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 200px;
+        padding: 2rem;
+      }
+
+      .error-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        max-width: 300px;
+      }
+
+      .error-state-icon {
+        color: var(--color-destructive, #ef4444);
+        margin-bottom: 1rem;
+      }
+
+      .error-state-message {
+        font-size: 1rem;
+        font-weight: 500;
+        color: var(--ui-data-table-text-color);
+        margin: 0 0 0.5rem 0;
+      }
+
+      .error-state-description {
+        font-size: 0.875rem;
+        color: var(--ui-data-table-header-text);
+        margin: 0 0 1rem 0;
+      }
+
+      .error-retry-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        background: transparent;
+        border: 1px solid var(--ui-data-table-border-color);
+        border-radius: var(--ui-radius, 0.375rem);
+        color: var(--ui-data-table-text-color);
+        cursor: pointer;
+        transition: background-color 0.15s ease, border-color 0.15s ease;
+      }
+
+      .error-retry-button:hover {
+        background: var(--ui-data-table-row-hover-bg);
+        border-color: var(--ui-data-table-header-text);
+      }
+
+      .error-retry-button:focus-visible {
+        outline: 2px solid var(--color-primary, #3b82f6);
+        outline-offset: 2px;
       }
 
       /* Updating Overlay Styles */
