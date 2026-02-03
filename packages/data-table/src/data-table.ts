@@ -40,7 +40,19 @@ import {
   type PaginationState,
 } from '@tanstack/lit-table';
 import { VirtualizerController } from '@tanstack/lit-virtual';
-import type { ColumnDef, LoadingState, EmptyStateType, RowSelectionState, SelectionChangeEvent, ColumnFiltersState, PaginationChangeEvent, FilterChangeEvent } from './types.js';
+import type {
+  ColumnDef,
+  LoadingState,
+  EmptyStateType,
+  RowSelectionState,
+  SelectionChangeEvent,
+  ColumnFiltersState,
+  PaginationChangeEvent,
+  FilterChangeEvent,
+  DataCallback,
+  DataCallbackParams,
+  DataTableErrorState,
+} from './types.js';
 import { KeyboardNavigationManager, type GridPosition } from './keyboard-navigation.js';
 import { createSelectionColumn } from './selection-column.js';
 
@@ -296,6 +308,39 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
    */
   @state()
   private _previousFilterState = '';
+
+  // ==========================================================================
+  // Async data callback properties
+  // ==========================================================================
+
+  /**
+   * Async data callback for server-side data fetching.
+   * When provided, the component calls this function when state changes.
+   */
+  @property({ attribute: false })
+  dataCallback?: DataCallback<TData>;
+
+  /**
+   * Error state from async data fetching.
+   */
+  @state()
+  private errorState: DataTableErrorState | null = null;
+
+  /**
+   * AbortController for cancelling in-flight requests.
+   */
+  private abortController?: AbortController;
+
+  /**
+   * Debounce timeout for filter changes.
+   */
+  private debounceTimeout?: ReturnType<typeof setTimeout>;
+
+  /**
+   * Debounce delay in milliseconds for filter-triggered fetches.
+   */
+  @property({ type: Number, attribute: 'debounce-delay' })
+  debounceDelay = 300;
 
   // ==========================================================================
   // Lifecycle methods

@@ -318,3 +318,57 @@ export interface FilterChangeEvent {
   /** True if the global filter changed, false if a column filter changed */
   isGlobalFilter: boolean;
 }
+
+// =============================================================================
+// Async Data Callback Types
+// =============================================================================
+
+/**
+ * Parameters passed to the async data callback.
+ * Contains current table state for server-side operations.
+ */
+export interface DataCallbackParams {
+  /** Current page index (0-based) */
+  pageIndex: number;
+  /** Current page size */
+  pageSize: number;
+  /** Current sorting state */
+  sorting: SortingState;
+  /** Current column filters */
+  columnFilters: ColumnFiltersState;
+  /** Current global filter string */
+  globalFilter: string;
+}
+
+/**
+ * Result returned from the async data callback.
+ */
+export interface DataCallbackResult<TData> {
+  /** Row data for current page */
+  data: TData[];
+  /** Total row count across all pages */
+  totalRowCount: number;
+  /** Optional page count (calculated from totalRowCount/pageSize if not provided) */
+  pageCount?: number;
+}
+
+/**
+ * Async data callback function type.
+ * @param params - Current table state
+ * @param signal - AbortSignal for request cancellation
+ * @returns Promise resolving to data result
+ */
+export type DataCallback<TData> = (
+  params: DataCallbackParams,
+  signal: AbortSignal
+) => Promise<DataCallbackResult<TData>>;
+
+/**
+ * Error state for async data fetching.
+ */
+export interface DataTableErrorState {
+  /** Error message to display */
+  message: string;
+  /** Whether retry is possible */
+  canRetry: boolean;
+}
