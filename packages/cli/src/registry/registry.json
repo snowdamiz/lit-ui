@@ -173,6 +173,26 @@
       "dependencies": ["lit"],
       "peerDependencies": ["lit"],
       "registryDependencies": []
+    },
+    {
+      "name": "accordion",
+      "description": "Accessible accordion with single/multi-expand, collapsible mode, and CSS Grid height animation",
+      "files": [
+        { "path": "components/accordion/accordion.ts", "type": "component" },
+        { "path": "components/accordion/accordion-item.ts", "type": "component" }
+      ],
+      "dependencies": [],
+      "registryDependencies": []
+    },
+    {
+      "name": "tabs",
+      "description": "Accessible tabs with animated indicator, keyboard navigation, overflow scroll, and lazy panels",
+      "files": [
+        { "path": "components/tabs/tabs.ts", "type": "component" },
+        { "path": "components/tabs/tab-panel.ts", "type": "component" }
+      ],
+      "dependencies": [],
+      "registryDependencies": []
     }
   ]
 }
