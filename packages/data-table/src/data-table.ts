@@ -1245,13 +1245,113 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
     };
   }
 
+  // ==========================================================================
+  // Drag-and-drop column reorder methods
+  // ==========================================================================
+
+  /**
+   * Handle drag start on column header.
+   * Sets dragged column ID and configures drag transfer data.
+   */
+  private handleDragStart(e: DragEvent, columnId: string): void {
+    if (!this.enableColumnReorder) return;
+
+    this._draggedColumnId = columnId;
+    e.dataTransfer?.setData('text/plain', columnId);
+    e.dataTransfer!.effectAllowed = 'move';
+
+    // Add dragging class after a frame (prevents immediate cancel)
+    requestAnimationFrame(() => {
+      this.dataset.dragging = 'true';
+    });
+  }
+
+  /**
+   * Handle drag over on column header.
+   * Sets drop target for visual indicator.
+   */
+  private handleDragOver(e: DragEvent, columnId: string): void {
+    if (!this.enableColumnReorder || !this._draggedColumnId) return;
+    if (columnId === this._draggedColumnId) return;
+
+    e.preventDefault();
+    e.dataTransfer!.dropEffect = 'move';
+    this._dropTargetColumnId = columnId;
+  }
+
+  /**
+   * Handle drag leave on column header.
+   * Clears drop target if leaving the header cell entirely.
+   */
+  private handleDragLeave(e: DragEvent): void {
+    // Only clear if leaving the header cell entirely
+    const relatedTarget = e.relatedTarget as HTMLElement;
+    if (!relatedTarget?.closest('.data-table-header-cell')) {
+      this._dropTargetColumnId = null;
+    }
+  }
+
+  /**
+   * Handle drop on column header.
+   * Reorders columns by moving dragged column to target position.
+   */
+  private handleDrop(e: DragEvent, targetColumnId: string, table: Table<TData>): void {
+    e.preventDefault();
+    if (!this._draggedColumnId || this._draggedColumnId === targetColumnId) {
+      this.resetDragState();
+      return;
+    }
+
+    // Get current column order (or default from visible columns)
+    const currentOrder = this.columnOrder.length > 0
+      ? [...this.columnOrder]
+      : table.getAllLeafColumns().map((c) => c.id);
+
+    // Find indices
+    const draggedIndex = currentOrder.indexOf(this._draggedColumnId);
+    const targetIndex = currentOrder.indexOf(targetColumnId);
+
+    if (draggedIndex === -1 || targetIndex === -1) {
+      this.resetDragState();
+      return;
+    }
+
+    // Reorder: remove dragged, insert at target position
+    currentOrder.splice(draggedIndex, 1);
+    currentOrder.splice(targetIndex, 0, this._draggedColumnId);
+
+    // Update state and dispatch event
+    this.columnOrder = currentOrder;
+    this.dispatchColumnOrderChange(currentOrder);
+    this.resetDragState();
+  }
+
+  /**
+   * Handle drag end on column header.
+   * Cleans up drag state regardless of drop success.
+   */
+  private handleDragEnd(): void {
+    this.resetDragState();
+  }
+
+  /**
+   * Reset drag state after drag operation completes.
+   */
+  private resetDragState(): void {
+    this._draggedColumnId = null;
+    this._dropTargetColumnId = null;
+    delete this.dataset.dragging;
+  }
+
   /**
    * Render a header cell using flexRender.
    * Sortable headers have click handlers and visual indicators.
+   * Draggable headers support column reordering via drag-and-drop.
    */
   private renderHeaderCell(
     header: Header<TData, unknown>,
-    colIndex: number
+    colIndex: number,
+    table: Table<TData>
   ): TemplateResult {
     const headerContent = header.isPlaceholder
       ? nothing
@@ -1260,6 +1360,15 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
     const canSort = header.column.getCanSort();
     const sortDirection = header.column.getIsSorted(); // false | 'asc' | 'desc'
     const sortIndex = header.column.getSortIndex(); // -1 if not sorted, 0+ for priority
+    const isResizing = header.column.getIsResizing();
+    const columnId = header.column.id;
+
+    // Drag state for visual feedback
+    const isDragging = this._draggedColumnId === columnId;
+    const isDropTarget = this._dropTargetColumnId === columnId;
+
+    // Disable drag during resize operation
+    const canDrag = this.enableColumnReorder && !isResizing;
 
     // Only set aria-sort on primary sorted column (sortIndex === 0)
     const ariaSort =
@@ -1269,16 +1378,30 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
           : 'descending'
         : nothing;
 
+    // Build class list
+    const classes = [
+      'data-table-header-cell',
+      canSort ? 'sortable' : '',
+      isDragging ? 'is-dragging' : '',
+      isDropTarget ? 'drop-target' : '',
+    ].filter(Boolean).join(' ');
+
     return html`
       <div
         role="columnheader"
         aria-colindex="${colIndex + 1}"
         aria-sort=${ariaSort}
-        class="data-table-header-cell ${canSort ? 'sortable' : ''}"
+        class="${classes}"
         id="${this.tableId}-header-${header.id}"
-        data-column-id="${header.column.id}"
+        data-column-id="${columnId}"
         tabindex="-1"
+        draggable="${canDrag ? 'true' : 'false'}"
         @click=${canSort ? header.column.getToggleSortingHandler() : nothing}
+        @dragstart=${canDrag ? (e: DragEvent) => this.handleDragStart(e, columnId) : nothing}
+        @dragover=${canDrag ? (e: DragEvent) => this.handleDragOver(e, columnId) : nothing}
+        @dragleave=${canDrag ? (e: DragEvent) => this.handleDragLeave(e) : nothing}
+        @drop=${canDrag ? (e: DragEvent) => this.handleDrop(e, columnId, table) : nothing}
+        @dragend=${canDrag ? () => this.handleDragEnd() : nothing}
       >
         <span class="header-content">${headerContent}</span>
         ${canSort ? this.renderSortIndicator(sortDirection, sortIndex) : nothing}
@@ -1371,7 +1494,7 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
               style="grid-template-columns: ${this.getGridTemplateColumns(table)}"
             >
               ${headerGroup.headers.map((header, colIndex) =>
-                this.renderHeaderCell(header, colIndex)
+                this.renderHeaderCell(header, colIndex, table)
               )}
             </div>
           `
@@ -1815,6 +1938,29 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
 
       :host([data-resizing]) * {
         cursor: col-resize;
+      }
+
+      /* Column drag-and-drop reorder styles */
+      .data-table-header-cell[draggable="true"] {
+        cursor: grab;
+      }
+
+      .data-table-header-cell.is-dragging {
+        opacity: 0.5;
+        cursor: grabbing;
+      }
+
+      .data-table-header-cell.drop-target {
+        background: var(--color-primary-100, rgba(59, 130, 246, 0.1));
+        border-left: 2px solid var(--color-primary, #3b82f6);
+      }
+
+      :host([data-dragging]) {
+        user-select: none;
+      }
+
+      :host([data-dragging]) .data-table-header-cell {
+        cursor: grabbing;
       }
 
       /* Sort indicator styles */
