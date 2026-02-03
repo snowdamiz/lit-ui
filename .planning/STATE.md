@@ -5,22 +5,22 @@
 See: .planning/PROJECT.md (updated 2026-02-02)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** Phase 59 - Tabs Polish & Package
+**Current focus:** Phase 59 - Tabs Polish & Package (COMPLETE)
 
 ## Current Position
 
 Phase: 59 of 60 (Tabs Polish & Package)
-Plan: 1 of 2 in current phase
-Status: In progress
-Last activity: 2026-02-03 — Completed 59-01-PLAN.md
+Plan: 2 of 2 in current phase
+Status: Phase complete
+Last activity: 2026-02-03 — Completed 59-02-PLAN.md
 
-Progress: ████████████████░░░░░░░░░░░░░░░░ 60% (v6.0)
+Progress: █████████████████░░░░░░░░░░░░░░░ 62% (v6.0)
 
 ## Performance Metrics
 
 **Velocity (v5.0):**
-- Plans completed: 13
-- Total execution time: ~36 min
+- Plans completed: 14
+- Total execution time: ~39 min
 
 ## Accumulated Context
 
@@ -46,6 +46,10 @@ Recent decisions affecting current work:
 - Tab indicator uses CSS transitions on transform/width (no JS animation loop), opacity guard until first measurement
 - Lazy panels return `nothing` for zero DOM footprint, _hasBeenExpanded as plain field
 - Conditional tabindex per W3C APG: active panels with focusable children skip tabindex="0"
+- Scroll buttons use aria-hidden and tabindex=-1 to stay out of tab order
+- Vertical orientation uses display:contents to bypass tablist-wrapper layout
+- Tablist display:flex (not inline-flex) for overflow detection
+- requestAnimationFrame in syncPanelStates guarded with isServer
 
 ### Pending Todos
 
@@ -69,5 +73,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-03
-Stopped at: Completed 59-01-PLAN.md
+Stopped at: Completed 59-02-PLAN.md (Phase 59 complete)
 Resume file: None
