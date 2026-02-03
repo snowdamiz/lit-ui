@@ -56,6 +56,8 @@ import type {
   ColumnSizingInfoState,
   VisibilityState,
   ColumnVisibilityChangeEvent,
+  ColumnOrderState,
+  ColumnOrderChangeEvent,
 } from './types.js';
 import { KeyboardNavigationManager, type GridPosition } from './keyboard-navigation.js';
 import { createSelectionColumn } from './selection-column.js';
@@ -373,6 +375,40 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
    */
   @property({ type: Boolean, attribute: 'show-column-picker' })
   showColumnPicker = false;
+
+  // ==========================================================================
+  // Column ordering properties
+  // ==========================================================================
+
+  /**
+   * Column order state.
+   * Array of column IDs in display order.
+   * Empty array means use default column definition order.
+   */
+  @property({ type: Array })
+  columnOrder: ColumnOrderState = [];
+
+  /**
+   * Enable column reordering via drag-and-drop.
+   * When true, column headers can be dragged to reorder columns.
+   * @default false
+   */
+  @property({ type: Boolean, attribute: 'enable-column-reorder' })
+  enableColumnReorder = false;
+
+  /**
+   * Currently dragged column ID during drag operation.
+   * Used for visual feedback.
+   */
+  @state()
+  private _draggedColumnId: string | null = null;
+
+  /**
+   * Column ID of current drop target during drag operation.
+   * Used for drop indicator visual feedback.
+   */
+  @state()
+  private _dropTargetColumnId: string | null = null;
 
   // ==========================================================================
   // Async data callback properties
@@ -813,6 +849,21 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
       detail: {
         columnVisibility,
       } satisfies ColumnVisibilityChangeEvent,
+      bubbles: true,
+      composed: true,
+    });
+    this.dispatchEvent(event);
+  }
+
+  /**
+   * Dispatch column order change event.
+   * @param columnOrder - Current column order state
+   */
+  private dispatchColumnOrderChange(columnOrder: ColumnOrderState): void {
+    const event = new CustomEvent('ui-column-order-change', {
+      detail: {
+        columnOrder,
+      } satisfies ColumnOrderChangeEvent,
       bubbles: true,
       composed: true,
     });
@@ -2105,6 +2156,7 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
         columnVisibility: this.columnVisibility,
         columnSizing: this.columnSizing,
         columnSizingInfo: this._columnSizingInfo,
+        columnOrder: this.columnOrder,
       },
       // Column sizing options
       enableColumnResizing: this.enableColumnResizing,
@@ -2207,6 +2259,12 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
           typeof updater === 'function' ? updater(this.columnVisibility) : updater;
         this.columnVisibility = newVisibility;
         this.dispatchColumnVisibilityChange(newVisibility);
+      },
+      onColumnOrderChange: (updater) => {
+        const newOrder =
+          typeof updater === 'function' ? updater(this.columnOrder) : updater;
+        this.columnOrder = newOrder;
+        this.dispatchColumnOrderChange(newOrder);
       },
       getRowId: (row) => String(row[this.rowIdKey as keyof TData]),
       enableRowSelection: this.enableSelection,

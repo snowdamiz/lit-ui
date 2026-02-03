@@ -333,6 +333,16 @@ export interface ColumnVisibilityChangeEvent {
   columnVisibility: VisibilityState;
 }
 
+/**
+ * Event detail for column order change events.
+ *
+ * Emitted when column order changes via drag-and-drop reordering.
+ */
+export interface ColumnOrderChangeEvent {
+  /** Current column order state (array of column IDs in display order) */
+  columnOrder: ColumnOrderState;
+}
+
 // =============================================================================
 // Async Data Callback Types
 // =============================================================================
