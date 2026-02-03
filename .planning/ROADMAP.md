@@ -94,11 +94,11 @@ Plans:
   1. Running `npx lit-ui add accordion` and `npx lit-ui add tabs` installs correct files with CSS variable fallbacks
   2. CLI registry lists accordion and tabs with correct dependency information
   3. Documentation pages for Accordion and Tabs show interactive demos, full API reference, and accessibility notes
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 60-01: CLI copy-source templates and registry entries for accordion and tabs
-- [ ] 60-02: Documentation pages with interactive demos and API references
+- [ ] 60-01-PLAN.md — CLI copy-source templates and registry entries for accordion and tabs
+- [ ] 60-02-PLAN.md — Documentation pages with interactive demos and API references
 
 ## Progress
 
