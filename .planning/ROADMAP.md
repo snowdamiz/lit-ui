@@ -48,11 +48,11 @@ Plans:
   2. Accordion items expose data-state="open"/"closed" for CSS-only consumer styling
   3. Accordion panel content with the lazy attribute is not mounted until first expand, then preserved
   4. Accordion renders correctly via Declarative Shadow DOM on the server and hydrates on the client
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 57-01: Chevron indicator, data-state attributes, lazy mounting
-- [ ] 57-02: SSR compatibility and @lit-ui/accordion package setup
+- [ ] 57-01-PLAN.md -- Chevron indicator with CSS rotation, data-state attribute reflection, lazy mounting
+- [ ] 57-02-PLAN.md -- SSR compatibility verification and @lit-ui/accordion package publishability audit
 
 ### Phase 58: Tabs Core
 **Goal**: Users can switch between tab panels with full keyboard, screen reader, and orientation support
