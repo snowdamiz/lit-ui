@@ -34,6 +34,7 @@ export const navigation: NavSection[] = [
   {
     title: "Components",
     items: [
+      { title: "Accordion", href: "/components/accordion" },
       { title: "Button", href: "/components/button" },
       { title: "Calendar", href: "/components/calendar" },
       { title: "Checkbox", href: "/components/checkbox" },
@@ -45,6 +46,7 @@ export const navigation: NavSection[] = [
       { title: "Radio", href: "/components/radio" },
       { title: "Select", href: "/components/select" },
       { title: "Switch", href: "/components/switch" },
+      { title: "Tabs", href: "/components/tabs" },
       { title: "Textarea", href: "/components/textarea" },
       { title: "Time Picker", href: "/components/time-picker" },
       { title: "Toast", href: "/components/toast" },

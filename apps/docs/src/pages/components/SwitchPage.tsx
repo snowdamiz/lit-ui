@@ -489,7 +489,7 @@ export function SwitchPage() {
         <div className="divider-fade mb-8" />
         <PrevNextNav
           prev={{ title: 'Select', href: '/components/select' }}
-          next={{ title: 'Textarea', href: '/components/textarea' }}
+          next={{ title: 'Tabs', href: '/components/tabs' }}
         />
       </div>
     </FrameworkProvider>

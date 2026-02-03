@@ -8,6 +8,7 @@ import { SSRGuide } from './pages/SSRGuide'
 import { MigrationGuide } from './pages/MigrationGuide'
 import { AgentSkillsGuide } from './pages/AgentSkillsGuide'
 import { Placeholder } from './pages/Placeholder'
+import { AccordionPage } from './pages/components/AccordionPage'
 import { ButtonPage } from './pages/components/ButtonPage'
 import { CalendarPage } from './pages/components/CalendarPage'
 import { CheckboxPage } from './pages/components/CheckboxPage'
@@ -17,6 +18,7 @@ import { RadioPage } from './pages/components/RadioPage'
 import { TextareaPage } from './pages/components/TextareaPage'
 import { SelectPage } from './pages/components/SelectPage'
 import { SwitchPage } from './pages/components/SwitchPage'
+import { TabsPage } from './pages/components/TabsPage'
 import { DatePickerPage } from './pages/components/DatePickerPage'
 import { DateRangePickerPage } from './pages/components/DateRangePickerPage'
 import { TimePickerPage } from './pages/components/TimePickerPage'
@@ -56,6 +58,7 @@ export default function App() {
             <Route path="configurator" element={<ConfiguratorPage />} />
 
             {/* Components */}
+            <Route path="components/accordion" element={<AccordionPage />} />
             <Route path="components/button" element={<ButtonPage />} />
             <Route path="components/calendar" element={<CalendarPage />} />
             <Route path="components/checkbox" element={<CheckboxPage />} />
@@ -67,6 +70,7 @@ export default function App() {
             <Route path="components/textarea" element={<TextareaPage />} />
             <Route path="components/select" element={<SelectPage />} />
             <Route path="components/switch" element={<SwitchPage />} />
+            <Route path="components/tabs" element={<TabsPage />} />
             <Route path="components/time-picker" element={<TimePickerPage />} />
             <Route path="components/tooltip" element={<TooltipPage />} />
             <Route path="components/popover" element={<PopoverPage />} />

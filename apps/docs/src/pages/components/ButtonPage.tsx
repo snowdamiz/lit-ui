@@ -485,7 +485,7 @@ export function ButtonPage() {
         {/* Navigation */}
         <div className="divider-fade mb-8" />
         <PrevNextNav
-          prev={{ title: 'Getting Started', href: '/getting-started' }}
+          prev={{ title: 'Accordion', href: '/components/accordion' }}
           next={{ title: 'Calendar', href: '/components/calendar' }}
         />
       </div>
