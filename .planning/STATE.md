@@ -9,22 +9,22 @@
 ## Current Position
 
 **Milestone:** v7.0 Data Table
-**Phase:** 63 - Filtering & Pagination
-**Plan:** 4 of 4 complete - PHASE COMPLETE
-**Status:** Phase complete
+**Phase:** 64 - Column Customization
+**Plan:** 2 of 4
+**Status:** In progress
 
 **Progress:**
 ```
-Milestone: [######--] 78%
-Phase:     [##########] 100%
+Milestone: [######--] 80%
+Phase:     [#####-----] 50%
 ```
 
 ## Performance Metrics
 
 | Metric | Value |
 |--------|-------|
-| Plans completed | 12 |
-| Requirements satisfied | 38/76 |
+| Plans completed | 14 |
+| Requirements satisfied | 40/76 |
 | Phases completed | 3/8 |
 
 ## Accumulated Context
@@ -65,6 +65,8 @@ Phase:     [##########] 100%
 | 300ms debounce delay | Balance between responsiveness and avoiding excessive re-renders | 63-02 |
 | Native button for retry | Simpler than lui-button dependency in error state | 63-04 |
 | AbortError silently ignored | Intentional cancellation should not show error state | 63-04 |
+| Column picker as function | Allows flexible placement in different toolbar layouts | 64-02 |
+| Toolbar slots for extensibility | toolbar-start and toolbar-end slots for custom controls | 64-02 |
 
 ### Architecture Notes
 *Technical context that spans multiple plans.*
@@ -84,6 +86,8 @@ Phase:     [##########] 100%
 - Pagination: getPaginationRowModel for client-side, manualPagination=true for server-side with ui-pagination-change events
 - Filter components: lui-column-text-filter, lui-column-number-filter, lui-column-date-filter, lui-column-select-filter, lui-global-search
 - Async data: dataCallback receives (params, signal) returns Promise<DataCallbackResult>, filter changes debounced, pagination/sort immediate
+- Column visibility: columnVisibility state + showColumnPicker property, renderColumnPicker function with lui-popover/lui-checkbox
+- Toolbar: renderToolbar method with toolbar-start/toolbar-end slots for extensibility
 
 ### TODOs
 *Items to address that emerged during work.*
@@ -111,19 +115,18 @@ Phase:     [##########] 100%
 ### Last Session
 *Summary of previous session's work. Updated at session end.*
 
-- Completed 63-04: Async Data Callback Pattern
-- Added DataCallback, DataCallbackParams, DataCallbackResult types
-- Implemented fetchData with AbortController cancellation
-- Added debounced fetch for filter changes (300ms default)
-- Added error state rendering with retry button
-- Phase 63 (Filtering & Pagination) complete
+- Completed 64-02: Column Visibility Picker
+- Added columnVisibility and showColumnPicker properties
+- Created column-picker.ts with renderColumnPicker function
+- Integrated column picker into DataTable toolbar
+- Added ui-column-visibility-change event
 
 ### Next Actions
 *Clear starting point for next session.*
 
-1. Plan Phase 64: Inline Editing
-2. Research contenteditable vs input-based cell editing
-3. Design edit mode state management
+1. Execute 64-03: Column Ordering with drag-and-drop
+2. Implement columnOrder state integration
+3. Add drag handles to column headers
 
 ### Open Questions
 *Unresolved questions needing user input.*
