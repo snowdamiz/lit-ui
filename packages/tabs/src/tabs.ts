@@ -347,8 +347,21 @@ export class Tabs extends TailwindElement {
   }
 
   /**
+   * Check if a panel contains focusable content (links, buttons, inputs, etc.).
+   * Used to determine whether active panels need tabindex="0" for keyboard access.
+   */
+  private panelHasFocusableContent(panel: TabPanel): boolean {
+    const focusableSelector =
+      'a[href], button:not([disabled]), input:not([disabled]), ' +
+      'select:not([disabled]), textarea:not([disabled]), ' +
+      '[tabindex]:not([tabindex="-1"])';
+    return panel.querySelector(focusableSelector) !== null;
+  }
+
+  /**
    * Sync active state and ARIA attributes on all child panels.
-   * Sets active, id, aria-labelledby, role, and tabindex on each panel host element.
+   * Sets active, id, aria-labelledby, role, and conditional tabindex on each panel host element.
+   * Active panels get tabindex="0" only when they have no focusable children (W3C APG).
    */
   private syncPanelStates(): void {
     for (const panel of this.panels) {
@@ -361,10 +374,26 @@ export class Tabs extends TailwindElement {
         `${this.tabsId}-tab-${panel.value}`
       );
       if (isActive) {
-        panel.setAttribute('tabindex', '0');
+        if (this.panelHasFocusableContent(panel)) {
+          panel.removeAttribute('tabindex');
+        } else {
+          panel.setAttribute('tabindex', '0');
+        }
       } else {
         panel.removeAttribute('tabindex');
       }
+    }
+
+    // Handle lazy panel + tabindex timing: slot content may not be in DOM yet
+    const activePanel = this.panels.find((p) => p.value === this.value);
+    if (activePanel?.lazy) {
+      requestAnimationFrame(() => {
+        if (this.panelHasFocusableContent(activePanel)) {
+          activePanel.removeAttribute('tabindex');
+        } else {
+          activePanel.setAttribute('tabindex', '0');
+        }
+      });
     }
   }
 

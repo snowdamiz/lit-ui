@@ -22,6 +22,7 @@ interface LuiTabPanelAttributes {
   label?: string;
   disabled?: boolean;
   active?: boolean;
+  lazy?: boolean;
 }
 
 // React JSX support

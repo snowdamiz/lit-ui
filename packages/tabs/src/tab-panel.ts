@@ -11,7 +11,7 @@
  * @slot default - Panel content
  */
 
-import { html, css, isServer, type PropertyValues } from 'lit';
+import { html, css, nothing, isServer, type PropertyValues } from 'lit';
 import { property } from 'lit/decorators.js';
 import { TailwindElement, tailwindBaseStyles } from '@lit-ui/core';
 import { dispatchCustomEvent } from '@lit-ui/core';
@@ -59,6 +59,19 @@ export class TabPanel extends TailwindElement {
   @property({ type: Boolean, reflect: true })
   active = false;
 
+  /**
+   * When true, panel content is not rendered until first activation.
+   * After first activation, content is preserved even when inactive.
+   * @default false
+   */
+  @property({ type: Boolean })
+  lazy = false;
+
+  /**
+   * Tracks whether this lazy panel has been activated at least once.
+   */
+  private _hasBeenExpanded = false;
+
   protected override updated(changedProperties: PropertyValues): void {
     if (changedProperties.has('label') || changedProperties.has('disabled')) {
       // Notify container to re-render tab buttons with fresh metadata
@@ -67,6 +80,10 @@ export class TabPanel extends TailwindElement {
 
     if (changedProperties.has('active') && !isServer) {
       this.setAttribute('data-state', this.active ? 'active' : 'inactive');
+    }
+
+    if (changedProperties.has('active') && this.active) {
+      this._hasBeenExpanded = true;
     }
   }
 
@@ -84,6 +101,9 @@ export class TabPanel extends TailwindElement {
   ];
 
   override render() {
+    if (this.lazy && !this._hasBeenExpanded && !this.active) {
+      return nothing;
+    }
     return html`<slot></slot>`;
   }
 }
