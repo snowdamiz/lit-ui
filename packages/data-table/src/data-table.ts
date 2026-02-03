@@ -62,6 +62,8 @@ import type {
 import { KeyboardNavigationManager, type GridPosition } from './keyboard-navigation.js';
 import { createSelectionColumn } from './selection-column.js';
 import { renderColumnPicker, columnPickerStyles } from './column-picker.js';
+import { savePreferences, loadPreferences, clearPreferences } from './column-preferences.js';
+import type { ColumnPreferences, ColumnPreferencesChangeEvent } from './types.js';
 
 /**
  * A high-performance data table component with TanStack Table integration.
@@ -423,6 +425,35 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
   stickyFirstColumn = false;
 
   // ==========================================================================
+  // Column preferences persistence properties (COL-07, COL-08)
+  // ==========================================================================
+
+  /**
+   * Unique key for localStorage persistence.
+   * When set, column preferences are automatically saved and restored.
+   * Use a unique key per table instance (e.g., 'users-table', 'orders-table').
+   */
+  @property({ type: String, attribute: 'persistence-key' })
+  persistenceKey = '';
+
+  /**
+   * Callback for server-side preference persistence (COL-08).
+   * Called with preference changes after debounce, in addition to localStorage.
+   */
+  @property({ attribute: false })
+  onColumnPreferencesChange?: (prefs: ColumnPreferencesChangeEvent) => void;
+
+  /**
+   * Debounce timer for preference saves.
+   */
+  private _preferenceSaveTimer?: ReturnType<typeof setTimeout>;
+
+  /**
+   * Debounce delay in milliseconds for preference saves.
+   */
+  private static readonly PREFERENCE_SAVE_DEBOUNCE = 300;
+
+  // ==========================================================================
   // Async data callback properties
   // ==========================================================================
 
@@ -551,12 +582,37 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
   }
 
   /**
+   * Load persisted preferences when component connects.
+   */
+  override connectedCallback(): void {
+    super.connectedCallback();
+
+    // Load persisted preferences if key provided
+    if (this.persistenceKey) {
+      const stored = loadPreferences(this.persistenceKey);
+      if (stored) {
+        // Only apply if not already set (allows prop override)
+        if (Object.keys(this.columnSizing).length === 0) {
+          this.columnSizing = stored.columnSizing;
+        }
+        if (this.columnOrder.length === 0) {
+          this.columnOrder = stored.columnOrder;
+        }
+        if (Object.keys(this.columnVisibility).length === 0) {
+          this.columnVisibility = stored.columnVisibility;
+        }
+      }
+    }
+  }
+
+  /**
    * Clean up virtualizer and async resources on disconnect.
    */
   override disconnectedCallback(): void {
     super.disconnectedCallback();
     this.virtualizer = undefined;
     clearTimeout(this.debounceTimeout);
+    clearTimeout(this._preferenceSaveTimer);
     this.abortController?.abort();
   }
 
@@ -880,6 +936,40 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
       composed: true,
     });
     this.dispatchEvent(event);
+  }
+
+  /**
+   * Dispatch column preference change with debouncing.
+   * Saves to localStorage and calls optional callback.
+   */
+  private dispatchPreferenceChange(): void {
+    clearTimeout(this._preferenceSaveTimer);
+    this._preferenceSaveTimer = setTimeout(() => {
+      const prefs: ColumnPreferences = {
+        columnSizing: this.columnSizing,
+        columnOrder: this.columnOrder,
+        columnVisibility: this.columnVisibility,
+      };
+
+      // Save to localStorage if persistence key provided
+      if (this.persistenceKey) {
+        savePreferences(this.persistenceKey, prefs);
+      }
+
+      // Call optional callback for server-side persistence (COL-08)
+      const event: ColumnPreferencesChangeEvent = {
+        ...prefs,
+        tableId: this.persistenceKey,
+      };
+      this.onColumnPreferencesChange?.(event);
+
+      // Also dispatch event for declarative usage
+      this.dispatchEvent(new CustomEvent('ui-column-preferences-change', {
+        detail: event,
+        bubbles: true,
+        composed: true,
+      }));
+    }, DataTable.PREFERENCE_SAVE_DEBOUNCE);
   }
 
   /**
@@ -2376,6 +2466,7 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
         const newSizing =
           typeof updater === 'function' ? updater(this.columnSizing) : updater;
         this.columnSizing = newSizing;
+        this.dispatchPreferenceChange();
       },
       onColumnSizingInfoChange: (updater) => {
         const newInfo =
@@ -2469,12 +2560,14 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
           typeof updater === 'function' ? updater(this.columnVisibility) : updater;
         this.columnVisibility = newVisibility;
         this.dispatchColumnVisibilityChange(newVisibility);
+        this.dispatchPreferenceChange();
       },
       onColumnOrderChange: (updater) => {
         const newOrder =
           typeof updater === 'function' ? updater(this.columnOrder) : updater;
         this.columnOrder = newOrder;
         this.dispatchColumnOrderChange(newOrder);
+        this.dispatchPreferenceChange();
       },
       getRowId: (row) => String(row[this.rowIdKey as keyof TData]),
       enableRowSelection: this.enableSelection,
