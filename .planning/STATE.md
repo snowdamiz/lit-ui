@@ -10,21 +10,21 @@
 
 **Milestone:** v7.0 Data Table
 **Phase:** 64 - Column Customization
-**Plan:** 2 of 4 (64-01 and 64-02 complete)
+**Plan:** 3 of 4 (64-01, 64-02, 64-03 complete)
 **Status:** In progress
 
 **Progress:**
 ```
-Milestone: [######--] 81%
-Phase:     [#####-----] 50%
+Milestone: [######--] 88%
+Phase:     [########--] 75%
 ```
 
 ## Performance Metrics
 
 | Metric | Value |
 |--------|-------|
-| Plans completed | 14 |
-| Requirements satisfied | 43/76 |
+| Plans completed | 15 |
+| Requirements satisfied | 45/76 |
 | Phases completed | 3/8 |
 
 ## Accumulated Context
@@ -70,6 +70,9 @@ Phase:     [#####-----] 50%
 | columnResizeMode: 'onChange' | Real-time preview during drag, better UX than 'onEnd' | 64-01 |
 | 50px minimum column width | Prevents columns from becoming too narrow (COL-03) | 64-01 |
 | Auto-fit visible rows only | Virtualization limitation - off-screen rows not in DOM | 64-01 |
+| Native drag events over dnd-kit | Headers are simple drag targets, no need for 10KB library | 64-03 |
+| Disable drag during resize | Prevents conflicts between resize and reorder gestures | 64-03 |
+| Sticky z-index 11 for header, 2 for body | Header intersection highest, body just above content | 64-03 |
 
 ### Architecture Notes
 *Technical context that spans multiple plans.*
@@ -92,6 +95,8 @@ Phase:     [#####-----] 50%
 - Column visibility: columnVisibility state + showColumnPicker property, renderColumnPicker function with lui-popover/lui-checkbox
 - Toolbar: renderToolbar method with toolbar-start/toolbar-end slots for extensibility
 - Column resizing: enableColumnResizing + columnSizing state, TanStack's getResizeHandler() for drag, autoFitColumn() for double-click
+- Column ordering: columnOrder state + enableColumnReorder property, native drag events for header reorder
+- Sticky column: stickyFirstColumn attribute (reflects to host), CSS position:sticky with proper z-index layering
 
 ### TODOs
 *Items to address that emerged during work.*
@@ -119,18 +124,18 @@ Phase:     [#####-----] 50%
 ### Last Session
 *Summary of previous session's work. Updated at session end.*
 
-- Completed 64-01: Column Resize with Drag Handles and Auto-fit
-- Added enableColumnResizing, columnSizing, columnResizeMode properties
-- Implemented renderResizeHandle() with mouse/touch/keyboard handlers
-- Implemented autoFitColumn() for double-click content fit
-- Added CSS for resize handles with hover and active states
+- Completed 64-03: Column Reorder via Drag-and-Drop, Sticky First Column
+- Added columnOrder property and enableColumnReorder flag
+- Implemented drag event handlers for column reordering
+- Added stickyFirstColumn property with CSS sticky positioning
+- Added visual feedback for drag (opacity, border) and shadow hint on sticky edge
 
 ### Next Actions
 *Clear starting point for next session.*
 
-1. Execute 64-03: Column Ordering with drag-and-drop
-2. Implement columnOrder state integration
-3. Add drag handles to column headers
+1. Execute 64-04: Column Preferences Persistence
+2. Implement localStorage persistence with persistenceKey
+3. Add onColumnPreferencesChange callback for server-side sync
 
 ### Open Questions
 *Unresolved questions needing user input.*
