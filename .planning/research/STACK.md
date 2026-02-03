@@ -1,383 +1,493 @@
-# Technology Stack: Checkbox, Radio, and Switch Components
+# Technology Stack: Data Table Component (v7.0)
 
-**Project:** LitUI - Checkbox, Radio, Switch milestone
-**Researched:** 2026-01-26
-**Overall confidence:** HIGH
+**Project:** LitUI Data Table
+**Researched:** 2026-02-02
+**Mode:** Ecosystem (Stack dimension)
 
-## Verdict: Zero New Dependencies Required
+## Executive Summary
 
-Checkbox, Radio, and Switch are fundamentally simpler than Select. They require no positioning logic (no Floating UI), no virtual scrolling (no TanStack Virtual), and no async state management (no @lit/task). All animation is achievable with pure CSS. All form participation uses the existing ElementInternals pattern already proven in Button, Input, Textarea, and Select.
+The Data Table for LitUI can be built primarily by extending existing stack dependencies. The key addition is **@tanstack/lit-table** (v8.21.3) which provides headless table logic that integrates seamlessly with the already-used **@tanstack/lit-virtual** (v3.13.x). No additional major dependencies are required -- column resizing, column ordering, and drag interactions can be implemented with native browser APIs following patterns already established in the time-picker component.
 
-**Do not add any npm dependencies for this milestone.** Every capability needed already exists in Lit 3 + CSS.
+**Key Recommendation:** Do NOT add TanStack Table as a peer dependency for end users. Instead, use it as an internal implementation detail (bundled). This keeps the component framework-agnostic and avoids version conflicts for users who may already use TanStack Table in their applications.
 
-## Recommended Stack (All Existing)
+---
 
-### Core Framework (No Changes)
+## Recommended Stack Additions
 
-| Technology | Version | Purpose | Status |
-|------------|---------|---------|--------|
-| Lit | ^3.3.2 | Component framework | Already in use |
-| @lit-ui/core | workspace:* | TailwindElement base class, design tokens | Already in use |
-| Tailwind CSS | ^4.1.18 | Utility classes in Shadow DOM | Already in use |
-| TypeScript | ^5.9.3 | Type safety | Already in use |
-| Vite | ^7.3.1 | Build tooling | Already in use |
+### Core Table Logic
 
-### Lit APIs Used (All Existing, No New Imports)
+| Technology | Version | Purpose | Why This Choice |
+|------------|---------|---------|-----------------|
+| @tanstack/lit-table | ^8.21.3 | Headless table state management | Official Lit adapter for TanStack Table. Provides sorting, filtering, pagination, column visibility, column ordering, column pinning, row selection, and column sizing out of the box. Requires Lit 3.1.3+ (project uses 3.3.2). [npm](https://www.npmjs.com/package/@tanstack/lit-table) |
 
-| API | Import | Purpose |
-|-----|--------|---------|
-| `html`, `css`, `svg`, `nothing` | `lit` | Templates, styles, SVG icons, conditional rendering |
-| `isServer` | `lit` | SSR guards for ElementInternals |
-| `property`, `state`, `query` | `lit/decorators.js` | Reactive properties and DOM queries |
-| `TailwindElement`, `tailwindBaseStyles` | `@lit-ui/core` | Base class with Tailwind Shadow DOM injection |
+**Integration with existing stack:**
+- Works with existing `@tanstack/lit-virtual` for row virtualization
+- Shares the same reactive controller pattern (`TableController` mirrors `VirtualizerController`)
+- Can use existing `@floating-ui/dom` for column menus and filter dropdowns
+- Can use existing form components (Input, Select, Checkbox) for inline editing
 
-### New Packages (Monorepo Structure)
+### Already Available (No New Dependencies)
 
-Three new packages following the existing pattern (mirroring `@lit-ui/input`, `@lit-ui/button`, etc.):
+| Technology | Current Version | Already Used In | Use for Data Table |
+|------------|-----------------|-----------------|-------------------|
+| @tanstack/lit-virtual | ^3.13.2 (upgrade to ^3.13.19) | Select component | 2D grid virtualization (rows + columns) |
+| @floating-ui/dom | ^1.7.4 | Core, Select | Column header menus, filter dropdowns |
+| @lit/task | ^1.0.3 | Select | Async data fetching, server-side operations |
+| Pointer Events API | Native | Time-picker | Column resize drag handles |
+| ResizeObserver | Native | Select | Auto-column sizing on container resize |
+| IntersectionObserver | Native | Select | Infinite scroll / load more |
 
-| Package | Contents | Dependencies |
-|---------|----------|-------------|
-| `@lit-ui/checkbox` | `Checkbox`, `CheckboxGroup` components | Peer: `lit ^3.0.0`, `@lit-ui/core ^1.0.0` (no runtime deps) |
-| `@lit-ui/radio` | `Radio`, `RadioGroup` components | Peer: `lit ^3.0.0`, `@lit-ui/core ^1.0.0` (no runtime deps) |
-| `@lit-ui/switch` | `Switch` component | Peer: `lit ^3.0.0`, `@lit-ui/core ^1.0.0` (no runtime deps) |
+---
 
-Each package has ZERO `dependencies` -- only `peerDependencies` (like `@lit-ui/input`), unlike `@lit-ui/select` which needs Floating UI and TanStack Virtual.
+## 2D Grid Virtualization Strategy
 
-## CSS Animation Techniques (No JS Animation Libraries)
+### How It Works
 
-All animations use CSS `transition` and `@keyframes` with `transform`, `opacity`, and `background-color` -- properties that are GPU-compositable and avoid layout thrashing.
-
-### Checkbox: SVG Stroke-Dashoffset Checkmark
-
-**Technique:** Inline SVG `<polyline>` with `stroke-dasharray`/`stroke-dashoffset` animation.
-
-**How it works:**
-1. Define an SVG checkmark as a `<polyline>` with known path length
-2. Set `stroke-dasharray` to the path length (creates one long dash)
-3. Set `stroke-dashoffset` to the same value (hides the dash by offsetting it fully)
-4. On checked state, transition `stroke-dashoffset` to `0` (draws the checkmark)
-
-**Indeterminate state:** Use a horizontal `<line>` element instead of the polyline, with the same dash animation technique.
-
-```css
-/* Checkbox checkmark animation */
-.checkmark-path {
-  stroke-dasharray: 18;        /* total path length */
-  stroke-dashoffset: 18;       /* fully hidden */
-  transition: stroke-dashoffset 200ms ease-out 50ms; /* 50ms delay for bg fill first */
-}
-
-:host([checked]) .checkmark-path {
-  stroke-dashoffset: 0;        /* fully drawn */
-}
-
-/* Checkbox box fill */
-.checkbox-box {
-  background-color: transparent;
-  border: var(--ui-checkbox-border-width) solid var(--ui-checkbox-border);
-  border-radius: var(--ui-checkbox-radius);
-  transition: background-color 150ms ease-out, border-color 150ms ease-out;
-}
-
-:host([checked]) .checkbox-box,
-:host([indeterminate]) .checkbox-box {
-  background-color: var(--ui-checkbox-bg-checked);
-  border-color: var(--ui-checkbox-bg-checked);
-}
-
-/* Indeterminate dash */
-.indeterminate-line {
-  stroke-dasharray: 8;
-  stroke-dashoffset: 8;
-  transition: stroke-dashoffset 200ms ease-out 50ms;
-}
-
-:host([indeterminate]) .indeterminate-line {
-  stroke-dashoffset: 0;
-}
-```
-
-**Why SVG over CSS-only shapes:** The Lit `svg` tagged template literal (already used in Input for eye/x-circle icons) renders SVG inline in the shadow DOM. This gives precise control over the checkmark shape, smooth stroke animation, and scales perfectly with the component size via `viewBox`. The existing codebase already uses this pattern extensively.
-
-**Confidence:** HIGH -- This is the industry-standard technique. The project already uses inline SVG via `svg` template literals in `lui-input`.
-
-### Radio: Scale Transform Dot
-
-**Technique:** CSS `transform: scale()` transition on a dot element.
-
-**How it works:**
-1. The radio circle is the outer element with a border
-2. An inner element represents the dot
-3. Default state: `transform: scale(0)` (invisible)
-4. Checked state: `transform: scale(1)` (visible, animated)
-
-```css
-/* Radio outer circle */
-.radio-circle {
-  width: 1em;
-  height: 1em;
-  border-radius: 50%;
-  border: var(--ui-radio-border-width) solid var(--ui-radio-border);
-  display: grid;
-  place-content: center;
-  transition: border-color 150ms ease-out;
-}
-
-:host([checked]) .radio-circle {
-  border-color: var(--ui-radio-border-checked);
-}
-
-/* Radio inner dot */
-.radio-dot {
-  width: 0.5em;
-  height: 0.5em;
-  border-radius: 50%;
-  background-color: var(--ui-radio-dot);
-  transform: scale(0);
-  transition: transform 150ms ease-in-out;
-}
-
-:host([checked]) .radio-dot {
-  transform: scale(1);
-}
-```
-
-**Why `transform: scale()` over `width`/`height`:** Scale transforms are GPU-composited and do not trigger layout. Width/height changes cause reflow. The scale approach is also simpler -- one property to transition vs. two.
-
-**Why a real element over `::before`:** In Lit web components with Shadow DOM, we have full control over the template. Using a real `<div class="radio-dot">` is more explicit than pseudo-elements, and avoids potential specificity issues with Tailwind utility resets. Either approach works; a real element is the cleaner pattern in this codebase.
-
-**Confidence:** HIGH -- Standard technique, well-documented.
-
-### Switch: translateX Thumb Slide
-
-**Technique:** CSS `transform: translateX()` on the thumb element.
-
-**How it works:**
-1. Track element has a background color transition (off-color to on-color)
-2. Thumb element slides via `translateX` from left (off) to right (on)
-3. Both transitions run simultaneously for a cohesive feel
-
-```css
-/* Switch track */
-.switch-track {
-  width: 2.5em;
-  height: 1.5em;
-  border-radius: var(--ui-switch-radius);
-  background-color: var(--ui-switch-track-bg);
-  padding: 2px;
-  transition: background-color 150ms ease-in-out;
-}
-
-:host([checked]) .switch-track {
-  background-color: var(--ui-switch-track-bg-checked);
-}
-
-/* Switch thumb */
-.switch-thumb {
-  width: 1.25em;
-  height: 1.25em;
-  border-radius: 50%;
-  background-color: var(--ui-switch-thumb-bg);
-  box-shadow: var(--ui-switch-thumb-shadow);
-  transform: translateX(0);
-  transition: transform 150ms ease-in-out;
-}
-
-:host([checked]) .switch-thumb {
-  transform: translateX(1em); /* track-width - thumb-width - padding */
-}
-```
-
-**Why `translateX` over `left`/`margin-left`:** `transform` is composited on the GPU and does not trigger layout recalculation. Animating `left` or `margin-left` causes reflow on every frame. This is the universally recommended approach.
-
-**Confidence:** HIGH -- Industry standard, confirmed by MDN and multiple authoritative sources.
-
-### Animation Timing Summary
-
-| Component | Property | Duration | Easing | Delay |
-|-----------|----------|----------|--------|-------|
-| Checkbox box fill | `background-color`, `border-color` | 150ms | ease-out | none |
-| Checkbox checkmark draw | `stroke-dashoffset` | 200ms | ease-out | 50ms (after fill) |
-| Checkbox indeterminate dash | `stroke-dashoffset` | 200ms | ease-out | 50ms |
-| Radio border color | `border-color` | 150ms | ease-out | none |
-| Radio dot appear | `transform` (scale) | 150ms | ease-in-out | none |
-| Switch track color | `background-color` | 150ms | ease-in-out | none |
-| Switch thumb slide | `transform` (translateX) | 150ms | ease-in-out | none |
-
-All timings use 150ms as the base, matching the existing `transition-colors duration-150` pattern used throughout the codebase (visible in Button). The checkbox checkmark gets a slightly longer 200ms with a 50ms delay so the fill completes before the stroke draws -- a small polish detail that makes the animation feel sequential rather than simultaneous.
-
-## Integration Points with Existing Patterns
-
-### ElementInternals (Form Participation)
-
-Follow the exact pattern from `lui-input`:
+TanStack Virtual supports 2D virtualization by creating two separate virtualizer instances:
 
 ```typescript
-static formAssociated = true;
-private internals: ElementInternals | null = null;
+// Row virtualizer (vertical)
+private _rowVirtualizer = new VirtualizerController(this, {
+  getScrollElement: () => this._scrollContainer,
+  count: this._data.length,
+  estimateSize: () => ROW_HEIGHT,
+  overscan: 5,
+});
 
-constructor() {
-  super();
-  if (!isServer) {
-    this.internals = this.attachInternals();
+// Column virtualizer (horizontal)
+private _columnVirtualizer = new VirtualizerController(this, {
+  getScrollElement: () => this._scrollContainer,
+  count: this._visibleColumns.length,
+  estimateSize: (index) => this._columnWidths[index] ?? DEFAULT_COLUMN_WIDTH,
+  horizontal: true,
+  overscan: 2,
+});
+```
+
+The rendering pattern nests column virtualization inside row virtualization:
+
+```typescript
+render() {
+  const virtualRows = this._rowVirtualizer.getVirtualizer().getVirtualItems();
+  const virtualCols = this._columnVirtualizer.getVirtualizer().getVirtualItems();
+
+  return html`
+    <div style="height: ${this._rowVirtualizer.getVirtualizer().getTotalSize()}px;
+                width: ${this._columnVirtualizer.getVirtualizer().getTotalSize()}px;">
+      ${virtualRows.map(row => html`
+        <div style="position: absolute; top: ${row.start}px; height: ${row.size}px;">
+          ${virtualCols.map(col => html`
+            <div style="position: absolute; left: ${col.start}px; width: ${col.size}px;">
+              ${this._renderCell(row.index, col.index)}
+            </div>
+          `)}
+        </div>
+      `)}
+    </div>
+  `;
+}
+```
+
+**Performance at 100K+ rows:**
+- With 2D virtualization, only visible cells render (~50 rows x ~10 cols = 500 DOM nodes max)
+- TanStack Virtual benchmarks show 60fps scrolling with 1M cells
+- Memory stays constant regardless of data size (O(viewport) not O(data))
+
+**Confidence:** HIGH - Verified via [TanStack Virtual docs](https://tanstack.com/virtual/latest) and [virtualization guide](https://tanstack.com/table/v8/docs/guide/virtualization)
+
+---
+
+## TanStack Table Integration
+
+### TableController Pattern
+
+The @tanstack/lit-table package provides a `TableController` reactive controller:
+
+```typescript
+import { TableController, createColumnHelper } from '@tanstack/lit-table';
+
+const columnHelper = createColumnHelper<Person>();
+
+const columns = [
+  columnHelper.accessor('name', { header: 'Name' }),
+  columnHelper.accessor('age', { header: 'Age' }),
+];
+
+class DataTable extends TailwindElement {
+  private _table = new TableController(this);
+
+  render() {
+    const table = this._table.table({
+      data: this._data,
+      columns,
+      getCoreRowModel: getCoreRowModel(),
+      // Enable features as needed:
+      getSortedRowModel: getSortedRowModel(),
+      getFilteredRowModel: getFilteredRowModel(),
+      getPaginationRowModel: getPaginationRowModel(),
+    });
+
+    // Use table.getHeaderGroups(), table.getRowModel(), etc.
   }
 }
 ```
 
-**Checkbox/Switch form value:** `this.internals?.setFormValue(this.checked ? this.value : null)` -- native checkbox behavior submits `value` when checked, nothing when unchecked.
+### Server-Side Operations (Manual Mode)
 
-**Radio form value:** `this.internals?.setFormValue(this.checked ? this.value : null)` -- only the selected radio in a group submits its value.
-
-**Checkbox validity (required):** `this.internals?.setValidity({ valueMissing: true }, 'Please check this box', anchorEl)` when `required` and not `checked`.
-
-### ARIA Roles via ElementInternals
-
-Use `ElementInternals.role` and `ElementInternals.ariaChecked` to set default semantics:
+For server-side sorting, filtering, and pagination, TanStack Table provides manual mode flags:
 
 ```typescript
-// In constructor or connectedCallback:
-if (this.internals) {
-  this.internals.role = 'checkbox'; // or 'radio' or 'switch'
-  this.internals.ariaChecked = 'false';
+const table = this._table.table({
+  data: this._data, // Current page only
+  columns,
+  manualPagination: true,
+  manualSorting: true,
+  manualFiltering: true,
+  pageCount: this._totalPages,  // From server
+  rowCount: this._totalRows,    // From server
+  state: {
+    pagination: this._paginationState,
+    sorting: this._sortingState,
+    columnFilters: this._filterState,
+  },
+  onPaginationChange: this._handlePaginationChange,
+  onSortingChange: this._handleSortingChange,
+  onColumnFiltersChange: this._handleFilterChange,
+});
+```
+
+When manual mode is enabled, state changes trigger events but don't process data -- the consumer fetches new data from their server.
+
+**Confidence:** HIGH - Verified via [TanStack Table pagination guide](https://tanstack.com/table/v8/docs/guide/pagination) and [sorting guide](https://tanstack.com/table/v8/docs/guide/sorting)
+
+---
+
+## Column Resizing
+
+### Native Implementation (Recommended)
+
+Column resizing should use native pointer events, matching existing patterns in time-picker/time-range-slider.ts:
+
+```typescript
+private _handleResizePointerDown(e: PointerEvent, columnId: string): void {
+  this._resizingColumn = columnId;
+  this._resizeStartX = e.clientX;
+  this._resizeStartWidth = this._columnWidths.get(columnId) ?? DEFAULT_WIDTH;
+
+  (e.target as HTMLElement).setPointerCapture(e.pointerId);
+}
+
+private _handleResizePointerMove(e: PointerEvent): void {
+  if (!this._resizingColumn) return;
+
+  const delta = e.clientX - this._resizeStartX;
+  const newWidth = Math.max(MIN_COLUMN_WIDTH, this._resizeStartWidth + delta);
+
+  // Update column width
+  this._table.setColumnSizing({
+    ...this._table.getState().columnSizing,
+    [this._resizingColumn]: newWidth,
+  });
 }
 ```
 
-This avoids polluting the host element's attributes while providing correct semantics. The `ariaChecked` property supports `'true'`, `'false'`, and `'mixed'` (for indeterminate checkbox).
+### TanStack Table Integration
 
-**Key ARIA details by component:**
-- **Checkbox:** `role="checkbox"`, `aria-checked="true|false|mixed"`
-- **Radio:** `role="radio"`, `aria-checked="true|false"` -- group container gets `role="radiogroup"`
-- **Switch:** `role="switch"`, `aria-checked="true|false"` -- NOT `role="checkbox"`, as switch communicates on/off semantics per W3C APG
+TanStack Table provides `header.getResizeHandler()` as a convenience, but it's designed for React event handlers. For Lit, directly managing pointer events gives more control and matches the project's existing patterns.
 
-### RadioGroup: Roving Tabindex
-
-The W3C ARIA Authoring Practices Guide recommends roving tabindex for radio groups:
-- Only the selected (or first) radio has `tabindex="0"`
-- All other radios have `tabindex="-1"`
-- Arrow keys move focus AND selection simultaneously
-- Tab/Shift+Tab exit the group entirely
-- Wraps at boundaries (last -> first, first -> last)
-
-This requires no library -- it is straightforward DOM management in the RadioGroup's keyboard event handler.
-
-### TailwindElement Base Class
-
-Extend `TailwindElement` exactly as all other components do:
+Use TanStack Table's column sizing state management:
 
 ```typescript
-export class Checkbox extends TailwindElement {
-  static override styles = [
-    ...tailwindBaseStyles,
-    css`/* component-specific styles */`,
-  ];
+state: {
+  columnSizing: this._columnSizingState,
+},
+onColumnSizingChange: (updater) => {
+  this._columnSizingState = typeof updater === 'function'
+    ? updater(this._columnSizingState)
+    : updater;
+  this.requestUpdate();
+},
+```
+
+**Resize modes:**
+- `columnResizeMode: 'onChange'` - Live resize (60fps target)
+- `columnResizeMode: 'onEnd'` - Update only when drag ends (simpler, more performant for complex cells)
+
+**Confidence:** HIGH - Verified via [TanStack Table column sizing guide](https://tanstack.com/table/v8/docs/guide/column-sizing)
+
+---
+
+## Column Ordering / Reordering
+
+### Native Drag and Drop (Recommended)
+
+Use native HTML5 Drag and Drop API for column reordering. This is the approach recommended by TanStack Table docs and used by Material React Table.
+
+```typescript
+// On header cell
+<th
+  draggable="true"
+  @dragstart=${(e) => this._handleColumnDragStart(e, column.id)}
+  @dragover=${(e) => this._handleColumnDragOver(e, column.id)}
+  @drop=${(e) => this._handleColumnDrop(e, column.id)}
+>
+```
+
+### TanStack Table Integration
+
+Column order is managed via `columnOrder` state:
+
+```typescript
+state: {
+  columnOrder: this._columnOrderState, // string[] of column IDs
+},
+onColumnOrderChange: (updater) => {
+  this._columnOrderState = typeof updater === 'function'
+    ? updater(this._columnOrderState)
+    : updater;
+  this.requestUpdate();
+},
+```
+
+**Note:** Column pinning takes precedence over column ordering. Pinned columns are always positioned at their pinned location (left/right).
+
+**Confidence:** HIGH - Verified via [TanStack Table column ordering guide](https://tanstack.com/table/v8/docs/guide/column-ordering)
+
+---
+
+## Row Selection and Bulk Actions
+
+TanStack Table provides comprehensive row selection:
+
+```typescript
+const table = this._table.table({
+  // ...
+  enableRowSelection: true,
+  // Or conditional selection:
+  enableRowSelection: (row) => !row.original.isLocked,
+
+  state: {
+    rowSelection: this._rowSelectionState,
+  },
+  onRowSelectionChange: (updater) => {
+    this._rowSelectionState = typeof updater === 'function'
+      ? updater(this._rowSelectionState)
+      : updater;
+    this.requestUpdate();
+    this._dispatchSelectionChange();
+  },
+});
+```
+
+**Selection APIs:**
+- `table.getSelectedRowModel().rows` - All selected rows
+- `table.toggleAllRowsSelected()` - Select/deselect all
+- `table.toggleAllPageRowsSelected()` - Select/deselect current page
+- `row.getIsSelected()` - Check if row is selected
+- `row.toggleSelected()` - Toggle row selection
+
+**Server-side pagination caveat:** `getSelectedRowModel()` only returns rows from current page data. For cross-page selection with server-side pagination, maintain selection state separately using row IDs.
+
+**Confidence:** HIGH - Verified via [TanStack Table row selection guide](https://tanstack.com/table/v8/docs/guide/row-selection)
+
+---
+
+## State Persistence
+
+### localStorage Pattern
+
+Persist user preferences (column visibility, order, sizes) to localStorage:
+
+```typescript
+private static STORAGE_KEY = 'lui-data-table-prefs';
+
+private _loadPreferences(): TablePreferences {
+  try {
+    const stored = localStorage.getItem(DataTable.STORAGE_KEY);
+    return stored ? JSON.parse(stored) : {};
+  } catch {
+    return {};
+  }
+}
+
+private _savePreferences(prefs: TablePreferences): void {
+  try {
+    localStorage.setItem(DataTable.STORAGE_KEY, JSON.stringify(prefs));
+  } catch {
+    // localStorage unavailable or full, fail silently
+  }
+}
+
+interface TablePreferences {
+  columnVisibility?: Record<string, boolean>;
+  columnOrder?: string[];
+  columnSizing?: Record<string, number>;
 }
 ```
 
-### CSS Design Tokens Pattern
+**Best practice:** Use a table-specific key (e.g., `lui-data-table-${tableId}-prefs`) when multiple tables exist on one page.
 
-Follow the `--ui-{component}-{property}` convention established in the tokens system. New tokens needed:
+**Confidence:** HIGH - Standard pattern, verified via [DataTables state saving](https://datatables.net/examples/basic_init/state_save.html)
 
-**Checkbox tokens:** `--ui-checkbox-radius`, `--ui-checkbox-border-width`, `--ui-checkbox-border`, `--ui-checkbox-bg-checked`, `--ui-checkbox-check-color`, `--ui-checkbox-size-{sm,md,lg}`
+---
 
-**Radio tokens:** `--ui-radio-border-width`, `--ui-radio-border`, `--ui-radio-border-checked`, `--ui-radio-dot`, `--ui-radio-size-{sm,md,lg}`
+## Accessibility: ARIA Grid vs Table Role
 
-**Switch tokens:** `--ui-switch-radius`, `--ui-switch-track-bg`, `--ui-switch-track-bg-checked`, `--ui-switch-thumb-bg`, `--ui-switch-thumb-shadow`, `--ui-switch-width-{sm,md,lg}`, `--ui-switch-height-{sm,md,lg}`
+### Recommendation: Use role="grid" for Interactive Data Tables
 
-### Inline SVG Icons
+For a full-featured data table with inline editing, cell navigation, and keyboard interactions, use `role="grid"` instead of a native `<table>` or `role="table"`.
 
-Use Lit `svg` tagged template literals for checkmark and indeterminate icons (same as Input's eye/x-circle icons):
+**When to use role="grid":**
+- Interactive widgets where cells can be focused
+- Arrow key navigation between cells
+- Inline editing within cells
+- Drag-to-reorder columns
+- Cell-level selection
 
+**Keyboard Navigation Requirements:**
+| Key | Action |
+|-----|--------|
+| Arrow keys | Move focus between cells |
+| Home/End | Move to first/last cell in row |
+| Ctrl+Home/End | Move to first/last cell in grid |
+| Enter/Space | Activate cell (enter edit mode, toggle selection) |
+| Tab | Move to next interactive element (exit grid, or within cell) |
+| Escape | Exit edit mode, deselect |
+
+**Implementation Pattern:**
 ```typescript
-private checkIcon = svg`
-  <polyline points="4 12 9 17 20 6"
-    stroke="currentColor" stroke-width="2.5" fill="none"
-    stroke-linecap="round" stroke-linejoin="round"
-    class="checkmark-path" />
-`;
+<div role="grid" aria-rowcount="${this._totalRows}" aria-colcount="${this._columns.length}">
+  <div role="rowgroup">
+    <div role="row">
+      ${headers.map(h => html`
+        <div role="columnheader" aria-sort="${h.sortDirection ?? 'none'}">
+          ${h.label}
+        </div>
+      `)}
+    </div>
+  </div>
+  <div role="rowgroup">
+    ${rows.map((row, i) => html`
+      <div role="row" aria-rowindex="${i + 1}">
+        ${cells.map((cell, j) => html`
+          <div role="gridcell" aria-colindex="${j + 1}" tabindex="-1">
+            ${cell.value}
+          </div>
+        `)}
+      </div>
+    `)}
+  </div>
+</div>
 ```
 
-## What NOT to Add (and Why)
+**Caution:** ARIA grids are complex. Follow the [W3C Grid Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/grid/) carefully. Many libraries get this wrong.
 
-| Temptation | Why to Avoid |
-|------------|-------------|
-| **Framer Motion / Motion One** | These are React/JS animation libraries. CSS transitions handle all needed animations. Adding JS animation for simple state transitions is over-engineering. |
-| **@floating-ui/dom** | No positioning needed. Checkboxes, radios, and switches render inline. Only Select uses popover positioning. |
-| **@tanstack/lit-virtual** | No virtualization needed. Even CheckboxGroup/RadioGroup will have at most a few dozen items, never thousands. |
-| **@lit/task** | No async operations. These are synchronous state-toggle controls. |
-| **lit/directives/class-map.js** | The existing codebase manually constructs class strings (see `getButtonClasses()` in Button). Stay consistent -- `classMap` adds marginal value for these simple components. |
-| **Web Animations API** | Overkill for simple state transitions. CSS transitions are declarative, inspectable, and already the pattern used in this codebase. |
-| **Gesture libraries (e.g., use-gesture)** | Switch drag-to-toggle is a nice-to-have but unnecessary for v1. Click/tap/keyboard is sufficient. If added later, it is a few lines of pointer event handling, not a library. |
-| **Icon library (Lucide, Heroicons)** | The codebase already uses inline SVG via `svg` template literals. A checkmark is 1 polyline. A minus is 1 line. No icon library needed. |
-| **@lit/context** | Group-to-child communication (CheckboxGroup, RadioGroup) can use DOM events and slotted element queries. Context API adds complexity without benefit for these simple parent-child relationships. |
+**Confidence:** HIGH - Verified via [MDN ARIA grid role](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/grid_role) and [W3C ARIA APG](https://www.w3.org/WAI/ARIA/apg/patterns/grid/)
 
-## Package Structure Template
+---
 
-Each new package follows the exact structure of `@lit-ui/input`:
+## What NOT to Add
 
-```
-packages/checkbox/
-  package.json          # Zero dependencies, peer: lit + @lit-ui/core
-  tsconfig.json
-  vite.config.ts
-  src/
-    index.ts            # Re-exports + customElement registration
-    checkbox.ts         # Checkbox component class
-    checkbox-group.ts   # CheckboxGroup component class
-    jsx.d.ts            # JSX type declarations
-    vite-env.d.ts
+### Do NOT add these libraries:
 
-packages/radio/
-  package.json
-  tsconfig.json
-  vite.config.ts
-  src/
-    index.ts
-    radio.ts
-    radio-group.ts
-    jsx.d.ts
-    vite-env.d.ts
+| Library | Why Not |
+|---------|---------|
+| ag-Grid | Heavyweight, commercial license for features, not web-component native |
+| @dnd-kit | Unnecessary - native DnD API sufficient for column reordering |
+| immer | Over-engineering - direct state updates with requestUpdate() work fine |
+| zustand/jotai | Not needed - Lit's reactive properties + TanStack Table state management sufficient |
+| react-window/react-virtuoso | Wrong framework - we have @tanstack/lit-virtual |
 
-packages/switch/
-  package.json
-  tsconfig.json
-  vite.config.ts
-  src/
-    index.ts
-    switch.ts
-    jsx.d.ts
-    vite-env.d.ts
+### Feature-specific decisions:
+
+| Feature | Approach | Rationale |
+|---------|----------|-----------|
+| Column resize | Pointer events | Already proven in time-picker component |
+| Column reorder | Native DnD | Simpler, no dependency, recommended by TanStack |
+| Inline editing | Existing components | Use lui-input, lui-select, lui-checkbox |
+| Filter dropdowns | @floating-ui/dom | Already used throughout the library |
+| Async data | @lit/task | Already used in Select component |
+
+---
+
+## Installation
+
+### For the @lit-ui/data-table package:
+
+```json
+{
+  "dependencies": {
+    "@tanstack/lit-table": "^8.21.3",
+    "@tanstack/lit-virtual": "^3.13.19"
+  },
+  "peerDependencies": {
+    "lit": "^3.0.0",
+    "@lit-ui/core": "^1.0.0"
+  }
+}
 ```
 
-## Alternatives Considered
+### npm/pnpm command:
 
-| Category | Recommended | Alternative | Why Not |
-|----------|-------------|-------------|---------|
-| Animation | CSS transitions | Web Animations API | CSS is simpler, declarative, already the codebase pattern |
-| Checkmark rendering | Inline SVG with `svg` literal | CSS-only pseudo-element shapes | SVG gives precise control, smooth stroke animation, scales with viewBox, matches existing pattern |
-| Radio dot | Real `<div>` element | `::before` pseudo-element | Either works; real element is more explicit in Lit templates |
-| Switch thumb | `translateX` transform | `left` positioning | Transform is GPU-composited, avoids layout thrashing |
-| Group communication | DOM events bubbling | `@lit/context` | Events are simpler, no new dependency, matches web platform patterns |
-| Focus management (RadioGroup) | Roving tabindex | `aria-activedescendant` | Roving tabindex is the W3C APG primary recommendation and works more reliably with screen readers |
+```bash
+pnpm add @tanstack/lit-table @tanstack/lit-virtual
+```
 
-## Confidence Assessment
+---
 
-| Area | Confidence | Rationale |
-|------|------------|-----------|
-| Zero new deps needed | HIGH | These are simple toggle controls; all capabilities exist in Lit + CSS |
-| SVG stroke animation | HIGH | Industry standard, codebase already uses inline SVG extensively |
-| Scale/translateX animation | HIGH | GPU-composited transforms, confirmed by MDN |
-| ElementInternals pattern | HIGH | Proven in 4 existing components in this codebase |
-| Roving tabindex for RadioGroup | HIGH | W3C APG primary recommendation, no library needed |
-| Design token naming | HIGH | Clear convention from existing `--ui-input-*`, `--ui-select-*` patterns |
+## Architecture Recommendation
+
+```
+packages/data-table/
+├── src/
+│   ├── data-table.ts           # Main component with TableController
+│   ├── data-table-header.ts    # Header row with sorting, resize handles
+│   ├── data-table-row.ts       # Individual row rendering (optional, for complex cells)
+│   ├── data-table-cell.ts      # Cell rendering with editing support
+│   ├── data-table-toolbar.ts   # Search, filters, bulk actions
+│   ├── data-table-pagination.ts # Page controls
+│   ├── column-menu.ts          # Column visibility/pinning menu
+│   └── types.ts                # Shared interfaces
+└── package.json
+```
+
+**Component responsibility:**
+- `lui-data-table` - Main orchestrator, holds TableController and VirtualizerControllers
+- Child components are internal implementation details, not exported
+
+---
+
+## Version Summary
+
+| Package | Version | Verified Date | Source |
+|---------|---------|---------------|--------|
+| @tanstack/lit-table | 8.21.3 | 2026-02-02 | [GitHub Releases](https://github.com/TanStack/table/releases) |
+| @tanstack/lit-virtual | 3.13.19 | 2026-02-02 | [GitHub Releases](https://github.com/TanStack/virtual/releases) |
+| lit (peer) | 3.x (requires 3.1.3+) | - | Project already uses 3.3.2 |
+
+---
 
 ## Sources
 
-- [W3C WAI-ARIA APG: Checkbox Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/checkbox/) -- ARIA roles, states, keyboard interaction
-- [W3C WAI-ARIA APG: Radio Group Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/radio/) -- Roving tabindex, arrow key navigation
-- [W3C WAI-ARIA APG: Switch Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/switch/) -- role="switch", aria-checked semantics
-- [MDN: ElementInternals.ariaChecked](https://developer.mozilla.org/en-US/docs/Web/API/ElementInternals/ariaChecked) -- Setting ARIA checked via internals
-- [MDN: Using CSS Transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Transitions/Using) -- Transition fundamentals
-- [WebKit: ElementInternals and Form-Associated Custom Elements](https://webkit.org/blog/13711/elementinternals-and-form-associated-custom-elements/) -- Form participation patterns
-- [Modern CSS Solutions: Pure CSS Custom Styled Radio Buttons](https://moderncss.dev/pure-css-custom-styled-radio-buttons/) -- Scale transform technique
-- [Go Make Things: Creating a Toggle Switch with CSS](https://gomakethings.com/creating-a-toggle-switch-with-just-css/) -- translateX pattern
-- Existing codebase: `packages/input/src/input.ts`, `packages/button/src/button.ts`, `packages/core/src/tailwind-element.ts` -- Established patterns for ElementInternals, SVG icons, CSS transitions, TailwindElement usage
+### Primary (HIGH confidence)
+- [TanStack Table Docs](https://tanstack.com/table/latest)
+- [TanStack Virtual Docs](https://tanstack.com/virtual/latest)
+- [TanStack Table GitHub Releases](https://github.com/TanStack/table/releases) - v8.21.3 (April 14, 2025)
+- [TanStack Virtual GitHub Releases](https://github.com/TanStack/virtual/releases) - v3.13.19 (January 7, 2026)
+- [TanStack Table Column Sizing Guide](https://tanstack.com/table/v8/docs/guide/column-sizing)
+- [TanStack Table Row Selection Guide](https://tanstack.com/table/v8/docs/guide/row-selection)
+- [TanStack Table Pagination Guide](https://tanstack.com/table/v8/docs/guide/pagination)
+- [TanStack Table Virtualization Guide](https://tanstack.com/table/v8/docs/guide/virtualization)
+- [TanStack Table Column Ordering Guide](https://tanstack.com/table/v8/docs/guide/column-ordering)
+- [W3C ARIA Grid Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/grid/)
+- [MDN ARIA grid role](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/grid_role)
+
+### Secondary (MEDIUM confidence)
+- [Build tables with Lit, TanStack Table and Twind](https://medium.com/@morkadosh/build-beautiful-accessible-tables-that-work-everywhere-with-lit-tanstack-table-and-twind-1275049d53a1)
+- [IBM Carbon Design System TanStack Table exploration](https://github.com/carbon-design-system/ibm-products/issues/6069)
+- [Adrian Roselli: ARIA Grid as an Anti-Pattern](https://adrianroselli.com/2020/07/aria-grid-as-an-anti-pattern.html)
+
+### Existing Project Patterns (HIGH confidence)
+- `/packages/select/src/select.ts` - VirtualizerController usage
+- `/packages/time-picker/src/time-range-slider.ts` - Pointer event drag handling
+- `/packages/core/src/floating/index.ts` - Shadow DOM-safe Floating UI wrapper

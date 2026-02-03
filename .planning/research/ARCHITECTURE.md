@@ -1,677 +1,508 @@
-# Architecture Research: Select Component
+# Architecture Patterns: LitUI Data Table
 
-**Domain:** Select/Combobox component for LitUI component library
-**Researched:** 2026-01-26
-**Confidence:** HIGH (based on existing codebase patterns, W3C APG, and Lit documentation)
+**Domain:** Data Table Component for Admin Dashboards
+**Researched:** 2026-02-02
+**Focus:** Integration with existing LitUI architecture for 100K+ rows
 
-## Executive Summary
+## Recommended Architecture
 
-The Select component should follow LitUI's established patterns: leverage native browser capabilities where possible, use ElementInternals for form participation, and maintain SSR compatibility via `isServer` guards. The key architectural decision is whether to use native `<select>` (limited styling) or build a custom select using the Popover API + CSS Anchor Positioning (modern, accessible, styleable).
-
-**Recommendation:** Build a custom select using the **Popover API** (baseline available April 2025) combined with **CSS Anchor Positioning** for dropdown placement. This follows LitUI's pattern of leveraging native browser capabilities (similar to Dialog using native `<dialog>`) while providing full styling control.
-
----
-
-## Component Structure
-
-### Recommended Component Composition
+### Component Structure Overview
 
 ```
-lui-select (main component)
-  |
-  +-- lui-option (option items)
-  |
-  +-- lui-option-group (optional grouping)
+lui-data-table (Container/Controller)
+    |
+    +-- <lui-column> (Declarative column definitions - OPTIONAL slotted)
+    |
+    +-- Internal Components (Shadow DOM)
+        +-- HeaderRow (column headers, sort indicators, resize handles)
+        +-- VirtualizedBody (virtualized row container)
+        |       +-- Row[] (only visible rows rendered)
+        |               +-- Cell[] (using existing LitUI components for editing)
+        +-- FooterRow (pagination, bulk actions)
 ```
 
-**Three components** with clear responsibilities:
+**Hybrid API approach:** Support both programmatic `columns` property AND declarative `<lui-column>` children (like Select supports both `options` property and slotted `<lui-option>`).
 
-| Component | Responsibility | API Style |
-|-----------|---------------|-----------|
-| `lui-select` | Container, form participation, keyboard navigation, state management | Properties + events |
-| `lui-option` | Individual option item, displays label/value, handles selection | Slot-based content |
-| `lui-option-group` | Groups options with optional label header | Slot-based content |
+### Integration Points with Existing LitUI
 
-### Why Slot-Based Options (Not Attribute-Based)
+| LitUI Component | Integration Point | Usage in Data Table |
+|-----------------|-------------------|---------------------|
+| `TailwindElement` | Base class | All table components extend this for dual-mode styling |
+| `@tanstack/lit-virtual` | Row virtualization | Reuse pattern from Select for virtualized row rendering |
+| `VirtualizerController` | Controller pattern | Same approach as Select, manages visible row window |
+| `Floating UI` | Column menus/filters | Dropdown filters, column visibility picker |
+| `lui-checkbox` | Row selection | Bulk selection checkboxes in each row |
+| `lui-input` | Inline cell editing | Text/number cell editors |
+| `lui-select` | Inline cell editing | Dropdown cell editors |
+| `lui-popover` | Filter dropdowns | Column filter UI |
+| `dispatchCustomEvent` | Event pattern | `ui-sort`, `ui-filter`, `ui-select`, `ui-edit` events |
+| `ElementInternals` | Form participation | Table value as JSON/FormData for form submission |
 
-**Slot-based (recommended):**
-```html
-<lui-select>
-  <lui-option value="us">United States</lui-option>
-  <lui-option value="ca">Canada</lui-option>
-</lui-select>
+### Data Flow Architecture
+
+```
+                    +-------------------+
+                    |   External Data   |
+                    |   (rows[], page)  |
+                    +---------+---------+
+                              |
+                              v
++--------------------+   +----------+   +--------------------+
+| Server-Side Mode   |<--|  Table   |-->| Client-Side Mode   |
+| (manual=true)      |   | State    |   | (manual=false)     |
+| - API pagination   |   |          |   | - In-memory sort   |
+| - API sorting      |   |          |   | - In-memory filter |
+| - API filtering    |   |          |   | - In-memory page   |
++--------------------+   +----------+   +--------------------+
+                              |
+                              v
+                    +---------+---------+
+                    |  VirtualizerCtrl  |
+                    |  (visible rows)   |
+                    +---------+---------+
+                              |
+                              v
+                    +-------------------+
+                    |   Rendered DOM    |
+                    | (20-50 rows only) |
+                    +-------------------+
 ```
 
-**Attribute-based (not recommended):**
-```html
-<lui-select options='[{"value":"us","label":"United States"}]'></lui-select>
-```
+### State Management Pattern
 
-**Rationale for slot-based:**
-1. **Declarative HTML** - Options are visible in markup, better for SSR
-2. **Rich content** - Options can contain icons, badges, descriptions
-3. **Framework agnostic** - Works naturally with any templating system
-4. **Accessibility** - Screen readers can enumerate options from DOM
-5. **Consistency** - Matches native `<select>` / `<option>` pattern
-6. **Dynamic updates** - Lit's MutationObserver can detect slot changes
-
-**Attribute-based options** should be supported as a convenience for simple cases but not be the primary API.
-
-### Component Hierarchy
+Follow existing LitUI controlled/uncontrolled pattern:
 
 ```typescript
-// lui-select.ts
-export class Select extends TailwindElement {
-  static formAssociated = true;
+// Controlled mode (external state management)
+<lui-data-table
+  .rows=${serverData}
+  .sortState=${sortState}
+  .filterState=${filterState}
+  .pagination=${pagination}
+  manual
+  @ui-sort-change=${handleSort}
+  @ui-filter-change=${handleFilter}
+  @ui-page-change=${handlePage}
+>
 
-  @property() value: string | string[] = '';
-  @property() multiple = false;
-  @property() placeholder = '';
-  @property({ type: Boolean }) disabled = false;
-  @property({ type: Boolean }) open = false;
-  @property({ type: Boolean }) searchable = false; // For combobox variant
-
-  // Slot collects lui-option elements
-  @queryAssignedElements({ selector: 'lui-option' })
-  private options!: Array<HTMLElement>;
-}
-
-// lui-option.ts
-export class Option extends TailwindElement {
-  @property() value = '';
-  @property({ type: Boolean }) disabled = false;
-  @property({ type: Boolean, reflect: true }) selected = false;
-
-  // Default slot for label content
-}
-
-// lui-option-group.ts
-export class OptionGroup extends TailwindElement {
-  @property() label = '';
-  @property({ type: Boolean }) disabled = false;
-
-  // Default slot for lui-option children
-}
+// Uncontrolled mode (internal state management)
+<lui-data-table
+  .rows=${allData}
+  default-sort="name:asc"
+  default-page-size="25"
+>
 ```
 
----
+## Component Boundaries
 
-## Data Flow
+### lui-data-table (Main Component)
 
-### State Ownership
+**Responsibilities:**
+- Column configuration management (from props or slotted children)
+- Virtualization orchestration via VirtualizerController
+- State management (sort, filter, selection, pagination)
+- Event dispatch to consumers
+- Form participation via ElementInternals
+- Keyboard navigation coordination
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│  lui-select (owns all state)                                    │
-│                                                                 │
-│  State:                                                         │
-│  - value: string | string[] (selected value(s))                │
-│  - open: boolean (dropdown visibility)                          │
-│  - activeDescendant: string (focused option ID for keyboard)   │
-│  - searchQuery: string (if searchable)                          │
-│  - loading: boolean (if async)                                  │
-│                                                                 │
-│  ┌─────────────┐     ┌─────────────┐     ┌─────────────┐       │
-│  │ lui-option  │     │ lui-option  │     │ lui-option  │       │
-│  │ (stateless) │     │ (stateless) │     │ (stateless) │       │
-│  └─────────────┘     └─────────────┘     └─────────────┘       │
-│        ↑                   ↑                   ↑                │
-│        └───────────────────┴───────────────────┘                │
-│                 Selected state derived from                     │
-│                 parent's value property                         │
-└─────────────────────────────────────────────────────────────────┘
-```
-
-### Selection Flow
-
-```
-User clicks option
-       │
-       ▼
-┌──────────────────┐
-│ Option dispatches│
-│ 'option-select'  │
-│ event (bubbles)  │
-└────────┬─────────┘
-         │
-         ▼
-┌──────────────────┐
-│ Select catches   │
-│ event, updates   │
-│ value property   │
-└────────┬─────────┘
-         │
-         ├──────────────────────────────────┐
-         │                                  │
-         ▼                                  ▼
-┌──────────────────┐               ┌──────────────────┐
-│ Select dispatches│               │ ElementInternals │
-│ 'change' event   │               │ setFormValue()   │
-│ (for consumers)  │               │ (form sync)      │
-└──────────────────┘               └──────────────────┘
-```
-
-### Async Loading Flow
-
-For dynamic/searchable selects with server-side data:
-
+**Properties:**
 ```typescript
-// Using Lit's Task controller for async loading
-import { Task } from '@lit/task';
+// Data
+rows: T[] | Promise<T[]>           // Data source
+columns: ColumnDef<T>[]            // Column definitions (alt to slotted)
+rowKey: keyof T | ((row: T) => string)  // Row identity
 
-class Select extends TailwindElement {
-  @property() searchable = false;
-  @property() loadOptions?: (query: string) => Promise<OptionData[]>;
+// State (controlled)
+sortState?: SortState[]
+filterState?: FilterState[]
+selectedRows?: Set<string>
+pagination?: PaginationState
 
-  @state() private searchQuery = '';
+// State (uncontrolled defaults)
+defaultSort?: string               // "field:asc,field2:desc"
+defaultPageSize?: number
+defaultPage?: number
 
-  // Task controller manages async state
-  private _optionsTask = new Task(this, {
-    task: async ([query], { signal }) => {
-      if (!this.loadOptions) return [];
-      return this.loadOptions(query);
-    },
-    args: () => [this.searchQuery],
-    autoRun: false, // Manual trigger on search
+// Modes
+manual?: boolean                   // Server-side mode
+selectable?: boolean | 'single' | 'multiple'
+editable?: boolean | 'cell' | 'row'
+
+// Virtual scrolling
+rowHeight?: number                 // Default: 48
+overscan?: number                  // Default: 10
+```
+
+### lui-column (Optional Declarative Definition)
+
+**Responsibilities:**
+- Declare column configuration as markup
+- Support slotted header/cell templates
+
+**Properties:**
+```typescript
+field: string                      // Data field path
+header?: string                    // Header text
+width?: string | number            // Column width
+minWidth?: number
+maxWidth?: number
+sortable?: boolean
+filterable?: boolean | 'text' | 'select' | 'date' | 'number'
+editable?: boolean
+resizable?: boolean
+hidden?: boolean
+pinned?: 'left' | 'right'
+```
+
+**Slots:**
+- `header` - Custom header content
+- `cell` - Custom cell template (receives row data)
+- `editor` - Custom editor component
+- `filter` - Custom filter UI
+
+### Internal: HeaderRow
+
+**Responsibilities:**
+- Render column headers with sort indicators
+- Handle click-to-sort
+- Resize handles via drag events
+- Column reorder via drag-and-drop (using native drag events)
+
+### Internal: VirtualizedBody
+
+**Responsibilities:**
+- Use VirtualizerController (same as Select)
+- Calculate visible row range
+- Render only visible rows with transform positioning
+- Handle scroll events
+
+### Internal: Cell
+
+**Responsibilities:**
+- Display mode: Render cell value
+- Edit mode: Switch to appropriate editor component
+- Handle edit lifecycle (enter/exit edit mode, save/cancel)
+
+## Virtualization Strategy
+
+### Row-Only Virtualization (Recommended for v1)
+
+**Rationale:**
+- Matches existing Select implementation pattern
+- Sufficient for 100K+ rows with < 50 columns
+- Column virtualization adds significant complexity
+- Most admin dashboards have 10-30 columns
+
+**Implementation:**
+```typescript
+private _virtualizer?: VirtualizerController<HTMLDivElement, Element>;
+
+private updateVirtualizer(): void {
+  const scrollElement = this._bodyRef.value;
+  if (!scrollElement) return;
+
+  this._virtualizer = new VirtualizerController(this, {
+    getScrollElement: () => this._bodyRef.value ?? null,
+    count: this.filteredRows.length,
+    estimateSize: () => this.rowHeight,
+    overscan: this.overscan,
   });
-
-  render() {
-    return html`
-      <div class="listbox">
-        ${this._optionsTask.render({
-          pending: () => html`<div class="loading">Loading...</div>`,
-          complete: (options) => options.map(opt =>
-            html`<div role="option">${opt.label}</div>`
-          ),
-          error: () => html`<div class="error">Failed to load</div>`,
-        })}
-        <!-- Slotted options always rendered -->
-        <slot></slot>
-      </div>
-    `;
-  }
 }
-```
 
----
-
-## Positioning Strategy
-
-### Recommended: Popover API + CSS Anchor Positioning
-
-**Why Popover API:**
-- Baseline widely available since April 2025
-- Automatic top-layer placement (no z-index management)
-- Built-in light dismiss (click outside closes)
-- Built-in focus management
-- Built-in Escape key handling
-- Works with Declarative Shadow DOM for SSR
-
-**Why CSS Anchor Positioning:**
-- Native browser positioning relative to trigger element
-- Automatic flip when insufficient space
-- No JavaScript calculations needed
-- Works with Popover API
-
-### Implementation Pattern
-
-```html
-<!-- Inside lui-select shadow DOM -->
-<button
-  id="trigger"
-  popovertarget="listbox"
-  aria-expanded="${this.open}"
-  aria-controls="listbox"
->
-  <span class="selected-value">${this.displayValue}</span>
-  <svg class="chevron">...</svg>
-</button>
-
-<div
-  id="listbox"
-  popover="auto"
-  role="listbox"
-  anchor="trigger"
-  class="dropdown"
->
-  <slot></slot>
-</div>
-
-<style>
-  .dropdown {
-    /* Anchor to trigger button */
-    position-anchor: --select-trigger;
-
-    /* Position below trigger, flip if needed */
-    inset-area: block-end;
-    position-try-options: flip-block;
-
-    /* Match trigger width */
-    min-width: anchor-size(width);
-    max-height: 300px;
-    overflow-y: auto;
-  }
-
-  #trigger {
-    anchor-name: --select-trigger;
-  }
-</style>
-```
-
-### Fallback Strategy
-
-For older browsers without CSS Anchor Positioning, use Floating UI as a progressive enhancement:
-
-```typescript
-import { computePosition, flip, offset, size } from '@floating-ui/dom';
-
-private async positionDropdown() {
-  if (CSS.supports('anchor-name: --test')) {
-    // Native anchor positioning available, CSS handles it
-    return;
-  }
-
-  // Fallback to Floating UI
-  const { x, y } = await computePosition(
-    this.triggerEl,
-    this.dropdownEl,
-    {
-      placement: 'bottom-start',
-      middleware: [
-        offset(4),
-        flip(),
-        size({
-          apply({ availableHeight, elements }) {
-            elements.floating.style.maxHeight = `${Math.min(300, availableHeight)}px`;
-          },
-        }),
-      ],
-    }
-  );
-
-  this.dropdownEl.style.left = `${x}px`;
-  this.dropdownEl.style.top = `${y}px`;
-}
-```
-
----
-
-## Keyboard Navigation
-
-### State Machine for Keyboard Interactions
-
-```
-                    ┌─────────────┐
-                    │   CLOSED    │
-                    └──────┬──────┘
-                           │
-          ┌────────────────┼────────────────┐
-          │                │                │
-      Enter/Space     Down Arrow        Alt+Down
-          │                │                │
-          ▼                ▼                ▼
-    ┌───────────────────────────────────────────┐
-    │                  OPEN                      │
-    │                                            │
-    │  ┌─────────────────────────────────────┐  │
-    │  │    Focus on activeDescendant        │  │
-    │  │                                     │  │
-    │  │  Down Arrow → next option           │  │
-    │  │  Up Arrow → previous option         │  │
-    │  │  Home → first option                │  │
-    │  │  End → last option                  │  │
-    │  │  Type char → type-ahead search      │  │
-    │  │                                     │  │
-    │  │  Enter/Space → select & close       │  │
-    │  │  Escape → close without selecting   │  │
-    │  │  Tab → close & move focus           │  │
-    │  └─────────────────────────────────────┘  │
-    │                                            │
-    └────────────────────────────────────────────┘
-                           │
-                     Escape/Tab/Select
-                           │
-                           ▼
-                    ┌─────────────┐
-                    │   CLOSED    │
-                    └─────────────┘
-```
-
-### Implementation
-
-```typescript
-class Select extends TailwindElement {
-  @state() private activeIndex = -1;
-
-  private handleKeyDown(e: KeyboardEvent) {
-    const options = this.getVisibleOptions();
-
-    switch (e.key) {
-      case 'ArrowDown':
-        e.preventDefault();
-        if (!this.open) {
-          this.open = true;
-          this.activeIndex = 0;
-        } else {
-          this.activeIndex = Math.min(this.activeIndex + 1, options.length - 1);
-        }
-        break;
-
-      case 'ArrowUp':
-        e.preventDefault();
-        if (this.open) {
-          this.activeIndex = Math.max(this.activeIndex - 1, 0);
-        }
-        break;
-
-      case 'Home':
-        e.preventDefault();
-        if (this.open) this.activeIndex = 0;
-        break;
-
-      case 'End':
-        e.preventDefault();
-        if (this.open) this.activeIndex = options.length - 1;
-        break;
-
-      case 'Enter':
-      case ' ':
-        e.preventDefault();
-        if (this.open && this.activeIndex >= 0) {
-          this.selectOption(options[this.activeIndex]);
-          this.open = false;
-        } else {
-          this.open = true;
-        }
-        break;
-
-      case 'Escape':
-        if (this.open) {
-          e.preventDefault();
-          this.open = false;
-        }
-        break;
-
-      case 'Tab':
-        if (this.open) {
-          this.open = false;
-          // Let default tab behavior proceed
-        }
-        break;
-
-      default:
-        // Type-ahead: single character search
-        if (e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
-          this.handleTypeAhead(e.key);
-        }
-    }
-  }
-
-  private typeAheadBuffer = '';
-  private typeAheadTimeout: number | null = null;
-
-  private handleTypeAhead(char: string) {
-    // Clear existing timeout
-    if (this.typeAheadTimeout) clearTimeout(this.typeAheadTimeout);
-
-    // Accumulate characters typed in quick succession
-    this.typeAheadBuffer += char.toLowerCase();
-
-    // Find matching option
-    const options = this.getVisibleOptions();
-    const matchIndex = options.findIndex(opt =>
-      opt.textContent?.toLowerCase().startsWith(this.typeAheadBuffer)
-    );
-
-    if (matchIndex >= 0) {
-      this.activeIndex = matchIndex;
-      if (!this.open) this.open = true;
-    }
-
-    // Clear buffer after 500ms of no typing
-    this.typeAheadTimeout = window.setTimeout(() => {
-      this.typeAheadBuffer = '';
-    }, 500);
-  }
-}
-```
-
-### ARIA Implementation
-
-```typescript
-render() {
-  const activeOption = this.options[this.activeIndex];
-  const activeId = activeOption?.id || '';
+private renderVirtualizedRows(): TemplateResult {
+  const virtualizer = this._virtualizer.getVirtualizer();
+  const virtualItems = virtualizer.getVirtualItems();
+  const totalSize = virtualizer.getTotalSize();
 
   return html`
-    <div
-      role="combobox"
-      aria-expanded="${this.open}"
-      aria-haspopup="listbox"
-      aria-controls="listbox"
-      aria-activedescendant="${this.open ? activeId : ''}"
-      tabindex="0"
-      @keydown=${this.handleKeyDown}
-    >
-      ...
-    </div>
-
-    <div
-      id="listbox"
-      role="listbox"
-      aria-label="${this.label}"
-      popover="auto"
-    >
-      <slot @slotchange=${this.handleSlotChange}></slot>
+    <div class="virtual-rows" style="height: ${totalSize}px; position: relative;">
+      ${virtualItems.map((item) => html`
+        <div
+          class="table-row"
+          style="transform: translateY(${item.start}px); height: ${item.size}px; position: absolute; width: 100%;"
+        >
+          ${this.renderRow(this.filteredRows[item.index], item.index)}
+        </div>
+      `)}
     </div>
   `;
 }
 ```
 
----
+### Column Virtualization (Future Enhancement)
 
-## SSR Considerations
-
-### What Works Naturally
-
-1. **Popover API with Declarative Shadow DOM** - The `popover` attribute is declarative HTML
-2. **ARIA attributes** - Static attributes render correctly during SSR
-3. **Slot-based options** - Children are in light DOM, render server-side
-4. **CSS-only initial state** - Dropdown closed by default via CSS
-
-### What Needs Guards
+For tables with 50+ columns, add horizontal virtualization:
 
 ```typescript
-class Select extends TailwindElement {
-  static formAssociated = true;
-  private internals: ElementInternals | null = null;
+// Future: 2D virtualization
+private _rowVirtualizer: VirtualizerController;
+private _colVirtualizer: VirtualizerController;
 
-  constructor() {
-    super();
-    // Guard: attachInternals not available during SSR
-    if (!isServer) {
-      this.internals = this.attachInternals();
-    }
-  }
+// Only render visible columns
+const visibleColumns = this._colVirtualizer
+  .getVirtualizer()
+  .getVirtualItems()
+  .map(item => this.columns[item.index]);
+```
 
-  // Guard: positioning calculations require DOM
-  private positionDropdown() {
-    if (isServer) return;
-    // ... positioning logic
-  }
+## Event Patterns
 
-  // Guard: Floating UI fallback is client-only
-  override connectedCallback() {
-    super.connectedCallback();
-    if (isServer) return;
+Following existing LitUI event naming convention (`ui-*`):
 
-    // Initialize Floating UI if needed
-    if (!CSS.supports('anchor-name: --test')) {
-      this.initFloatingUI();
-    }
-  }
+| Event | Payload | When |
+|-------|---------|------|
+| `ui-sort-change` | `{ field, direction, multiSort[] }` | User clicks sortable header |
+| `ui-filter-change` | `{ field, operator, value, filters[] }` | Filter value changes |
+| `ui-page-change` | `{ page, pageSize, offset }` | Pagination change |
+| `ui-selection-change` | `{ selected: Set<string>, row?, all? }` | Row selection change |
+| `ui-row-click` | `{ row, index }` | Row clicked |
+| `ui-cell-edit-start` | `{ row, field, value }` | Cell enters edit mode |
+| `ui-cell-edit-end` | `{ row, field, oldValue, newValue, cancelled }` | Cell exits edit mode |
+| `ui-row-edit-start` | `{ row }` | Row enters edit mode |
+| `ui-row-edit-end` | `{ row, changes, cancelled }` | Row exits edit mode |
+| `ui-column-resize` | `{ field, width }` | Column resized |
+| `ui-column-reorder` | `{ columns[] }` | Columns reordered |
+
+## Keyboard Navigation
+
+Following W3C APG Grid pattern:
+
+| Key | Action |
+|-----|--------|
+| Arrow Keys | Move cell focus |
+| Page Up/Down | Jump 10 rows |
+| Home/End | First/last column in row |
+| Ctrl+Home/End | First/last cell in table |
+| Enter | Enter edit mode / confirm edit |
+| Escape | Cancel edit / exit cell focus |
+| Tab | Move to next focusable (exit grid or next editable) |
+| Space | Toggle row selection |
+| Ctrl+A | Select all rows |
+
+## Styling Architecture
+
+Use CSS Grid for column layout (matches existing Tabs pattern):
+
+```css
+.table-grid {
+  display: grid;
+  grid-template-columns: var(--lui-table-columns);
+  /* Dynamic: repeat(6, minmax(100px, 1fr)) */
+}
+
+.table-row {
+  display: contents; /* Children participate in parent grid */
+}
+
+.table-cell {
+  /* Inherits grid positioning from parent */
+  padding: var(--ui-table-cell-padding);
+  border-bottom: 1px solid var(--ui-table-border);
+}
+
+/* Pinned columns use sticky positioning */
+.cell-pinned-left {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: var(--ui-table-bg);
 }
 ```
 
-### SSR-Safe Patterns from Existing Components
+## Anti-Patterns to Avoid
 
-Following Input/Textarea pattern:
-```typescript
-// From input.ts - Pattern to follow
-constructor() {
-  super();
-  // Only attach internals on client (not during SSR)
-  if (!isServer) {
-    this.internals = this.attachInternals();
-  }
-}
-```
+### Anti-Pattern 1: Rendering All Rows
 
-### Hydration Considerations
+**What:** Rendering full DOM for all 100K rows
+**Why bad:** Browser crashes, multi-second render times
+**Instead:** Use VirtualizerController (already proven in Select)
 
-The Select component should hydrate cleanly because:
-1. Initial state (closed dropdown) matches SSR output
-2. Event listeners attach during `connectedCallback`
-3. No DOM manipulation required until user interaction
-4. `aria-activedescendant` only populated after keyboard interaction
+### Anti-Pattern 2: Deep Component Nesting for Cells
 
----
+**What:** `<lui-table-row><lui-table-cell>` for every cell
+**Why bad:** Thousands of custom element upgrades, memory explosion
+**Instead:** Rows are templates, not components. Only the table container is a custom element.
 
-## Build Order
+### Anti-Pattern 3: Two-Way Binding for Server Data
 
-### Phase 1: Core Select (Foundation)
+**What:** Modifying row data directly in the table
+**Why bad:** Server data should be immutable; edits should go through API
+**Instead:** Dispatch edit events, let consumer update data and re-pass to table
 
-**Goal:** Basic select with slot-based options, form participation, keyboard navigation
+### Anti-Pattern 4: Global Event Listeners for Resize
 
-1. **lui-option component** (no dependencies)
-   - Value/label properties
-   - Selected state (visual only, parent manages)
-   - Disabled state
-   - Emits selection events
+**What:** Attaching global mouse listeners for column resize
+**Why bad:** Memory leaks, conflicts with other components
+**Instead:** Use pointer capture API on resize handles
 
-2. **lui-select component** (depends on lui-option)
-   - Trigger button with selected value display
-   - Popover-based dropdown using `popover="auto"`
-   - Single-select value management
-   - ElementInternals form participation
-   - Full keyboard navigation
-   - ARIA combobox pattern
+## Suggested Build Order
 
-3. **lui-option-group component** (depends on lui-option)
-   - Groups options with label header
-   - Disables all children when group disabled
+Based on dependency analysis and existing component patterns:
 
-**Deliverable:** Working single-select with keyboard navigation and form participation
+### Phase 1: Core Table Shell (Foundation)
+**Build:**
+- `lui-data-table` base class extending TailwindElement
+- Column configuration via `columns` property
+- Static row rendering (no virtualization)
+- Basic CSS Grid layout
 
-### Phase 2: Positioning & Polish
+**Dependencies:** TailwindElement, CSS tokens
+**Reuse:** Pattern from Accordion container
 
-**Goal:** Reliable dropdown positioning across all layouts
+### Phase 2: Row Virtualization (Critical Path)
+**Build:**
+- VirtualizerController integration
+- Virtualized body rendering
+- Scroll handling
 
-4. **CSS Anchor Positioning**
-   - Native positioning when supported
-   - Floating UI fallback integration
-   - Position flipping when near viewport edge
-   - Width matching to trigger
+**Dependencies:** Phase 1
+**Reuse:** VirtualizerController pattern from Select
 
-5. **Styling & Theming**
-   - CSS custom properties for all visual tokens
-   - Size variants (sm, md, lg) matching Input
-   - Focus ring consistent with other components
-   - Dark mode support
+### Phase 3: Sorting (User Interaction)
+**Build:**
+- Click-to-sort on headers
+- Multi-column sort (shift+click)
+- Sort indicators
+- Client-side sort implementation
+- `manual` mode for server-side sort
 
-**Deliverable:** Production-ready visual component with reliable positioning
+**Dependencies:** Phase 2
+**Reuse:** Icon patterns from existing components
 
-### Phase 3: Multi-Select Variant
+### Phase 4: Row Selection (User Interaction)
+**Build:**
+- Checkbox column
+- Single/multiple selection modes
+- Bulk selection (header checkbox)
+- Keyboard selection (Space)
+- Selection state management
 
-**Goal:** Support multiple selection
+**Dependencies:** Phase 2
+**Reuse:** lui-checkbox component
 
-6. **Multi-select mode**
-   - `multiple` property enables multi-select
-   - Checkbox rendering in options
-   - Array value handling
-   - Tags/chips display in trigger
-   - Shift+click range selection
-   - Ctrl/Cmd+A select all
+### Phase 5: Pagination (Navigation)
+**Build:**
+- Pagination controls (footer)
+- Page size selector
+- Page navigation
+- Client-side pagination
+- `manual` mode for server-side pagination
 
-**Deliverable:** Multi-select variant
+**Dependencies:** Phase 3 (sorting affects page content)
+**Reuse:** lui-select for page size dropdown
 
-### Phase 4: Searchable/Combobox Variant
+### Phase 6: Column Filtering (Search)
+**Build:**
+- Filter UI per column (in header or dropdown)
+- Text, select, number, date filter types
+- Client-side filtering
+- `manual` mode for server-side filtering
+- Filter state management
 
-**Goal:** Type-to-filter and async loading support
+**Dependencies:** Phase 5
+**Reuse:** lui-input, lui-select, lui-popover, Floating UI
 
-7. **Searchable mode**
-   - `searchable` property enables text input
-   - Filter options by search query
-   - Highlight matching text in options
-   - Clear search on selection
+### Phase 7: Column Customization (Advanced)
+**Build:**
+- Column resize (drag handles)
+- Column reorder (drag-and-drop)
+- Column visibility toggle
+- Column pinning (left/right sticky)
+- State persistence (localStorage)
 
-8. **Async loading**
-   - `loadOptions` callback property
-   - Task controller for loading state
-   - Loading indicator in dropdown
-   - Debounced search requests
+**Dependencies:** Phase 3 (headers must be built)
+**Reuse:** Native drag events pattern
 
-**Deliverable:** Full combobox with async support
+### Phase 8: Inline Editing (Advanced)
+**Build:**
+- Cell edit mode
+- Row edit mode
+- Edit lifecycle events
+- Form validation integration
+- Editor component integration
 
-### Phase 5: Advanced Features (Future)
+**Dependencies:** Phase 4 (selection often related to editing)
+**Reuse:** lui-input, lui-select, lui-checkbox for editors
 
-9. **Virtual scrolling** (for 1000+ options)
-10. **Creatable options** (add new values)
-11. **Nested/tree select**
+### Phase 9: Declarative API (DX)
+**Build:**
+- `<lui-column>` element
+- Slotchange discovery (same as Accordion)
+- Template slots for custom cells
+- Merge with programmatic columns
 
----
+**Dependencies:** Phase 1-6 complete
+**Reuse:** Slot pattern from Accordion, Tabs, Select
 
-## Summary
+### Phase 10: Server-Side Integration (Production)
+**Build:**
+- Async data loading (`rows` as Promise)
+- Loading states and skeletons
+- Error handling and retry
+- Infinite scroll (optional)
 
-### Key Architectural Decisions
+**Dependencies:** All previous phases
+**Reuse:** @lit/task pattern from Select
 
-| Decision | Choice | Rationale |
-|----------|--------|-----------|
-| **Component composition** | Select + Option + OptionGroup | Follows native pattern, enables rich content |
-| **Options API** | Slot-based primary, attribute backup | Declarative, SSR-friendly, framework agnostic |
-| **Dropdown positioning** | Popover API + CSS Anchor | Baseline available, native browser capability |
-| **Positioning fallback** | Floating UI | Mature library, covers older browsers |
-| **Form participation** | ElementInternals | Consistent with Input/Textarea pattern |
-| **Keyboard navigation** | ARIA combobox pattern | W3C APG compliance |
-| **Async loading** | Lit Task controller | Official Lit pattern for async state |
-| **State management** | Select owns all state | Single source of truth, options are stateless |
+## New vs Modified Components
 
-### Integration Points with Existing Components
+### New Components (to be created)
 
-| Component | Integration |
-|-----------|-------------|
-| TailwindElement | Base class for all Select components |
-| tailwindBaseStyles | Include in static styles for SSR |
-| CSS tokens | Use `--ui-select-*` custom properties |
-| Input patterns | Match size variants (sm, md, lg) |
-| Dialog patterns | Similar popover/overlay handling |
-| Button patterns | Similar focus ring, disabled states |
+| Component | Status | Notes |
+|-----------|--------|-------|
+| `lui-data-table` | NEW | Main table container |
+| `lui-column` | NEW | Optional declarative column definition |
 
-### New vs Modified Components
+### Existing Components (reuse unchanged)
 
-| Type | Component | Notes |
-|------|-----------|-------|
-| NEW | `@lit-ui/select` package | New package following monorepo structure |
-| NEW | `lui-select` | Main select component |
-| NEW | `lui-option` | Option item component |
-| NEW | `lui-option-group` | Optional grouping component |
-| MODIFY | `@lit-ui/core` tokens | Add `--ui-select-*` CSS custom properties |
-| MODIFY | Docs app | Add Select documentation page |
+| Component | Usage |
+|-----------|-------|
+| `lui-checkbox` | Row selection |
+| `lui-input` | Text cell editing, text filter |
+| `lui-select` | Dropdown cell editing, enum filter, page size |
+| `lui-popover` | Filter dropdowns, column menu |
+| `lui-tooltip` | Truncated cell content |
 
----
+### Shared Infrastructure (reuse)
+
+| Infrastructure | Source | Usage |
+|----------------|--------|-------|
+| `TailwindElement` | @lit-ui/core | Base class |
+| `VirtualizerController` | @tanstack/lit-virtual | Row virtualization |
+| `computePosition` | @lit-ui/core/floating | Dropdown positioning |
+| `@lit/task` | @lit/task | Async data loading |
+| `dispatchCustomEvent` | @lit-ui/core | Event dispatch |
+
+## Performance Architecture for 100K+ Rows
+
+### Memory Budget
+
+| Item | Target | Strategy |
+|------|--------|----------|
+| DOM nodes | < 2,000 | Virtualize rows (overscan: 10) |
+| Event listeners | < 100 | Delegate to container |
+| Re-renders | Partial | Use `requestUpdate()` only for changed state |
+
+### Rendering Optimization
+
+1. **Row recycling:** Virtualized rows reuse DOM via transforms
+2. **Memoized templates:** Cache cell templates by column type
+3. **Deferred sort/filter:** Debounce operations, show loading
+4. **Pagination fallback:** Offer pagination for lower-end devices
+
+### Scroll Performance
+
+- Use CSS `will-change: transform` on virtual container
+- Use `contain: strict` on rows
+- Passive scroll listeners
+- `requestAnimationFrame` for scroll-linked updates
 
 ## Sources
 
-- [W3C ARIA APG Combobox Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/) - Accessibility requirements
-- [W3C ARIA APG Listbox Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/listbox/) - Keyboard navigation requirements
-- [MDN Popover API](https://developer.mozilla.org/en-US/docs/Web/API/Popover_API) - Native popover documentation
-- [Floating UI Documentation](https://floating-ui.com/) - Positioning fallback library
-- [Lit Task Controller](https://lit.dev/docs/data/task/) - Async data loading pattern
-- [Lit Reactive Controllers](https://lit.dev/docs/composition/controllers/) - Controller architecture
-- [Orange A11y Listbox Keyboard Navigation](https://a11y-guidelines.orange.com/en/articles/listbox-and-keyboard-navigation/) - Keyboard patterns
-- [Frontend Masters Popover API Guide](https://frontendmasters.com/blog/menus-toasts-and-more/) - Modern popover patterns
-- [Hidde de Vries - Positioning Anchored Popovers](https://hidde.blog/positioning-anchored-popovers/) - CSS Anchor Positioning
-- Existing codebase analysis:
-  - `/packages/input/src/input.ts` - Form participation pattern
-  - `/packages/dialog/src/dialog.ts` - Popover/overlay pattern
-  - `/packages/core/src/tailwind-element.ts` - Base class pattern
+- [TanStack Virtual - Lit Support](https://tanstack.com/virtual/latest)
+- [TanStack Table Virtualization Guide](https://tanstack.com/table/latest/docs/guide/virtualization)
+- [AG Grid DOM Virtualization](https://www.ag-grid.com/javascript-data-grid/dom-virtualisation/)
+- [Scaling Data Grid Rows with Cell-Based Virtualization](https://www.coditation.com/blog/scaling-thousands-of-concurrent-data-grid-rows-with-cell-based-virtualization-in-react)
+- [TanStack Table Server-Side Pagination](https://tanstack.com/table/latest/docs/guide/pagination)
+- [Inline Editing Best Practices](https://uxdworld.com/inline-editing-in-tables-design/)
+- [Column Ordering DnD Guide](https://www.material-react-table.com/docs/guides/column-ordering-dnd)
