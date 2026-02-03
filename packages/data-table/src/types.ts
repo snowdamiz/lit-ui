@@ -396,3 +396,29 @@ export interface DataTableErrorState {
   /** Whether retry is possible */
   canRetry: boolean;
 }
+
+// =============================================================================
+// Column Preferences Types (COL-07, COL-08)
+// =============================================================================
+
+/**
+ * Column preferences for persistence.
+ * Stores column sizing, order, and visibility state.
+ */
+export interface ColumnPreferences {
+  /** Column widths keyed by column ID */
+  columnSizing: ColumnSizingState;
+  /** Column display order (array of column IDs) */
+  columnOrder: ColumnOrderState;
+  /** Column visibility keyed by column ID (false = hidden) */
+  columnVisibility: VisibilityState;
+}
+
+/**
+ * Event detail for column preferences change.
+ * Emitted when any column customization changes.
+ */
+export interface ColumnPreferencesChangeEvent extends ColumnPreferences {
+  /** Table persistence key for identification */
+  tableId: string;
+}

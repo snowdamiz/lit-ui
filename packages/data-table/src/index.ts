@@ -34,6 +34,9 @@ export { createSelectionColumn } from './selection-column.js';
 // Column picker for visibility toggle
 export { renderColumnPicker, columnPickerStyles } from './column-picker.js';
 
+// Column preferences persistence
+export { savePreferences, loadPreferences, clearPreferences } from './column-preferences.js';
+
 // Pagination components
 export * from './pagination/index.js';
 
