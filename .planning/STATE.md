@@ -10,21 +10,21 @@
 
 **Milestone:** v7.0 Data Table
 **Phase:** 63 - Filtering & Pagination
-**Plan:** 1 of 3 complete
+**Plan:** 2 of 4 complete (01 and 03 done, 02 and 04 pending)
 **Status:** In progress
 
 **Progress:**
 ```
-Milestone: [######--] 69%
-Phase:     [###-------] 33%
+Milestone: [######--] 72%
+Phase:     [#####-----] 50%
 ```
 
 ## Performance Metrics
 
 | Metric | Value |
 |--------|-------|
-| Plans completed | 9 |
-| Requirements satisfied | 28/76 |
+| Plans completed | 10 |
+| Requirements satisfied | 32/76 |
 | Phases completed | 2/8 |
 
 ## Accumulated Context
@@ -60,6 +60,8 @@ Phase:     [###-------] 33%
 | Range via TanStack row model | Virtualization-safe, not DOM indices | 62-03 |
 | Filter state via JSON.stringify | Simple change detection for columnFilters + globalFilter | 62-03 |
 | FilterType union type | text\|number\|date\|select matches TanStack filter function types | 63-01 |
+| Native select for page size | HTML select simpler than lui-select for pagination UI | 63-03 |
+| Page reset on filter change | Prevents empty page when filtered results reduce page count | 63-03 |
 
 ### Architecture Notes
 *Technical context that spans multiple plans.*
@@ -76,6 +78,7 @@ Phase:     [###-------] 33%
 - Selection: enableRowSelection + getRowId for persistent selection, createSelectionColumn factory for checkbox column
 - Range selection: handleRowSelect() with shiftKey parameter, uses getRowRange() with row model
 - Filtering: getFilteredRowModel for client-side, manualFiltering=true for server-side with ui-filter-change events
+- Pagination: getPaginationRowModel for client-side, manualPagination=true for server-side with ui-pagination-change events
 
 ### TODOs
 *Items to address that emerged during work.*
@@ -103,13 +106,13 @@ Phase:     [###-------] 33%
 ### Last Session
 *Summary of previous session's work. Updated at session end.*
 
-- Started Phase 63: Filtering & Pagination
-- 63-01: Filter state integration with TanStack Table
-- Added FilterType, FilterChangeEvent types
-- Integrated getFilteredRowModel for client-side filtering
-- Added manualFiltering property for server-side mode
-- Added filter indicator icon in column headers
-- Events emit with changed column tracking
+- Completed 63-03: Pagination Controls
+- Added PaginationChangeEvent type
+- Created lui-pagination-controls component
+- Integrated getPaginationRowModel for client-side pagination
+- Added manualPagination property for server-side mode
+- Implemented page reset on filter change
+- Added getTotalRowCount and getPageCount helper methods
 
 ### Next Actions
 *Clear starting point for next session.*
