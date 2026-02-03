@@ -439,7 +439,7 @@ export class Tabs extends TailwindElement {
 
     // Handle lazy panel + tabindex timing: slot content may not be in DOM yet
     const activePanel = this.panels.find((p) => p.value === this.value);
-    if (activePanel?.lazy) {
+    if (activePanel?.lazy && !isServer) {
       requestAnimationFrame(() => {
         if (this.panelHasFocusableContent(activePanel)) {
           activePanel.removeAttribute('tabindex');
