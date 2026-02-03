@@ -1656,6 +1656,7 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
       }
 
       .data-table-header-cell {
+        position: relative; /* For resize handle positioning */
         padding: var(--ui-data-table-cell-padding);
         font-size: var(--ui-data-table-font-size);
         font-weight: var(--ui-data-table-header-font-weight);
@@ -1690,6 +1691,40 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
 
       :host-context(.dark) .data-table-header-cell.sortable:hover {
         --ui-data-table-header-hover-bg: rgba(255, 255, 255, 0.05);
+      }
+
+      /* Column resize handle styles */
+      .column-resize-handle {
+        position: absolute;
+        right: 0;
+        top: 0;
+        height: 100%;
+        width: 4px;
+        cursor: col-resize;
+        user-select: none;
+        touch-action: none;
+        background: transparent;
+        z-index: 1;
+      }
+
+      .column-resize-handle:hover,
+      .column-resize-handle.is-resizing {
+        background: var(--color-primary, #3b82f6);
+      }
+
+      .column-resize-handle:focus-visible {
+        outline: 2px solid var(--color-primary, #3b82f6);
+        outline-offset: -2px;
+      }
+
+      /* Prevent text selection during resize */
+      :host([data-resizing]) {
+        user-select: none;
+        cursor: col-resize;
+      }
+
+      :host([data-resizing]) * {
+        cursor: col-resize;
       }
 
       /* Sort indicator styles */
