@@ -387,8 +387,49 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
   }
 
   /**
+   * Render sort direction indicator with priority number for multi-sort.
+   * @param direction - Current sort direction (false if unsorted, 'asc' or 'desc')
+   * @param sortIndex - Sort priority index (-1 if not sorted, 0+ for priority)
+   */
+  private renderSortIndicator(
+    direction: false | 'asc' | 'desc',
+    sortIndex: number
+  ): TemplateResult {
+    const showPriority = sortIndex > 0; // Show priority number for secondary+ sorts
+
+    return html`
+      <span class="sort-indicator" aria-hidden="true">
+        ${direction === 'asc'
+          ? html`
+              <svg viewBox="0 0 12 12" class="sort-icon">
+                <path d="M6 3L10 9H2L6 3Z" fill="currentColor" />
+              </svg>
+            `
+          : direction === 'desc'
+            ? html`
+                <svg viewBox="0 0 12 12" class="sort-icon">
+                  <path d="M6 9L2 3H10L6 9Z" fill="currentColor" />
+                </svg>
+              `
+            : html`
+                <svg viewBox="0 0 12 12" class="sort-icon unsorted">
+                  <path
+                    d="M6 2L9 5H3L6 2ZM6 10L3 7H9L6 10Z"
+                    fill="currentColor"
+                    opacity="0.3"
+                  />
+                </svg>
+              `}
+        ${showPriority
+          ? html`<span class="sort-priority">${sortIndex + 1}</span>`
+          : nothing}
+      </span>
+    `;
+  }
+
+  /**
    * Render a header cell using flexRender.
-   * Header cells are not focusable in this grid pattern (data rows only).
+   * Sortable headers have click handlers and visual indicators.
    */
   private renderHeaderCell(
     header: Header<TData, unknown>,
@@ -398,15 +439,30 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
       ? nothing
       : flexRender(header.column.columnDef.header, header.getContext());
 
+    const canSort = header.column.getCanSort();
+    const sortDirection = header.column.getIsSorted(); // false | 'asc' | 'desc'
+    const sortIndex = header.column.getSortIndex(); // -1 if not sorted, 0+ for priority
+
+    // Only set aria-sort on primary sorted column (sortIndex === 0)
+    const ariaSort =
+      sortDirection && sortIndex === 0
+        ? sortDirection === 'asc'
+          ? 'ascending'
+          : 'descending'
+        : nothing;
+
     return html`
       <div
         role="columnheader"
         aria-colindex="${colIndex + 1}"
-        class="data-table-header-cell"
+        aria-sort=${ariaSort}
+        class="data-table-header-cell ${canSort ? 'sortable' : ''}"
         id="${this.tableId}-header-${header.id}"
         tabindex="-1"
+        @click=${canSort ? header.column.getToggleSortingHandler() : nothing}
       >
-        ${headerContent}
+        <span class="header-content">${headerContent}</span>
+        ${canSort ? this.renderSortIndicator(sortDirection, sortIndex) : nothing}
       </div>
     `;
   }
@@ -794,6 +850,65 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
         font-weight: var(--ui-data-table-header-font-weight);
         color: var(--ui-data-table-header-text);
         text-align: left;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .data-table-header-cell .header-content {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      /* Sortable header styles */
+      .data-table-header-cell.sortable {
+        cursor: pointer;
+        user-select: none;
+      }
+
+      .data-table-header-cell.sortable:hover {
+        background: var(--ui-data-table-header-hover-bg, rgba(0, 0, 0, 0.05));
+      }
+
+      .data-table-header-cell.sortable:focus-visible {
+        outline: 2px solid var(--color-primary, #3b82f6);
+        outline-offset: -2px;
+        border-radius: 2px;
+      }
+
+      :host-context(.dark) .data-table-header-cell.sortable:hover {
+        --ui-data-table-header-hover-bg: rgba(255, 255, 255, 0.05);
+      }
+
+      /* Sort indicator styles */
+      .sort-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 2px;
+        flex-shrink: 0;
+      }
+
+      .sort-icon {
+        width: 12px;
+        height: 12px;
+      }
+
+      .sort-icon.unsorted {
+        opacity: 0.3;
+      }
+
+      .sort-priority {
+        font-size: 10px;
+        font-weight: 600;
+        min-width: 14px;
+        height: 14px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--color-primary, #3b82f6);
+        color: var(--color-primary-foreground, #ffffff);
+        border-radius: 50%;
       }
 
       .data-table-body {
