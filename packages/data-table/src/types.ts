@@ -16,6 +16,8 @@ import type {
   ColumnOrderState,
   ColumnPinningState,
   ExpandedState,
+  ColumnSizingState,
+  ColumnSizingInfoState,
 } from '@tanstack/lit-table';
 
 // Re-export TanStack types for convenience
@@ -29,6 +31,8 @@ export type {
   ColumnOrderState,
   ColumnPinningState,
   ExpandedState,
+  ColumnSizingState,
+  ColumnSizingInfoState,
 };
 
 /**
@@ -317,6 +321,16 @@ export interface FilterChangeEvent {
   changedColumn?: string;
   /** True if the global filter changed, false if a column filter changed */
   isGlobalFilter: boolean;
+}
+
+/**
+ * Event detail for column visibility change events.
+ *
+ * Emitted when column visibility changes via the column picker.
+ */
+export interface ColumnVisibilityChangeEvent {
+  /** Current column visibility state (column ID -> isVisible) */
+  columnVisibility: VisibilityState;
 }
 
 // =============================================================================

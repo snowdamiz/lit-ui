@@ -52,6 +52,10 @@ import type {
   DataCallback,
   DataCallbackParams,
   DataTableErrorState,
+  ColumnSizingState,
+  ColumnSizingInfoState,
+  VisibilityState,
+  ColumnVisibilityChangeEvent,
 } from './types.js';
 import { KeyboardNavigationManager, type GridPosition } from './keyboard-navigation.js';
 import { createSelectionColumn } from './selection-column.js';
@@ -308,6 +312,66 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
    */
   @state()
   private _previousFilterState = '';
+
+  // ==========================================================================
+  // Column sizing properties
+  // ==========================================================================
+
+  /**
+   * Enable column resizing with drag handles.
+   * When true, resize handles appear between column headers.
+   * @default true
+   */
+  @property({ type: Boolean, attribute: 'enable-column-resizing' })
+  enableColumnResizing = true;
+
+  /**
+   * Column sizing state for externally-controlled sizing.
+   * Maps column IDs to their widths in pixels.
+   */
+  @property({ type: Object })
+  columnSizing: ColumnSizingState = {};
+
+  /**
+   * Column resize mode determines when width updates are applied.
+   * - 'onChange': Real-time preview during drag (default)
+   * - 'onEnd': Only update when drag completes (better for very large tables)
+   */
+  @property({ type: String, attribute: 'column-resize-mode' })
+  columnResizeMode: 'onChange' | 'onEnd' = 'onChange';
+
+  /**
+   * Internal state for resize tracking (transient during drag).
+   * Not persisted - only used during active resize operation.
+   */
+  @state()
+  private _columnSizingInfo: ColumnSizingInfoState = {
+    startOffset: null,
+    startSize: null,
+    deltaOffset: null,
+    deltaPercentage: null,
+    isResizingColumn: false,
+    columnSizingStart: [],
+  };
+
+  // ==========================================================================
+  // Column visibility properties
+  // ==========================================================================
+
+  /**
+   * Column visibility state.
+   * Maps column IDs to visibility (true = visible, false = hidden).
+   * Omitted columns are visible by default.
+   */
+  @property({ type: Object })
+  columnVisibility: VisibilityState = {};
+
+  /**
+   * Show column picker button in toolbar.
+   * When true, displays a dropdown to toggle column visibility.
+   */
+  @property({ type: Boolean, attribute: 'show-column-picker' })
+  showColumnPicker = false;
 
   // ==========================================================================
   // Async data callback properties
@@ -740,6 +804,21 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
   }
 
   /**
+   * Dispatch column visibility change event.
+   * @param columnVisibility - Current column visibility state
+   */
+  private dispatchColumnVisibilityChange(columnVisibility: VisibilityState): void {
+    const event = new CustomEvent('ui-column-visibility-change', {
+      detail: {
+        columnVisibility,
+      } satisfies ColumnVisibilityChangeEvent,
+      bubbles: true,
+      composed: true,
+    });
+    this.dispatchEvent(event);
+  }
+
+  /**
    * Get all rows between two row IDs (inclusive).
    * Used for shift+click range selection.
    */
@@ -876,13 +955,35 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
 
   /**
    * Compute CSS Grid template columns from column definitions.
-   * Uses column size or equal distribution if not specified.
+   * Uses TanStack's column.getSize() when available for dynamic sizing.
+   * Falls back to column definition sizes or minmax() for flexibility.
+   *
+   * @param table - Optional TanStack table instance for dynamic sizing
    */
-  private getGridTemplateColumns(): string {
+  private getGridTemplateColumns(table?: Table<TData>): string {
     if (this.columns.length === 0) return '';
 
+    // If we have a table instance, use TanStack's sizing
+    if (table) {
+      const headers = table.getFlatHeaders();
+      return headers
+        .map((header) => {
+          const size = header.getSize();
+          return `${size}px`;
+        })
+        .join(' ');
+    }
+
+    // Fallback for skeleton/loading states without table instance
     return this.columns
       .map((col) => {
+        // Check if we have a stored size in columnSizing state
+        const colId = (col as { accessorKey?: string; id?: string }).accessorKey ??
+                      (col as { id?: string }).id ?? '';
+        const storedSize = this.columnSizing[colId];
+        if (storedSize) {
+          return `${storedSize}px`;
+        }
         // Check for size in column definition
         const size = col.size;
         if (size) {
@@ -1824,6 +1925,7 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
         columnFilters: this.columnFilters,
         globalFilter: this.globalFilter,
         pagination: this.pagination,
+        columnVisibility: this.columnVisibility,
       },
       onSortingChange: (updater) => {
         const newSorting =
@@ -1900,6 +2002,12 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
         if (this.dataCallback && this.manualPagination) {
           this.fetchData();
         }
+      },
+      onColumnVisibilityChange: (updater) => {
+        const newVisibility =
+          typeof updater === 'function' ? updater(this.columnVisibility) : updater;
+        this.columnVisibility = newVisibility;
+        this.dispatchColumnVisibilityChange(newVisibility);
       },
       getRowId: (row) => String(row[this.rowIdKey as keyof TData]),
       enableRowSelection: this.enableSelection,
