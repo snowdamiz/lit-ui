@@ -15,7 +15,7 @@ Deliver Accordion and Tabs layout components following the established parent-ch
 - Integer phases (56, 57, ...): Planned milestone work
 - Decimal phases (57.1, 57.2): Urgent insertions (marked with INSERTED)
 
-- [ ] **Phase 56: Accordion Core** - Fully accessible accordion with single/multi-expand, keyboard navigation, and CSS Grid animation
+- [x] **Phase 56: Accordion Core** - Fully accessible accordion with single/multi-expand, keyboard navigation, and CSS Grid animation
 - [ ] **Phase 57: Accordion Polish & Package** - Visual refinements, lazy mounting, SSR compatibility, and publishable package
 - [ ] **Phase 58: Tabs Core** - Fully accessible tabs with automatic/manual activation, horizontal/vertical orientation, and keyboard navigation
 - [ ] **Phase 59: Tabs Polish & Package** - Active indicator animation, lazy rendering, overflow scroll, SSR compatibility, and publishable package
@@ -36,8 +36,8 @@ Deliver Accordion and Tabs layout components following the established parent-ch
 **Plans**: 2 plans
 
 Plans:
-- [ ] 56-01-PLAN.md — Package scaffold, AccordionItem element, Accordion container with single/multi-expand state management
-- [ ] 56-02-PLAN.md — Keyboard navigation, ARIA attributes, disabled states, and CSS custom property theming with dark mode
+- [x] 56-01-PLAN.md — Package scaffold, AccordionItem element, Accordion container with single/multi-expand state management
+- [x] 56-02-PLAN.md — Keyboard navigation, ARIA attributes, disabled states, and CSS custom property theming with dark mode
 
 ### Phase 57: Accordion Polish & Package
 **Goal**: Accordion has visual polish, SSR compatibility, and ships as a publishable @lit-ui/accordion package
@@ -107,7 +107,7 @@ Phases execute in numeric order: 56 -> 57 -> 58 -> 59 -> 60
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 56. Accordion Core | 0/2 | Not started | - |
+| 56. Accordion Core | 2/2 | ✓ Complete | 2026-02-03 |
 | 57. Accordion Polish & Package | 0/2 | Not started | - |
 | 58. Tabs Core | 0/2 | Not started | - |
 | 59. Tabs Polish & Package | 0/2 | Not started | - |

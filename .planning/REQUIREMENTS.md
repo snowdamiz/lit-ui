@@ -9,21 +9,21 @@ Requirements for the Layout Components milestone. Each maps to roadmap phases.
 
 ### Accordion — Core
 
-- [ ] **ACRD-01**: Accordion container manages single-expand mode (opening one panel closes others)
-- [ ] **ACRD-02**: Accordion container supports multi-expand mode (multiple panels open simultaneously)
-- [ ] **ACRD-03**: Accordion supports collapsible behavior (all panels can be closed in single mode)
-- [ ] **ACRD-04**: Accordion item expands/collapses with smooth CSS Grid animation (grid-template-rows 0fr/1fr)
-- [ ] **ACRD-05**: Accordion respects prefers-reduced-motion by disabling transitions
-- [ ] **ACRD-06**: Accordion item header button toggles panel on Enter/Space
-- [ ] **ACRD-07**: Arrow keys navigate between accordion headers with wrapping
-- [ ] **ACRD-08**: Home/End keys jump to first/last accordion header
-- [ ] **ACRD-09**: Accordion item has aria-expanded, aria-controls, and heading wrapper with configurable aria-level
-- [ ] **ACRD-10**: Accordion panel has role="region" with aria-labelledby pointing to header
-- [ ] **ACRD-11**: Individual accordion items can be disabled (focusable but not activatable)
-- [ ] **ACRD-12**: Accordion supports controlled mode (value attribute) and uncontrolled mode (default-value)
-- [ ] **ACRD-13**: Accordion dispatches ui-change event on expand/collapse
-- [ ] **ACRD-14**: Accordion items discovered via slotchange, handles dynamic add/remove
-- [ ] **ACRD-15**: Parent disabled state propagates to all child items
+- [x] **ACRD-01**: Accordion container manages single-expand mode (opening one panel closes others)
+- [x] **ACRD-02**: Accordion container supports multi-expand mode (multiple panels open simultaneously)
+- [x] **ACRD-03**: Accordion supports collapsible behavior (all panels can be closed in single mode)
+- [x] **ACRD-04**: Accordion item expands/collapses with smooth CSS Grid animation (grid-template-rows 0fr/1fr)
+- [x] **ACRD-05**: Accordion respects prefers-reduced-motion by disabling transitions
+- [x] **ACRD-06**: Accordion item header button toggles panel on Enter/Space
+- [x] **ACRD-07**: Arrow keys navigate between accordion headers with wrapping
+- [x] **ACRD-08**: Home/End keys jump to first/last accordion header
+- [x] **ACRD-09**: Accordion item has aria-expanded, aria-controls, and heading wrapper with configurable aria-level
+- [x] **ACRD-10**: Accordion panel has role="region" with aria-labelledby pointing to header
+- [x] **ACRD-11**: Individual accordion items can be disabled (focusable but not activatable)
+- [x] **ACRD-12**: Accordion supports controlled mode (value attribute) and uncontrolled mode (default-value)
+- [x] **ACRD-13**: Accordion dispatches ui-change event on expand/collapse
+- [x] **ACRD-14**: Accordion items discovered via slotchange, handles dynamic add/remove
+- [x] **ACRD-15**: Parent disabled state propagates to all child items
 
 ### Accordion — Polish
 
@@ -34,8 +34,8 @@ Requirements for the Layout Components milestone. Each maps to roadmap phases.
 
 ### Accordion — Theming
 
-- [ ] **ACRD-20**: CSS custom properties for accordion theming (--ui-accordion-*)
-- [ ] **ACRD-21**: Dark mode support via :host-context(.dark)
+- [x] **ACRD-20**: CSS custom properties for accordion theming (--ui-accordion-*)
+- [x] **ACRD-21**: Dark mode support via :host-context(.dark)
 
 ### Tabs — Core
 
@@ -113,27 +113,27 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| ACRD-01 | Phase 56 | Pending |
-| ACRD-02 | Phase 56 | Pending |
-| ACRD-03 | Phase 56 | Pending |
-| ACRD-04 | Phase 56 | Pending |
-| ACRD-05 | Phase 56 | Pending |
-| ACRD-06 | Phase 56 | Pending |
-| ACRD-07 | Phase 56 | Pending |
-| ACRD-08 | Phase 56 | Pending |
-| ACRD-09 | Phase 56 | Pending |
-| ACRD-10 | Phase 56 | Pending |
-| ACRD-11 | Phase 56 | Pending |
-| ACRD-12 | Phase 56 | Pending |
-| ACRD-13 | Phase 56 | Pending |
-| ACRD-14 | Phase 56 | Pending |
-| ACRD-15 | Phase 56 | Pending |
+| ACRD-01 | Phase 56 | Complete |
+| ACRD-02 | Phase 56 | Complete |
+| ACRD-03 | Phase 56 | Complete |
+| ACRD-04 | Phase 56 | Complete |
+| ACRD-05 | Phase 56 | Complete |
+| ACRD-06 | Phase 56 | Complete |
+| ACRD-07 | Phase 56 | Complete |
+| ACRD-08 | Phase 56 | Complete |
+| ACRD-09 | Phase 56 | Complete |
+| ACRD-10 | Phase 56 | Complete |
+| ACRD-11 | Phase 56 | Complete |
+| ACRD-12 | Phase 56 | Complete |
+| ACRD-13 | Phase 56 | Complete |
+| ACRD-14 | Phase 56 | Complete |
+| ACRD-15 | Phase 56 | Complete |
 | ACRD-16 | Phase 57 | Pending |
 | ACRD-17 | Phase 57 | Pending |
 | ACRD-18 | Phase 57 | Pending |
 | ACRD-19 | Phase 57 | Pending |
-| ACRD-20 | Phase 56 | Pending |
-| ACRD-21 | Phase 56 | Pending |
+| ACRD-20 | Phase 56 | Complete |
+| ACRD-21 | Phase 56 | Complete |
 | TABS-01 | Phase 58 | Pending |
 | TABS-02 | Phase 58 | Pending |
 | TABS-03 | Phase 58 | Pending |
@@ -174,4 +174,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-02-02*
-*Last updated: 2026-02-02 after roadmap creation*
+*Last updated: 2026-02-03 after Phase 56 completion*
