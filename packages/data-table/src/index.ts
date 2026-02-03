@@ -18,5 +18,5 @@ export {
 // Re-export TailwindElement and isServer for convenience
 export { TailwindElement, isServer } from '@lit-ui/core';
 
-// DataTable component will be exported in Plan 02:
-// export { DataTable } from './data-table.js';
+// DataTable component
+export { DataTable } from './data-table.js';
