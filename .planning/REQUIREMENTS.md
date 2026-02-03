@@ -9,15 +9,15 @@ Requirements for Data Table milestone. Each maps to roadmap phases.
 
 ### Core Infrastructure
 
-- [ ] **CORE-01**: Data Table renders columns and rows from column definition array
-- [ ] **CORE-02**: Header row is fixed/sticky during vertical scroll
-- [ ] **CORE-03**: Loading state shows skeleton loaders during initial data fetch
-- [ ] **CORE-04**: Loading overlay appears during data updates (sort, filter, page change)
-- [ ] **CORE-05**: Empty state displays "no data" message when data array is empty
-- [ ] **CORE-06**: Empty state displays "no matches" message when filters return zero results
-- [ ] **CORE-07**: Table uses role="grid" with proper ARIA attributes for accessibility
-- [ ] **CORE-08**: Arrow key navigation moves between cells (grid pattern)
-- [ ] **CORE-09**: Tab navigation moves between interactive elements within cells
+- [x] **CORE-01**: Data Table renders columns and rows from column definition array
+- [x] **CORE-02**: Header row is fixed/sticky during vertical scroll
+- [x] **CORE-03**: Loading state shows skeleton loaders during initial data fetch
+- [x] **CORE-04**: Loading overlay appears during data updates (sort, filter, page change)
+- [x] **CORE-05**: Empty state displays "no data" message when data array is empty
+- [x] **CORE-06**: Empty state displays "no matches" message when filters return zero results
+- [x] **CORE-07**: Table uses role="grid" with proper ARIA attributes for accessibility
+- [x] **CORE-08**: Arrow key navigation moves between cells (grid pattern)
+- [x] **CORE-09**: Tab navigation moves between interactive elements within cells
 
 ### Sorting
 
@@ -47,10 +47,10 @@ Requirements for Data Table milestone. Each maps to roadmap phases.
 
 ### Virtual Scrolling
 
-- [ ] **VIRT-01**: Virtual scrolling renders only visible rows plus buffer for 100K+ row datasets
-- [ ] **VIRT-02**: Scroll performance maintains 60fps with 100K+ rows
-- [ ] **VIRT-03**: Row heights are fixed for consistent virtual scroll behavior
-- [ ] **VIRT-04**: Scroll position is preserved during data updates (sort, filter)
+- [x] **VIRT-01**: Virtual scrolling renders only visible rows plus buffer for 100K+ row datasets
+- [x] **VIRT-02**: Scroll performance maintains 60fps with 100K+ rows
+- [x] **VIRT-03**: Row heights are fixed for consistent virtual scroll behavior
+- [x] **VIRT-04**: Scroll position is preserved during data updates (sort, filter)
 
 ### Async Data Source
 
@@ -195,19 +195,19 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CORE-01 | 61 | Pending |
-| CORE-02 | 61 | Pending |
-| CORE-03 | 61 | Pending |
-| CORE-04 | 61 | Pending |
-| CORE-05 | 61 | Pending |
-| CORE-06 | 61 | Pending |
-| CORE-07 | 61 | Pending |
-| CORE-08 | 61 | Pending |
-| CORE-09 | 61 | Pending |
-| VIRT-01 | 61 | Pending |
-| VIRT-02 | 61 | Pending |
-| VIRT-03 | 61 | Pending |
-| VIRT-04 | 61 | Pending |
+| CORE-01 | 61 | Complete |
+| CORE-02 | 61 | Complete |
+| CORE-03 | 61 | Complete |
+| CORE-04 | 61 | Complete |
+| CORE-05 | 61 | Complete |
+| CORE-06 | 61 | Complete |
+| CORE-07 | 61 | Complete |
+| CORE-08 | 61 | Complete |
+| CORE-09 | 61 | Complete |
+| VIRT-01 | 61 | Complete |
+| VIRT-02 | 61 | Complete |
+| VIRT-03 | 61 | Complete |
+| VIRT-04 | 61 | Complete |
 | SORT-01 | 62 | Pending |
 | SORT-02 | 62 | Pending |
 | SORT-03 | 62 | Pending |
@@ -299,4 +299,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-02-02*
-*Last updated: 2026-02-02 after roadmap creation*
+*Last updated: 2026-02-03 after Phase 61 completion*

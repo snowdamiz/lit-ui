@@ -17,11 +17,11 @@ Phases progress from foundational architecture (virtualization, ARIA grid) throu
 **Plans:** 5 plans
 
 Plans:
-- [ ] 61-01-PLAN.md — Package setup with types and TanStack dependencies
-- [ ] 61-02-PLAN.md — Core DataTable component with TableController
-- [ ] 61-03-PLAN.md — Virtual scrolling with VirtualizerController
-- [ ] 61-04-PLAN.md — Loading and empty states
-- [ ] 61-05-PLAN.md — ARIA grid keyboard navigation
+- [x] 61-01-PLAN.md — Package setup with types and TanStack dependencies
+- [x] 61-02-PLAN.md — Core DataTable component with TableController
+- [x] 61-03-PLAN.md — Virtual scrolling with VirtualizerController
+- [x] 61-04-PLAN.md — Loading and empty states
+- [x] 61-05-PLAN.md — ARIA grid keyboard navigation
 
 **Requirements:**
 - CORE-01: Data Table renders columns and rows from column definition array
@@ -253,7 +253,7 @@ Plans:
 
 | Phase | Name | Status | Plans |
 |-------|------|--------|-------|
-| 61 | Core Table Shell & Virtualization | Planned | 0/5 |
+| 61 | Core Table Shell & Virtualization | ✓ Complete | 5/5 |
 | 62 | Sorting & Selection | Pending | 0/0 |
 | 63 | Filtering & Pagination | Pending | 0/0 |
 | 64 | Column Customization | Pending | 0/0 |
