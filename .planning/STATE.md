@@ -5,22 +5,22 @@
 See: .planning/PROJECT.md (updated 2026-02-02)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** Phase 58 - Tabs Core
+**Current focus:** Phase 58 - Tabs Core (complete)
 
 ## Current Position
 
 Phase: 58 of 60 (Tabs Core)
-Plan: 1 of 2 in current phase
-Status: In progress
-Last activity: 2026-02-03 — Completed 58-01-PLAN.md (Package Scaffold & Core Tabs)
+Plan: 2 of 2 in current phase
+Status: Phase complete
+Last activity: 2026-02-03 — Completed 58-02-PLAN.md (Keyboard Nav, ARIA, and Theming)
 
-Progress: █████████████░░░░░░░░░░░░░░░░░░░ 41% (v6.0)
+Progress: █████████████░░░░░░░░░░░░░░░░░░░ 42% (v6.0)
 
 ## Performance Metrics
 
 **Velocity (v5.0):**
-- Plans completed: 11
-- Total execution time: ~31 min
+- Plans completed: 13
+- Total execution time: ~33 min
 
 ## Accumulated Context
 
@@ -40,7 +40,9 @@ Recent decisions affecting current work:
 - _hasBeenExpanded as plain field, not @state() (avoids redundant re-render)
 - data-state set via this.setAttribute in lifecycle (host-level, read-only, client-only via isServer guard)
 - Container-rendered tablist: tab buttons in shadow DOM, panels slotted in light DOM (ARIA cross-boundary best-effort)
-- TabPanel sets role=tabpanel on connectedCallback; container sets id/aria-labelledby on panel hosts
+- Container sets role=tabpanel on panel hosts (moved from tab-panel connectedCallback for centralized ARIA)
+- _focusedValue tracks keyboard focus separately from active value for manual activation mode
+- orientation reflects to host attribute for CSS :host([orientation]) selectors
 
 ### Pending Todos
 
@@ -64,5 +66,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-03
-Stopped at: Completed 58-01-PLAN.md (Package Scaffold & Core Tabs)
+Stopped at: Completed 58-02-PLAN.md (Keyboard Nav, ARIA, and Theming) — Phase 58 complete
 Resume file: None
