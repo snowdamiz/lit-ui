@@ -20,6 +20,7 @@ interface LuiAccordionItemAttributes {
   value?: string;
   expanded?: boolean;
   disabled?: boolean;
+  lazy?: boolean;
   'heading-level'?: number;
 }
 

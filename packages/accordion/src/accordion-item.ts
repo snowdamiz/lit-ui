@@ -14,7 +14,7 @@
  * @slot default - Content for the collapsible panel
  */
 
-import { html, css, nothing } from 'lit';
+import { html, css, nothing, type PropertyValues } from 'lit';
 import { property } from 'lit/decorators.js';
 import { TailwindElement, tailwindBaseStyles } from '@lit-ui/core';
 import { dispatchCustomEvent } from '@lit-ui/core';
@@ -61,6 +61,21 @@ export class AccordionItem extends TailwindElement {
    */
   @property({ type: Number, attribute: 'heading-level' })
   headingLevel = 3;
+
+  /**
+   * Whether to defer panel content rendering until first expand.
+   * When true, the default slot is not mounted until the item is first expanded,
+   * then content is preserved after collapse.
+   * @default false
+   */
+  @property({ type: Boolean })
+  lazy = false;
+
+  /**
+   * Tracks whether this item has ever been expanded (for lazy mounting).
+   * Plain class field -- NOT reactive, since `expanded` changes already trigger re-render.
+   */
+  private _hasBeenExpanded = false;
 
   static override styles = [
     ...tailwindBaseStyles,
@@ -148,6 +163,20 @@ export class AccordionItem extends TailwindElement {
     `,
   ];
 
+  override connectedCallback(): void {
+    super.connectedCallback();
+    this.setAttribute('data-state', this.expanded ? 'open' : 'closed');
+  }
+
+  protected override updated(changedProperties: PropertyValues): void {
+    if (changedProperties.has('expanded')) {
+      this.setAttribute('data-state', this.expanded ? 'open' : 'closed');
+      if (this.expanded) {
+        this._hasBeenExpanded = true;
+      }
+    }
+  }
+
   /**
    * Focus the header button programmatically.
    * Used by parent accordion for roving tabindex keyboard navigation.
@@ -207,7 +236,9 @@ export class AccordionItem extends TailwindElement {
             aria-labelledby="${this.itemId}-header"
             id="${this.itemId}-panel"
           >
-            <slot></slot>
+            ${this.lazy && !this._hasBeenExpanded && !this.expanded
+              ? nothing
+              : html`<slot></slot>`}
           </div>
         </div>
       </div>
