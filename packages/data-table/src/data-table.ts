@@ -20,7 +20,7 @@
  */
 
 import { html, css, nothing, isServer, type TemplateResult, type PropertyValues } from 'lit';
-import { property } from 'lit/decorators.js';
+import { property, state } from 'lit/decorators.js';
 import { Ref, createRef, ref } from 'lit/directives/ref.js';
 import { TailwindElement, tailwindBaseStyles } from '@lit-ui/core';
 import {
@@ -35,6 +35,7 @@ import {
 } from '@tanstack/lit-table';
 import { VirtualizerController } from '@tanstack/lit-virtual';
 import type { ColumnDef, LoadingState, EmptyStateType } from './types.js';
+import { KeyboardNavigationManager, type GridPosition } from './keyboard-navigation.js';
 
 /**
  * A high-performance data table component with TanStack Table integration.
@@ -72,6 +73,23 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
    * Provides smooth scrolling by pre-rendering buffer rows.
    */
   private static readonly VIRTUALIZER_OVERSCAN = 5;
+
+  /**
+   * Keyboard navigation manager for ARIA grid pattern.
+   */
+  private navManager = new KeyboardNavigationManager();
+
+  /**
+   * Current focused cell position for roving tabindex.
+   */
+  @state()
+  private _focusedCell: GridPosition = { row: 0, col: 0 };
+
+  /**
+   * Announcement for screen readers on navigation.
+   */
+  @state()
+  private _announcement = '';
 
   /**
    * Column definitions for the table.
@@ -155,12 +173,24 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
 
   /**
    * Initialize or update virtualizer when data changes.
+   * Update keyboard navigation bounds when data/columns change.
    */
   protected override updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
 
     if (changedProperties.has('data') || changedProperties.has('rowHeight')) {
       this.initVirtualizer();
+    }
+
+    // Update keyboard navigation bounds when data or columns change
+    if (changedProperties.has('data') || changedProperties.has('columns')) {
+      const maxHeightPx = parseInt(this.maxHeight, 10) || 400;
+      const visibleRowCount = Math.floor(maxHeightPx / (this.rowHeight || 48));
+      this.navManager.setBounds({
+        rowCount: this.data.length,
+        colCount: this.columns.length,
+        visibleRowCount,
+      });
     }
   }
 
@@ -196,6 +226,105 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
   }
 
   // ==========================================================================
+  // Keyboard navigation methods
+  // ==========================================================================
+
+  /**
+   * Handle keyboard navigation on the grid.
+   * Delegates to KeyboardNavigationManager for position calculation.
+   */
+  private handleKeyDown(e: KeyboardEvent): void {
+    // Don't handle if target is interactive element within cell
+    const target = e.target as HTMLElement;
+    if (this.isInteractiveElement(target)) {
+      return;
+    }
+
+    const newPos = this.navManager.handleKeyDown(e);
+    if (newPos) {
+      e.preventDefault();
+      this._focusedCell = newPos;
+      this.focusCell(newPos);
+      this.announcePosition(newPos);
+
+      // Scroll virtualized row into view
+      if (this.virtualizer) {
+        this.virtualizer.getVirtualizer().scrollToIndex(newPos.row, {
+          align: 'auto',
+          behavior: 'auto',
+        });
+      }
+    }
+  }
+
+  /**
+   * Check if element is interactive (should handle its own keyboard events).
+   */
+  private isInteractiveElement(el: HTMLElement): boolean {
+    const interactiveTags = ['INPUT', 'BUTTON', 'SELECT', 'TEXTAREA', 'A'];
+    return interactiveTags.includes(el.tagName) || el.hasAttribute('contenteditable');
+  }
+
+  /**
+   * Focus a cell by its position.
+   * Updates roving tabindex and focuses the cell element.
+   */
+  private focusCell(pos: GridPosition): void {
+    // Account for header row in aria-rowindex (1-indexed, header = 1, first data = 2)
+    const ariaRow = pos.row + 2;
+    const ariaCol = pos.col + 1;
+
+    // Find cell by ARIA attributes
+    const cell = this.shadowRoot?.querySelector(
+      `[role="row"][aria-rowindex="${ariaRow}"] [aria-colindex="${ariaCol}"]`
+    ) as HTMLElement | null;
+
+    if (cell) {
+      // Make this cell tabbable, others not
+      this.updateRovingTabindex(pos);
+      cell.focus();
+    }
+  }
+
+  /**
+   * Update roving tabindex: active cell gets 0, all others get -1.
+   */
+  private updateRovingTabindex(activePos: GridPosition): void {
+    // Remove tabindex from all cells
+    const allCells = this.shadowRoot?.querySelectorAll('[role="gridcell"], [role="columnheader"]');
+    allCells?.forEach((cell) => cell.setAttribute('tabindex', '-1'));
+
+    // Set tabindex=0 on active cell
+    const ariaRow = activePos.row + 2;
+    const ariaCol = activePos.col + 1;
+    const activeCell = this.shadowRoot?.querySelector(
+      `[role="row"][aria-rowindex="${ariaRow}"] [aria-colindex="${ariaCol}"]`
+    );
+    activeCell?.setAttribute('tabindex', '0');
+  }
+
+  /**
+   * Handle cell click to update focus position.
+   */
+  private handleCellClick(rowIndex: number, colIndex: number): void {
+    this._focusedCell = { row: rowIndex, col: colIndex };
+    this.navManager.setPosition(this._focusedCell);
+    this.updateRovingTabindex(this._focusedCell);
+  }
+
+  /**
+   * Announce position change to screen readers via live region.
+   */
+  private announcePosition(pos: GridPosition): void {
+    const column = this.columns[pos.col];
+    const colHeader = column?.header;
+    const headerText =
+      typeof colHeader === 'function' ? 'Column' : String(colHeader || 'Column');
+
+    this._announcement = `Row ${pos.row + 1} of ${this.data.length}, ${headerText}, Column ${pos.col + 1} of ${this.columns.length}`;
+  }
+
+  // ==========================================================================
   // Helper methods
   // ==========================================================================
 
@@ -223,6 +352,7 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
 
   /**
    * Render a header cell using flexRender.
+   * Header cells are not focusable in this grid pattern (data rows only).
    */
   private renderHeaderCell(
     header: Header<TData, unknown>,
@@ -238,6 +368,7 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
         aria-colindex="${colIndex + 1}"
         class="data-table-header-cell"
         id="${this.tableId}-header-${header.id}"
+        tabindex="-1"
       >
         ${headerContent}
       </div>
@@ -246,18 +377,24 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
 
   /**
    * Render a data cell using flexRender.
+   * Includes roving tabindex and click handler for focus management.
    */
   private renderCell(
     cell: Cell<TData, unknown>,
+    rowIndex: number,
     colIndex: number
   ): TemplateResult {
     const cellContent = flexRender(cell.column.columnDef.cell, cell.getContext());
+    const isFocused =
+      this._focusedCell.row === rowIndex && this._focusedCell.col === colIndex;
 
     return html`
       <div
         role="gridcell"
         aria-colindex="${colIndex + 1}"
         class="data-table-cell"
+        tabindex="${isFocused ? '0' : '-1'}"
+        @click=${() => this.handleCellClick(rowIndex, colIndex)}
       >
         ${cellContent}
       </div>
@@ -276,7 +413,7 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
         data-row-id="${row.id}"
       >
         ${row.getVisibleCells().map((cell, colIndex) =>
-          this.renderCell(cell, colIndex)
+          this.renderCell(cell, rowIndex, colIndex)
         )}
       </div>
     `;
@@ -474,7 +611,7 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
               data-row-id="${row.id}"
             >
               ${row.getVisibleCells().map((cell, colIndex) =>
-                this.renderCell(cell, colIndex)
+                this.renderCell(cell, rowIndex, colIndex)
               )}
             </div>
           `
@@ -524,7 +661,7 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
                 data-row-id="${row.id}"
               >
                 ${row.getVisibleCells().map((cell, colIndex) =>
-                  this.renderCell(cell, colIndex)
+                  this.renderCell(cell, virtualRow.index, colIndex)
                 )}
               </div>
             `;
@@ -606,6 +743,13 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+        outline: none;
+      }
+
+      .data-table-cell:focus-visible {
+        outline: 2px solid var(--color-primary, #3b82f6);
+        outline-offset: -2px;
+        border-radius: 2px;
       }
 
       .data-table-header-cell {
@@ -748,6 +892,19 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
           opacity: 0.5;
         }
       }
+
+      /* Screen reader only - for ARIA live region */
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
     `,
   ];
 
@@ -771,9 +928,18 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
         aria-colcount="${colCount}"
         aria-label="${this.ariaLabel}"
         aria-busy="${this.loading !== 'idle' ? 'true' : 'false'}"
+        @keydown=${this.handleKeyDown}
       >
         ${this.renderHeader(table)}
         ${this.renderBody(table)}
+        <div
+          class="sr-only"
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+        >
+          ${this._announcement}
+        </div>
       </div>
     `;
   }
