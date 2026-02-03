@@ -20,3 +20,10 @@ export { TailwindElement, isServer } from '@lit-ui/core';
 
 // DataTable component
 export { DataTable } from './data-table.js';
+
+// Keyboard navigation utilities
+export {
+  KeyboardNavigationManager,
+  type GridPosition,
+  type GridBounds,
+} from './keyboard-navigation.js';
