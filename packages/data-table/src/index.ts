@@ -30,3 +30,6 @@ export {
 
 // Selection column factory
 export { createSelectionColumn } from './selection-column.js';
+
+// Pagination components
+export * from './pagination/index.js';
