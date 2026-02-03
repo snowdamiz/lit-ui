@@ -10,12 +10,12 @@
 
 **Milestone:** v7.0 Data Table
 **Phase:** 64 - Column Customization
-**Plan:** 2 of 4
+**Plan:** 2 of 4 (64-01 and 64-02 complete)
 **Status:** In progress
 
 **Progress:**
 ```
-Milestone: [######--] 80%
+Milestone: [######--] 81%
 Phase:     [#####-----] 50%
 ```
 
@@ -24,7 +24,7 @@ Phase:     [#####-----] 50%
 | Metric | Value |
 |--------|-------|
 | Plans completed | 14 |
-| Requirements satisfied | 40/76 |
+| Requirements satisfied | 43/76 |
 | Phases completed | 3/8 |
 
 ## Accumulated Context
@@ -67,6 +67,9 @@ Phase:     [#####-----] 50%
 | AbortError silently ignored | Intentional cancellation should not show error state | 63-04 |
 | Column picker as function | Allows flexible placement in different toolbar layouts | 64-02 |
 | Toolbar slots for extensibility | toolbar-start and toolbar-end slots for custom controls | 64-02 |
+| columnResizeMode: 'onChange' | Real-time preview during drag, better UX than 'onEnd' | 64-01 |
+| 50px minimum column width | Prevents columns from becoming too narrow (COL-03) | 64-01 |
+| Auto-fit visible rows only | Virtualization limitation - off-screen rows not in DOM | 64-01 |
 
 ### Architecture Notes
 *Technical context that spans multiple plans.*
@@ -88,6 +91,7 @@ Phase:     [#####-----] 50%
 - Async data: dataCallback receives (params, signal) returns Promise<DataCallbackResult>, filter changes debounced, pagination/sort immediate
 - Column visibility: columnVisibility state + showColumnPicker property, renderColumnPicker function with lui-popover/lui-checkbox
 - Toolbar: renderToolbar method with toolbar-start/toolbar-end slots for extensibility
+- Column resizing: enableColumnResizing + columnSizing state, TanStack's getResizeHandler() for drag, autoFitColumn() for double-click
 
 ### TODOs
 *Items to address that emerged during work.*
@@ -115,11 +119,11 @@ Phase:     [#####-----] 50%
 ### Last Session
 *Summary of previous session's work. Updated at session end.*
 
-- Completed 64-02: Column Visibility Picker
-- Added columnVisibility and showColumnPicker properties
-- Created column-picker.ts with renderColumnPicker function
-- Integrated column picker into DataTable toolbar
-- Added ui-column-visibility-change event
+- Completed 64-01: Column Resize with Drag Handles and Auto-fit
+- Added enableColumnResizing, columnSizing, columnResizeMode properties
+- Implemented renderResizeHandle() with mouse/touch/keyboard handlers
+- Implemented autoFitColumn() for double-click content fit
+- Added CSS for resize handles with hover and active states
 
 ### Next Actions
 *Clear starting point for next session.*
