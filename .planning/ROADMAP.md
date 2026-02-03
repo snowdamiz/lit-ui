@@ -80,11 +80,11 @@ Plans:
   3. When tabs overflow the container, scroll navigation buttons appear and allow horizontal scrolling
   4. Tab panels without focusable content receive tabindex="0" so keyboard users can reach panel content
   5. Tabs render correctly via Declarative Shadow DOM on the server and hydrate on the client
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 59-01: Active indicator animation, data-state attributes, lazy rendering, panel tabindex
-- [ ] 59-02: Overflow scroll with navigation buttons, SSR compatibility, and @lit-ui/tabs package setup
+- [ ] 59-01-PLAN.md — Animated active indicator, data-state on tab buttons, lazy panel rendering, conditional panel tabindex
+- [ ] 59-02-PLAN.md — Overflow scroll with navigation buttons, SSR compatibility verification, package publishability audit
 
 ### Phase 60: CLI & Documentation
 **Goal**: Both components are installable via CLI and documented with interactive demos
