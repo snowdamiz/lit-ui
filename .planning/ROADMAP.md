@@ -88,6 +88,14 @@ Plans:
 
 **Dependencies:** Phase 62 (builds on sorting pipeline, selection clears on filter)
 
+**Plans:** 4 plans
+
+Plans:
+- [ ] 63-01-PLAN.md — Filtering infrastructure with TanStack integration
+- [ ] 63-02-PLAN.md — Filter components (text, number, date, select, global)
+- [ ] 63-03-PLAN.md — Pagination state and controls
+- [ ] 63-04-PLAN.md — Async data callback with AbortController
+
 **Requirements:**
 - FILT-01: User can filter each column independently via per-column filter inputs
 - FILT-02: Text columns support text/contains filter
@@ -260,9 +268,9 @@ Plans:
 
 | Phase | Name | Status | Plans |
 |-------|------|--------|-------|
-| 61 | Core Table Shell & Virtualization | ✓ Complete | 5/5 |
-| 62 | Sorting & Selection | ✓ Complete | 3/3 |
-| 63 | Filtering & Pagination | Pending | 0/0 |
+| 61 | Core Table Shell & Virtualization | Complete | 5/5 |
+| 62 | Sorting & Selection | Complete | 3/3 |
+| 63 | Filtering & Pagination | In Progress | 0/4 |
 | 64 | Column Customization | Pending | 0/0 |
 | 65 | Inline Editing | Pending | 0/0 |
 | 66 | Cell Renderers, Row Actions & Bulk Actions | Pending | 0/0 |
