@@ -113,65 +113,65 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| ACRD-01 | — | Pending |
-| ACRD-02 | — | Pending |
-| ACRD-03 | — | Pending |
-| ACRD-04 | — | Pending |
-| ACRD-05 | — | Pending |
-| ACRD-06 | — | Pending |
-| ACRD-07 | — | Pending |
-| ACRD-08 | — | Pending |
-| ACRD-09 | — | Pending |
-| ACRD-10 | — | Pending |
-| ACRD-11 | — | Pending |
-| ACRD-12 | — | Pending |
-| ACRD-13 | — | Pending |
-| ACRD-14 | — | Pending |
-| ACRD-15 | — | Pending |
-| ACRD-16 | — | Pending |
-| ACRD-17 | — | Pending |
-| ACRD-18 | — | Pending |
-| ACRD-19 | — | Pending |
-| ACRD-20 | — | Pending |
-| ACRD-21 | — | Pending |
-| TABS-01 | — | Pending |
-| TABS-02 | — | Pending |
-| TABS-03 | — | Pending |
-| TABS-04 | — | Pending |
-| TABS-05 | — | Pending |
-| TABS-06 | — | Pending |
-| TABS-07 | — | Pending |
-| TABS-08 | — | Pending |
-| TABS-09 | — | Pending |
-| TABS-10 | — | Pending |
-| TABS-11 | — | Pending |
-| TABS-12 | — | Pending |
-| TABS-13 | — | Pending |
-| TABS-14 | — | Pending |
-| TABS-15 | — | Pending |
-| TABS-16 | — | Pending |
-| TABS-17 | — | Pending |
-| TABS-18 | — | Pending |
-| TABS-19 | — | Pending |
-| TABS-20 | — | Pending |
-| TABS-21 | — | Pending |
-| TABS-22 | — | Pending |
-| TABS-23 | — | Pending |
-| TABS-24 | — | Pending |
-| INTG-01 | — | Pending |
-| INTG-02 | — | Pending |
-| INTG-03 | — | Pending |
-| INTG-04 | — | Pending |
-| INTG-05 | — | Pending |
-| INTG-06 | — | Pending |
-| INTG-07 | — | Pending |
-| INTG-08 | — | Pending |
+| ACRD-01 | Phase 56 | Pending |
+| ACRD-02 | Phase 56 | Pending |
+| ACRD-03 | Phase 56 | Pending |
+| ACRD-04 | Phase 56 | Pending |
+| ACRD-05 | Phase 56 | Pending |
+| ACRD-06 | Phase 56 | Pending |
+| ACRD-07 | Phase 56 | Pending |
+| ACRD-08 | Phase 56 | Pending |
+| ACRD-09 | Phase 56 | Pending |
+| ACRD-10 | Phase 56 | Pending |
+| ACRD-11 | Phase 56 | Pending |
+| ACRD-12 | Phase 56 | Pending |
+| ACRD-13 | Phase 56 | Pending |
+| ACRD-14 | Phase 56 | Pending |
+| ACRD-15 | Phase 56 | Pending |
+| ACRD-16 | Phase 57 | Pending |
+| ACRD-17 | Phase 57 | Pending |
+| ACRD-18 | Phase 57 | Pending |
+| ACRD-19 | Phase 57 | Pending |
+| ACRD-20 | Phase 56 | Pending |
+| ACRD-21 | Phase 56 | Pending |
+| TABS-01 | Phase 58 | Pending |
+| TABS-02 | Phase 58 | Pending |
+| TABS-03 | Phase 58 | Pending |
+| TABS-04 | Phase 58 | Pending |
+| TABS-05 | Phase 58 | Pending |
+| TABS-06 | Phase 58 | Pending |
+| TABS-07 | Phase 58 | Pending |
+| TABS-08 | Phase 58 | Pending |
+| TABS-09 | Phase 58 | Pending |
+| TABS-10 | Phase 58 | Pending |
+| TABS-11 | Phase 58 | Pending |
+| TABS-12 | Phase 58 | Pending |
+| TABS-13 | Phase 58 | Pending |
+| TABS-14 | Phase 58 | Pending |
+| TABS-15 | Phase 58 | Pending |
+| TABS-16 | Phase 59 | Pending |
+| TABS-17 | Phase 59 | Pending |
+| TABS-18 | Phase 59 | Pending |
+| TABS-19 | Phase 59 | Pending |
+| TABS-20 | Phase 59 | Pending |
+| TABS-21 | Phase 59 | Pending |
+| TABS-22 | Phase 59 | Pending |
+| TABS-23 | Phase 58 | Pending |
+| TABS-24 | Phase 58 | Pending |
+| INTG-01 | Phase 57 | Pending |
+| INTG-02 | Phase 59 | Pending |
+| INTG-03 | Phase 60 | Pending |
+| INTG-04 | Phase 60 | Pending |
+| INTG-05 | Phase 60 | Pending |
+| INTG-06 | Phase 60 | Pending |
+| INTG-07 | Phase 60 | Pending |
+| INTG-08 | Phase 60 | Pending |
 
 **Coverage:**
 - v6.0 requirements: 53 total
-- Mapped to phases: 0
-- Unmapped: 53 ⚠️
+- Mapped to phases: 53
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-02*
-*Last updated: 2026-02-02 after initial definition*
+*Last updated: 2026-02-02 after roadmap creation*
