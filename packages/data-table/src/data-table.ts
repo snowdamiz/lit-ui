@@ -426,11 +426,13 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
   }
 
   /**
-   * Clean up virtualizer on disconnect.
+   * Clean up virtualizer and async resources on disconnect.
    */
   override disconnectedCallback(): void {
     super.disconnectedCallback();
     this.virtualizer = undefined;
+    clearTimeout(this.debounceTimeout);
+    this.abortController?.abort();
   }
 
   // ==========================================================================
@@ -454,6 +456,81 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
       estimateSize: () => this.rowHeight,
       overscan: DataTable.VIRTUALIZER_OVERSCAN,
     });
+  }
+
+  // ==========================================================================
+  // Async data methods
+  // ==========================================================================
+
+  /**
+   * Fetch data from async callback with current table state.
+   * Handles request cancellation and error states.
+   */
+  private async fetchData(): Promise<void> {
+    if (!this.dataCallback) return;
+
+    // Cancel any pending request
+    this.abortController?.abort();
+    this.abortController = new AbortController();
+
+    const params: DataCallbackParams = {
+      pageIndex: this.pagination.pageIndex,
+      pageSize: this.pagination.pageSize,
+      sorting: this.sorting,
+      columnFilters: this.columnFilters,
+      globalFilter: this.globalFilter,
+    };
+
+    // Show updating state (preserves existing content)
+    this.loading = 'updating';
+    this.errorState = null;
+
+    try {
+      const result = await this.dataCallback(params, this.abortController.signal);
+
+      // Update data and counts
+      this.data = result.data;
+      this.totalRowCount = result.totalRowCount;
+      if (result.pageCount !== undefined) {
+        this.pageCount = result.pageCount;
+      } else {
+        // Calculate page count from total
+        this.pageCount = Math.ceil(result.totalRowCount / this.pagination.pageSize);
+      }
+
+      this.loading = 'idle';
+    } catch (error) {
+      // Ignore abort errors - these are intentional cancellations
+      if ((error as Error).name === 'AbortError') {
+        return;
+      }
+
+      // Set error state for display
+      this.errorState = {
+        message: (error as Error).message || 'Failed to load data',
+        canRetry: true,
+      };
+      this.loading = 'idle';
+    }
+  }
+
+  /**
+   * Debounced fetch for filter changes.
+   * Prevents excessive requests during rapid input.
+   */
+  private debouncedFetchData(): void {
+    clearTimeout(this.debounceTimeout);
+    this.debounceTimeout = setTimeout(() => {
+      this.fetchData();
+    }, this.debounceDelay);
+  }
+
+  /**
+   * Handle retry button click from error state.
+   */
+  private handleRetry(): void {
+    this.errorState = null;
+    this.fetchData();
   }
 
   // ==========================================================================
@@ -1644,6 +1721,10 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
           typeof updater === 'function' ? updater(this.sorting) : updater;
         this.sorting = newSorting;
         this.dispatchSortChange(newSorting);
+        // Trigger async fetch for server-side sorting
+        if (this.dataCallback && this.manualSorting) {
+          this.fetchData();
+        }
       },
       onRowSelectionChange: (updater) => {
         const newSelection =
@@ -1686,18 +1767,30 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
         }
         this.columnFilters = newFilters;
         this.dispatchFilterChange(newFilters, this.globalFilter, changedColumn);
+        // Trigger debounced async fetch for server-side filtering
+        if (this.dataCallback && this.manualFiltering) {
+          this.debouncedFetchData();
+        }
       },
       onGlobalFilterChange: (updater) => {
         const newGlobalFilter =
           typeof updater === 'function' ? updater(this.globalFilter) : updater;
         this.globalFilter = newGlobalFilter;
         this.dispatchFilterChange(this.columnFilters, newGlobalFilter, undefined);
+        // Trigger debounced async fetch for server-side filtering
+        if (this.dataCallback && this.manualFiltering) {
+          this.debouncedFetchData();
+        }
       },
       onPaginationChange: (updater) => {
         const newPagination =
           typeof updater === 'function' ? updater(this.pagination) : updater;
         this.pagination = newPagination;
         this.dispatchPaginationChange(newPagination);
+        // Trigger async fetch for server-side pagination
+        if (this.dataCallback && this.manualPagination) {
+          this.fetchData();
+        }
       },
       getRowId: (row) => String(row[this.rowIdKey as keyof TData]),
       enableRowSelection: this.enableSelection,
