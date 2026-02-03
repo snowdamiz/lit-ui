@@ -47,7 +47,26 @@ export function createSelectionColumn<TData extends RowData>(): ColumnDef<TData,
           size="sm"
           .checked=${isSelected}
           ?disabled=${!canSelect}
-          @ui-change=${() => row.toggleSelected()}
+          @click=${(e: MouseEvent) => {
+            e.stopPropagation(); // Prevent row click
+            // Store shift key state for ui-change handler
+            (e.currentTarget as HTMLElement).dataset.shiftKey = String(e.shiftKey);
+          }}
+          @ui-change=${(e: CustomEvent) => {
+            const checkbox = e.currentTarget as HTMLElement;
+            const wasShiftClick = checkbox.dataset.shiftKey === 'true';
+            delete checkbox.dataset.shiftKey;
+
+            // Get data-table host element
+            const dataTable = checkbox.closest('lui-data-table');
+            if (dataTable && 'handleRowSelect' in dataTable) {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              (dataTable as any).handleRowSelect(row, wasShiftClick);
+            } else {
+              // Fallback: simple toggle
+              row.toggleSelected();
+            }
+          }}
           aria-label="Select row"
         ></lui-checkbox>
       `;

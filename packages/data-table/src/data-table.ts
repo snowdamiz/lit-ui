@@ -95,6 +95,12 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
   private _announcement = '';
 
   /**
+   * Track last selected row ID for shift+click range selection.
+   */
+  @state()
+  private lastSelectedRowId: string | null = null;
+
+  /**
    * Column definitions for the table.
    * Uses TanStack Table's ColumnDef type for full compatibility.
    */
@@ -423,6 +429,87 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
       composed: true,
     });
     this.dispatchEvent(event);
+  }
+
+  /**
+   * Get all rows between two row IDs (inclusive).
+   * Used for shift+click range selection.
+   */
+  private getRowRange(rows: Row<TData>[], idA: string, idB: string): Row<TData>[] {
+    const range: Row<TData>[] = [];
+    let foundStart = false;
+    let foundEnd = false;
+
+    for (const row of rows) {
+      if (row.id === idA || row.id === idB) {
+        if (foundStart) {
+          foundEnd = true;
+        } else {
+          foundStart = true;
+        }
+      }
+      if (foundStart) range.push(row);
+      if (foundEnd) break;
+    }
+    return range;
+  }
+
+  /**
+   * Handle row selection with shift+click range support.
+   * Called from selection column checkbox click.
+   * @param row - The row being selected
+   * @param shiftKey - Whether shift key was held during click
+   */
+  public handleRowSelect(row: Row<TData>, shiftKey: boolean): void {
+    // Get effective columns to create table instance
+    const effectiveColumns = this.getEffectiveColumns();
+    const table = this.tableController.table({
+      columns: effectiveColumns,
+      data: this.data,
+      state: {
+        sorting: this.sorting,
+        rowSelection: this.rowSelection,
+      },
+      getRowId: (r) => String(r[this.rowIdKey as keyof TData]),
+      enableRowSelection: this.enableSelection,
+      getCoreRowModel: getCoreRowModel(),
+      getSortedRowModel: this.manualSorting ? undefined : getSortedRowModel(),
+      manualSorting: this.manualSorting,
+    });
+
+    if (shiftKey && this.lastSelectedRowId && this.enableSelection) {
+      const { rows } = table.getRowModel();
+      const range = this.getRowRange(rows, row.id, this.lastSelectedRowId);
+
+      // Match selection state of the last selected row
+      const lastRow = rows.find((r) => r.id === this.lastSelectedRowId);
+      const targetState = lastRow?.getIsSelected() ?? true;
+
+      // Build new selection state
+      const newSelection = { ...this.rowSelection };
+      range.forEach((r) => {
+        if (targetState) {
+          newSelection[r.id] = true;
+        } else {
+          delete newSelection[r.id];
+        }
+      });
+
+      this.rowSelection = newSelection;
+      this.dispatchSelectionChange(table, newSelection, 'user');
+    } else {
+      // Simple toggle for non-shift clicks
+      const newSelection = { ...this.rowSelection };
+      if (row.getIsSelected()) {
+        delete newSelection[row.id];
+      } else {
+        newSelection[row.id] = true;
+      }
+      this.rowSelection = newSelection;
+      this.dispatchSelectionChange(table, newSelection, 'user');
+    }
+
+    this.lastSelectedRowId = row.id;
   }
 
   /**
