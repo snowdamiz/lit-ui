@@ -10,20 +10,20 @@
 
 **Milestone:** v7.0 Data Table
 **Phase:** 61 - Core Table Shell & Virtualization
-**Plan:** 1 of 5 complete
+**Plan:** 2 of 5 complete
 **Status:** In progress
 
 **Progress:**
 ```
-Milestone: [#-------] 12.5%
-Phase:     [##------] 20%
+Milestone: [##------] 25%
+Phase:     [####----] 40%
 ```
 
 ## Performance Metrics
 
 | Metric | Value |
 |--------|-------|
-| Plans completed | 1 |
+| Plans completed | 2 |
 | Requirements satisfied | 0/76 |
 | Phases completed | 0/8 |
 
@@ -42,6 +42,9 @@ Phase:     [##------] 20%
 | Type alias for ColumnDef | TanStack's ColumnDef is union type, cannot extend with interface | 61-01 |
 | LitUI extensions via meta | Column customizations (editable, filter) go in meta property | 61-01 |
 | Re-export TanStack utilities | Developer convenience - single import source | 61-01 |
+| Div-based ARIA grid layout | Required for virtualization, native table elements incompatible | 61-02 |
+| CSS Grid with minmax() columns | Flexible sizing from column.size or defaults | 61-02 |
+| aria-rowindex starts at 1 | Header is row 1, data starts at row 2 per W3C APG | 61-02 |
 
 ### Architecture Notes
 *Technical context that spans multiple plans.*
@@ -79,17 +82,17 @@ Phase:     [##------] 20%
 ### Last Session
 *Summary of previous session's work. Updated at session end.*
 
-- Completed 61-01-PLAN.md: Package foundation for @lit-ui/data-table
-- Installed @tanstack/lit-table@8.21.3 and @tanstack/lit-virtual@3.13.19
-- Created type definitions: ColumnDef, DataTableState, LoadingState, event types
-- Fixed ColumnDef type approach (type alias vs interface extension)
+- Completed 61-02-PLAN.md: DataTable component with TableController
+- Created lui-data-table component with full ARIA grid pattern
+- Implemented CSS Grid layout with theming via CSS custom properties
+- Added dark mode support via :host-context(.dark)
 
 ### Next Actions
 *Clear starting point for next session.*
 
-1. Execute 61-02-PLAN.md: DataTable component with TableController and VirtualizerController
-2. Implement CSS Grid layout with ARIA grid roles
-3. Add sticky header and virtual row rendering
+1. Execute 61-03-PLAN.md: Add VirtualizerController for row virtualization
+2. Implement scroll container with sticky header
+3. Add overscan configuration for smooth scrolling
 
 ### Open Questions
 *Unresolved questions needing user input.*
