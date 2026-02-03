@@ -8,6 +8,10 @@
  * - Dynamic panel add/remove updates tab buttons automatically
  * - Dispatches ui-change event with the new active tab value
  * - ARIA roles, aria-selected, aria-controls, aria-labelledby
+ * - Keyboard navigation with orientation-aware arrow keys, Home, End
+ * - Automatic and manual activation modes
+ * - Roving tabindex for focus management
+ * - Disabled tab handling (skipped in keyboard navigation)
  * - SSR compatible via isServer guards
  *
  * @example
@@ -30,7 +34,7 @@ import type { TabPanel } from './tab-panel.js';
 /**
  * A tabs container that renders tab buttons from slotted lui-tab-panel
  * metadata and manages active tab state. Supports controlled/uncontrolled
- * modes, disabled state, and dynamic panel add/remove.
+ * modes, disabled state, keyboard navigation, and dynamic panel add/remove.
  *
  * @slot default - Child lui-tab-panel elements
  */
@@ -44,6 +48,11 @@ export class Tabs extends TailwindElement {
    * Unique ID prefix for ARIA associations between tabs and panels.
    */
   private tabsId = `lui-tabs-${Math.random().toString(36).substr(2, 9)}`;
+
+  /**
+   * Tracks which tab currently has focus (distinct from active tab in manual mode).
+   */
+  private _focusedValue = '';
 
   /**
    * Active tab value (controlled mode).
@@ -77,15 +86,16 @@ export class Tabs extends TailwindElement {
 
   /**
    * Orientation of the tablist for keyboard navigation.
-   * Plan 02 will implement keyboard orientation logic.
+   * Horizontal uses ArrowLeft/ArrowRight, vertical uses ArrowUp/ArrowDown.
    * @default 'horizontal'
    */
-  @property({ type: String })
+  @property({ type: String, reflect: true })
   orientation: 'horizontal' | 'vertical' = 'horizontal';
 
   /**
    * Tab activation mode for keyboard navigation.
-   * Plan 02 will implement keyboard activation logic.
+   * Automatic: arrow keys move focus AND activate tab.
+   * Manual: arrow keys move focus only, Enter/Space activates.
    * @default 'automatic'
    */
   @property({ type: String, attribute: 'activation-mode' })
@@ -115,10 +125,14 @@ export class Tabs extends TailwindElement {
 
   /**
    * Sync panel states when value changes.
+   * In automatic mode, keep _focusedValue in sync with active value.
    */
   protected override updated(changedProperties: PropertyValues): void {
     if (changedProperties.has('value')) {
       this.syncPanelStates();
+      if (this.activationMode === 'automatic') {
+        this._focusedValue = this.value;
+      }
     }
   }
 
@@ -142,6 +156,7 @@ export class Tabs extends TailwindElement {
       }
     }
 
+    this._focusedValue = this.value;
     this.syncPanelStates();
     this.requestUpdate();
   }
@@ -154,23 +169,133 @@ export class Tabs extends TailwindElement {
     if (this.disabled || panelDisabled) return;
 
     this.value = panelValue;
+    this._focusedValue = panelValue;
     this.syncPanelStates();
 
     dispatchCustomEvent(this, 'ui-change', { value: this.value });
   }
 
   /**
+   * Handle keyboard navigation on the tablist.
+   * Orientation-aware arrow keys, Home, End, and Enter/Space (manual mode).
+   */
+  private handleKeyDown(e: KeyboardEvent): void {
+    const forwardKey =
+      this.orientation === 'horizontal' ? 'ArrowRight' : 'ArrowDown';
+    const backwardKey =
+      this.orientation === 'horizontal' ? 'ArrowLeft' : 'ArrowUp';
+
+    const handledKeys = [forwardKey, backwardKey, 'Home', 'End'];
+    if (this.activationMode === 'manual') {
+      handledKeys.push('Enter', ' ');
+    }
+
+    if (!handledKeys.includes(e.key)) return;
+    e.preventDefault();
+
+    // Manual mode: Enter/Space activates the currently focused tab
+    if (
+      this.activationMode === 'manual' &&
+      (e.key === 'Enter' || e.key === ' ')
+    ) {
+      if (this._focusedValue && this._focusedValue !== this.value) {
+        const panel = this.panels.find(
+          (p) => p.value === this._focusedValue && !p.disabled
+        );
+        if (panel) {
+          this.value = this._focusedValue;
+          this.syncPanelStates();
+          dispatchCustomEvent(this, 'ui-change', { value: this.value });
+        }
+      }
+      return;
+    }
+
+    const enabledPanels = this.panels.filter((p) => !p.disabled);
+    if (enabledPanels.length === 0) return;
+
+    const currentFocused = this._focusedValue || this.value;
+    const currentIndex = enabledPanels.findIndex(
+      (p) => p.value === currentFocused
+    );
+
+    let nextIndex: number;
+    switch (e.key) {
+      case forwardKey:
+        nextIndex = (currentIndex + 1) % enabledPanels.length;
+        break;
+      case backwardKey:
+        nextIndex =
+          (currentIndex - 1 + enabledPanels.length) % enabledPanels.length;
+        break;
+      case 'Home':
+        nextIndex = 0;
+        break;
+      case 'End':
+        nextIndex = enabledPanels.length - 1;
+        break;
+      default:
+        return;
+    }
+
+    const nextPanel = enabledPanels[nextIndex];
+
+    if (this.activationMode === 'automatic') {
+      // Automatic: move focus AND activate
+      this.value = nextPanel.value;
+      this._focusedValue = nextPanel.value;
+      this.syncPanelStates();
+      dispatchCustomEvent(this, 'ui-change', { value: this.value });
+      this.focusTabButton(nextPanel.value);
+    } else {
+      // Manual: move focus only
+      this._focusedValue = nextPanel.value;
+      this.requestUpdate();
+      this.updateComplete.then(() => {
+        this.focusTabButton(nextPanel.value);
+      });
+    }
+  }
+
+  /**
+   * Focus a tab button in the shadow DOM by its panel value.
+   */
+  private focusTabButton(panelValue: string): void {
+    const button = this.shadowRoot?.querySelector(
+      `#${this.tabsId}-tab-${panelValue}`
+    ) as HTMLElement | null;
+    button?.focus();
+  }
+
+  /**
+   * Get the tabindex for a tab button based on activation mode.
+   * In automatic mode: active tab gets 0, others -1.
+   * In manual mode: focused tab gets 0, others -1.
+   */
+  private getTabIndex(panel: TabPanel): '0' | '-1' {
+    const focusTarget = this._focusedValue || this.value;
+    return panel.value === focusTarget ? '0' : '-1';
+  }
+
+  /**
    * Sync active state and ARIA attributes on all child panels.
-   * Sets active, id, and aria-labelledby on each panel host element.
+   * Sets active, id, aria-labelledby, role, and tabindex on each panel host element.
    */
   private syncPanelStates(): void {
     for (const panel of this.panels) {
-      panel.active = panel.value === this.value;
+      const isActive = panel.value === this.value;
+      panel.active = isActive;
       panel.id = `${this.tabsId}-panel-${panel.value}`;
+      panel.setAttribute('role', 'tabpanel');
       panel.setAttribute(
         'aria-labelledby',
         `${this.tabsId}-tab-${panel.value}`
       );
+      if (isActive) {
+        panel.setAttribute('tabindex', '0');
+      } else {
+        panel.removeAttribute('tabindex');
+      }
     }
   }
 
@@ -186,7 +311,7 @@ export class Tabs extends TailwindElement {
         pointer-events: none;
       }
 
-      [role='tablist'] {
+      .tablist {
         display: flex;
       }
 
@@ -213,9 +338,11 @@ export class Tabs extends TailwindElement {
         @ui-tab-panel-update=${() => this.requestUpdate()}
       >
         <div
+          class="tablist"
           role="tablist"
           aria-orientation="${this.orientation}"
           aria-label="${this.label || nothing}"
+          @keydown=${this.handleKeyDown}
         >
           ${this.panels.map(
             (panel) => html`
@@ -225,7 +352,7 @@ export class Tabs extends TailwindElement {
                 aria-selected="${panel.value === this.value ? 'true' : 'false'}"
                 aria-controls="${this.tabsId}-panel-${panel.value}"
                 aria-disabled="${panel.disabled ? 'true' : nothing}"
-                tabindex="${panel.value === this.value ? '0' : '-1'}"
+                tabindex="${this.getTabIndex(panel)}"
                 class="tab-button ${panel.value === this.value
                   ? 'tab-active'
                   : ''}"

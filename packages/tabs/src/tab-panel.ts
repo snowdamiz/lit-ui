@@ -5,12 +5,13 @@
  * - Simple show/hide wrapper controlled by the parent lui-tabs container
  * - value/label/disabled attributes read by container to render tab buttons
  * - Dispatches internal ui-tab-panel-update event when label or disabled changes
+ * - data-state attribute reflects active/inactive for external styling
  * - SSR compatible
  *
  * @slot default - Panel content
  */
 
-import { html, css, type PropertyValues } from 'lit';
+import { html, css, isServer, type PropertyValues } from 'lit';
 import { property } from 'lit/decorators.js';
 import { TailwindElement, tailwindBaseStyles } from '@lit-ui/core';
 import { dispatchCustomEvent } from '@lit-ui/core';
@@ -58,15 +59,14 @@ export class TabPanel extends TailwindElement {
   @property({ type: Boolean, reflect: true })
   active = false;
 
-  override connectedCallback(): void {
-    super.connectedCallback();
-    this.setAttribute('role', 'tabpanel');
-  }
-
   protected override updated(changedProperties: PropertyValues): void {
     if (changedProperties.has('label') || changedProperties.has('disabled')) {
       // Notify container to re-render tab buttons with fresh metadata
       dispatchCustomEvent(this, 'ui-tab-panel-update', {});
+    }
+
+    if (changedProperties.has('active') && !isServer) {
+      this.setAttribute('data-state', this.active ? 'active' : 'inactive');
     }
   }
 
