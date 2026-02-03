@@ -242,6 +242,7 @@
   --ui-tabs-tab-active-text: var(--color-gray-50);
   --ui-tabs-tab-active-bg: var(--color-gray-900);
   --ui-tabs-panel-text: var(--color-gray-50);
+  --ui-tabs-indicator-color: var(--color-primary, var(--ui-color-primary));
 }
 
 /* ==========================================================================
@@ -823,6 +824,12 @@
 
   /* Transition */
   --ui-tabs-transition: 150ms;
+
+  /* Indicator */
+  --ui-tabs-indicator-color: var(--color-primary, var(--ui-color-primary));
+  --ui-tabs-indicator-height: 2px;
+  --ui-tabs-indicator-radius: 9999px;
+  --ui-tabs-indicator-transition: 200ms;
 }
 
 /* ==========================================================================

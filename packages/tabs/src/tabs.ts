@@ -27,6 +27,7 @@
 
 import { html, css, nothing, isServer, type PropertyValues } from 'lit';
 import { property } from 'lit/decorators.js';
+import { styleMap } from 'lit/directives/style-map.js';
 import { TailwindElement, tailwindBaseStyles } from '@lit-ui/core';
 import { dispatchCustomEvent } from '@lit-ui/core';
 import type { TabPanel } from './tab-panel.js';
@@ -53,6 +54,21 @@ export class Tabs extends TailwindElement {
    * Tracks which tab currently has focus (distinct from active tab in manual mode).
    */
   private _focusedValue = '';
+
+  /**
+   * Computed indicator position/size for the active tab.
+   */
+  private _indicatorStyle: Record<string, string> = {};
+
+  /**
+   * Prevents flash of unstyled indicator on first render.
+   */
+  private _indicatorReady = false;
+
+  /**
+   * Tracks container resize to reposition indicator.
+   */
+  private resizeObserver: ResizeObserver | null = null;
 
   /**
    * Active tab value (controlled mode).
@@ -108,9 +124,16 @@ export class Tabs extends TailwindElement {
     }
   }
 
+  override disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this.resizeObserver?.disconnect();
+    this.resizeObserver = null;
+  }
+
   /**
    * SSR slotchange workaround: after hydration, manually trigger
    * slotchange to discover children that were server-rendered.
+   * Also sets up ResizeObserver for indicator repositioning.
    */
   protected override firstUpdated(): void {
     if (!isServer) {
@@ -120,7 +143,51 @@ export class Tabs extends TailwindElement {
       if (slot) {
         slot.dispatchEvent(new Event('slotchange'));
       }
+
+      // Set up ResizeObserver for indicator repositioning
+      const tablist = this.shadowRoot?.querySelector('.tablist') as HTMLElement | null;
+      if (tablist) {
+        this.resizeObserver = new ResizeObserver(() => this.updateIndicator());
+        this.resizeObserver.observe(tablist);
+      }
+      this.updateComplete.then(() => this.updateIndicator());
     }
+  }
+
+  /**
+   * Compute indicator position/size from the active tab button.
+   */
+  private updateIndicator(): void {
+    if (isServer) return;
+
+    const button = this.shadowRoot?.querySelector(
+      `#${this.tabsId}-tab-${this.value}`
+    ) as HTMLElement | null;
+    const tablist = this.shadowRoot?.querySelector('.tablist') as HTMLElement | null;
+
+    if (!button || !tablist) {
+      this._indicatorReady = false;
+      this.requestUpdate();
+      return;
+    }
+
+    const buttonRect = button.getBoundingClientRect();
+    const tablistRect = tablist.getBoundingClientRect();
+
+    if (this.orientation === 'vertical') {
+      this._indicatorStyle = {
+        transform: `translateY(${buttonRect.top - tablistRect.top + tablist.scrollTop}px)`,
+        height: `${buttonRect.height}px`,
+      };
+    } else {
+      this._indicatorStyle = {
+        transform: `translateX(${buttonRect.left - tablistRect.left + tablist.scrollLeft}px)`,
+        width: `${buttonRect.width}px`,
+      };
+    }
+
+    this._indicatorReady = true;
+    this.requestUpdate();
   }
 
   /**
@@ -133,6 +200,7 @@ export class Tabs extends TailwindElement {
       if (this.activationMode === 'automatic') {
         this._focusedValue = this.value;
       }
+      this.updateComplete.then(() => this.updateIndicator());
     }
   }
 
@@ -159,6 +227,7 @@ export class Tabs extends TailwindElement {
     this._focusedValue = this.value;
     this.syncPanelStates();
     this.requestUpdate();
+    this.updateComplete.then(() => this.updateIndicator());
   }
 
   /**
@@ -312,6 +381,7 @@ export class Tabs extends TailwindElement {
       }
 
       .tablist {
+        position: relative;
         display: inline-flex;
         align-items: center;
         gap: var(--ui-tabs-list-gap);
@@ -382,8 +452,32 @@ export class Tabs extends TailwindElement {
         color: var(--ui-tabs-panel-text);
       }
 
+      .tab-indicator {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        height: var(--ui-tabs-indicator-height, 2px);
+        background: var(--ui-tabs-indicator-color, var(--color-primary, var(--ui-color-primary)));
+        border-radius: var(--ui-tabs-indicator-radius, 9999px);
+        transition:
+          transform var(--ui-tabs-indicator-transition, 200ms) ease,
+          width var(--ui-tabs-indicator-transition, 200ms) ease,
+          height var(--ui-tabs-indicator-transition, 200ms) ease,
+          opacity 150ms ease;
+        pointer-events: none;
+      }
+
+      :host([orientation="vertical"]) .tab-indicator {
+        bottom: auto;
+        top: 0;
+        width: var(--ui-tabs-indicator-height, 2px) !important;
+      }
+
       @media (prefers-reduced-motion: reduce) {
         .tab-button {
+          transition-duration: 0ms;
+        }
+        .tab-indicator {
           transition-duration: 0ms;
         }
       }
@@ -411,6 +505,7 @@ export class Tabs extends TailwindElement {
                 aria-selected="${panel.value === this.value ? 'true' : 'false'}"
                 aria-controls="${this.tabsId}-panel-${panel.value}"
                 aria-disabled="${panel.disabled ? 'true' : nothing}"
+                data-state="${panel.value === this.value ? 'active' : 'inactive'}"
                 tabindex="${this.getTabIndex(panel)}"
                 class="tab-button ${panel.value === this.value
                   ? 'tab-active'
@@ -421,6 +516,13 @@ export class Tabs extends TailwindElement {
               </button>
             `
           )}
+          <div
+            class="tab-indicator"
+            style=${styleMap({
+              ...this._indicatorStyle,
+              opacity: this._indicatorReady ? '1' : '0',
+            })}
+          ></div>
         </div>
         <div class="panels-container">
           <slot @slotchange=${this.handleSlotChange}></slot>
