@@ -133,10 +133,10 @@ Plans:
 **Plans:** 4 plans
 
 Plans:
-- [ ] 64-01-PLAN.md — Column resize with drag handles and auto-fit
-- [ ] 64-02-PLAN.md — Column visibility picker with lui-popover
-- [ ] 64-03-PLAN.md — Column reorder via drag-and-drop, sticky first column
-- [ ] 64-04-PLAN.md — Persistence to localStorage with optional callback
+- [x] 64-01-PLAN.md — Column resize with drag handles and auto-fit
+- [x] 64-02-PLAN.md — Column visibility picker with lui-popover
+- [x] 64-03-PLAN.md — Column reorder via drag-and-drop, sticky first column
+- [x] 64-04-PLAN.md — Persistence to localStorage with optional callback
 
 **Requirements:**
 - COL-01: Column widths are resizable via drag handles between headers
@@ -279,7 +279,7 @@ Plans:
 | 61 | Core Table Shell & Virtualization | Complete | 5/5 |
 | 62 | Sorting & Selection | Complete | 3/3 |
 | 63 | Filtering & Pagination | Complete | 4/4 |
-| 64 | Column Customization | In Progress | 0/4 |
+| 64 | Column Customization | Complete | 4/4 |
 | 65 | Inline Editing | Pending | 0/0 |
 | 66 | Cell Renderers, Row Actions & Bulk Actions | Pending | 0/0 |
 | 67 | Export & Expandable Rows | Pending | 0/0 |
@@ -289,4 +289,4 @@ Plans:
 
 ---
 *Roadmap created: 2026-02-02*
-*Last updated: 2026-02-03*
+*Last updated: 2026-02-03 (Phase 64 complete)*

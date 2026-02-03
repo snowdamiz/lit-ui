@@ -21,29 +21,29 @@ Requirements for Data Table milestone. Each maps to roadmap phases.
 
 ### Sorting
 
-- [ ] **SORT-01**: User can click column header to sort by that column (ascending/descending toggle)
-- [ ] **SORT-02**: Sort indicator (arrow) shows current sort direction on sorted column
-- [ ] **SORT-03**: User can Shift+click additional columns for multi-column sort
-- [ ] **SORT-04**: Multi-column sort shows priority numbers on sorted columns
-- [ ] **SORT-05**: Server-side sorting passes sort state to data callback when manual mode enabled
+- [x] **SORT-01**: User can click column header to sort by that column (ascending/descending toggle)
+- [x] **SORT-02**: Sort indicator (arrow) shows current sort direction on sorted column
+- [x] **SORT-03**: User can Shift+click additional columns for multi-column sort
+- [x] **SORT-04**: Multi-column sort shows priority numbers on sorted columns
+- [x] **SORT-05**: Server-side sorting passes sort state to data callback when manual mode enabled
 
 ### Filtering
 
-- [ ] **FILT-01**: User can filter each column independently via per-column filter inputs
-- [ ] **FILT-02**: Text columns support text/contains filter
-- [ ] **FILT-03**: Number columns support numeric comparison filters (equals, greater than, less than, range)
-- [ ] **FILT-04**: Date columns support date range filters
-- [ ] **FILT-05**: Select/enum columns support multi-select filter from predefined options
-- [ ] **FILT-06**: Global search input filters across all searchable columns simultaneously
-- [ ] **FILT-07**: Server-side filtering passes filter state to data callback when manual mode enabled
-- [ ] **FILT-08**: Active filters are visually indicated on column headers
+- [x] **FILT-01**: User can filter each column independently via per-column filter inputs
+- [x] **FILT-02**: Text columns support text/contains filter
+- [x] **FILT-03**: Number columns support numeric comparison filters (equals, greater than, less than, range)
+- [x] **FILT-04**: Date columns support date range filters
+- [x] **FILT-05**: Select/enum columns support multi-select filter from predefined options
+- [x] **FILT-06**: Global search input filters across all searchable columns simultaneously
+- [x] **FILT-07**: Server-side filtering passes filter state to data callback when manual mode enabled
+- [x] **FILT-08**: Active filters are visually indicated on column headers
 
 ### Pagination
 
-- [ ] **PAGE-01**: Pagination controls show current page, total pages, and navigation (prev/next, first/last)
-- [ ] **PAGE-02**: User can select page size from configurable options (e.g., 10, 25, 50, 100)
-- [ ] **PAGE-03**: Total record count is displayed
-- [ ] **PAGE-04**: Server-side pagination passes page/size to data callback when manual mode enabled
+- [x] **PAGE-01**: Pagination controls show current page, total pages, and navigation (prev/next, first/last)
+- [x] **PAGE-02**: User can select page size from configurable options (e.g., 10, 25, 50, 100)
+- [x] **PAGE-03**: Total record count is displayed
+- [x] **PAGE-04**: Server-side pagination passes page/size to data callback when manual mode enabled
 
 ### Virtual Scrolling
 
@@ -54,20 +54,20 @@ Requirements for Data Table milestone. Each maps to roadmap phases.
 
 ### Async Data Source
 
-- [ ] **ASYNC-01**: Data Table accepts async data callback for server-side data fetching
-- [ ] **ASYNC-02**: Callback receives current state (page, pageSize, sort, filters) as parameters
-- [ ] **ASYNC-03**: Previous requests are cancelled via AbortController when new request starts
-- [ ] **ASYNC-04**: Debounced requests prevent excessive server calls during rapid filter input
-- [ ] **ASYNC-05**: Error state displays when data fetch fails with retry option
+- [x] **ASYNC-01**: Data Table accepts async data callback for server-side data fetching
+- [x] **ASYNC-02**: Callback receives current state (page, pageSize, sort, filters) as parameters
+- [x] **ASYNC-03**: Previous requests are cancelled via AbortController when new request starts
+- [x] **ASYNC-04**: Debounced requests prevent excessive server calls during rapid filter input
+- [x] **ASYNC-05**: Error state displays when data fetch fails with retry option
 
 ### Selection
 
-- [ ] **SEL-01**: Row selection checkbox column is optionally enabled
-- [ ] **SEL-02**: Header checkbox selects/deselects all rows on current page
-- [ ] **SEL-03**: Shift+click enables range selection (select all rows between two clicks)
-- [ ] **SEL-04**: "Select all X items" link appears after page select-all to select entire filtered dataset
-- [ ] **SEL-05**: Selection state is maintained across pagination (selected IDs tracked)
-- [ ] **SEL-06**: Selection is cleared when filters change (with configurable option to preserve)
+- [x] **SEL-01**: Row selection checkbox column is optionally enabled
+- [x] **SEL-02**: Header checkbox selects/deselects all rows on current page
+- [x] **SEL-03**: Shift+click enables range selection (select all rows between two clicks)
+- [x] **SEL-04**: "Select all X items" link appears after page select-all to select entire filtered dataset
+- [x] **SEL-05**: Selection state is maintained across pagination (selected IDs tracked)
+- [x] **SEL-06**: Selection is cleared when filters change (with configurable option to preserve)
 
 ### Bulk Actions
 
@@ -79,14 +79,14 @@ Requirements for Data Table milestone. Each maps to roadmap phases.
 
 ### Column Customization
 
-- [ ] **COL-01**: Column widths are resizable via drag handles between headers
-- [ ] **COL-02**: Double-click column divider auto-fits column to content width
-- [ ] **COL-03**: Minimum column width prevents columns from becoming too narrow
-- [ ] **COL-04**: First column can be configured as fixed/sticky during horizontal scroll
-- [ ] **COL-05**: Column picker dropdown allows show/hide of individual columns
-- [ ] **COL-06**: Columns can be reordered via drag-and-drop in header
-- [ ] **COL-07**: Column preferences (width, order, visibility) persist to localStorage
-- [ ] **COL-08**: Optional callback receives preference changes for server-side persistence
+- [x] **COL-01**: Column widths are resizable via drag handles between headers
+- [x] **COL-02**: Double-click column divider auto-fits column to content width
+- [x] **COL-03**: Minimum column width prevents columns from becoming too narrow
+- [x] **COL-04**: First column can be configured as fixed/sticky during horizontal scroll
+- [x] **COL-05**: Column picker dropdown allows show/hide of individual columns
+- [x] **COL-06**: Columns can be reordered via drag-and-drop in header
+- [x] **COL-07**: Column preferences (width, order, visibility) persist to localStorage
+- [x] **COL-08**: Optional callback receives preference changes for server-side persistence
 
 ### Inline Editing (Cell Level)
 
@@ -208,42 +208,42 @@ Which phases cover which requirements. Updated during roadmap creation.
 | VIRT-02 | 61 | Complete |
 | VIRT-03 | 61 | Complete |
 | VIRT-04 | 61 | Complete |
-| SORT-01 | 62 | Pending |
-| SORT-02 | 62 | Pending |
-| SORT-03 | 62 | Pending |
-| SORT-04 | 62 | Pending |
-| SORT-05 | 62 | Pending |
-| SEL-01 | 62 | Pending |
-| SEL-02 | 62 | Pending |
-| SEL-03 | 62 | Pending |
-| SEL-04 | 62 | Pending |
-| SEL-05 | 62 | Pending |
-| SEL-06 | 62 | Pending |
-| FILT-01 | 63 | Pending |
-| FILT-02 | 63 | Pending |
-| FILT-03 | 63 | Pending |
-| FILT-04 | 63 | Pending |
-| FILT-05 | 63 | Pending |
-| FILT-06 | 63 | Pending |
-| FILT-07 | 63 | Pending |
-| FILT-08 | 63 | Pending |
-| PAGE-01 | 63 | Pending |
-| PAGE-02 | 63 | Pending |
-| PAGE-03 | 63 | Pending |
-| PAGE-04 | 63 | Pending |
-| ASYNC-01 | 63 | Pending |
-| ASYNC-02 | 63 | Pending |
-| ASYNC-03 | 63 | Pending |
-| ASYNC-04 | 63 | Pending |
-| ASYNC-05 | 63 | Pending |
-| COL-01 | 64 | Pending |
-| COL-02 | 64 | Pending |
-| COL-03 | 64 | Pending |
-| COL-04 | 64 | Pending |
-| COL-05 | 64 | Pending |
-| COL-06 | 64 | Pending |
-| COL-07 | 64 | Pending |
-| COL-08 | 64 | Pending |
+| SORT-01 | 62 | Complete |
+| SORT-02 | 62 | Complete |
+| SORT-03 | 62 | Complete |
+| SORT-04 | 62 | Complete |
+| SORT-05 | 62 | Complete |
+| SEL-01 | 62 | Complete |
+| SEL-02 | 62 | Complete |
+| SEL-03 | 62 | Complete |
+| SEL-04 | 62 | Complete |
+| SEL-05 | 62 | Complete |
+| SEL-06 | 62 | Complete |
+| FILT-01 | 63 | Complete |
+| FILT-02 | 63 | Complete |
+| FILT-03 | 63 | Complete |
+| FILT-04 | 63 | Complete |
+| FILT-05 | 63 | Complete |
+| FILT-06 | 63 | Complete |
+| FILT-07 | 63 | Complete |
+| FILT-08 | 63 | Complete |
+| PAGE-01 | 63 | Complete |
+| PAGE-02 | 63 | Complete |
+| PAGE-03 | 63 | Complete |
+| PAGE-04 | 63 | Complete |
+| ASYNC-01 | 63 | Complete |
+| ASYNC-02 | 63 | Complete |
+| ASYNC-03 | 63 | Complete |
+| ASYNC-04 | 63 | Complete |
+| ASYNC-05 | 63 | Complete |
+| COL-01 | 64 | Complete |
+| COL-02 | 64 | Complete |
+| COL-03 | 64 | Complete |
+| COL-04 | 64 | Complete |
+| COL-05 | 64 | Complete |
+| COL-06 | 64 | Complete |
+| COL-07 | 64 | Complete |
+| COL-08 | 64 | Complete |
 | EDIT-01 | 65 | Pending |
 | EDIT-02 | 65 | Pending |
 | EDIT-03 | 65 | Pending |
@@ -299,4 +299,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-02-02*
-*Last updated: 2026-02-03 after Phase 61 completion*
+*Last updated: 2026-02-03 (Phases 61-64 complete)*
