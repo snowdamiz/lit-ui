@@ -10,21 +10,21 @@
 
 **Milestone:** v7.0 Data Table
 **Phase:** 61 - Core Table Shell & Virtualization
-**Plan:** 2 of 5 complete
+**Plan:** 4 of 5 complete
 **Status:** In progress
 
 **Progress:**
 ```
-Milestone: [##------] 25%
-Phase:     [####----] 40%
+Milestone: [###-----] 38%
+Phase:     [########] 80%
 ```
 
 ## Performance Metrics
 
 | Metric | Value |
 |--------|-------|
-| Plans completed | 2 |
-| Requirements satisfied | 0/76 |
+| Plans completed | 4 |
+| Requirements satisfied | 6/76 |
 | Phases completed | 0/8 |
 
 ## Accumulated Context
@@ -45,6 +45,9 @@ Phase:     [####----] 40%
 | Div-based ARIA grid layout | Required for virtualization, native table elements incompatible | 61-02 |
 | CSS Grid with minmax() columns | Flexible sizing from column.size or defaults | 61-02 |
 | aria-rowindex starts at 1 | Header is row 1, data starts at row 2 per W3C APG | 61-02 |
+| Skeleton pulse 1.5s timing | Smooth visual feedback without being distracting | 61-04 |
+| Overlay 0.7 opacity | Preserves content visibility during updates | 61-04 |
+| Flex container layout | Proper body sizing with virtualization | 61-04 |
 
 ### Architecture Notes
 *Technical context that spans multiple plans.*
@@ -55,6 +58,7 @@ Phase:     [####----] 40%
 - Scroll architecture: separate containers for header and body with synchronized scrollLeft
 - Form integration via ElementInternals (for inline editing validation)
 - ColumnDef<TData, TValue> is type alias (not interface) due to TanStack union type structure
+- Loading states: loading='loading' shows skeleton, loading='updating' shows overlay
 
 ### TODOs
 *Items to address that emerged during work.*
@@ -82,17 +86,18 @@ Phase:     [####----] 40%
 ### Last Session
 *Summary of previous session's work. Updated at session end.*
 
-- Completed 61-02-PLAN.md: DataTable component with TableController
-- Created lui-data-table component with full ARIA grid pattern
-- Implemented CSS Grid layout with theming via CSS custom properties
-- Added dark mode support via :host-context(.dark)
+- Completed 61-04-PLAN.md: Loading and empty state CSS styles
+- Added skeleton loading animation with pulse effect
+- Added empty state styling for no-data and no-matches
+- Added updating overlay with spinner animation
+- Dark mode and reduced motion support for all animations
 
 ### Next Actions
 *Clear starting point for next session.*
 
-1. Execute 61-03-PLAN.md: Add VirtualizerController for row virtualization
-2. Implement scroll container with sticky header
-3. Add overscan configuration for smooth scrolling
+1. Execute 61-05-PLAN.md: Keyboard navigation and focus management
+2. Implement arrow key navigation between cells
+3. Add focus ring styling and tabIndex management
 
 ### Open Questions
 *Unresolved questions needing user input.*
