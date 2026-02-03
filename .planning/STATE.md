@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-02-02)
 ## Current Position
 
 Phase: 59 of 60 (Tabs Polish & Package)
-Plan: 0 of 2 in current phase
-Status: Ready to plan
-Last activity: 2026-02-03 — Phase 58 Tabs Core complete (verified ✓)
+Plan: 1 of 2 in current phase
+Status: In progress
+Last activity: 2026-02-03 — Completed 59-01-PLAN.md
 
 Progress: ████████████████░░░░░░░░░░░░░░░░ 60% (v6.0)
 
@@ -43,6 +43,9 @@ Recent decisions affecting current work:
 - Container sets role=tabpanel on panel hosts (moved from tab-panel connectedCallback for centralized ARIA)
 - _focusedValue tracks keyboard focus separately from active value for manual activation mode
 - orientation reflects to host attribute for CSS :host([orientation]) selectors
+- Tab indicator uses CSS transitions on transform/width (no JS animation loop), opacity guard until first measurement
+- Lazy panels return `nothing` for zero DOM footprint, _hasBeenExpanded as plain field
+- Conditional tabindex per W3C APG: active panels with focusable children skip tabindex="0"
 
 ### Pending Todos
 
@@ -66,5 +69,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-03
-Stopped at: Phase 58 complete and verified, ready to plan Phase 59
+Stopped at: Completed 59-01-PLAN.md
 Resume file: None
