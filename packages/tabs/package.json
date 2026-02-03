@@ -1,0 +1,53 @@
+{
+  "name": "@lit-ui/tabs",
+  "version": "1.0.0",
+  "description": "Accessible tabs component built with Lit and Tailwind CSS",
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/user/lit-ui.git",
+    "directory": "packages/tabs"
+  },
+  "keywords": [
+    "tabs",
+    "lit",
+    "web-components",
+    "ui",
+    "tailwind",
+    "ssr"
+  ],
+  "type": "module",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": true,
+  "scripts": {
+    "dev": "vite build --watch",
+    "build": "vite build"
+  },
+  "peerDependencies": {
+    "lit": "^3.0.0",
+    "@lit-ui/core": "^1.0.0"
+  },
+  "devDependencies": {
+    "@lit-ui/core": "workspace:*",
+    "@lit-ui/typescript-config": "workspace:*",
+    "@lit-ui/vite-config": "workspace:*",
+    "@tailwindcss/vite": "^4.1.18",
+    "lit": "^3.3.2",
+    "tailwindcss": "^4.1.18",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1",
+    "vite-plugin-dts": "^4.5.4"
+  }
+}
