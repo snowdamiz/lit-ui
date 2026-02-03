@@ -1520,6 +1520,8 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
       state: {
         sorting: this.sorting,
         rowSelection: this.rowSelection,
+        columnFilters: this.columnFilters,
+        globalFilter: this.globalFilter,
         pagination: this.pagination,
       },
       onSortingChange: (updater) => {
@@ -1534,6 +1536,48 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
         this.rowSelection = newSelection;
         this.dispatchSelectionChange(table, newSelection, 'user');
       },
+      onColumnFiltersChange: (updater) => {
+        const newFilters =
+          typeof updater === 'function' ? updater(this.columnFilters) : updater;
+        // Determine which column changed
+        let changedColumn: string | undefined;
+        if (newFilters.length !== this.columnFilters.length) {
+          // Column added or removed - find the difference
+          const oldIds = new Set(this.columnFilters.map((f) => f.id));
+          const newIds = new Set(newFilters.map((f) => f.id));
+          for (const id of newIds) {
+            if (!oldIds.has(id)) {
+              changedColumn = id;
+              break;
+            }
+          }
+          if (!changedColumn) {
+            for (const id of oldIds) {
+              if (!newIds.has(id)) {
+                changedColumn = id;
+                break;
+              }
+            }
+          }
+        } else {
+          // Same count - find changed filter
+          for (let i = 0; i < newFilters.length; i++) {
+            const oldFilter = this.columnFilters.find((f) => f.id === newFilters[i].id);
+            if (!oldFilter || JSON.stringify(oldFilter.value) !== JSON.stringify(newFilters[i].value)) {
+              changedColumn = newFilters[i].id;
+              break;
+            }
+          }
+        }
+        this.columnFilters = newFilters;
+        this.dispatchFilterChange(newFilters, this.globalFilter, changedColumn);
+      },
+      onGlobalFilterChange: (updater) => {
+        const newGlobalFilter =
+          typeof updater === 'function' ? updater(this.globalFilter) : updater;
+        this.globalFilter = newGlobalFilter;
+        this.dispatchFilterChange(this.columnFilters, newGlobalFilter, undefined);
+      },
       onPaginationChange: (updater) => {
         const newPagination =
           typeof updater === 'function' ? updater(this.pagination) : updater;
@@ -1544,8 +1588,10 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
       enableRowSelection: this.enableSelection,
       getCoreRowModel: getCoreRowModel(),
       getSortedRowModel: this.manualSorting ? undefined : getSortedRowModel(),
+      getFilteredRowModel: this.manualFiltering ? undefined : getFilteredRowModel(),
       getPaginationRowModel: this.manualPagination ? undefined : getPaginationRowModel(),
       manualSorting: this.manualSorting,
+      manualFiltering: this.manualFiltering,
       manualPagination: this.manualPagination,
       pageCount: this.pageCount,
     });
