@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-02)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** Phase 57 - Accordion Polish & Package
+**Current focus:** Phase 58+ (Phase 57 complete)
 
 ## Current Position
 
 Phase: 57 of 60 (Accordion Polish & Package)
-Plan: 1 of 2 in current phase
-Status: In progress
-Last activity: 2026-02-03 — Completed 57-01-PLAN.md (chevron, data-state, lazy mounting)
+Plan: 2 of 2 in current phase
+Status: Phase complete
+Last activity: 2026-02-03 — Completed 57-02-PLAN.md (SSR verification, package publishability)
 
-Progress: ██████░░░░░░░░░░░░░░░░░░░░░░░░░░ 20% (v6.0)
+Progress: ███████░░░░░░░░░░░░░░░░░░░░░░░░░ 22% (v6.0)
 
 ## Performance Metrics
 
@@ -37,6 +37,8 @@ Recent decisions affecting current work:
 - Roving tabindex pattern reused from RadioGroup for accordion keyboard nav
 - Disabled items use cursor:not-allowed + opacity instead of pointer-events:none to remain focusable
 - aria-disabled uses lit `nothing` sentinel to omit attribute when not disabled
+- _hasBeenExpanded as plain field, not @state() (avoids redundant re-render)
+- data-state set via this.setAttribute in lifecycle (host-level, read-only, client-only via isServer guard)
 
 ### Pending Todos
 
@@ -60,5 +62,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-03
-Stopped at: Completed 57-01-PLAN.md, ready for 57-02
+Stopped at: Completed 57-02-PLAN.md, Phase 57 complete
 Resume file: None
