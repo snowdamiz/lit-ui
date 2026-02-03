@@ -14,7 +14,7 @@
  * @slot default - Content for the collapsible panel
  */
 
-import { html, css, nothing, type PropertyValues } from 'lit';
+import { html, css, nothing, isServer, type PropertyValues } from 'lit';
 import { property } from 'lit/decorators.js';
 import { TailwindElement, tailwindBaseStyles } from '@lit-ui/core';
 import { dispatchCustomEvent } from '@lit-ui/core';
@@ -165,12 +165,16 @@ export class AccordionItem extends TailwindElement {
 
   override connectedCallback(): void {
     super.connectedCallback();
-    this.setAttribute('data-state', this.expanded ? 'open' : 'closed');
+    if (!isServer) {
+      this.setAttribute('data-state', this.expanded ? 'open' : 'closed');
+    }
   }
 
   protected override updated(changedProperties: PropertyValues): void {
     if (changedProperties.has('expanded')) {
-      this.setAttribute('data-state', this.expanded ? 'open' : 'closed');
+      if (!isServer) {
+        this.setAttribute('data-state', this.expanded ? 'open' : 'closed');
+      }
       if (this.expanded) {
         this._hasBeenExpanded = true;
       }
