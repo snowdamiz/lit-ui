@@ -27,10 +27,10 @@ Requirements for the Layout Components milestone. Each maps to roadmap phases.
 
 ### Accordion — Polish
 
-- [ ] **ACRD-16**: Built-in chevron indicator with CSS rotation animation on expand/collapse
-- [ ] **ACRD-17**: data-state attribute ("open"/"closed") on items for CSS-only styling
-- [ ] **ACRD-18**: Lazy mounting of panel content (DOM created on first expand, preserved after)
-- [ ] **ACRD-19**: SSR compatible via Declarative Shadow DOM with slotchange hydration workaround
+- [x] **ACRD-16**: Built-in chevron indicator with CSS rotation animation on expand/collapse
+- [x] **ACRD-17**: data-state attribute ("open"/"closed") on items for CSS-only styling
+- [x] **ACRD-18**: Lazy mounting of panel content (DOM created on first expand, preserved after)
+- [x] **ACRD-19**: SSR compatible via Declarative Shadow DOM with slotchange hydration workaround
 
 ### Accordion — Theming
 
@@ -72,7 +72,7 @@ Requirements for the Layout Components milestone. Each maps to roadmap phases.
 
 ### Integration
 
-- [ ] **INTG-01**: @lit-ui/accordion package with peer deps on lit and @lit-ui/core
+- [x] **INTG-01**: @lit-ui/accordion package with peer deps on lit and @lit-ui/core
 - [ ] **INTG-02**: @lit-ui/tabs package with peer deps on lit and @lit-ui/core
 - [ ] **INTG-03**: CLI copy-source templates for accordion (namespaced: accordion/accordion, accordion/accordion-item)
 - [ ] **INTG-04**: CLI copy-source templates for tabs (namespaced: tabs/tabs, tabs/tab-panel)
