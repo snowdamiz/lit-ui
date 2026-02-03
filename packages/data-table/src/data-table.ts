@@ -411,6 +411,18 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
   private _dropTargetColumnId: string | null = null;
 
   // ==========================================================================
+  // Sticky column properties
+  // ==========================================================================
+
+  /**
+   * Enable sticky first column during horizontal scroll.
+   * When true, the first column stays fixed while scrolling horizontally.
+   * @default false
+   */
+  @property({ type: Boolean, attribute: 'sticky-first-column', reflect: true })
+  stickyFirstColumn = false;
+
+  // ==========================================================================
   // Async data callback properties
   // ==========================================================================
 
@@ -2068,7 +2080,59 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
       .data-table-body {
         flex: 1;
         overflow-y: auto;
-        overflow-x: hidden;
+        overflow-x: auto;
+      }
+
+      /* Sticky first column styles */
+      :host([sticky-first-column]) .data-table-cell:first-child,
+      :host([sticky-first-column]) .data-table-header-cell:first-child {
+        position: sticky;
+        left: 0;
+        background: inherit;
+      }
+
+      :host([sticky-first-column]) .data-table-cell:first-child {
+        z-index: 2;
+        background: var(--ui-data-table-row-bg);
+      }
+
+      :host([sticky-first-column]) .data-table-row:hover .data-table-cell:first-child {
+        background: var(--ui-data-table-row-hover-bg);
+      }
+
+      :host([sticky-first-column]) .data-table-row.selected .data-table-cell:first-child {
+        background: var(--ui-data-table-selected-bg, rgba(59, 130, 246, 0.1));
+      }
+
+      :host([sticky-first-column]) .data-table-header-cell:first-child {
+        z-index: 11; /* Above sticky header row z-index (10) */
+        background: var(--ui-data-table-header-bg);
+      }
+
+      /* Shadow hint for sticky column edge */
+      :host([sticky-first-column]) .data-table-cell:first-child::after,
+      :host([sticky-first-column]) .data-table-header-cell:first-child::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: -8px;
+        bottom: 0;
+        width: 8px;
+        pointer-events: none;
+        background: linear-gradient(
+          to right,
+          rgba(0, 0, 0, 0.06),
+          transparent
+        );
+      }
+
+      :host-context(.dark):host([sticky-first-column]) .data-table-cell:first-child::after,
+      :host-context(.dark):host([sticky-first-column]) .data-table-header-cell:first-child::after {
+        background: linear-gradient(
+          to right,
+          rgba(0, 0, 0, 0.2),
+          transparent
+        );
       }
 
       /* Virtual scrolling styles */
