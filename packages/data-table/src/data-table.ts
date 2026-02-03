@@ -213,6 +213,13 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
   @property({ attribute: 'row-id-key' })
   rowIdKey = 'id';
 
+  /**
+   * Total number of rows across all pages.
+   * Used for "Select all X items" display. For client-side, uses data.length.
+   */
+  @property({ type: Number, attribute: 'total-row-count' })
+  totalRowCount?: number;
+
   // ==========================================================================
   // Lifecycle methods
   // ==========================================================================
@@ -510,6 +517,63 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
     }
 
     this.lastSelectedRowId = row.id;
+  }
+
+  /**
+   * Render "Select all X items" banner when all page rows are selected.
+   * Shows link to select entire dataset (across all pages).
+   */
+  private renderSelectionBanner(table: Table<TData>): TemplateResult {
+    if (!this.enableSelection) return html``;
+
+    const isAllPageSelected = table.getIsAllPageRowsSelected();
+    const totalCount = this.totalRowCount ?? this.data.length;
+    const selectedCount = Object.keys(this.rowSelection).length;
+
+    // Only show banner when:
+    // 1. All rows on current page are selected
+    // 2. Not all rows in dataset are selected
+    if (!isAllPageSelected || selectedCount >= totalCount) {
+      return html``;
+    }
+
+    return html`
+      <div class="selection-banner" role="status" aria-live="polite">
+        <span class="selection-banner-text">
+          ${selectedCount} items on this page selected.
+        </span>
+        <button
+          type="button"
+          class="selection-banner-link"
+          @click=${() => this.handleSelectAll(table, totalCount)}
+        >
+          Select all ${totalCount.toLocaleString()} items
+        </button>
+      </div>
+    `;
+  }
+
+  /**
+   * Handle "Select all X items" click.
+   * For client-side: selects all rows in data array.
+   * For server-side: emits event for parent to handle.
+   */
+  private handleSelectAll(table: Table<TData>, totalCount: number): void {
+    // Check if manual pagination is enabled (will be added in Phase 63)
+    const manualPagination = false; // Placeholder until Phase 63
+
+    if (manualPagination) {
+      // Server-side: emit event with intent
+      const event = new CustomEvent('ui-select-all-requested', {
+        detail: { totalCount },
+        bubbles: true,
+        composed: true,
+      });
+      this.dispatchEvent(event);
+    } else {
+      // Client-side: select all rows
+      table.toggleAllRowsSelected(true);
+    }
   }
 
   /**
@@ -1088,6 +1152,43 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
         --ui-data-table-selected-hover-bg: rgba(59, 130, 246, 0.25);
       }
 
+      /* Selection banner styles */
+      .selection-banner {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        background: var(--ui-data-table-banner-bg, #eff6ff);
+        border-bottom: 1px solid var(--ui-data-table-border-color);
+        font-size: 0.875rem;
+        color: var(--ui-data-table-text-color);
+      }
+
+      :host-context(.dark) .selection-banner {
+        --ui-data-table-banner-bg: rgba(59, 130, 246, 0.15);
+      }
+
+      .selection-banner-link {
+        background: none;
+        border: none;
+        color: var(--color-primary, #3b82f6);
+        font-weight: 500;
+        cursor: pointer;
+        text-decoration: underline;
+        text-underline-offset: 2px;
+      }
+
+      .selection-banner-link:hover {
+        text-decoration: none;
+      }
+
+      .selection-banner-link:focus-visible {
+        outline: 2px solid var(--color-primary, #3b82f6);
+        outline-offset: 2px;
+        border-radius: 2px;
+      }
+
       .data-table-body {
         flex: 1;
         overflow-y: auto;
@@ -1294,6 +1395,7 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
         @keydown=${this.handleKeyDown}
       >
         ${this.renderHeader(table)}
+        ${this.renderSelectionBanner(table)}
         ${this.renderBody(table)}
         <div
           class="sr-only"
