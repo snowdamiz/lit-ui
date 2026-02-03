@@ -124,8 +124,24 @@ export class AccordionItem extends TailwindElement {
         color: var(--ui-accordion-panel-text, inherit);
       }
 
+      .chevron {
+        flex-shrink: 0;
+        width: 1em;
+        height: 1em;
+        margin-left: auto;
+        transition: transform var(--ui-accordion-transition, 200ms) ease;
+      }
+
+      :host([expanded]) .chevron {
+        transform: rotate(180deg);
+      }
+
       @media (prefers-reduced-motion: reduce) {
         .panel-wrapper {
+          transition-duration: 0ms;
+        }
+
+        .chevron {
           transition-duration: 0ms;
         }
       }
@@ -166,6 +182,21 @@ export class AccordionItem extends TailwindElement {
           @click=${this.handleToggle}
         >
           <slot name="header"></slot>
+          <svg
+            class="chevron"
+            viewBox="0 0 16 16"
+            fill="none"
+            stroke="currentColor"
+            aria-hidden="true"
+            part="chevron"
+          >
+            <path
+              d="M4 6l4 4 4-4"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
         </button>
       </div>
       <div class="panel-wrapper">
