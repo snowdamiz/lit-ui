@@ -64,11 +64,11 @@ Plans:
   3. User can navigate tabs with Left/Right arrows (horizontal) or Up/Down arrows (vertical), with wrapping and Home/End support
   4. Screen reader identifies tablist, tab, and tabpanel roles with correct aria-selected, aria-controls, aria-labelledby, and aria-orientation
   5. Tabs render with project-consistent CSS custom properties (--ui-tabs-*) and respond to dark mode
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 58-01: Tabs container and tab-panel elements with tablist rendering and active tab state
-- [ ] 58-02: Keyboard navigation, activation modes, orientation, ARIA, disabled tabs, and CSS theming
+- [ ] 58-01-PLAN.md — Package scaffold, TabPanel element, Tabs container with tablist rendering and active tab state
+- [ ] 58-02-PLAN.md — Keyboard navigation, activation modes, orientation, ARIA, disabled tabs, and CSS theming
 
 ### Phase 59: Tabs Polish & Package
 **Goal**: Tabs have animated indicator, lazy rendering, overflow handling, SSR compatibility, and ship as a publishable @lit-ui/tabs package
