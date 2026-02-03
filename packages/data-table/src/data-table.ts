@@ -59,6 +59,7 @@ import type {
 } from './types.js';
 import { KeyboardNavigationManager, type GridPosition } from './keyboard-navigation.js';
 import { createSelectionColumn } from './selection-column.js';
+import { renderColumnPicker, columnPickerStyles } from './column-picker.js';
 
 /**
  * A high-performance data table component with TanStack Table integration.
@@ -1190,7 +1191,7 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
               role="row"
               aria-rowindex="1"
               class="data-table-row header-row"
-              style="grid-template-columns: ${this.getGridTemplateColumns()}"
+              style="grid-template-columns: ${this.getGridTemplateColumns(table)}"
             >
               ${headerGroup.headers.map((header, colIndex) =>
                 this.renderHeaderCell(header, colIndex)
@@ -1389,7 +1390,7 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
    */
   private renderAllRows(table: Table<TData>): TemplateResult {
     const rows = table.getRowModel().rows;
-    const gridTemplateColumns = this.getGridTemplateColumns();
+    const gridTemplateColumns = this.getGridTemplateColumns(table);
 
     return html`
       <div
@@ -1428,7 +1429,7 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
     const virtualItems = virtualizer.getVirtualItems();
     const totalHeight = virtualizer.getTotalSize();
     const rows = table.getRowModel().rows;
-    const gridTemplateColumns = this.getGridTemplateColumns();
+    const gridTemplateColumns = this.getGridTemplateColumns(table);
 
     return html`
       <div
@@ -1926,6 +1927,28 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
         globalFilter: this.globalFilter,
         pagination: this.pagination,
         columnVisibility: this.columnVisibility,
+        columnSizing: this.columnSizing,
+        columnSizingInfo: this._columnSizingInfo,
+      },
+      // Column sizing options
+      enableColumnResizing: this.enableColumnResizing,
+      columnResizeMode: this.columnResizeMode,
+      columnResizeDirection: 'ltr',
+      onColumnSizingChange: (updater) => {
+        const newSizing =
+          typeof updater === 'function' ? updater(this.columnSizing) : updater;
+        this.columnSizing = newSizing;
+      },
+      onColumnSizingInfoChange: (updater) => {
+        const newInfo =
+          typeof updater === 'function' ? updater(this._columnSizingInfo) : updater;
+        this._columnSizingInfo = newInfo;
+        // Toggle data-resizing attribute on host for cursor styling
+        if (newInfo.isResizingColumn) {
+          this.dataset.resizing = 'true';
+        } else {
+          delete this.dataset.resizing;
+        }
       },
       onSortingChange: (updater) => {
         const newSorting =
