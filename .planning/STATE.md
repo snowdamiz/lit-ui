@@ -10,21 +10,21 @@
 
 **Milestone:** v7.0 Data Table
 **Phase:** 68 - Package, CLI & Documentation (in progress)
-**Plan:** 2 of 4 complete
+**Plan:** 3 of 4 complete
 **Status:** In progress
-**Last activity:** 2026-02-05 - Completed 68-02-PLAN.md
+**Last activity:** 2026-02-05 - Completed 68-03-PLAN.md
 
 **Progress:**
 ```
-Milestone: [#########-] 93%
-Phase:     [#####-----] 50%
+Milestone: [##########] 96%
+Phase:     [########--] 75%
 ```
 
 ## Performance Metrics
 
 | Metric | Value |
 |--------|-------|
-| Plans completed | 26 |
+| Plans completed | 27 |
 | Requirements satisfied | 85/85 |
 | Phases completed | 7/8 |
 
@@ -111,6 +111,9 @@ Phase:     [#####-----] 50%
 | Starter template for CLI copy-source | Self-contained 310-line template with sorting, matching Select starter pattern | 68-02 |
 | TanStack packages as CLI registry deps | Copy-source mode needs @tanstack/lit-table and @tanstack/lit-virtual installed | 68-02 |
 | CSS double fallback in starter | --ui-data-table-* -> --color-* -> literal hex, with private --_* vars for internal reuse | 68-02 |
+| DataTableDemo React wrapper | useRef + useEffect to set object/array properties on custom element (React cannot set object attrs) | 68-03 |
+| Inline JSX type declarations | declare global JSX.IntrinsicElements for lui-data-table in page file, matching DialogPage.tsx pattern | 68-03 |
+| Code tabs show Lit HTML | Documentation code examples show Lit template syntax, not React wrapper, for framework-agnostic docs | 68-03 |
 
 ### Architecture Notes
 *Technical context that spans multiple plans.*
@@ -156,6 +159,7 @@ Phase:     [#####-----] 50%
 - CLI registry: data-table entry with @tanstack/lit-table + @tanstack/lit-virtual dependencies, checkbox/popover registryDependencies
 - CLI starter template: 310-line self-contained component with single-column sorting, CSS double fallbacks, ARIA grid, skeleton loading
 - CLI npm mapping: data-table -> @lit-ui/data-table in install-component.ts
+- Docs page: DataTablePage.tsx with DataTableDemo React wrapper for complex props, JSX IntrinsicElements declaration, 5 core demos (basic/sort/selection/filter/pagination)
 
 ### TODOs
 *Items to address that emerged during work.*
@@ -183,19 +187,19 @@ Phase:     [#####-----] 50%
 ### Last Session
 *Summary of previous session's work. Updated at session end.*
 
-- Executed Phase 68 Plan 02: CLI registry and starter template
-- Added data-table to registry.json with TanStack dependencies and checkbox/popover registryDependencies
-- Mapped data-table to @lit-ui/data-table in install-component.ts
-- Created 310-line starter template with sorting, CSS double fallbacks, ARIA grid, skeleton loading
-- Registered DATA_TABLE_TEMPLATE in index.ts COMPONENT_TEMPLATES map
-- CLI TypeScript compilation passes cleanly
-- Plan 68-02 complete (2/4 plans done in phase 68)
+- Executed Phase 68 Plan 03: Documentation page with core feature demos
+- Added @lit-ui/data-table dependency to docs package.json
+- Added "Data Table" nav item and /components/data-table route
+- Created DataTablePage.tsx (426 lines) with DataTableDemo React wrapper
+- 5 interactive demos: basic table, sorting, selection, filtering, pagination
+- JSX IntrinsicElements declaration for lui-data-table with 11 attributes
+- TypeScript compilation passes cleanly
+- Plan 68-03 complete (3/4 plans done in phase 68)
 
 ### Next Actions
 *Clear starting point for next session.*
 
-1. Phase 68 Plan 03: Documentation page for data-table
-2. Phase 68 Plan 04: Remaining CLI/docs work
+1. Phase 68 Plan 04: Advanced demos, API reference, accessibility docs
 
 ### Open Questions
 *Unresolved questions needing user input.*
@@ -204,4 +208,4 @@ Phase:     [#####-----] 50%
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-02-05 (Phase 68 plan 02 complete, CLI registry and starter template done)*
+*Last updated: 2026-02-05 (Phase 68 plan 03 complete, documentation page core demos done)*
