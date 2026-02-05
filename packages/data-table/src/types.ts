@@ -615,3 +615,62 @@ export interface BulkActionEvent<TData extends RowData = RowData> {
   /** Number of selected rows */
   selectedCount: number;
 }
+
+// =============================================================================
+// Export Types (EXP-*)
+// =============================================================================
+
+/**
+ * Options for client-side CSV export.
+ *
+ * Controls filename, row selection, encoding, and header customization
+ * when exporting table data to CSV format.
+ */
+export interface ExportCsvOptions {
+  /**
+   * Filename for the downloaded CSV file.
+   * @default 'export.csv'
+   */
+  filename?: string;
+
+  /**
+   * When true, export only selected rows (EXP-02).
+   * Falls back to all filtered rows if no rows are selected.
+   * @default false
+   */
+  selectedOnly?: boolean;
+
+  /**
+   * Prepend UTF-8 BOM for Excel compatibility.
+   * Excel requires the BOM to correctly interpret UTF-8 encoded CSV files.
+   * @default true
+   */
+  includeBom?: boolean;
+
+  /**
+   * Custom column header labels keyed by column ID.
+   * Overrides the default header derived from column definitions.
+   */
+  headers?: Record<string, string>;
+}
+
+/**
+ * Parameters passed to the server-side export callback (EXP-04).
+ *
+ * When `onExport` is set on the DataTable, `exportCsv()` delegates
+ * to the callback with these parameters instead of performing
+ * client-side CSV generation. This allows the server to handle
+ * large dataset exports efficiently.
+ */
+export interface ServerExportParams {
+  /** Current column filters state */
+  columnFilters: ColumnFiltersState;
+  /** Current global filter string */
+  globalFilter: string;
+  /** Current sorting state */
+  sorting: SortingState;
+  /** IDs of currently visible columns, excluding utility columns (EXP-03) */
+  visibleColumnIds: string[];
+  /** IDs of currently selected rows */
+  selectedRowIds: string[];
+}
