@@ -237,6 +237,12 @@ Plans:
 
 **Dependencies:** Phase 62 (selection for export selected), Phase 63 (filters for export filtered)
 
+**Plans:** 2 plans
+
+Plans:
+- [ ] 67-01-PLAN.md — CSV export utility with client-side and server-side callback support
+- [ ] 67-02-PLAN.md — Expandable detail rows with column factory, dynamic virtualizer measurement, and single-expand mode
+
 **Requirements:**
 - EXP-01: Export to CSV downloads current filtered/visible data
 - EXP-02: Export to CSV downloads selected rows only when selection active
@@ -296,7 +302,7 @@ Plans:
 | 64 | Column Customization | Complete | 4/4 |
 | 65 | Inline Editing | Complete | 3/3 |
 | 66 | Cell Renderers, Row Actions & Bulk Actions | Complete | 3/3 |
-| 67 | Export & Expandable Rows | Pending | 0/0 |
+| 67 | Export & Expandable Rows | Planned | 0/2 |
 | 68 | Package, CLI & Documentation | Pending | 0/0 |
 
 **Total:** 8 phases, 76 requirements mapped
