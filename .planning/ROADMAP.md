@@ -200,6 +200,13 @@ Plans:
 
 **Dependencies:** Phase 62 (selection), Phase 65 (edit mode integration with actions)
 
+**Plans:** 3 plans
+
+Plans:
+- [ ] 66-01-PLAN.md — Types, cell renderer factories, and row actions module
+- [ ] 66-02-PLAN.md — Row actions integration into DataTable component
+- [ ] 66-03-PLAN.md — Bulk actions toolbar and confirmation dialog integration
+
 **Requirements:**
 - CELL-01: Column definition accepts custom Lit template for cell rendering
 - CELL-02: Cell template receives row data and column definition as context
@@ -288,7 +295,7 @@ Plans:
 | 63 | Filtering & Pagination | Complete | 4/4 |
 | 64 | Column Customization | Complete | 4/4 |
 | 65 | Inline Editing | Complete | 3/3 |
-| 66 | Cell Renderers, Row Actions & Bulk Actions | Pending | 0/0 |
+| 66 | Cell Renderers, Row Actions & Bulk Actions | Planned | 0/3 |
 | 67 | Export & Expandable Rows | Pending | 0/0 |
 | 68 | Package, CLI & Documentation | Pending | 0/0 |
 
