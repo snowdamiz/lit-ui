@@ -10,21 +10,21 @@
 
 **Milestone:** v7.0 Data Table
 **Phase:** 68 - Package, CLI & Documentation (in progress)
-**Plan:** 1 of 4 complete
+**Plan:** 2 of 4 complete
 **Status:** In progress
-**Last activity:** 2026-02-05 - Completed 68-01-PLAN.md
+**Last activity:** 2026-02-05 - Completed 68-02-PLAN.md
 
 **Progress:**
 ```
-Milestone: [#########-] 90%
-Phase:     [##--------] 25%
+Milestone: [#########-] 93%
+Phase:     [#####-----] 50%
 ```
 
 ## Performance Metrics
 
 | Metric | Value |
 |--------|-------|
-| Plans completed | 25 |
+| Plans completed | 26 |
 | Requirements satisfied | 85/85 |
 | Phases completed | 7/8 |
 
@@ -108,6 +108,9 @@ Phase:     [##--------] 25%
 | Collision detection registration | customElements.get guard before define in index.ts, matching accordion/tabs pattern | 68-01 |
 | JSX kebab/camelCase split | HTML attributes use kebab-case, JS-only properties use camelCase in JSX declarations | 68-01 |
 | 14 events in JSX declarations | 13 JSDoc events + ui-select-all-requested for complete server-side pagination support | 68-01 |
+| Starter template for CLI copy-source | Self-contained 310-line template with sorting, matching Select starter pattern | 68-02 |
+| TanStack packages as CLI registry deps | Copy-source mode needs @tanstack/lit-table and @tanstack/lit-virtual installed | 68-02 |
+| CSS double fallback in starter | --ui-data-table-* -> --color-* -> literal hex, with private --_* vars for internal reuse | 68-02 |
 
 ### Architecture Notes
 *Technical context that spans multiple plans.*
@@ -150,6 +153,9 @@ Phase:     [##--------] 25%
 - Detail panel: renderDetailPanel helper, role="region", padding-left aligned with data columns (calc(1rem + 40px)), full-width below data row
 - Package: 4 peerDependencies (lit, @lit-ui/core, @lit-ui/checkbox, @lit-ui/popover), collision detection registration in index.ts
 - JSX declarations: 44 properties + 14 events, React/Vue/Svelte support, 330 lines in jsx.d.ts
+- CLI registry: data-table entry with @tanstack/lit-table + @tanstack/lit-virtual dependencies, checkbox/popover registryDependencies
+- CLI starter template: 310-line self-contained component with single-column sorting, CSS double fallbacks, ARIA grid, skeleton loading
+- CLI npm mapping: data-table -> @lit-ui/data-table in install-component.ts
 
 ### TODOs
 *Items to address that emerged during work.*
@@ -177,20 +183,19 @@ Phase:     [##--------] 25%
 ### Last Session
 *Summary of previous session's work. Updated at session end.*
 
-- Executed Phase 68 Plan 01: Package finalization and JSX declarations
-- Added @lit-ui/checkbox and @lit-ui/popover as peerDependencies in package.json
-- Moved element registration from data-table.ts to index.ts with collision detection pattern
-- Rewrote jsx.d.ts from 69-line placeholder to 330-line comprehensive type declarations
-- 44 properties and 14 events covered across React, Vue, and Svelte
-- TypeScript compilation and vite build both pass cleanly
-- Plan 68-01 complete (1/4 plans done in phase 68)
+- Executed Phase 68 Plan 02: CLI registry and starter template
+- Added data-table to registry.json with TanStack dependencies and checkbox/popover registryDependencies
+- Mapped data-table to @lit-ui/data-table in install-component.ts
+- Created 310-line starter template with sorting, CSS double fallbacks, ARIA grid, skeleton loading
+- Registered DATA_TABLE_TEMPLATE in index.ts COMPONENT_TEMPLATES map
+- CLI TypeScript compilation passes cleanly
+- Plan 68-02 complete (2/4 plans done in phase 68)
 
 ### Next Actions
 *Clear starting point for next session.*
 
-1. Phase 68 Plan 02: CLI registry entry and npm mapping for data-table
-2. Phase 68 Plan 03: CLI template generation for data-table
-3. Phase 68 Plan 04: Documentation page for data-table
+1. Phase 68 Plan 03: Documentation page for data-table
+2. Phase 68 Plan 04: Remaining CLI/docs work
 
 ### Open Questions
 *Unresolved questions needing user input.*
@@ -199,4 +204,4 @@ Phase:     [##--------] 25%
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-02-05 (Phase 68 plan 01 complete, package finalization done)*
+*Last updated: 2026-02-05 (Phase 68 plan 02 complete, CLI registry and starter template done)*
