@@ -161,13 +161,15 @@ ui-button::part(base) {
 
 ## Contributing
 
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+
+Please note that this project is released with a [Contributor Code of Conduct](CODE_OF_CONDUCT.md). By participating in this project you agree to abide by its terms.
+
 ```bash
 pnpm install    # Install dependencies
 pnpm dev        # Start dev server
 pnpm build      # Build library
 ```
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ## Publishing
 
