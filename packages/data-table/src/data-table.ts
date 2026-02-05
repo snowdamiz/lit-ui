@@ -34,6 +34,7 @@
  * @fires ui-column-order-change - When column order changes
  * @fires ui-column-preferences-change - When column sizing/order/visibility changes
  * @fires ui-column-preferences-reset - When preferences are reset via resetColumnPreferences()
+ * @fires ui-cell-edit - When a cell edit is committed with old/new values
  */
 
 import { html, css, nothing, isServer, type TemplateResult, type PropertyValues } from 'lit';
@@ -79,8 +80,9 @@ import type {
 import { KeyboardNavigationManager, type GridPosition } from './keyboard-navigation.js';
 import { createSelectionColumn } from './selection-column.js';
 import { renderColumnPicker, columnPickerStyles } from './column-picker.js';
+import { renderEditInput, isColumnEditable, renderEditableIndicator, inlineEditingStyles } from './inline-editing.js';
 import { savePreferences, loadPreferences, clearPreferences } from './column-preferences.js';
-import type { ColumnPreferences, ColumnPreferencesChangeEvent } from './types.js';
+import type { ColumnPreferences, ColumnPreferencesChangeEvent, EditingCell, CellEditEvent, EditValidationResult, LitUIColumnMeta } from './types.js';
 
 /**
  * A high-performance data table component with TanStack Table integration.
@@ -141,6 +143,24 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
    */
   @state()
   private lastSelectedRowId: string | null = null;
+
+  // ==========================================================================
+  // Inline editing state (cell level)
+  // ==========================================================================
+
+  /** Currently editing cell state. Null when not editing. */
+  @state()
+  private _editingCell: EditingCell | null = null;
+
+  /** Validation error for the currently editing cell. */
+  @state()
+  private _cellValidationError: string | null = null;
+
+  /** Guard flag to prevent double-commit from Enter + blur race condition. */
+  private _isCommitting = false;
+
+  /** Reference to current table instance for use outside render(). */
+  private _tableInstance?: Table<TData>;
 
   /**
    * Column definitions for the table.
@@ -746,6 +766,14 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
       return;
     }
 
+    // Enter or F2 on a focused cell activates edit mode (EDIT-02)
+    if ((e.key === 'Enter' || e.key === 'F2') && !this._editingCell) {
+      const pos = this.navManager.getPosition();
+      this.activateCellEdit(pos);
+      e.preventDefault();
+      return;
+    }
+
     const newPos = this.navManager.handleKeyDown(e);
     if (newPos) {
       e.preventDefault();
@@ -811,11 +839,19 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
 
   /**
    * Handle cell click to update focus position.
+   * Click on already-focused editable cell activates edit mode (EDIT-02).
    */
   private handleCellClick(rowIndex: number, colIndex: number): void {
+    const wasFocused = this._focusedCell.row === rowIndex && this._focusedCell.col === colIndex;
+
     this._focusedCell = { row: rowIndex, col: colIndex };
     this.navManager.setPosition(this._focusedCell);
     this.updateRovingTabindex(this._focusedCell);
+
+    // Click on already-focused editable cell activates edit mode (EDIT-02)
+    if (wasFocused && !this._editingCell) {
+      this.activateCellEdit({ row: rowIndex, col: colIndex });
+    }
   }
 
   /**
@@ -1091,6 +1127,150 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
       bubbles: true,
       composed: true,
     }));
+  }
+
+  // ==========================================================================
+  // Inline cell editing methods
+  // ==========================================================================
+
+  /**
+   * Activate cell edit mode for a given grid position.
+   * Checks editability, cancels any existing edit, and sets editing state.
+   * @param pos - Grid position of the cell to edit
+   */
+  private activateCellEdit(pos: GridPosition): void {
+    const table = this._tableInstance;
+    if (!table) return;
+
+    const rows = table.getRowModel().rows;
+    const row = rows[pos.row];
+    if (!row) return;
+
+    const visibleCells = row.getVisibleCells();
+    const cell = visibleCells[pos.col];
+    if (!cell) return;
+
+    const meta = cell.column.columnDef.meta as LitUIColumnMeta<TData> | undefined;
+    const rowData = row.original;
+
+    // Check if column is editable for this row
+    if (!isColumnEditable(meta, rowData)) return;
+
+    // Don't allow cell edit while row edit is active
+    if ((this as unknown as { _editingRow?: unknown })._editingRow) return;
+
+    // If another cell is being edited, cancel it first
+    if (this._editingCell) {
+      this.cancelCellEdit();
+    }
+
+    // Set editing state
+    this._editingCell = {
+      rowId: row.id,
+      columnId: cell.column.id,
+      originalValue: cell.getValue(),
+    };
+    this._cellValidationError = null;
+  }
+
+  /**
+   * Commit a cell edit with validation and event dispatch.
+   * @param newValue - The new value to commit
+   */
+  private commitCellEdit(newValue: unknown): void {
+    if (this._isCommitting || !this._editingCell) return;
+    this._isCommitting = true;
+
+    const { rowId, columnId, originalValue } = this._editingCell;
+    const table = this._tableInstance;
+
+    if (!table) {
+      this._isCommitting = false;
+      return;
+    }
+
+    // Find the row and column for validation
+    const row = table.getRowModel().rows.find((r) => r.id === rowId);
+    if (!row) {
+      this._isCommitting = false;
+      return;
+    }
+
+    const column = table.getColumn(columnId);
+    const meta = column?.columnDef.meta as LitUIColumnMeta<TData> | undefined;
+    const rowData = row.original;
+
+    // Run validation if provided
+    if (meta?.editValidate) {
+      const result = meta.editValidate(newValue, rowData);
+      if (result === false || (typeof result === 'object' && !result.valid)) {
+        const message = typeof result === 'object' && result.message ? result.message : 'Invalid value';
+        this._cellValidationError = message;
+        this._isCommitting = false;
+        return; // Stay in edit mode
+      }
+    }
+
+    // If value hasn't changed, just cancel silently
+    // eslint-disable-next-line eqeqeq
+    if (newValue == originalValue) {
+      this._editingCell = null;
+      this._cellValidationError = null;
+      this._isCommitting = false;
+      this.restoreCellFocus(rowId, columnId);
+      return;
+    }
+
+    // Dispatch cell edit event (EDIT-06)
+    const detail: CellEditEvent<TData> = {
+      row: rowData,
+      rowId,
+      columnId,
+      oldValue: originalValue,
+      newValue,
+    };
+    this.dispatchEvent(new CustomEvent('ui-cell-edit', {
+      detail,
+      bubbles: true,
+      composed: true,
+    }));
+
+    // Clear editing state
+    this._editingCell = null;
+    this._cellValidationError = null;
+    this._isCommitting = false;
+    this.restoreCellFocus(rowId, columnId);
+  }
+
+  /**
+   * Cancel the current cell edit, restoring focus to the cell.
+   */
+  private cancelCellEdit(): void {
+    const rowId = this._editingCell?.rowId;
+    const columnId = this._editingCell?.columnId;
+    this._editingCell = null;
+    this._cellValidationError = null;
+    this._isCommitting = false;
+    if (rowId && columnId) {
+      this.restoreCellFocus(rowId, columnId);
+    }
+  }
+
+  /**
+   * Restore focus to a grid cell after exiting edit mode.
+   * @param rowId - Row identifier
+   * @param columnId - Column identifier
+   */
+  private restoreCellFocus(rowId: string, columnId: string): void {
+    requestAnimationFrame(() => {
+      const cell = this.shadowRoot?.querySelector(
+        `[data-row-id="${rowId}"] [data-column-id="${columnId}"]`
+      ) as HTMLElement | null;
+      if (cell) {
+        cell.setAttribute('tabindex', '0');
+        cell.focus();
+      }
+    });
   }
 
   /**
@@ -1918,6 +2098,7 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
   static override styles = [
     ...tailwindBaseStyles,
     columnPickerStyles,
+    inlineEditingStyles,
     css`
       :host {
         display: block;
@@ -2483,8 +2664,8 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
     // Get effective columns (includes selection column when enabled)
     const effectiveColumns = this.getEffectiveColumns();
 
-    // Create table instance via controller
-    const table = this.tableController.table({
+    // Create table instance via controller (stored for use outside render)
+    const table = this._tableInstance = this.tableController.table({
       columns: effectiveColumns,
       data: this.data,
       state: {
