@@ -43,5 +43,28 @@ export * from './pagination/index.js';
 // Inline editing utilities
 export { renderEditInput, isColumnEditable, renderEditableIndicator, renderRowEditActions, inlineEditingStyles } from './inline-editing.js';
 
+// Cell renderers (built-in + type)
+export {
+  type CellRenderer,
+  textCellRenderer,
+  numberCellRenderer,
+  dateCellRenderer,
+  booleanCellRenderer,
+  badgeCellRenderer,
+  progressCellRenderer,
+  avatarCellRenderer,
+  cellRendererStyles,
+} from './cell-renderers.js';
+
+// Row actions (rendering + pre-built factories)
+export {
+  renderRowActions,
+  createViewAction,
+  createEditAction,
+  createDeleteAction,
+  rowActionsStyles,
+  kebabIcon,
+} from './row-actions.js';
+
 // Filter components
 export * from './filters/index.js';
