@@ -9,24 +9,24 @@
 ## Current Position
 
 **Milestone:** v7.0 Data Table
-**Phase:** 67 - Export & Expandable Rows
-**Plan:** 1 of 2 complete
-**Status:** In progress
-**Last activity:** 2026-02-05 - Completed 67-01-PLAN.md
+**Phase:** 67 - Export & Expandable Rows (complete)
+**Plan:** 2 of 2 complete
+**Status:** Phase complete
+**Last activity:** 2026-02-05 - Completed 67-02-PLAN.md
 
 **Progress:**
 ```
-Milestone: [########··] 79%
-Phase:     [#####·····] 50%
+Milestone: [#########+] 88%
+Phase:     [##########] 100%
 ```
 
 ## Performance Metrics
 
 | Metric | Value |
 |--------|-------|
-| Plans completed | 23 |
-| Requirements satisfied | 79/85 |
-| Phases completed | 6/8 |
+| Plans completed | 24 |
+| Requirements satisfied | 84/85 |
+| Phases completed | 7/8 |
 
 ## Accumulated Context
 
@@ -101,6 +101,10 @@ Phase:     [#####·····] 50%
 | alertdialog role for confirmation | Correct ARIA role for confirmations requiring user response | 66-03 |
 | Utility column _ prefix exclusion | All columns with _ prefix excluded from CSV export (covers _selection, _actions, _expand) | 67-01 |
 | Selected-only empty fallback | selectedOnly=true with no selection falls back to all filtered rows | 67-01 |
+| Expand column _expand prefix | Consistent with _selection and _actions utility column naming pattern | 67-02 |
+| DetailContentRenderer row as any | Public API simplicity; consumers import Row from TanStack for strong typing | 67-02 |
+| virtual-row-wrapper for expand | Container div wraps data-row + detail-panel for virtualizer measurement | 67-02 |
+| Conditional measureElement | Only enabled when renderDetailContent set, avoids overhead for fixed-height | 67-02 |
 
 ### Architecture Notes
 *Technical context that spans multiple plans.*
@@ -137,6 +141,10 @@ Phase:     [#####·····] 50%
 - Row action events: ui-row-action CustomEvent with {actionId, row, rowId}, special 'edit' actionId bridges to activateRowEdit
 - Bulk actions: bulkActions property, renderBulkActionsToolbar standalone function, native HTML confirmation dialog, ui-bulk-action event with selectedRows
 - CSV export: exportToCsv standalone utility, exportCsv() public method on DataTable, onExport callback for server delegation, RFC 4180 escaping, UTF-8 BOM
+- Expandable rows: renderDetailContent property enables expand toggle column, expanded state (ExpandedState), singleExpand for accordion mode, ui-expanded-change event
+- Expand column: createExpandColumn factory (follows createSelectionColumn pattern), _expand ID, 40px fixed, chevron-right SVG with rotate(90deg) on expand
+- Virtual row wrapper: wraps data-row + detail-panel in container div, virtualizer.measureElement for dynamic heights, data-index for measurement tracking
+- Detail panel: renderDetailPanel helper, role="region", padding-left aligned with data columns (calc(1rem + 40px)), full-width below data row
 
 ### TODOs
 *Items to address that emerged during work.*
@@ -164,18 +172,21 @@ Phase:     [#####·····] 50%
 ### Last Session
 *Summary of previous session's work. Updated at session end.*
 
-- Executed Phase 67 Plan 01: CSV export capability
-- 67-01: Created export-csv.ts with RFC 4180 CSV generation, triggerDownload, escapeCsvField
-- Added ExportCsvOptions and ServerExportParams interfaces to types.ts
-- Added exportCsv() public method and onExport callback to DataTable
-- Re-exported all CSV utilities from package entry point
-- Clean TypeScript compilation, no deviations, 3 min execution
+- Executed Phase 67 Plan 02: Expandable detail rows (EXPAND-01 to EXPAND-05)
+- Created expandable-rows.ts with createExpandColumn factory, expandColumnStyles, renderDetailPanel
+- Added DetailContentRenderer type and ExpandedChangeEvent interface to types.ts
+- Integrated full expand support into DataTable: renderDetailContent, expanded, singleExpand properties
+- Updated virtualizer with measureElement for dynamic row heights when expanding enabled
+- Both virtualized and SSR render paths support expandable rows with detail panels
+- Added ui-expanded-change event, enforceSingleExpand accordion interceptor
+- Phase 67 now complete (2/2 plans done)
+- Clean TypeScript compilation, no deviations, 5 min execution
 
 ### Next Actions
 *Clear starting point for next session.*
 
-1. Phase 67 Plan 02: Expandable rows (EXPAND-01 to EXPAND-05)
-2. Phase 68: Package, CLI & Documentation (12 requirements: PKG-01 to PKG-06, CLI-01 to CLI-06)
+1. Phase 68: Package, CLI & Documentation (PKG-01 to PKG-06, CLI-01 to CLI-06) - needs research and planning
+2. Final milestone phase: package publishing, CLI template updates, documentation
 
 ### Open Questions
 *Unresolved questions needing user input.*
@@ -184,4 +195,4 @@ Phase:     [#####·····] 50%
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-02-05 (Phase 67 plan 01 complete, CSV export done)*
+*Last updated: 2026-02-05 (Phase 67 complete, expandable rows done)*
