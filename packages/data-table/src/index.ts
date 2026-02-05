@@ -72,5 +72,8 @@ export { renderBulkActionsToolbar, renderConfirmationDialog, bulkActionsStyles }
 // CSV export utility
 export { exportToCsv, escapeCsvField, triggerDownload } from './export-csv.js';
 
+// Expandable rows (column factory + styles + detail panel helper)
+export { createExpandColumn, expandColumnStyles, renderDetailPanel } from './expandable-rows.js';
+
 // Filter components
 export * from './filters/index.js';

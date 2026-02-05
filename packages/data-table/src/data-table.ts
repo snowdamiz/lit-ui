@@ -38,6 +38,7 @@
  * @fires ui-row-edit - When a row edit is saved with old/new values for all changed fields
  * @fires ui-row-action - When a row action button is clicked
  * @fires ui-bulk-action - When a bulk action is executed on selected rows
+ * @fires ui-expanded-change - When expanded row state changes
  */
 
 import { html, css, nothing, isServer, type TemplateResult, type PropertyValues } from 'lit';
@@ -50,6 +51,7 @@ import {
   getSortedRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
+  getExpandedRowModel,
   flexRender,
   type RowData,
   type Table,
@@ -79,6 +81,9 @@ import type {
   ColumnVisibilityChangeEvent,
   ColumnOrderState,
   ColumnOrderChangeEvent,
+  ExpandedState,
+  DetailContentRenderer,
+  ExpandedChangeEvent,
 } from './types.js';
 import { KeyboardNavigationManager, type GridPosition } from './keyboard-navigation.js';
 import { createSelectionColumn } from './selection-column.js';
@@ -89,6 +94,7 @@ import { renderBulkActionsToolbar, renderConfirmationDialog, bulkActionsStyles }
 import { cellRendererStyles } from './cell-renderers.js';
 import { savePreferences, loadPreferences, clearPreferences } from './column-preferences.js';
 import { exportToCsv } from './export-csv.js';
+import { createExpandColumn, expandColumnStyles, renderDetailPanel } from './expandable-rows.js';
 import type { ColumnPreferences, ColumnPreferencesChangeEvent, EditingCell, EditingRow, CellEditEvent, RowEditEvent, EditValidationResult, LitUIColumnMeta, RowAction, RowActionEvent, BulkAction, BulkActionEvent, ExportCsvOptions, ServerExportParams } from './types.js';
 
 /**
@@ -258,6 +264,35 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
    */
   @property({ attribute: false })
   onExport?: (params: ServerExportParams) => void | Promise<void>;
+
+  // ==========================================================================
+  // Expandable Rows (EXPAND-*)
+  // ==========================================================================
+
+  /**
+   * Function to render detail content for expanded rows (EXPAND-03).
+   * When set, rows become expandable with a toggle button.
+   * The function receives the row data and TanStack Row instance.
+   */
+  @property({ attribute: false })
+  renderDetailContent?: DetailContentRenderer<TData>;
+
+  /**
+   * Current expanded state (EXPAND-05: controlled/uncontrolled pattern).
+   * - `{}`: No rows expanded (default)
+   * - `{ 'row-id': true }`: Specific rows expanded
+   * - `true`: All rows expanded
+   */
+  @property({ type: Object })
+  expanded: ExpandedState = {};
+
+  /**
+   * When true, only one row can be expanded at a time (EXPAND-04).
+   * Expanding a new row automatically collapses the previous one.
+   * @default false
+   */
+  @property({ type: Boolean, attribute: 'single-expand' })
+  singleExpand = false;
 
   /**
    * Column definitions for the table.
@@ -631,23 +666,25 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
   protected override updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
 
-    if (changedProperties.has('data') || changedProperties.has('rowHeight')) {
+    if (changedProperties.has('data') || changedProperties.has('rowHeight') || changedProperties.has('renderDetailContent')) {
       this.initVirtualizer();
     }
 
-    // Update keyboard navigation bounds when data, columns, selection, row-editing, or row-actions state changes
+    // Update keyboard navigation bounds when data, columns, selection, row-editing, row-actions, or expand state changes
     if (
       changedProperties.has('data') ||
       changedProperties.has('columns') ||
       changedProperties.has('enableSelection') ||
       changedProperties.has('enableRowEditing') ||
-      changedProperties.has('rowActions')
+      changedProperties.has('rowActions') ||
+      changedProperties.has('renderDetailContent')
     ) {
       const maxHeightPx = parseInt(this.maxHeight, 10) || 400;
       const visibleRowCount = Math.floor(maxHeightPx / (this.rowHeight || 48));
-      // Account for selection column and unified actions column
+      // Account for selection column, expand column, and unified actions column
       let colCount = this.columns.length;
       if (this.enableSelection) colCount += 1;
+      if (this.renderDetailContent) colCount += 1;
       if (this.hasActionsColumn) colCount += 1;
       this.navManager.setBounds({
         rowCount: this.data.length,
@@ -761,6 +798,7 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
   /**
    * Initialize the virtualizer for efficient row rendering.
    * Only runs client-side when data is available.
+   * When expandable rows are enabled, uses measureElement for dynamic heights.
    */
   private initVirtualizer(): void {
     if (isServer || this.data.length === 0) {
@@ -774,6 +812,13 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
       count: this.data.length,
       estimateSize: () => this.rowHeight,
       overscan: DataTable.VIRTUALIZER_OVERSCAN,
+      // Enable dynamic measurement when expandable rows are configured
+      ...(this.renderDetailContent ? {
+        measureElement: (el: Element) => {
+          if (!el) return this.rowHeight;
+          return el.getBoundingClientRect().height;
+        },
+      } : {}),
     });
   }
 
@@ -1228,6 +1273,55 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
       bubbles: true,
       composed: true,
     }));
+  }
+
+  // ==========================================================================
+  // Expandable Rows methods (EXPAND-*)
+  // ==========================================================================
+
+  /**
+   * Enforce single-expand accordion mode (EXPAND-04).
+   * When singleExpand is true, only one row can be expanded at a time.
+   * Returns the new ExpandedState with at most one row expanded.
+   *
+   * @param nextExpanded - The next expanded state from TanStack
+   * @returns Adjusted expanded state with single-expand enforcement
+   */
+  private enforceSingleExpand(nextExpanded: ExpandedState): ExpandedState {
+    // "Expand all" not meaningful in single-expand mode
+    if (nextExpanded === true) {
+      return this.expanded;
+    }
+    if (typeof nextExpanded !== 'object') return {};
+
+    const prevKeys = this.expanded === true
+      ? []
+      : Object.keys(this.expanded as Record<string, boolean>).filter(
+          (k) => (this.expanded as Record<string, boolean>)[k]
+        );
+    const nextKeys = Object.keys(nextExpanded).filter((k) => nextExpanded[k]);
+
+    // Find the newly expanded row
+    const newKey = nextKeys.find((k) => !prevKeys.includes(k));
+    if (newKey) {
+      return { [newKey]: true };
+    }
+    // If no new key, a row was collapsed
+    return nextExpanded;
+  }
+
+  /**
+   * Dispatch ui-expanded-change event (EXPAND-05).
+   * Fires when expanded state changes via toggle clicks or programmatic updates.
+   */
+  private dispatchExpandedChange(expanded: ExpandedState): void {
+    this.dispatchEvent(
+      new CustomEvent<ExpandedChangeEvent>('ui-expanded-change', {
+        detail: { expanded },
+        bubbles: true,
+        composed: true,
+      })
+    );
   }
 
   // ==========================================================================
@@ -2473,6 +2567,7 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
 
   /**
    * Render all rows without virtualization (fallback for SSR/small datasets).
+   * Supports expandable rows with detail panels.
    */
   private renderAllRows(table: Table<TData>): TemplateResult {
     const rows = table.getRowModel().rows;
@@ -2487,40 +2582,46 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
         ${rows.map((row, rowIndex) => {
           const isSelected = row.getIsSelected();
           const isRowEditing = this._editingRow?.rowId === row.id;
+          const isExpanded = this.renderDetailContent && row.getIsExpanded();
           return html`
-            <div
-              role="row"
-              aria-rowindex="${rowIndex + 2}"
-              aria-selected="${isSelected}"
-              class="data-table-row ${isSelected ? 'selected' : ''} ${isRowEditing ? 'row-editing' : ''}"
-              style="grid-template-columns: ${gridTemplateColumns}"
-              data-row-id="${row.id}"
-            >
-              ${row.getVisibleCells().map((cell, colIndex) =>
-                this.renderCell(cell, rowIndex, colIndex)
-              )}
-              ${this.hasActionsColumn ? html`
-                <div class="data-table-cell row-actions-cell" role="gridcell">
-                  <div class="row-actions-content">
-                    ${isRowEditing
-                      ? renderRowEditActions(true, {
-                          onEdit: () => this.activateRowEdit(row),
-                          onSave: () => this.saveRowEdit(),
-                          onCancel: () => this.cancelRowEdit(),
-                        })
-                      : this.rowActions.length > 0
-                        ? renderRowActions(row, this.rowActions, (actionId, r) => this.handleRowAction(actionId, r))
-                        : this.enableRowEditing
-                          ? renderRowEditActions(false, {
-                              onEdit: () => this.activateRowEdit(row),
-                              onSave: () => this.saveRowEdit(),
-                              onCancel: () => this.cancelRowEdit(),
-                            })
-                          : nothing
-                    }
+            <div class="virtual-row-wrapper">
+              <div
+                role="row"
+                aria-rowindex="${rowIndex + 2}"
+                aria-selected="${isSelected}"
+                class="data-table-row ${isSelected ? 'selected' : ''} ${isRowEditing ? 'row-editing' : ''}"
+                style="grid-template-columns: ${gridTemplateColumns}"
+                data-row-id="${row.id}"
+              >
+                ${row.getVisibleCells().map((cell, colIndex) =>
+                  this.renderCell(cell, rowIndex, colIndex)
+                )}
+                ${this.hasActionsColumn ? html`
+                  <div class="data-table-cell row-actions-cell" role="gridcell">
+                    <div class="row-actions-content">
+                      ${isRowEditing
+                        ? renderRowEditActions(true, {
+                            onEdit: () => this.activateRowEdit(row),
+                            onSave: () => this.saveRowEdit(),
+                            onCancel: () => this.cancelRowEdit(),
+                          })
+                        : this.rowActions.length > 0
+                          ? renderRowActions(row, this.rowActions, (actionId, r) => this.handleRowAction(actionId, r))
+                          : this.enableRowEditing
+                            ? renderRowEditActions(false, {
+                                onEdit: () => this.activateRowEdit(row),
+                                onSave: () => this.saveRowEdit(),
+                                onCancel: () => this.cancelRowEdit(),
+                              })
+                            : nothing
+                      }
+                    </div>
                   </div>
-                </div>
-              ` : nothing}
+                ` : nothing}
+              </div>
+              ${isExpanded && this.renderDetailContent
+                ? renderDetailPanel(row, this.renderDetailContent)
+                : nothing}
             </div>
           `;
         })}
@@ -2532,6 +2633,7 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
   /**
    * Render virtualized rows for efficient 100K+ row handling.
    * Only renders visible rows plus overscan buffer.
+   * When expandable rows are enabled, wraps each row+detail in a measured wrapper.
    */
   private renderVirtualizedBody(table: Table<TData>): TemplateResult {
     const virtualizer = this.virtualizer!.getVirtualizer();
@@ -2539,6 +2641,7 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
     const totalHeight = virtualizer.getTotalSize();
     const rows = table.getRowModel().rows;
     const gridTemplateColumns = this.getGridTemplateColumns(table);
+    const hasExpanding = !!this.renderDetailContent;
 
     return html`
       <div
@@ -2554,7 +2657,10 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
 
             const isSelected = row.getIsSelected();
             const isRowEditing = this._editingRow?.rowId === row.id;
-            return html`
+            const isExpanded = hasExpanding && row.getIsExpanded();
+
+            // Row content (data cells + optional actions column)
+            const rowContent = html`
               <div
                 role="row"
                 aria-rowindex="${virtualRow.index + 2}"
@@ -2562,12 +2668,7 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
                 class="data-table-row virtual-row ${isSelected ? 'selected' : ''} ${isRowEditing ? 'row-editing' : ''}"
                 style="
                   grid-template-columns: ${gridTemplateColumns};
-                  position: absolute;
-                  top: 0;
-                  left: 0;
-                  width: 100%;
-                  height: ${virtualRow.size}px;
-                  transform: translateY(${virtualRow.start}px);
+                  height: ${this.rowHeight}px;
                 "
                 data-row-id="${row.id}"
               >
@@ -2597,6 +2698,30 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
                   </div>
                 ` : nothing}
               </div>
+              ${isExpanded && this.renderDetailContent
+                ? renderDetailPanel(row, this.renderDetailContent)
+                : nothing}
+            `;
+
+            // Wrap in measured container for dynamic heights (expandable)
+            // or use direct absolute positioning (fixed height)
+            return html`
+              <div
+                class="virtual-row-wrapper"
+                data-index="${virtualRow.index}"
+                style="
+                  position: absolute;
+                  top: 0;
+                  left: 0;
+                  width: 100%;
+                  transform: translateY(${virtualRow.start}px);
+                "
+                ${hasExpanding
+                  ? ref((el: Element | undefined) => { if (el) virtualizer.measureElement(el); })
+                  : nothing}
+              >
+                ${rowContent}
+              </div>
             `;
           })}
         </div>
@@ -2612,6 +2737,7 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
     cellRendererStyles,
     rowActionsStyles,
     bulkActionsStyles,
+    expandColumnStyles,
     css`
       :host {
         display: block;
@@ -3162,15 +3288,24 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
   ];
 
   /**
-   * Get effective columns including selection column if enabled.
-   * The selection column is prepended when enableSelection is true.
+   * Get effective columns including selection and expand columns if enabled.
+   * The selection column is prepended first, then expand column.
+   * Result order: [selection?, expand?, ...data columns]
    */
   private getEffectiveColumns(): ColumnDef<TData, unknown>[] {
-    if (!this.enableSelection) {
-      return this.columns;
+    const cols = [...this.columns];
+
+    // Prepend expand column if expandable rows enabled
+    if (this.renderDetailContent) {
+      cols.unshift(createExpandColumn<TData>());
     }
 
-    return [createSelectionColumn<TData>(), ...this.columns];
+    // Prepend selection column if selection enabled (goes first)
+    if (this.enableSelection) {
+      cols.unshift(createSelectionColumn<TData>());
+    }
+
+    return cols;
   }
 
   override render() {
@@ -3191,6 +3326,7 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
         columnSizing: this.columnSizing,
         columnSizingInfo: this._columnSizingInfo,
         columnOrder: this.columnOrder,
+        expanded: this.expanded,
       },
       // Column sizing options
       enableColumnResizing: this.enableColumnResizing,
@@ -3309,6 +3445,17 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
       getSortedRowModel: this.manualSorting ? undefined : getSortedRowModel(),
       getFilteredRowModel: this.manualFiltering ? undefined : getFilteredRowModel(),
       getPaginationRowModel: this.manualPagination ? undefined : getPaginationRowModel(),
+      // Expanding options (EXPAND-01 to EXPAND-05)
+      ...(this.renderDetailContent ? {
+        enableExpanding: true,
+        getRowCanExpand: () => true,
+        getExpandedRowModel: getExpandedRowModel(),
+        onExpandedChange: (updater: any) => {
+          const next = typeof updater === 'function' ? updater(this.expanded) : updater;
+          this.expanded = this.singleExpand ? this.enforceSingleExpand(next) : next;
+          this.dispatchExpandedChange(this.expanded);
+        },
+      } : {}),
       manualSorting: this.manualSorting,
       manualFiltering: this.manualFiltering,
       manualPagination: this.manualPagination,
