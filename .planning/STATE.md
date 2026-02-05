@@ -9,23 +9,23 @@
 ## Current Position
 
 **Milestone:** v7.0 Data Table
-**Phase:** 67 - Export & Expandable Rows (complete)
-**Plan:** 2 of 2 complete
-**Status:** Phase complete
-**Last activity:** 2026-02-05 - Completed 67-02-PLAN.md
+**Phase:** 68 - Package, CLI & Documentation (in progress)
+**Plan:** 1 of 4 complete
+**Status:** In progress
+**Last activity:** 2026-02-05 - Completed 68-01-PLAN.md
 
 **Progress:**
 ```
-Milestone: [#########+] 88%
-Phase:     [##########] 100%
+Milestone: [#########-] 90%
+Phase:     [##--------] 25%
 ```
 
 ## Performance Metrics
 
 | Metric | Value |
 |--------|-------|
-| Plans completed | 24 |
-| Requirements satisfied | 84/85 |
+| Plans completed | 25 |
+| Requirements satisfied | 85/85 |
 | Phases completed | 7/8 |
 
 ## Accumulated Context
@@ -105,6 +105,9 @@ Phase:     [##########] 100%
 | DetailContentRenderer row as any | Public API simplicity; consumers import Row from TanStack for strong typing | 67-02 |
 | virtual-row-wrapper for expand | Container div wraps data-row + detail-panel for virtualizer measurement | 67-02 |
 | Conditional measureElement | Only enabled when renderDetailContent set, avoids overhead for fixed-height | 67-02 |
+| Collision detection registration | customElements.get guard before define in index.ts, matching accordion/tabs pattern | 68-01 |
+| JSX kebab/camelCase split | HTML attributes use kebab-case, JS-only properties use camelCase in JSX declarations | 68-01 |
+| 14 events in JSX declarations | 13 JSDoc events + ui-select-all-requested for complete server-side pagination support | 68-01 |
 
 ### Architecture Notes
 *Technical context that spans multiple plans.*
@@ -145,6 +148,8 @@ Phase:     [##########] 100%
 - Expand column: createExpandColumn factory (follows createSelectionColumn pattern), _expand ID, 40px fixed, chevron-right SVG with rotate(90deg) on expand
 - Virtual row wrapper: wraps data-row + detail-panel in container div, virtualizer.measureElement for dynamic heights, data-index for measurement tracking
 - Detail panel: renderDetailPanel helper, role="region", padding-left aligned with data columns (calc(1rem + 40px)), full-width below data row
+- Package: 4 peerDependencies (lit, @lit-ui/core, @lit-ui/checkbox, @lit-ui/popover), collision detection registration in index.ts
+- JSX declarations: 44 properties + 14 events, React/Vue/Svelte support, 330 lines in jsx.d.ts
 
 ### TODOs
 *Items to address that emerged during work.*
@@ -172,21 +177,20 @@ Phase:     [##########] 100%
 ### Last Session
 *Summary of previous session's work. Updated at session end.*
 
-- Executed Phase 67 Plan 02: Expandable detail rows (EXPAND-01 to EXPAND-05)
-- Created expandable-rows.ts with createExpandColumn factory, expandColumnStyles, renderDetailPanel
-- Added DetailContentRenderer type and ExpandedChangeEvent interface to types.ts
-- Integrated full expand support into DataTable: renderDetailContent, expanded, singleExpand properties
-- Updated virtualizer with measureElement for dynamic row heights when expanding enabled
-- Both virtualized and SSR render paths support expandable rows with detail panels
-- Added ui-expanded-change event, enforceSingleExpand accordion interceptor
-- Phase 67 now complete (2/2 plans done)
-- Clean TypeScript compilation, no deviations, 5 min execution
+- Executed Phase 68 Plan 01: Package finalization and JSX declarations
+- Added @lit-ui/checkbox and @lit-ui/popover as peerDependencies in package.json
+- Moved element registration from data-table.ts to index.ts with collision detection pattern
+- Rewrote jsx.d.ts from 69-line placeholder to 330-line comprehensive type declarations
+- 44 properties and 14 events covered across React, Vue, and Svelte
+- TypeScript compilation and vite build both pass cleanly
+- Plan 68-01 complete (1/4 plans done in phase 68)
 
 ### Next Actions
 *Clear starting point for next session.*
 
-1. Phase 68: Package, CLI & Documentation (PKG-01 to PKG-06, CLI-01 to CLI-06) - needs research and planning
-2. Final milestone phase: package publishing, CLI template updates, documentation
+1. Phase 68 Plan 02: CLI registry entry and npm mapping for data-table
+2. Phase 68 Plan 03: CLI template generation for data-table
+3. Phase 68 Plan 04: Documentation page for data-table
 
 ### Open Questions
 *Unresolved questions needing user input.*
@@ -195,4 +199,4 @@ Phase:     [##########] 100%
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-02-05 (Phase 67 complete, expandable rows done)*
+*Last updated: 2026-02-05 (Phase 68 plan 01 complete, package finalization done)*
