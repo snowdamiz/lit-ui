@@ -45,10 +45,14 @@
   },
   "peerDependencies": {
     "lit": "^3.0.0",
-    "@lit-ui/core": "^1.0.0"
+    "@lit-ui/core": "^1.0.0",
+    "@lit-ui/checkbox": "^1.0.0",
+    "@lit-ui/popover": "^1.0.0"
   },
   "devDependencies": {
+    "@lit-ui/checkbox": "workspace:*",
     "@lit-ui/core": "workspace:*",
+    "@lit-ui/popover": "workspace:*",
     "@lit-ui/typescript-config": "workspace:*",
     "@lit-ui/vite-config": "workspace:*",
     "@tailwindcss/vite": "^4.1.18",

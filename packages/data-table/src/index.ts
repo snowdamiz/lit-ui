@@ -1,5 +1,6 @@
 // @lit-ui/data-table - High-performance data table with virtual scrolling
 /// <reference path="./jsx.d.ts" />
+import { isServer } from 'lit';
 
 // Export types
 export * from './types.js';
@@ -77,3 +78,24 @@ export { createExpandColumn, expandColumnStyles, renderDetailPanel } from './exp
 
 // Filter components
 export * from './filters/index.js';
+
+// Safe custom element registration with collision detection
+import { DataTable } from './data-table.js';
+
+if (typeof customElements !== 'undefined') {
+  if (!customElements.get('lui-data-table')) {
+    customElements.define('lui-data-table', DataTable);
+  } else if (!isServer && import.meta.env?.DEV) {
+    console.warn(
+      '[lui-data-table] Custom element already registered. ' +
+        'This may indicate duplicate imports or version conflicts.'
+    );
+  }
+}
+
+// TypeScript global type registration
+declare global {
+  interface HTMLElementTagNameMap {
+    'lui-data-table': DataTable;
+  }
+}

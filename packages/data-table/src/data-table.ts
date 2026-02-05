@@ -3504,14 +3504,3 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
   }
 }
 
-// Register custom element (client-side only)
-if (!isServer) {
-  customElements.define('lui-data-table', DataTable);
-}
-
-// Type declaration for HTMLElementTagNameMap
-declare global {
-  interface HTMLElementTagNameMap {
-    'lui-data-table': DataTable;
-  }
-}
