@@ -240,8 +240,8 @@ Plans:
 **Plans:** 2 plans
 
 Plans:
-- [ ] 67-01-PLAN.md — CSV export utility with client-side and server-side callback support
-- [ ] 67-02-PLAN.md — Expandable detail rows with column factory, dynamic virtualizer measurement, and single-expand mode
+- [x] 67-01-PLAN.md — CSV export utility with client-side and server-side callback support
+- [x] 67-02-PLAN.md — Expandable detail rows with column factory, dynamic virtualizer measurement, and single-expand mode
 
 **Requirements:**
 - EXP-01: Export to CSV downloads current filtered/visible data
@@ -302,11 +302,11 @@ Plans:
 | 64 | Column Customization | Complete | 4/4 |
 | 65 | Inline Editing | Complete | 3/3 |
 | 66 | Cell Renderers, Row Actions & Bulk Actions | Complete | 3/3 |
-| 67 | Export & Expandable Rows | Planned | 0/2 |
+| 67 | Export & Expandable Rows | Complete | 2/2 |
 | 68 | Package, CLI & Documentation | Pending | 0/0 |
 
 **Total:** 8 phases, 76 requirements mapped
 
 ---
 *Roadmap created: 2026-02-02*
-*Last updated: 2026-02-05 (Phase 66 complete)*
+*Last updated: 2026-02-05 (Phase 67 complete)*
