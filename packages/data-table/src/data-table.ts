@@ -1735,27 +1735,69 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
 
   /**
    * Render a data cell using flexRender.
-   * Includes roving tabindex and click handler for focus management.
+   * Supports edit mode rendering with appropriate input type,
+   * editable indicators, and inline validation errors.
+   *
+   * - View mode: shows cell content with pencil indicator for editable cells (EDIT-01)
+   * - Edit mode: renders native input via renderEditInput (EDIT-03)
+   * - Validation errors appear below cell without changing row height (EDIT-05)
    */
   private renderCell(
     cell: Cell<TData, unknown>,
     rowIndex: number,
     colIndex: number
   ): TemplateResult {
-    const cellContent = flexRender(cell.column.columnDef.cell, cell.getContext());
+    const meta = cell.column.columnDef.meta as LitUIColumnMeta<TData> | undefined;
+    const rowData = cell.row.original;
+    const isEditable = isColumnEditable(meta, rowData);
+    const isEditing = this._editingCell?.rowId === cell.row.id
+      && this._editingCell?.columnId === cell.column.id;
     const isFocused =
       this._focusedCell.row === rowIndex && this._focusedCell.col === colIndex;
 
+    // Build CSS class list
+    const classes = [
+      'data-table-cell',
+      isEditable ? 'editable' : '',
+      isEditing ? 'editing' : '',
+    ].filter(Boolean).join(' ');
+
+    if (isEditing) {
+      // Render edit input instead of cell content (EDIT-03)
+      const editType = meta?.editType ?? 'text';
+      const currentValue = this._editingCell!.originalValue;
+      return html`
+        <div
+          role="gridcell"
+          aria-colindex="${colIndex + 1}"
+          class="${classes}"
+          data-column-id="${cell.column.id}"
+          tabindex="${isFocused ? '0' : '-1'}"
+        >
+          ${renderEditInput(editType, currentValue, {
+            editOptions: meta?.editOptions,
+            validationError: this._cellValidationError,
+          }, {
+            onCommit: (value: unknown) => this.commitCellEdit(value),
+            onCancel: () => this.cancelCellEdit(),
+          })}
+        </div>
+      `;
+    }
+
+    // Normal view mode
+    const cellContent = flexRender(cell.column.columnDef.cell, cell.getContext());
     return html`
       <div
         role="gridcell"
         aria-colindex="${colIndex + 1}"
-        class="data-table-cell"
+        class="${classes}"
         data-column-id="${cell.column.id}"
         tabindex="${isFocused ? '0' : '-1'}"
         @click=${() => this.handleCellClick(rowIndex, colIndex)}
       >
         ${cellContent}
+        ${isEditable ? renderEditableIndicator() : nothing}
       </div>
     `;
   }
