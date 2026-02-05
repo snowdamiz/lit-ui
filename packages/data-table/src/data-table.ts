@@ -36,6 +36,7 @@
  * @fires ui-column-preferences-reset - When preferences are reset via resetColumnPreferences()
  * @fires ui-cell-edit - When a cell edit is committed with old/new values
  * @fires ui-row-edit - When a row edit is saved with old/new values for all changed fields
+ * @fires ui-row-action - When a row action button is clicked
  */
 
 import { html, css, nothing, isServer, type TemplateResult, type PropertyValues } from 'lit';
@@ -82,8 +83,10 @@ import { KeyboardNavigationManager, type GridPosition } from './keyboard-navigat
 import { createSelectionColumn } from './selection-column.js';
 import { renderColumnPicker, columnPickerStyles } from './column-picker.js';
 import { renderEditInput, isColumnEditable, renderEditableIndicator, renderRowEditActions, inlineEditingStyles } from './inline-editing.js';
+import { renderRowActions, rowActionsStyles } from './row-actions.js';
+import { cellRendererStyles } from './cell-renderers.js';
 import { savePreferences, loadPreferences, clearPreferences } from './column-preferences.js';
-import type { ColumnPreferences, ColumnPreferencesChangeEvent, EditingCell, EditingRow, CellEditEvent, RowEditEvent, EditValidationResult, LitUIColumnMeta } from './types.js';
+import type { ColumnPreferences, ColumnPreferencesChangeEvent, EditingCell, EditingRow, CellEditEvent, RowEditEvent, EditValidationResult, LitUIColumnMeta, RowAction, RowActionEvent } from './types.js';
 
 /**
  * A high-performance data table component with TanStack Table integration.
@@ -179,6 +182,34 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
   /** Currently editing row state. Null when not in row edit mode. */
   @state()
   private _editingRow: EditingRow | null = null;
+
+  // ==========================================================================
+  // Row Actions (ACT-*)
+  // ==========================================================================
+
+  /**
+   * Array of row actions to display in the actions column.
+   * For 1-2 actions: renders inline icon buttons.
+   * For 3+: renders kebab menu with dropdown.
+   */
+  @property({ type: Array })
+  rowActions: RowAction<TData>[] = [];
+
+  /**
+   * When true, row action buttons are hidden until row is hovered or focused.
+   * Always visible on touch devices via @media (hover: none).
+   * @default false
+   */
+  @property({ type: Boolean, attribute: 'hover-reveal-actions', reflect: true })
+  hoverRevealActions = false;
+
+  /**
+   * Whether an actions column should be rendered.
+   * True when rowActions are configured OR enableRowEditing is true.
+   */
+  private get hasActionsColumn(): boolean {
+    return this.rowActions.length > 0 || this.enableRowEditing;
+  }
 
   /**
    * Column definitions for the table.
@@ -556,19 +587,20 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
       this.initVirtualizer();
     }
 
-    // Update keyboard navigation bounds when data, columns, or selection/row-editing state changes
+    // Update keyboard navigation bounds when data, columns, selection, row-editing, or row-actions state changes
     if (
       changedProperties.has('data') ||
       changedProperties.has('columns') ||
       changedProperties.has('enableSelection') ||
-      changedProperties.has('enableRowEditing')
+      changedProperties.has('enableRowEditing') ||
+      changedProperties.has('rowActions')
     ) {
       const maxHeightPx = parseInt(this.maxHeight, 10) || 400;
       const visibleRowCount = Math.floor(maxHeightPx / (this.rowHeight || 48));
-      // Account for selection column and row edit actions column
+      // Account for selection column and unified actions column
       let colCount = this.columns.length;
       if (this.enableSelection) colCount += 1;
-      if (this.enableRowEditing) colCount += 1;
+      if (this.hasActionsColumn) colCount += 1;
       this.navManager.setBounds({
         rowCount: this.data.length,
         colCount,
@@ -1295,6 +1327,34 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
   }
 
   // ==========================================================================
+  // Row action handling (ACT-01 through ACT-04)
+  // ==========================================================================
+
+  /**
+   * Handle row action click. Dispatches ui-row-action event.
+   * Special handling: if actionId is 'edit' and enableRowEditing is true,
+   * activates row edit mode instead of dispatching event.
+   */
+  private handleRowAction(actionId: string, row: Row<TData>): void {
+    // Special case: built-in edit action triggers row edit mode
+    if (actionId === 'edit' && this.enableRowEditing) {
+      this.activateRowEdit(row);
+      return;
+    }
+
+    const event = new CustomEvent<RowActionEvent<TData>>('ui-row-action', {
+      detail: {
+        actionId,
+        row: row.original,
+        rowId: row.id,
+      },
+      bubbles: true,
+      composed: true,
+    });
+    this.dispatchEvent(event);
+  }
+
+  // ==========================================================================
   // Inline row editing methods (ROWEDIT-01 through ROWEDIT-06)
   // ==========================================================================
 
@@ -1500,8 +1560,8 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
   private getGridTemplateColumns(table?: Table<TData>): string {
     if (this.columns.length === 0) return '';
 
-    // Row edit action column width (pencil button or save+cancel buttons)
-    const rowEditSuffix = this.enableRowEditing ? ' 72px' : '';
+    // Actions column width (row actions buttons or row edit save/cancel)
+    const actionsColumnSuffix = this.hasActionsColumn ? ' 72px' : '';
 
     // If we have a table instance, use TanStack's sizing
     if (table) {
@@ -1512,7 +1572,7 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
           return `${size}px`;
         })
         .join(' ');
-      return columns + rowEditSuffix;
+      return columns + actionsColumnSuffix;
     }
 
     // Fallback for skeleton/loading states without table instance
@@ -1536,7 +1596,7 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
         return `minmax(${minSize}px, ${maxSize}px)`;
       })
       .join(' ');
-    return columns + rowEditSuffix;
+    return columns + actionsColumnSuffix;
   }
 
   /**
@@ -2058,8 +2118,8 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
               ${headerGroup.headers.map((header, colIndex) =>
                 this.renderHeaderCell(header, colIndex, table)
               )}
-              ${this.enableRowEditing ? html`
-                <div role="columnheader" class="data-table-header-cell" aria-label="Row actions">
+              ${this.hasActionsColumn ? html`
+                <div role="columnheader" class="data-table-header-cell row-actions-header" aria-label="Actions">
                 </div>
               ` : nothing}
             </div>
@@ -2279,13 +2339,26 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
               ${row.getVisibleCells().map((cell, colIndex) =>
                 this.renderCell(cell, rowIndex, colIndex)
               )}
-              ${this.enableRowEditing ? html`
+              ${this.hasActionsColumn ? html`
                 <div class="data-table-cell row-actions-cell" role="gridcell">
-                  ${renderRowEditActions(isRowEditing, {
-                    onEdit: () => this.activateRowEdit(row),
-                    onSave: () => this.saveRowEdit(),
-                    onCancel: () => this.cancelRowEdit(),
-                  })}
+                  <div class="row-actions-content">
+                    ${isRowEditing
+                      ? renderRowEditActions(true, {
+                          onEdit: () => this.activateRowEdit(row),
+                          onSave: () => this.saveRowEdit(),
+                          onCancel: () => this.cancelRowEdit(),
+                        })
+                      : this.rowActions.length > 0
+                        ? renderRowActions(row, this.rowActions, (actionId, r) => this.handleRowAction(actionId, r))
+                        : this.enableRowEditing
+                          ? renderRowEditActions(false, {
+                              onEdit: () => this.activateRowEdit(row),
+                              onSave: () => this.saveRowEdit(),
+                              onCancel: () => this.cancelRowEdit(),
+                            })
+                          : nothing
+                    }
+                  </div>
                 </div>
               ` : nothing}
             </div>
@@ -2341,13 +2414,26 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
                 ${row.getVisibleCells().map((cell, colIndex) =>
                   this.renderCell(cell, virtualRow.index, colIndex)
                 )}
-                ${this.enableRowEditing ? html`
+                ${this.hasActionsColumn ? html`
                   <div class="data-table-cell row-actions-cell" role="gridcell">
-                    ${renderRowEditActions(isRowEditing, {
-                      onEdit: () => this.activateRowEdit(row),
-                      onSave: () => this.saveRowEdit(),
-                      onCancel: () => this.cancelRowEdit(),
-                    })}
+                    <div class="row-actions-content">
+                      ${isRowEditing
+                        ? renderRowEditActions(true, {
+                            onEdit: () => this.activateRowEdit(row),
+                            onSave: () => this.saveRowEdit(),
+                            onCancel: () => this.cancelRowEdit(),
+                          })
+                        : this.rowActions.length > 0
+                          ? renderRowActions(row, this.rowActions, (actionId, r) => this.handleRowAction(actionId, r))
+                          : this.enableRowEditing
+                            ? renderRowEditActions(false, {
+                                onEdit: () => this.activateRowEdit(row),
+                                onSave: () => this.saveRowEdit(),
+                                onCancel: () => this.cancelRowEdit(),
+                              })
+                            : nothing
+                      }
+                    </div>
                   </div>
                 ` : nothing}
               </div>
@@ -2363,6 +2449,8 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
     ...tailwindBaseStyles,
     columnPickerStyles,
     inlineEditingStyles,
+    cellRendererStyles,
+    rowActionsStyles,
     css`
       :host {
         display: block;
@@ -3068,7 +3156,7 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
 
     // Calculate total counts for ARIA
     const rowCount = this.data.length + 1; // +1 for header row
-    const colCount = effectiveColumns.length + (this.enableRowEditing ? 1 : 0);
+    const colCount = effectiveColumns.length + (this.hasActionsColumn ? 1 : 0);
 
     return html`
       <div
