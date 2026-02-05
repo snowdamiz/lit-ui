@@ -138,21 +138,21 @@ Requirements for Data Table milestone. Each maps to roadmap phases.
 
 ### Package & Integration
 
-- [ ] **PKG-01**: @lit-ui/data-table package with peer dependencies on lit and @lit-ui/core
-- [ ] **PKG-02**: TypeScript types exported for column definitions, row data, events
-- [ ] **PKG-03**: JSX/TSX declarations for React/Preact compatibility
-- [ ] **PKG-04**: SSR support via Declarative Shadow DOM (matching existing pattern)
-- [ ] **PKG-05**: CSS custom properties for full theming (--ui-data-table-*)
-- [ ] **PKG-06**: Dark mode support via :host-context(.dark)
+- [x] **PKG-01**: @lit-ui/data-table package with peer dependencies on lit and @lit-ui/core
+- [x] **PKG-02**: TypeScript types exported for column definitions, row data, events
+- [x] **PKG-03**: JSX/TSX declarations for React/Preact compatibility
+- [x] **PKG-04**: SSR support via Declarative Shadow DOM (matching existing pattern)
+- [x] **PKG-05**: CSS custom properties for full theming (--ui-data-table-*)
+- [x] **PKG-06**: Dark mode support via :host-context(.dark)
 
 ### CLI & Documentation
 
-- [ ] **CLI-01**: CLI registry includes data-table component
-- [ ] **CLI-02**: Copy-source templates with CSS variable fallbacks
-- [ ] **CLI-03**: Documentation page with interactive demos
-- [ ] **CLI-04**: API reference for all properties, events, CSS custom properties
-- [ ] **CLI-05**: Accessibility documentation (keyboard navigation, screen reader behavior)
-- [ ] **CLI-06**: Example patterns: basic table, server-side data, inline editing, bulk actions
+- [x] **CLI-01**: CLI registry includes data-table component
+- [x] **CLI-02**: Copy-source templates with CSS variable fallbacks
+- [x] **CLI-03**: Documentation page with interactive demos
+- [x] **CLI-04**: API reference for all properties, events, CSS custom properties
+- [x] **CLI-05**: Accessibility documentation (keyboard navigation, screen reader behavior)
+- [x] **CLI-06**: Example patterns: basic table, server-side data, inline editing, bulk actions
 
 ## Future Requirements (v7.1+)
 
@@ -279,18 +279,18 @@ Which phases cover which requirements. Updated during roadmap creation.
 | EXPAND-03 | 67 | Pending |
 | EXPAND-04 | 67 | Pending |
 | EXPAND-05 | 67 | Pending |
-| PKG-01 | 68 | Pending |
-| PKG-02 | 68 | Pending |
-| PKG-03 | 68 | Pending |
-| PKG-04 | 68 | Pending |
-| PKG-05 | 68 | Pending |
-| PKG-06 | 68 | Pending |
-| CLI-01 | 68 | Pending |
-| CLI-02 | 68 | Pending |
-| CLI-03 | 68 | Pending |
-| CLI-04 | 68 | Pending |
-| CLI-05 | 68 | Pending |
-| CLI-06 | 68 | Pending |
+| PKG-01 | 68 | Complete |
+| PKG-02 | 68 | Complete |
+| PKG-03 | 68 | Complete |
+| PKG-04 | 68 | Complete |
+| PKG-05 | 68 | Complete |
+| PKG-06 | 68 | Complete |
+| CLI-01 | 68 | Complete |
+| CLI-02 | 68 | Complete |
+| CLI-03 | 68 | Complete |
+| CLI-04 | 68 | Complete |
+| CLI-05 | 68 | Complete |
+| CLI-06 | 68 | Complete |
 
 **Coverage:**
 - v7.0 requirements: 76 total
