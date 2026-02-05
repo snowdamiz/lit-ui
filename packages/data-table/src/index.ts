@@ -69,5 +69,8 @@ export {
 // Bulk actions (toolbar + confirmation dialog templates)
 export { renderBulkActionsToolbar, renderConfirmationDialog, bulkActionsStyles } from './bulk-actions.js';
 
+// CSV export utility
+export { exportToCsv, escapeCsvField, triggerDownload } from './export-csv.js';
+
 // Filter components
 export * from './filters/index.js';

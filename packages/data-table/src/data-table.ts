@@ -88,7 +88,8 @@ import { renderRowActions, rowActionsStyles } from './row-actions.js';
 import { renderBulkActionsToolbar, renderConfirmationDialog, bulkActionsStyles } from './bulk-actions.js';
 import { cellRendererStyles } from './cell-renderers.js';
 import { savePreferences, loadPreferences, clearPreferences } from './column-preferences.js';
-import type { ColumnPreferences, ColumnPreferencesChangeEvent, EditingCell, EditingRow, CellEditEvent, RowEditEvent, EditValidationResult, LitUIColumnMeta, RowAction, RowActionEvent, BulkAction, BulkActionEvent } from './types.js';
+import { exportToCsv } from './export-csv.js';
+import type { ColumnPreferences, ColumnPreferencesChangeEvent, EditingCell, EditingRow, CellEditEvent, RowEditEvent, EditValidationResult, LitUIColumnMeta, RowAction, RowActionEvent, BulkAction, BulkActionEvent, ExportCsvOptions, ServerExportParams } from './types.js';
 
 /**
  * A high-performance data table component with TanStack Table integration.
@@ -231,6 +232,32 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
   private get hasActionsColumn(): boolean {
     return this.rowActions.length > 0 || this.enableRowEditing;
   }
+
+  // ==========================================================================
+  // Export (EXP-*)
+  // ==========================================================================
+
+  /**
+   * Server-side export callback (EXP-04).
+   *
+   * When set, `exportCsv()` delegates to this callback instead of performing
+   * client-side CSV generation. The callback receives the current table state
+   * (filters, sorting, visible columns, selected rows) so the server can
+   * generate the export.
+   *
+   * @example
+   * ```typescript
+   * table.onExport = async (params) => {
+   *   const response = await fetch('/api/export', {
+   *     method: 'POST',
+   *     body: JSON.stringify(params),
+   *   });
+   *   // Handle server-generated file download
+   * };
+   * ```
+   */
+  @property({ attribute: false })
+  onExport?: (params: ServerExportParams) => void | Promise<void>;
 
   /**
    * Column definitions for the table.
@@ -1201,6 +1228,53 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
       bubbles: true,
       composed: true,
     }));
+  }
+
+  // ==========================================================================
+  // CSV Export (EXP-*)
+  // ==========================================================================
+
+  /**
+   * Export table data to CSV.
+   *
+   * When `onExport` is set, delegates to the server-side callback with
+   * current table state parameters (EXP-04). Otherwise performs client-side
+   * CSV generation and triggers a browser download (EXP-01, EXP-02, EXP-03).
+   *
+   * @param options - Export options (filename, selectedOnly, includeBom, headers)
+   *
+   * @example
+   * ```typescript
+   * // Client-side: downloads CSV file
+   * const table = document.querySelector('lui-data-table');
+   * table.exportCsv();
+   *
+   * // Export selected rows only
+   * table.exportCsv({ selectedOnly: true, filename: 'selected-users.csv' });
+   * ```
+   */
+  public async exportCsv(options?: ExportCsvOptions): Promise<void> {
+    const table = this._tableInstance;
+    if (!table) return;
+
+    if (this.onExport) {
+      // Server-side export (EXP-04)
+      const visibleColumnIds = table.getVisibleLeafColumns()
+        .filter(c => !c.id.startsWith('_'))
+        .map(c => c.id);
+      const selectedRowIds = Object.keys(this.rowSelection);
+
+      await this.onExport({
+        columnFilters: this.columnFilters,
+        globalFilter: this.globalFilter,
+        sorting: this.sorting,
+        visibleColumnIds,
+        selectedRowIds,
+      });
+    } else {
+      // Client-side export (EXP-01, EXP-02, EXP-03)
+      exportToCsv(table, options);
+    }
   }
 
   // ==========================================================================
