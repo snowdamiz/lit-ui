@@ -9,23 +9,23 @@
 ## Current Position
 
 **Milestone:** v7.0 Data Table
-**Phase:** 66 - Cell Renderers, Row Actions & Bulk Actions (COMPLETE)
-**Plan:** 3 of 3 complete
-**Status:** Phase complete
-**Last activity:** 2026-02-05 - Completed 66-03-PLAN.md
+**Phase:** 67 - Export & Expandable Rows
+**Plan:** 1 of 2 complete
+**Status:** In progress
+**Last activity:** 2026-02-05 - Completed 67-01-PLAN.md
 
 **Progress:**
 ```
-Milestone: [#######···] 75%
-Phase:     [##########] 100%
+Milestone: [########··] 79%
+Phase:     [#####·····] 50%
 ```
 
 ## Performance Metrics
 
 | Metric | Value |
 |--------|-------|
-| Plans completed | 22 |
-| Requirements satisfied | 75/76 |
+| Plans completed | 23 |
+| Requirements satisfied | 79/85 |
 | Phases completed | 6/8 |
 
 ## Accumulated Context
@@ -99,6 +99,8 @@ Phase:     [##########] 100%
 | Native confirmation dialog for bulk actions | Native HTML elements avoid lui-dialog dependency overhead, matches project pattern | 66-03 |
 | Bulk toolbar replaces selection banner | Toolbar provides superset functionality (count, select-all, clear, actions) | 66-03 |
 | alertdialog role for confirmation | Correct ARIA role for confirmations requiring user response | 66-03 |
+| Utility column _ prefix exclusion | All columns with _ prefix excluded from CSV export (covers _selection, _actions, _expand) | 67-01 |
+| Selected-only empty fallback | selectedOnly=true with no selection falls back to all filtered rows | 67-01 |
 
 ### Architecture Notes
 *Technical context that spans multiple plans.*
@@ -134,6 +136,7 @@ Phase:     [##########] 100%
 - Row actions: renderRowActions with inline (1-2) / kebab (3+) branching, pre-built factories (view/edit/delete), rowActionsStyles CSS with hover-reveal
 - Row action events: ui-row-action CustomEvent with {actionId, row, rowId}, special 'edit' actionId bridges to activateRowEdit
 - Bulk actions: bulkActions property, renderBulkActionsToolbar standalone function, native HTML confirmation dialog, ui-bulk-action event with selectedRows
+- CSV export: exportToCsv standalone utility, exportCsv() public method on DataTable, onExport callback for server delegation, RFC 4180 escaping, UTF-8 BOM
 
 ### TODOs
 *Items to address that emerged during work.*
@@ -161,19 +164,17 @@ Phase:     [##########] 100%
 ### Last Session
 *Summary of previous session's work. Updated at session end.*
 
-- Executed Phase 66 Plan 03: Bulk actions toolbar integration
-- 66-03: Created bulk-actions.ts with toolbar + confirmation dialog, integrated into DataTable
-- Added bulkActions property, _pendingBulkAction state, handleBulkAction/dispatchBulkAction methods
-- Bulk toolbar replaces selection banner when configured and rows selected
-- Native HTML confirmation dialog for destructive actions (no lui-dialog dependency)
-- All exports added to package entry point
-- Clean TypeScript compilation, no deviations
-- Phase 66 complete: all CELL-*, ACT-*, BULK-* requirements satisfied
+- Executed Phase 67 Plan 01: CSV export capability
+- 67-01: Created export-csv.ts with RFC 4180 CSV generation, triggerDownload, escapeCsvField
+- Added ExportCsvOptions and ServerExportParams interfaces to types.ts
+- Added exportCsv() public method and onExport callback to DataTable
+- Re-exported all CSV utilities from package entry point
+- Clean TypeScript compilation, no deviations, 3 min execution
 
 ### Next Actions
 *Clear starting point for next session.*
 
-1. Phase 67: Export & Expandable Rows (9 requirements: EXP-01 to EXP-04, EXPAND-01 to EXPAND-05)
+1. Phase 67 Plan 02: Expandable rows (EXPAND-01 to EXPAND-05)
 2. Phase 68: Package, CLI & Documentation (12 requirements: PKG-01 to PKG-06, CLI-01 to CLI-06)
 
 ### Open Questions
@@ -183,4 +184,4 @@ Phase:     [##########] 100%
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-02-05 (Phase 66 complete, 6/8 phases done)*
+*Last updated: 2026-02-05 (Phase 67 plan 01 complete, CSV export done)*
