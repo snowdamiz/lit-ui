@@ -260,6 +260,84 @@ export function renderEditInput(
 }
 
 // =============================================================================
+// Row Edit Action Handlers
+// =============================================================================
+
+/**
+ * Callbacks for row-level edit action buttons.
+ * Provided by the DataTable component to handle row edit lifecycle.
+ */
+export interface RowEditActionHandlers {
+  /** Enter row edit mode */
+  onEdit: () => void;
+  /** Save all pending row changes (validates first) */
+  onSave: () => void;
+  /** Cancel row editing and revert all changes */
+  onCancel: () => void;
+}
+
+/**
+ * Render row-level edit action buttons.
+ *
+ * In view mode: renders a pencil icon button to enter row edit mode (ROWEDIT-01).
+ * In edit mode: renders save (check) and cancel (X) icon buttons (ROWEDIT-03).
+ *
+ * All buttons call stopPropagation to prevent row click handlers from firing.
+ *
+ * @param isEditing - Whether this row is currently in edit mode
+ * @param handlers - Callbacks for edit/save/cancel actions
+ * @returns Lit TemplateResult with appropriate action buttons
+ */
+export function renderRowEditActions(
+  isEditing: boolean,
+  handlers: RowEditActionHandlers
+): TemplateResult {
+  if (isEditing) {
+    return html`
+      <div class="row-edit-actions">
+        <button
+          type="button"
+          class="row-edit-save"
+          @click=${(e: MouseEvent) => { e.stopPropagation(); handlers.onSave(); }}
+          aria-label="Save row changes"
+          title="Save"
+        >
+          <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="3 8 7 12 13 4"/>
+          </svg>
+        </button>
+        <button
+          type="button"
+          class="row-edit-cancel"
+          @click=${(e: MouseEvent) => { e.stopPropagation(); handlers.onCancel(); }}
+          aria-label="Cancel row editing"
+          title="Cancel"
+        >
+          <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="4" y1="4" x2="12" y2="12"/>
+            <line x1="12" y1="4" x2="4" y2="12"/>
+          </svg>
+        </button>
+      </div>
+    `;
+  }
+
+  return html`
+    <button
+      type="button"
+      class="row-edit-trigger"
+      @click=${(e: MouseEvent) => { e.stopPropagation(); handlers.onEdit(); }}
+      aria-label="Edit this row"
+      title="Edit row"
+    >
+      <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor">
+        <path d="M12.1 1.9a1.5 1.5 0 0 1 2.1 2.1L5.6 12.6l-3.2.8.8-3.2L12.1 1.9z"/>
+      </svg>
+    </button>
+  `;
+}
+
+// =============================================================================
 // Editable Cell Indicator
 // =============================================================================
 
@@ -384,5 +462,83 @@ export const inlineEditingStyles = css`
 
   :host-context(.dark) .data-table-cell.editable:hover {
     background: var(--ui-data-table-editable-hover-bg, rgba(59, 130, 246, 0.08));
+  }
+
+  /* ── Row edit action buttons (ROWEDIT-01, ROWEDIT-03) ── */
+  .row-edit-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .row-edit-trigger,
+  .row-edit-save,
+  .row-edit-cancel {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    background: transparent;
+    color: var(--color-muted-foreground, #71717a);
+    transition: background-color 0.15s, color 0.15s;
+  }
+
+  .row-edit-trigger:hover {
+    background: var(--ui-data-table-row-hover-bg, #f4f4f5);
+    color: var(--ui-data-table-text-color, #09090b);
+  }
+
+  .row-edit-save {
+    color: var(--color-success, #22c55e);
+  }
+
+  .row-edit-save:hover {
+    background: rgba(34, 197, 94, 0.1);
+    color: var(--color-success, #16a34a);
+  }
+
+  .row-edit-cancel {
+    color: var(--color-destructive, #ef4444);
+  }
+
+  .row-edit-cancel:hover {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--color-destructive, #dc2626);
+  }
+
+  .row-edit-trigger:focus-visible,
+  .row-edit-save:focus-visible,
+  .row-edit-cancel:focus-visible {
+    outline: 2px solid var(--color-primary, #3b82f6);
+    outline-offset: 1px;
+  }
+
+  /* ── Row in edit mode highlight ── */
+  .data-table-row.row-editing {
+    background: var(--ui-data-table-editing-bg, rgba(59, 130, 246, 0.06));
+  }
+
+  /* ── Row actions cell ── */
+  .row-actions-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ── Dark mode overrides for row edit ── */
+  :host-context(.dark) .row-edit-trigger:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  :host-context(.dark) .row-edit-save {
+    color: #4ade80;
+  }
+
+  :host-context(.dark) .row-edit-cancel {
+    color: #f87171;
   }
 `;
