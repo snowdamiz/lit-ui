@@ -617,6 +617,33 @@ export interface BulkActionEvent<TData extends RowData = RowData> {
 }
 
 // =============================================================================
+// Expandable Rows Types (EXPAND-*)
+// =============================================================================
+
+/**
+ * Function that renders detail content for an expanded row (EXPAND-03).
+ *
+ * Receives the row data and TanStack Row instance (typed as `any` for
+ * public API simplicity -- consumers can import `Row` from TanStack
+ * if they need strong typing on the second parameter).
+ *
+ * @template TData - Row data type
+ */
+export type DetailContentRenderer<TData extends RowData = RowData> =
+  (rowData: TData, row: any) => TemplateResult;
+
+/**
+ * Event detail for expanded state change events (EXPAND-05).
+ *
+ * Dispatched as `ui-expanded-change` when the expanded state changes
+ * via toggle clicks or programmatic updates.
+ */
+export interface ExpandedChangeEvent {
+  /** Current expanded state (true = all expanded, or record of row IDs) */
+  expanded: ExpandedState;
+}
+
+// =============================================================================
 // Export Types (EXP-*)
 // =============================================================================
 
