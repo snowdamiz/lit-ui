@@ -35,6 +35,7 @@
  * @fires ui-column-preferences-change - When column sizing/order/visibility changes
  * @fires ui-column-preferences-reset - When preferences are reset via resetColumnPreferences()
  * @fires ui-cell-edit - When a cell edit is committed with old/new values
+ * @fires ui-row-edit - When a row edit is saved with old/new values for all changed fields
  */
 
 import { html, css, nothing, isServer, type TemplateResult, type PropertyValues } from 'lit';
@@ -80,9 +81,9 @@ import type {
 import { KeyboardNavigationManager, type GridPosition } from './keyboard-navigation.js';
 import { createSelectionColumn } from './selection-column.js';
 import { renderColumnPicker, columnPickerStyles } from './column-picker.js';
-import { renderEditInput, isColumnEditable, renderEditableIndicator, inlineEditingStyles } from './inline-editing.js';
+import { renderEditInput, isColumnEditable, renderEditableIndicator, renderRowEditActions, inlineEditingStyles } from './inline-editing.js';
 import { savePreferences, loadPreferences, clearPreferences } from './column-preferences.js';
-import type { ColumnPreferences, ColumnPreferencesChangeEvent, EditingCell, CellEditEvent, EditValidationResult, LitUIColumnMeta } from './types.js';
+import type { ColumnPreferences, ColumnPreferencesChangeEvent, EditingCell, EditingRow, CellEditEvent, RowEditEvent, EditValidationResult, LitUIColumnMeta } from './types.js';
 
 /**
  * A high-performance data table component with TanStack Table integration.
@@ -161,6 +162,23 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
 
   /** Reference to current table instance for use outside render(). */
   private _tableInstance?: Table<TData>;
+
+  // ==========================================================================
+  // Inline editing state (row level)
+  // ==========================================================================
+
+  /**
+   * Enable row-level edit mode with pencil/save/cancel action buttons.
+   * When true, each row shows a pencil icon that activates edit mode for the entire row.
+   * Mutually exclusive with cell-level editing on the same row.
+   * @default false
+   */
+  @property({ type: Boolean, attribute: 'enable-row-editing' })
+  enableRowEditing = false;
+
+  /** Currently editing row state. Null when not in row edit mode. */
+  @state()
+  private _editingRow: EditingRow | null = null;
 
   /**
    * Column definitions for the table.
@@ -538,16 +556,19 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
       this.initVirtualizer();
     }
 
-    // Update keyboard navigation bounds when data, columns, or selection state changes
+    // Update keyboard navigation bounds when data, columns, or selection/row-editing state changes
     if (
       changedProperties.has('data') ||
       changedProperties.has('columns') ||
-      changedProperties.has('enableSelection')
+      changedProperties.has('enableSelection') ||
+      changedProperties.has('enableRowEditing')
     ) {
       const maxHeightPx = parseInt(this.maxHeight, 10) || 400;
       const visibleRowCount = Math.floor(maxHeightPx / (this.rowHeight || 48));
-      // Account for selection column when enabled
-      const colCount = this.enableSelection ? this.columns.length + 1 : this.columns.length;
+      // Account for selection column and row edit actions column
+      let colCount = this.columns.length;
+      if (this.enableSelection) colCount += 1;
+      if (this.enableRowEditing) colCount += 1;
       this.navManager.setBounds({
         rowCount: this.data.length,
         colCount,
@@ -1156,8 +1177,8 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
     // Check if column is editable for this row
     if (!isColumnEditable(meta, rowData)) return;
 
-    // Don't allow cell edit while row edit is active
-    if ((this as unknown as { _editingRow?: unknown })._editingRow) return;
+    // Don't allow cell edit while row edit is active (mutual exclusion)
+    if (this._editingRow) return;
 
     // If another cell is being edited, cancel it first
     if (this._editingCell) {
@@ -1273,6 +1294,148 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
     });
   }
 
+  // ==========================================================================
+  // Inline row editing methods (ROWEDIT-01 through ROWEDIT-06)
+  // ==========================================================================
+
+  /**
+   * Activate row-level edit mode for a given row.
+   *
+   * - Cancels any active cell edit (mutual exclusion)
+   * - Cancels any other row's edit mode (ROWEDIT-06: only one row at a time)
+   * - Collects original values from all editable cells
+   * - Sets _editingRow state to trigger re-render
+   *
+   * @param row - The TanStack Row to enter edit mode
+   */
+  private activateRowEdit(row: Row<TData>): void {
+    // Mutual exclusion: cancel cell edit if active
+    if (this._editingCell) {
+      this.cancelCellEdit();
+    }
+
+    // ROWEDIT-06: only one row at a time
+    if (this._editingRow && this._editingRow.rowId !== row.id) {
+      this.cancelRowEdit();
+    }
+
+    // Already editing this row
+    if (this._editingRow?.rowId === row.id) return;
+
+    const table = this._tableInstance;
+    if (!table) return;
+
+    // Collect original values from all editable cells in this row
+    const originalData: Record<string, unknown> = {};
+    const visibleCells = row.getVisibleCells();
+    for (const cell of visibleCells) {
+      const meta = cell.column.columnDef.meta as LitUIColumnMeta<TData> | undefined;
+      if (isColumnEditable(meta, row.original)) {
+        originalData[cell.column.id] = cell.getValue();
+      }
+    }
+
+    this._editingRow = {
+      rowId: row.id,
+      originalData,
+      pendingValues: { ...originalData },
+      errors: {},
+    };
+  }
+
+  /**
+   * Update a pending value for a column during row edit mode.
+   * Clears any existing validation error for the column.
+   *
+   * @param columnId - The column being updated
+   * @param value - The new pending value
+   */
+  private updateRowEditValue(columnId: string, value: unknown): void {
+    if (!this._editingRow) return;
+
+    this._editingRow = {
+      ...this._editingRow,
+      pendingValues: {
+        ...this._editingRow.pendingValues,
+        [columnId]: value,
+      },
+      errors: (() => {
+        const errs = { ...this._editingRow!.errors };
+        delete errs[columnId];
+        return errs;
+      })(),
+    };
+  }
+
+  /**
+   * Save the current row edit after validating all editable fields.
+   *
+   * - Validates ALL editable columns (ROWEDIT-04)
+   * - If any fail, shows errors inline and stays in edit mode
+   * - If all pass, dispatches ui-row-edit event (ROWEDIT-05) and exits edit mode
+   */
+  private saveRowEdit(): void {
+    if (!this._editingRow) return;
+
+    const table = this._tableInstance;
+    if (!table) return;
+
+    const row = table.getRowModel().rows.find((r) => r.id === this._editingRow!.rowId);
+    if (!row) return;
+
+    const rowData = row.original;
+    const errors: Record<string, string> = {};
+
+    // Validate ALL editable fields (ROWEDIT-04)
+    const visibleCells = row.getVisibleCells();
+    for (const cell of visibleCells) {
+      const meta = cell.column.columnDef.meta as LitUIColumnMeta<TData> | undefined;
+      if (!isColumnEditable(meta, rowData)) continue;
+      if (!meta?.editValidate) continue;
+
+      const pendingValue = this._editingRow.pendingValues[cell.column.id];
+      const result = meta.editValidate(pendingValue, rowData);
+
+      if (result === false) {
+        errors[cell.column.id] = 'Invalid value';
+      } else if (typeof result === 'object' && !result.valid) {
+        errors[cell.column.id] = result.message ?? 'Invalid value';
+      }
+    }
+
+    // If any validation errors, show them and stay in edit mode
+    if (Object.keys(errors).length > 0) {
+      this._editingRow = {
+        ...this._editingRow,
+        errors,
+      };
+      return;
+    }
+
+    // Dispatch ui-row-edit event (ROWEDIT-05)
+    const detail: RowEditEvent<TData> = {
+      row: rowData,
+      rowId: this._editingRow.rowId,
+      oldValues: this._editingRow.originalData,
+      newValues: this._editingRow.pendingValues,
+    };
+    this.dispatchEvent(new CustomEvent('ui-row-edit', {
+      detail,
+      bubbles: true,
+      composed: true,
+    }));
+
+    // Exit edit mode
+    this._editingRow = null;
+  }
+
+  /**
+   * Cancel the current row edit, reverting all pending changes.
+   */
+  private cancelRowEdit(): void {
+    this._editingRow = null;
+  }
+
   /**
    * Render "Select all X items" banner when all page rows are selected.
    * Shows link to select entire dataset (across all pages).
@@ -1337,19 +1500,23 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
   private getGridTemplateColumns(table?: Table<TData>): string {
     if (this.columns.length === 0) return '';
 
+    // Row edit action column width (pencil button or save+cancel buttons)
+    const rowEditSuffix = this.enableRowEditing ? ' 72px' : '';
+
     // If we have a table instance, use TanStack's sizing
     if (table) {
       const headers = table.getFlatHeaders();
-      return headers
+      const columns = headers
         .map((header) => {
           const size = header.getSize();
           return `${size}px`;
         })
         .join(' ');
+      return columns + rowEditSuffix;
     }
 
     // Fallback for skeleton/loading states without table instance
-    return this.columns
+    const columns = this.columns
       .map((col) => {
         // Check if we have a stored size in columnSizing state
         const colId = (col as { accessorKey?: string; id?: string }).accessorKey ??
@@ -1369,6 +1536,7 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
         return `minmax(${minSize}px, ${maxSize}px)`;
       })
       .join(' ');
+    return columns + rowEditSuffix;
   }
 
   /**
@@ -1750,8 +1918,9 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
     const meta = cell.column.columnDef.meta as LitUIColumnMeta<TData> | undefined;
     const rowData = cell.row.original;
     const isEditable = isColumnEditable(meta, rowData);
-    const isEditing = this._editingCell?.rowId === cell.row.id
+    const isCellEditing = this._editingCell?.rowId === cell.row.id
       && this._editingCell?.columnId === cell.column.id;
+    const isRowEditing = this._editingRow?.rowId === cell.row.id;
     const isFocused =
       this._focusedCell.row === rowIndex && this._focusedCell.col === colIndex;
 
@@ -1759,10 +1928,39 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
     const classes = [
       'data-table-cell',
       isEditable ? 'editable' : '',
-      isEditing ? 'editing' : '',
+      isCellEditing ? 'editing' : '',
+      isRowEditing && isEditable ? 'editing' : '',
     ].filter(Boolean).join(' ');
 
-    if (isEditing) {
+    // Row edit mode: all editable cells become inputs simultaneously (ROWEDIT-02)
+    if (isRowEditing && isEditable) {
+      const editType = meta?.editType ?? 'text';
+      const pendingValue = this._editingRow!.pendingValues[cell.column.id] ?? cell.getValue();
+      const fieldError = this._editingRow!.errors[cell.column.id] ?? null;
+
+      return html`
+        <div
+          role="gridcell"
+          aria-colindex="${colIndex + 1}"
+          class="${classes}"
+          data-column-id="${cell.column.id}"
+          tabindex="${isFocused ? '0' : '-1'}"
+        >
+          ${renderEditInput(editType, pendingValue, {
+            editOptions: meta?.editOptions,
+            validationError: fieldError,
+          }, {
+            onCommit: (value: unknown) => this.updateRowEditValue(cell.column.id, value),
+            onCancel: () => {}, // No individual cancel in row mode - use row cancel button
+          })}
+          ${fieldError ? html`
+            <span class="cell-edit-error" role="alert">${fieldError}</span>
+          ` : nothing}
+        </div>
+      `;
+    }
+
+    if (isCellEditing) {
       // Render edit input instead of cell content (EDIT-03)
       const editType = meta?.editType ?? 'text';
       const currentValue = this._editingCell!.originalValue;
@@ -1860,6 +2058,10 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
               ${headerGroup.headers.map((header, colIndex) =>
                 this.renderHeaderCell(header, colIndex, table)
               )}
+              ${this.enableRowEditing ? html`
+                <div role="columnheader" class="data-table-header-cell" aria-label="Row actions">
+                </div>
+              ` : nothing}
             </div>
           `
         )}
@@ -2064,18 +2266,28 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
       >
         ${rows.map((row, rowIndex) => {
           const isSelected = row.getIsSelected();
+          const isRowEditing = this._editingRow?.rowId === row.id;
           return html`
             <div
               role="row"
               aria-rowindex="${rowIndex + 2}"
               aria-selected="${isSelected}"
-              class="data-table-row ${isSelected ? 'selected' : ''}"
+              class="data-table-row ${isSelected ? 'selected' : ''} ${isRowEditing ? 'row-editing' : ''}"
               style="grid-template-columns: ${gridTemplateColumns}"
               data-row-id="${row.id}"
             >
               ${row.getVisibleCells().map((cell, colIndex) =>
                 this.renderCell(cell, rowIndex, colIndex)
               )}
+              ${this.enableRowEditing ? html`
+                <div class="data-table-cell row-actions-cell" role="gridcell">
+                  ${renderRowEditActions(isRowEditing, {
+                    onEdit: () => this.activateRowEdit(row),
+                    onSave: () => this.saveRowEdit(),
+                    onCancel: () => this.cancelRowEdit(),
+                  })}
+                </div>
+              ` : nothing}
             </div>
           `;
         })}
@@ -2108,12 +2320,13 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
             if (!row) return nothing;
 
             const isSelected = row.getIsSelected();
+            const isRowEditing = this._editingRow?.rowId === row.id;
             return html`
               <div
                 role="row"
                 aria-rowindex="${virtualRow.index + 2}"
                 aria-selected="${isSelected}"
-                class="data-table-row virtual-row ${isSelected ? 'selected' : ''}"
+                class="data-table-row virtual-row ${isSelected ? 'selected' : ''} ${isRowEditing ? 'row-editing' : ''}"
                 style="
                   grid-template-columns: ${gridTemplateColumns};
                   position: absolute;
@@ -2128,6 +2341,15 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
                 ${row.getVisibleCells().map((cell, colIndex) =>
                   this.renderCell(cell, virtualRow.index, colIndex)
                 )}
+                ${this.enableRowEditing ? html`
+                  <div class="data-table-cell row-actions-cell" role="gridcell">
+                    ${renderRowEditActions(isRowEditing, {
+                      onEdit: () => this.activateRowEdit(row),
+                      onSave: () => this.saveRowEdit(),
+                      onCancel: () => this.cancelRowEdit(),
+                    })}
+                  </div>
+                ` : nothing}
               </div>
             `;
           })}
@@ -2846,7 +3068,7 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
 
     // Calculate total counts for ARIA
     const rowCount = this.data.length + 1; // +1 for header row
-    const colCount = effectiveColumns.length;
+    const colCount = effectiveColumns.length + (this.enableRowEditing ? 1 : 0);
 
     return html`
       <div
