@@ -269,6 +269,14 @@ Plans:
 
 **Dependencies:** Phases 61-67 (all features complete)
 
+**Plans:** 4 plans
+
+Plans:
+- [ ] 68-01-PLAN.md — Package finalization (peer deps, element registration, JSX types)
+- [ ] 68-02-PLAN.md — CLI registry entry and copy-source starter template
+- [ ] 68-03-PLAN.md — Docs page setup with core feature demos
+- [ ] 68-04-PLAN.md — Advanced demos, API reference, and accessibility docs
+
 **Requirements:**
 - PKG-01: @lit-ui/data-table package with peer dependencies on lit and @lit-ui/core
 - PKG-02: TypeScript types exported for column definitions, row data, events
@@ -303,10 +311,10 @@ Plans:
 | 65 | Inline Editing | Complete | 3/3 |
 | 66 | Cell Renderers, Row Actions & Bulk Actions | Complete | 3/3 |
 | 67 | Export & Expandable Rows | Complete | 2/2 |
-| 68 | Package, CLI & Documentation | Pending | 0/0 |
+| 68 | Package, CLI & Documentation | Pending | 0/4 |
 
 **Total:** 8 phases, 76 requirements mapped
 
 ---
 *Roadmap created: 2026-02-02*
-*Last updated: 2026-02-05 (Phase 67 complete)*
+*Last updated: 2026-02-05 (Phase 68 planned)*
