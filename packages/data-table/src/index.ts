@@ -66,5 +66,8 @@ export {
   kebabIcon,
 } from './row-actions.js';
 
+// Bulk actions (toolbar + confirmation dialog templates)
+export { renderBulkActionsToolbar, renderConfirmationDialog, bulkActionsStyles } from './bulk-actions.js';
+
 // Filter components
 export * from './filters/index.js';

@@ -37,6 +37,7 @@
  * @fires ui-cell-edit - When a cell edit is committed with old/new values
  * @fires ui-row-edit - When a row edit is saved with old/new values for all changed fields
  * @fires ui-row-action - When a row action button is clicked
+ * @fires ui-bulk-action - When a bulk action is executed on selected rows
  */
 
 import { html, css, nothing, isServer, type TemplateResult, type PropertyValues } from 'lit';
@@ -84,9 +85,10 @@ import { createSelectionColumn } from './selection-column.js';
 import { renderColumnPicker, columnPickerStyles } from './column-picker.js';
 import { renderEditInput, isColumnEditable, renderEditableIndicator, renderRowEditActions, inlineEditingStyles } from './inline-editing.js';
 import { renderRowActions, rowActionsStyles } from './row-actions.js';
+import { renderBulkActionsToolbar, renderConfirmationDialog, bulkActionsStyles } from './bulk-actions.js';
 import { cellRendererStyles } from './cell-renderers.js';
 import { savePreferences, loadPreferences, clearPreferences } from './column-preferences.js';
-import type { ColumnPreferences, ColumnPreferencesChangeEvent, EditingCell, EditingRow, CellEditEvent, RowEditEvent, EditValidationResult, LitUIColumnMeta, RowAction, RowActionEvent } from './types.js';
+import type { ColumnPreferences, ColumnPreferencesChangeEvent, EditingCell, EditingRow, CellEditEvent, RowEditEvent, EditValidationResult, LitUIColumnMeta, RowAction, RowActionEvent, BulkAction, BulkActionEvent } from './types.js';
 
 /**
  * A high-performance data table component with TanStack Table integration.
@@ -202,6 +204,25 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
    */
   @property({ type: Boolean, attribute: 'hover-reveal-actions', reflect: true })
   hoverRevealActions = false;
+
+  // ==========================================================================
+  // Bulk Actions (BULK-*)
+  // ==========================================================================
+
+  /**
+   * Array of bulk actions for the toolbar.
+   * When configured and rows are selected, a floating toolbar appears
+   * above the table body with action buttons.
+   */
+  @property({ type: Array })
+  bulkActions: BulkAction[] = [];
+
+  /**
+   * Tracks a pending bulk action that requires confirmation dialog.
+   * Non-null triggers the confirmation dialog to render.
+   */
+  @state()
+  private _pendingBulkAction: BulkAction | null = null;
 
   /**
    * Whether an actions column should be rendered.
@@ -1497,15 +1518,36 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
   }
 
   /**
-   * Render "Select all X items" banner when all page rows are selected.
-   * Shows link to select entire dataset (across all pages).
+   * Render selection banner or bulk actions toolbar.
+   *
+   * When bulkActions are configured and rows are selected, renders the
+   * bulk actions toolbar (replaces the selection banner).
+   * Otherwise, falls back to the simple "Select all X items" banner.
    */
   private renderSelectionBanner(table: Table<TData>): TemplateResult {
     if (!this.enableSelection) return html``;
 
+    const selectedCount = Object.keys(this.rowSelection).length;
+
+    // Render bulk actions toolbar when configured and rows are selected
+    if (this.bulkActions.length > 0 && selectedCount > 0) {
+      const isAllPageSelected = table.getIsAllPageRowsSelected();
+      const totalCount = this.totalRowCount ?? this.data.length;
+      const showSelectAll = isAllPageSelected && selectedCount < totalCount;
+
+      return renderBulkActionsToolbar(
+        selectedCount,
+        this.bulkActions,
+        (action) => this.handleBulkAction(action),
+        () => this.clearSelection(table),
+        showSelectAll ? `Select all ${totalCount.toLocaleString()} items` : undefined,
+        showSelectAll ? () => this.handleSelectAll(table, totalCount) : undefined
+      );
+    }
+
+    // Fallback: existing selection banner (no bulk actions configured)
     const isAllPageSelected = table.getIsAllPageRowsSelected();
     const totalCount = this.totalRowCount ?? this.data.length;
-    const selectedCount = Object.keys(this.rowSelection).length;
 
     // Only show banner when:
     // 1. All rows on current page are selected
@@ -1528,6 +1570,50 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
         </button>
       </div>
     `;
+  }
+
+  /**
+   * Clear all row selection state.
+   */
+  private clearSelection(table: Table<TData>): void {
+    table.resetRowSelection();
+  }
+
+  /**
+   * Handle bulk action click.
+   * If action requires confirmation, show dialog.
+   * Otherwise dispatch event immediately.
+   */
+  private handleBulkAction(action: BulkAction): void {
+    if (action.requiresConfirmation) {
+      this._pendingBulkAction = action;
+      return;
+    }
+    this.dispatchBulkAction(action);
+  }
+
+  /**
+   * Dispatch ui-bulk-action event with selected row data.
+   */
+  private dispatchBulkAction(action: BulkAction): void {
+    const table = this._tableInstance;
+    if (!table) return;
+
+    const selectedRows = table
+      .getSelectedRowModel()
+      .rows.map((r) => r.original);
+
+    const event = new CustomEvent<BulkActionEvent<TData>>('ui-bulk-action', {
+      detail: {
+        actionId: action.id,
+        selectedRows,
+        rowSelection: { ...this.rowSelection },
+        selectedCount: selectedRows.length,
+      },
+      bubbles: true,
+      composed: true,
+    });
+    this.dispatchEvent(event);
   }
 
   /**
@@ -2451,6 +2537,7 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
     inlineEditingStyles,
     cellRendererStyles,
     rowActionsStyles,
+    bulkActionsStyles,
     css`
       :host {
         display: block;
@@ -3172,6 +3259,17 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
         ${this.renderHeader(table)}
         ${this.renderSelectionBanner(table)}
         ${this.renderBody(table)}
+        ${renderConfirmationDialog(
+          this._pendingBulkAction,
+          Object.keys(this.rowSelection).length,
+          () => {
+            this.dispatchBulkAction(this._pendingBulkAction!);
+            this._pendingBulkAction = null;
+          },
+          () => {
+            this._pendingBulkAction = null;
+          }
+        )}
         <div
           class="sr-only"
           role="status"
