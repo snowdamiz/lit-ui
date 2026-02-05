@@ -9,21 +9,22 @@
 ## Current Position
 
 **Milestone:** v7.0 Data Table
-**Phase:** 65 - Inline Editing (COMPLETE, VERIFIED)
-**Plan:** 3 of 3 complete - PHASE COMPLETE
-**Status:** Phase complete, verified (21/21 must-haves)
+**Phase:** 66 - Cell Renderers, Row Actions & Bulk Actions
+**Plan:** 1 of 3 complete
+**Status:** In progress
+**Last activity:** 2026-02-05 - Completed 66-01-PLAN.md
 
 **Progress:**
 ```
-Milestone: [########--] 62%
-Phase:     [##########] 100%
+Milestone: [########--] 66%
+Phase:     [###-------] 33%
 ```
 
 ## Performance Metrics
 
 | Metric | Value |
 |--------|-------|
-| Plans completed | 19 |
+| Plans completed | 20 |
 | Requirements satisfied | 59/76 |
 | Phases completed | 5/8 |
 
@@ -88,6 +89,10 @@ Phase:     [##########] 100%
 | Validate ALL fields before save | Row-level save validates every editable column before dispatching event | 65-03 |
 | 72px row actions column | Fixed width fits pencil button or save+cancel button pair | 65-03 |
 | updateRowEditValue for row inputs | Individual cell inputs update pending state, not commit directly | 65-03 |
+| Cell renderers as factory functions | Not custom elements; matches createSelectionColumn pattern, no element overhead | 66-01 |
+| Inline/kebab threshold at 2 actions | 1-2 visible actions render inline buttons, 3+ get kebab dropdown | 66-01 |
+| lui-popover for kebab dropdown | Top-layer rendering avoids scroll container clipping | 66-01 |
+| Pre-built action icons as SVG constants | No external icon library dependency | 66-01 |
 
 ### Architecture Notes
 *Technical context that spans multiple plans.*
@@ -119,6 +124,8 @@ Phase:     [##########] 100%
 - Row editing lifecycle: _editingRow state, activateRowEdit (pencil click), saveRowEdit (validates all + ui-row-edit event), cancelRowEdit (revert), updateRowEditValue (pending state per field)
 - Row edit mutual exclusion: cell edit blocked when _editingRow set, row edit cancels _editingCell on activation
 - Row actions column: 72px appended to grid-template-columns, empty header cell, renderRowEditActions in both renderAllRows and renderVirtualizedBody
+- Cell renderers: CellRenderer<TData, TValue> type alias, factory functions (text/number/date/boolean/badge/progress/avatar), cellRendererStyles CSS
+- Row actions: renderRowActions with inline (1-2) / kebab (3+) branching, pre-built factories (view/edit/delete), rowActionsStyles CSS with hover-reveal
 
 ### TODOs
 *Items to address that emerged during work.*
@@ -146,18 +153,16 @@ Phase:     [##########] 100%
 ### Last Session
 *Summary of previous session's work. Updated at session end.*
 
-- Executed Phase 65: Inline Editing (3 plans across 3 waves)
-- 65-01: Editing types & inline editing module — EditType, validation, event interfaces, renderEditInput for 5 types
-- 65-02: Cell-level inline editing — click-to-edit, Enter/F2 activation, commit/cancel, validation, ui-cell-edit event
-- 65-03: Row-level inline editing — pencil action, save/cancel buttons, per-field validation, ui-row-edit event
-- Verified phase goal: 21/21 must-haves satisfied, all 13 EDIT/ROWEDIT requirements complete
+- Executed Phase 66 Plan 01: Standalone modules for cell renderers, row actions types, and row action rendering
+- 66-01: Added RowAction/BulkAction/RowActionEvent/BulkActionEvent types, 7 cell renderer factories, row actions rendering with kebab menu
+- All modules compile clean, no circular dependencies
 
 ### Next Actions
 *Clear starting point for next session.*
 
-1. Plan Phase 66: Cell Renderers, Row Actions & Bulk Actions
-2. Design built-in cell renderer system (text, number, date, boolean, badge, progress, avatar)
-3. Plan bulk actions toolbar integration with selection system
+1. Execute Phase 66 Plan 02: Integrate row actions into DataTable component
+2. Execute Phase 66 Plan 03: Bulk actions toolbar integration
+3. Verify phase goal upon completion
 
 ### Open Questions
 *Unresolved questions needing user input.*
@@ -166,4 +171,4 @@ Phase:     [##########] 100%
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-02-04*
+*Last updated: 2026-02-05*
