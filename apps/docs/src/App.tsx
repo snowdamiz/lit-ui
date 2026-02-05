@@ -20,6 +20,7 @@ import { SelectPage } from './pages/components/SelectPage'
 import { SwitchPage } from './pages/components/SwitchPage'
 import { TabsPage } from './pages/components/TabsPage'
 import { DatePickerPage } from './pages/components/DatePickerPage'
+import { DataTablePage } from './pages/components/DataTablePage'
 import { DateRangePickerPage } from './pages/components/DateRangePickerPage'
 import { TimePickerPage } from './pages/components/TimePickerPage'
 import { TooltipPage } from './pages/components/TooltipPage'
@@ -63,6 +64,7 @@ export default function App() {
             <Route path="components/calendar" element={<CalendarPage />} />
             <Route path="components/checkbox" element={<CheckboxPage />} />
             <Route path="components/date-picker" element={<DatePickerPage />} />
+            <Route path="components/data-table" element={<DataTablePage />} />
             <Route path="components/date-range-picker" element={<DateRangePickerPage />} />
             <Route path="components/dialog" element={<DialogPage />} />
             <Route path="components/input" element={<InputPage />} />

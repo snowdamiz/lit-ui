@@ -15,6 +15,7 @@
     "@lit-ui/checkbox": "workspace:*",
     "@lit-ui/cli": "workspace:^",
     "@lit-ui/core": "workspace:*",
+    "@lit-ui/data-table": "workspace:*",
     "@lit-ui/date-picker": "workspace:*",
     "@lit-ui/date-range-picker": "workspace:*",
     "@lit-ui/dialog": "workspace:*",

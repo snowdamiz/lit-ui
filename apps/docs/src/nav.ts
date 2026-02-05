@@ -38,6 +38,7 @@ export const navigation: NavSection[] = [
       { title: "Button", href: "/components/button" },
       { title: "Calendar", href: "/components/calendar" },
       { title: "Checkbox", href: "/components/checkbox" },
+      { title: "Data Table", href: "/components/data-table" },
       { title: "Date Picker", href: "/components/date-picker" },
       { title: "Date Range Picker", href: "/components/date-range-picker" },
       { title: "Dialog", href: "/components/dialog" },
