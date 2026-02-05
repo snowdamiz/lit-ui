@@ -99,6 +99,15 @@
       "registryDependencies": []
     },
     {
+      "name": "data-table",
+      "description": "High-performance data table with virtual scrolling, sorting, filtering, inline editing, and selection",
+      "files": [
+        { "path": "components/data-table/data-table.ts", "type": "component" }
+      ],
+      "dependencies": ["@tanstack/lit-table", "@tanstack/lit-virtual"],
+      "registryDependencies": ["checkbox", "popover"]
+    },
+    {
       "name": "date-picker",
       "description": "Accessible date picker with calendar popup, text input parsing, and form participation",
       "files": [

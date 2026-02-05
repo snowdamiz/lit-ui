@@ -16,6 +16,7 @@ export const componentToPackage: Record<string, string> = {
   radio: '@lit-ui/radio',
   switch: '@lit-ui/switch',
   calendar: '@lit-ui/calendar',
+  'data-table': '@lit-ui/data-table',
   'date-picker': '@lit-ui/date-picker',
   'date-range-picker': '@lit-ui/date-range-picker',
   'time-picker': '@lit-ui/time-picker',
