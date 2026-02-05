@@ -166,9 +166,9 @@ Plans:
 **Plans:** 3 plans
 
 Plans:
-- [ ] 65-01-PLAN.md — Editing types and inline-editing module (input renderers, helpers)
-- [ ] 65-02-PLAN.md — Cell-level inline editing (click-to-edit, commit/cancel, validation, events)
-- [ ] 65-03-PLAN.md — Row-level inline editing (pencil action, save/cancel, row validation, events)
+- [x] 65-01-PLAN.md — Editing types and inline-editing module (input renderers, helpers)
+- [x] 65-02-PLAN.md — Cell-level inline editing (click-to-edit, commit/cancel, validation, events)
+- [x] 65-03-PLAN.md — Row-level inline editing (pencil action, save/cancel, row validation, events)
 
 **Requirements:**
 - EDIT-01: Cells marked as editable show visual indicator on hover/focus
@@ -287,7 +287,7 @@ Plans:
 | 62 | Sorting & Selection | Complete | 3/3 |
 | 63 | Filtering & Pagination | Complete | 4/4 |
 | 64 | Column Customization | Complete | 4/4 |
-| 65 | Inline Editing | Planned | 0/3 |
+| 65 | Inline Editing | Complete | 3/3 |
 | 66 | Cell Renderers, Row Actions & Bulk Actions | Pending | 0/0 |
 | 67 | Export & Expandable Rows | Pending | 0/0 |
 | 68 | Package, CLI & Documentation | Pending | 0/0 |
@@ -296,4 +296,4 @@ Plans:
 
 ---
 *Roadmap created: 2026-02-02*
-*Last updated: 2026-02-03 (Phase 64 complete)*
+*Last updated: 2026-02-04 (Phase 65 complete)*

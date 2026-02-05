@@ -90,22 +90,22 @@ Requirements for Data Table milestone. Each maps to roadmap phases.
 
 ### Inline Editing (Cell Level)
 
-- [ ] **EDIT-01**: Cells marked as editable show visual indicator on hover/focus
-- [ ] **EDIT-02**: Click on editable cell activates inline edit mode
-- [ ] **EDIT-03**: Edit mode renders appropriate input type (text, number, select, date, checkbox)
-- [ ] **EDIT-04**: Enter or blur commits the edit; Escape cancels
-- [ ] **EDIT-05**: Validation errors display inline with the cell
-- [ ] **EDIT-06**: Edit commit dispatches event with old/new values for developer handling
-- [ ] **EDIT-07**: Arrow keys exit edit mode and navigate to adjacent cell (optional)
+- [x] **EDIT-01**: Cells marked as editable show visual indicator on hover/focus
+- [x] **EDIT-02**: Click on editable cell activates inline edit mode
+- [x] **EDIT-03**: Edit mode renders appropriate input type (text, number, select, date, checkbox)
+- [x] **EDIT-04**: Enter or blur commits the edit; Escape cancels
+- [x] **EDIT-05**: Validation errors display inline with the cell
+- [x] **EDIT-06**: Edit commit dispatches event with old/new values for developer handling
+- [x] **EDIT-07**: Arrow keys exit edit mode and navigate to adjacent cell (optional)
 
 ### Inline Editing (Row Level)
 
-- [ ] **ROWEDIT-01**: Row edit mode activates via action button (pencil icon)
-- [ ] **ROWEDIT-02**: Entire row becomes editable with appropriate inputs
-- [ ] **ROWEDIT-03**: Save and Cancel buttons appear in row during edit mode
-- [ ] **ROWEDIT-04**: Save validates all fields before committing
-- [ ] **ROWEDIT-05**: Save dispatches event with complete row data for developer handling
-- [ ] **ROWEDIT-06**: Only one row can be in edit mode at a time
+- [x] **ROWEDIT-01**: Row edit mode activates via action button (pencil icon)
+- [x] **ROWEDIT-02**: Entire row becomes editable with appropriate inputs
+- [x] **ROWEDIT-03**: Save and Cancel buttons appear in row during edit mode
+- [x] **ROWEDIT-04**: Save validates all fields before committing
+- [x] **ROWEDIT-05**: Save dispatches event with complete row data for developer handling
+- [x] **ROWEDIT-06**: Only one row can be in edit mode at a time
 
 ### Custom Cell Renderers
 
@@ -244,19 +244,19 @@ Which phases cover which requirements. Updated during roadmap creation.
 | COL-06 | 64 | Complete |
 | COL-07 | 64 | Complete |
 | COL-08 | 64 | Complete |
-| EDIT-01 | 65 | Pending |
-| EDIT-02 | 65 | Pending |
-| EDIT-03 | 65 | Pending |
-| EDIT-04 | 65 | Pending |
-| EDIT-05 | 65 | Pending |
-| EDIT-06 | 65 | Pending |
-| EDIT-07 | 65 | Pending |
-| ROWEDIT-01 | 65 | Pending |
-| ROWEDIT-02 | 65 | Pending |
-| ROWEDIT-03 | 65 | Pending |
-| ROWEDIT-04 | 65 | Pending |
-| ROWEDIT-05 | 65 | Pending |
-| ROWEDIT-06 | 65 | Pending |
+| EDIT-01 | 65 | Complete |
+| EDIT-02 | 65 | Complete |
+| EDIT-03 | 65 | Complete |
+| EDIT-04 | 65 | Complete |
+| EDIT-05 | 65 | Complete |
+| EDIT-06 | 65 | Complete |
+| EDIT-07 | 65 | Complete |
+| ROWEDIT-01 | 65 | Complete |
+| ROWEDIT-02 | 65 | Complete |
+| ROWEDIT-03 | 65 | Complete |
+| ROWEDIT-04 | 65 | Complete |
+| ROWEDIT-05 | 65 | Complete |
+| ROWEDIT-06 | 65 | Complete |
 | CELL-01 | 66 | Pending |
 | CELL-02 | 66 | Pending |
 | CELL-03 | 66 | Pending |
@@ -299,4 +299,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-02-02*
-*Last updated: 2026-02-03 (Phases 61-64 complete)*
+*Last updated: 2026-02-04 (Phases 61-65 complete)*
