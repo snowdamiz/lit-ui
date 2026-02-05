@@ -5,6 +5,7 @@
  * extensions while maintaining full compatibility with the TanStack ecosystem.
  */
 
+import type { TemplateResult } from 'lit';
 import type {
   ColumnDef as TanStackColumnDef,
   RowData,
@@ -547,4 +548,70 @@ export interface RowEditEvent<TData extends RowData = RowData> {
   oldValues: Record<string, unknown>;
   /** New values after editing (keyed by column ID) */
   newValues: Record<string, unknown>;
+}
+
+// =============================================================================
+// Row Actions Types (ACT-*)
+// =============================================================================
+
+/** Configuration for a single row action */
+export interface RowAction<TData extends RowData = RowData> {
+  /** Unique action identifier */
+  id: string;
+  /** Display label */
+  label: string;
+  /** Optional icon (SVG template or string) */
+  icon?: TemplateResult | string;
+  /** Action variant for styling */
+  variant?: 'default' | 'destructive';
+  /** Whether this action is disabled (boolean or per-row function) */
+  disabled?: boolean | ((row: TData) => boolean);
+  /** Whether to hide this action (boolean or per-row function) */
+  hidden?: boolean | ((row: TData) => boolean);
+}
+
+/** Event detail for row action events (ACT-03) */
+export interface RowActionEvent<TData extends RowData = RowData> {
+  /** Action ID that was triggered */
+  actionId: string;
+  /** Row data */
+  row: TData;
+  /** Row ID */
+  rowId: string;
+}
+
+// =============================================================================
+// Bulk Actions Types (BULK-*)
+// =============================================================================
+
+/** Configuration for a bulk action */
+export interface BulkAction {
+  /** Unique action identifier */
+  id: string;
+  /** Display label */
+  label: string;
+  /** Optional icon (SVG template or string) */
+  icon?: TemplateResult | string;
+  /** Action variant for styling */
+  variant?: 'default' | 'destructive';
+  /** Whether this action requires confirmation dialog */
+  requiresConfirmation?: boolean;
+  /** Custom confirmation dialog title */
+  confirmTitle?: string;
+  /** Custom confirmation dialog message (string or function receiving selected count) */
+  confirmMessage?: string | ((count: number) => string);
+  /** Custom confirmation button label */
+  confirmLabel?: string;
+}
+
+/** Event detail for bulk action events (BULK-05) */
+export interface BulkActionEvent<TData extends RowData = RowData> {
+  /** Action ID that was triggered */
+  actionId: string;
+  /** Array of selected row data */
+  selectedRows: TData[];
+  /** Row selection state */
+  rowSelection: RowSelectionState;
+  /** Number of selected rows */
+  selectedCount: number;
 }
