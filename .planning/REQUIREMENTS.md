@@ -71,11 +71,11 @@ Requirements for Data Table milestone. Each maps to roadmap phases.
 
 ### Bulk Actions
 
-- [ ] **BULK-01**: Floating bulk actions toolbar appears when rows are selected
-- [ ] **BULK-02**: Toolbar shows count of selected items
-- [ ] **BULK-03**: Developer can configure action buttons (delete, export, custom actions)
-- [ ] **BULK-04**: Bulk delete action shows confirmation dialog before executing
-- [ ] **BULK-05**: Actions dispatch events with selected row data for developer handling
+- [x] **BULK-01**: Floating bulk actions toolbar appears when rows are selected
+- [x] **BULK-02**: Toolbar shows count of selected items
+- [x] **BULK-03**: Developer can configure action buttons (delete, export, custom actions)
+- [x] **BULK-04**: Bulk delete action shows confirmation dialog before executing
+- [x] **BULK-05**: Actions dispatch events with selected row data for developer handling
 
 ### Column Customization
 
@@ -109,17 +109,17 @@ Requirements for Data Table milestone. Each maps to roadmap phases.
 
 ### Custom Cell Renderers
 
-- [ ] **CELL-01**: Column definition accepts custom Lit template for cell rendering
-- [ ] **CELL-02**: Cell template receives row data and column definition as context
-- [ ] **CELL-03**: Built-in cell renderers provided: text, number, date, boolean, badge, progress, avatar
-- [ ] **CELL-04**: Custom renderers work correctly with virtual scrolling (no stale data)
+- [x] **CELL-01**: Column definition accepts custom Lit template for cell rendering
+- [x] **CELL-02**: Cell template receives row data and column definition as context
+- [x] **CELL-03**: Built-in cell renderers provided: text, number, date, boolean, badge, progress, avatar
+- [x] **CELL-04**: Custom renderers work correctly with virtual scrolling (no stale data)
 
 ### Row Actions
 
-- [ ] **ACT-01**: Row actions column displays action buttons or kebab menu
-- [ ] **ACT-02**: Hover-reveal pattern optionally shows actions only on row hover
-- [ ] **ACT-03**: Action click dispatches event with row data
-- [ ] **ACT-04**: Common actions (edit, delete, view) are pre-built with customizable labels
+- [x] **ACT-01**: Row actions column displays action buttons or kebab menu
+- [x] **ACT-02**: Hover-reveal pattern optionally shows actions only on row hover
+- [x] **ACT-03**: Action click dispatches event with row data
+- [x] **ACT-04**: Common actions (edit, delete, view) are pre-built with customizable labels
 
 ### Export
 
@@ -257,19 +257,19 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ROWEDIT-04 | 65 | Complete |
 | ROWEDIT-05 | 65 | Complete |
 | ROWEDIT-06 | 65 | Complete |
-| CELL-01 | 66 | Pending |
-| CELL-02 | 66 | Pending |
-| CELL-03 | 66 | Pending |
-| CELL-04 | 66 | Pending |
-| ACT-01 | 66 | Pending |
-| ACT-02 | 66 | Pending |
-| ACT-03 | 66 | Pending |
-| ACT-04 | 66 | Pending |
-| BULK-01 | 66 | Pending |
-| BULK-02 | 66 | Pending |
-| BULK-03 | 66 | Pending |
-| BULK-04 | 66 | Pending |
-| BULK-05 | 66 | Pending |
+| CELL-01 | 66 | Complete |
+| CELL-02 | 66 | Complete |
+| CELL-03 | 66 | Complete |
+| CELL-04 | 66 | Complete |
+| ACT-01 | 66 | Complete |
+| ACT-02 | 66 | Complete |
+| ACT-03 | 66 | Complete |
+| ACT-04 | 66 | Complete |
+| BULK-01 | 66 | Complete |
+| BULK-02 | 66 | Complete |
+| BULK-03 | 66 | Complete |
+| BULK-04 | 66 | Complete |
+| BULK-05 | 66 | Complete |
 | EXP-01 | 67 | Pending |
 | EXP-02 | 67 | Pending |
 | EXP-03 | 67 | Pending |
@@ -299,4 +299,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-02-02*
-*Last updated: 2026-02-04 (Phases 61-65 complete)*
+*Last updated: 2026-02-05 (Phases 61-66 complete)*

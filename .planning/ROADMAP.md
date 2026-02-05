@@ -203,9 +203,9 @@ Plans:
 **Plans:** 3 plans
 
 Plans:
-- [ ] 66-01-PLAN.md — Types, cell renderer factories, and row actions module
-- [ ] 66-02-PLAN.md — Row actions integration into DataTable component
-- [ ] 66-03-PLAN.md — Bulk actions toolbar and confirmation dialog integration
+- [x] 66-01-PLAN.md — Types, cell renderer factories, and row actions module
+- [x] 66-02-PLAN.md — Row actions integration into DataTable component
+- [x] 66-03-PLAN.md — Bulk actions toolbar and confirmation dialog integration
 
 **Requirements:**
 - CELL-01: Column definition accepts custom Lit template for cell rendering
@@ -295,7 +295,7 @@ Plans:
 | 63 | Filtering & Pagination | Complete | 4/4 |
 | 64 | Column Customization | Complete | 4/4 |
 | 65 | Inline Editing | Complete | 3/3 |
-| 66 | Cell Renderers, Row Actions & Bulk Actions | Planned | 0/3 |
+| 66 | Cell Renderers, Row Actions & Bulk Actions | Complete | 3/3 |
 | 67 | Export & Expandable Rows | Pending | 0/0 |
 | 68 | Package, CLI & Documentation | Pending | 0/0 |
 
@@ -303,4 +303,4 @@ Plans:
 
 ---
 *Roadmap created: 2026-02-02*
-*Last updated: 2026-02-04 (Phase 65 complete)*
+*Last updated: 2026-02-05 (Phase 66 complete)*
