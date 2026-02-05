@@ -24,6 +24,7 @@ interface LuiDateRangePickerAttributes {
   comparison?: boolean;
   'compare-start-date'?: string;
   'compare-end-date'?: string;
+  presets?: boolean;
 }
 
 // Event handler types

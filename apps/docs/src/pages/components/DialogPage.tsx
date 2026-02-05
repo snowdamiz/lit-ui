@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import { FrameworkProvider } from '../../contexts/FrameworkContext';
 import { ExampleBlock } from '../../components/ExampleBlock';
 import { PropsTable, type PropDef } from '../../components/PropsTable';
@@ -22,7 +22,7 @@ declare global {
           dismissible?: boolean;
           'show-close-button'?: boolean;
           'dialog-class'?: string;
-          ref?: React.RefObject<HTMLElement>;
+          onClose?: (e: Event) => void;
         },
         HTMLElement
       >;
@@ -263,21 +263,11 @@ lui-dialog::part(footer) {
 
 function BasicDialogDemo() {
   const [open, setOpen] = useState(false);
-  const dialogRef = useRef<HTMLElement>(null);
-
-  useEffect(() => {
-    const el = dialogRef.current;
-    if (el) {
-      const handleClose = () => setOpen(false);
-      el.addEventListener('close', handleClose);
-      return () => el.removeEventListener('close', handleClose);
-    }
-  }, []);
 
   return (
     <div>
       <lui-button onClick={() => setOpen(true)}>Open Dialog</lui-button>
-      <lui-dialog ref={dialogRef} {...(open ? { open: true } : {})} show-close-button>
+      <lui-dialog open={open} show-close-button onClose={() => setOpen(false)}>
         <span slot="title">Dialog Title</span>
         <p>This is the dialog content. You can put any content here.</p>
       </lui-dialog>
@@ -287,16 +277,6 @@ function BasicDialogDemo() {
 
 function ConfirmDialogDemo() {
   const [open, setOpen] = useState(false);
-  const dialogRef = useRef<HTMLElement>(null);
-
-  useEffect(() => {
-    const el = dialogRef.current;
-    if (el) {
-      const handleClose = () => setOpen(false);
-      el.addEventListener('close', handleClose);
-      return () => el.removeEventListener('close', handleClose);
-    }
-  }, []);
 
   const handleConfirm = () => {
     setOpen(false);
@@ -308,7 +288,7 @@ function ConfirmDialogDemo() {
       <lui-button variant="destructive" onClick={() => setOpen(true)}>
         Delete Item
       </lui-button>
-      <lui-dialog ref={dialogRef} {...(open ? { open: true } : {})}>
+      <lui-dialog open={open} onClose={() => setOpen(false)}>
         <span slot="title">Confirm Action</span>
         <p>Are you sure you want to proceed? This action cannot be undone.</p>
         <div slot="footer">
@@ -327,41 +307,19 @@ function ConfirmDialogDemo() {
 function ClassPassthroughDemo() {
   const [wideOpen, setWideOpen] = useState(false);
   const [styledOpen, setStyledOpen] = useState(false);
-  const wideDialogRef = useRef<HTMLElement>(null);
-  const styledDialogRef = useRef<HTMLElement>(null);
-
-  useEffect(() => {
-    const wideEl = wideDialogRef.current;
-    const styledEl = styledDialogRef.current;
-
-    const handleWideClose = () => setWideOpen(false);
-    const handleStyledClose = () => setStyledOpen(false);
-
-    if (wideEl) {
-      wideEl.addEventListener('close', handleWideClose);
-    }
-    if (styledEl) {
-      styledEl.addEventListener('close', handleStyledClose);
-    }
-
-    return () => {
-      if (wideEl) wideEl.removeEventListener('close', handleWideClose);
-      if (styledEl) styledEl.removeEventListener('close', handleStyledClose);
-    };
-  }, []);
 
   return (
     <div className="flex flex-wrap gap-3">
       <lui-button onClick={() => setWideOpen(true)}>Wide Dialog</lui-button>
       <lui-button variant="secondary" onClick={() => setStyledOpen(true)}>Styled Dialog</lui-button>
 
-      <lui-dialog ref={wideDialogRef} {...(wideOpen ? { open: true } : {})} dialog-class="max-w-2xl" show-close-button>
+      <lui-dialog open={wideOpen} dialog-class="max-w-2xl" show-close-button onClose={() => setWideOpen(false)}>
         <span slot="title">Wide Dialog</span>
         <p>This dialog uses <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">dialog-class="max-w-2xl"</code> for a wider max-width than the default.</p>
         <p className="mt-2 text-gray-500 dark:text-gray-400 text-sm">The extra width is useful for content that needs more horizontal space, like tables or forms with side-by-side fields.</p>
       </lui-dialog>
 
-      <lui-dialog ref={styledDialogRef} {...(styledOpen ? { open: true } : {})} dialog-class="bg-gradient-to-br from-gray-50 to-gray-100" show-close-button>
+      <lui-dialog open={styledOpen} dialog-class="bg-gradient-to-br from-gray-50 to-gray-100" show-close-button onClose={() => setStyledOpen(false)}>
         <span slot="title">Styled Dialog</span>
         <p>This dialog has a gradient background applied via Tailwind classes.</p>
         <p className="mt-2 text-gray-500 dark:text-gray-400 text-sm">Use <code className="px-1.5 py-0.5 bg-white dark:bg-gray-900 rounded text-xs font-mono">dialog-class</code> to add any Tailwind utilities for per-instance customization.</p>

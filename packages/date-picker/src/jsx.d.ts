@@ -22,7 +22,7 @@ interface LuiDatePickerAttributes {
   inline?: boolean;
 }
 
-// JS-only properties (not reflected as attributes)
+// Properties (presets is now also an attribute; format remains JS-only)
 interface LuiDatePickerProperties {
   presets?: DatePreset[] | boolean;
   format?: Intl.DateTimeFormatOptions | null;

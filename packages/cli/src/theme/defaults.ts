@@ -32,13 +32,13 @@ export const defaultTheme: ThemeConfig = {
      * Primary: Neutral gray with slight blue tint.
      * Override this for brand colors.
      */
-    primary: "oklch(0.45 0.03 250)",
+    primary: "oklch(0.18 0 0)",
 
     /**
      * Secondary: Light gray for subtle backgrounds.
      * Used for secondary buttons and alternate surfaces.
      */
-    secondary: "oklch(0.92 0.02 250)",
+    secondary: "oklch(0.92 0 0)",
 
     /**
      * Destructive: Red for danger/error states.
@@ -50,19 +50,19 @@ export const defaultTheme: ThemeConfig = {
      * Background: Near-white page background.
      * Very low lightness variation from pure white.
      */
-    background: "oklch(0.98 0.01 250)",
+    background: "oklch(0.98 0 0)",
 
     /**
      * Foreground: Near-black text color.
      * Provides strong contrast against light backgrounds.
      */
-    foreground: "oklch(0.15 0.02 250)",
+    foreground: "oklch(0.15 0 0)",
 
     /**
      * Muted: Subtle gray for disabled/secondary text.
      * Mid-lightness with minimal color.
      */
-    muted: "oklch(0.92 0.02 250)",
+    muted: "oklch(0.92 0 0)",
   },
   radius: "md",
 };

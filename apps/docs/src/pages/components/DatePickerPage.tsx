@@ -86,7 +86,7 @@ const datePickerProps: PropDef[] = [
     name: 'presets',
     type: 'boolean | DatePreset[]',
     default: 'false',
-    description: 'Preset buttons for quick date selection. Set to true for defaults (Today, Tomorrow, Next Week) or pass a custom array. JS-only property.',
+    description: 'Preset buttons for quick date selection. Set to true for defaults (Today, Tomorrow, Next Week) or pass a custom array via JS.',
   },
   {
     name: 'format',
@@ -138,50 +138,7 @@ const requiredCode = `<lui-date-picker label="Start Date" required></lui-date-pi
 const naturalLanguageCode = `<!-- Type "tomorrow", "next friday", or "in 3 days" -->
 <lui-date-picker label="Date"></lui-date-picker>`;
 
-const presetsHtmlCode = `<lui-date-picker id="my-picker" label="Date"></lui-date-picker>
-
-<script>
-  // true = default presets (Today, Tomorrow, Next Week)
-  document.getElementById('my-picker').presets = true;
-
-  // Or pass custom presets:
-  // document.getElementById('my-picker').presets = [
-  //   { label: 'Christmas', resolve: () => new Date(2026, 11, 25) },
-  // ];
-</script>`;
-
-const presetsReactCode = `import { useRef, useEffect } from 'react';
-
-function MyForm() {
-  const ref = useRef(null);
-
-  useEffect(() => {
-    if (ref.current) ref.current.presets = true;
-  }, []);
-
-  return <lui-date-picker ref={ref} label="Date" />;
-}`;
-
-const presetsVueCode = `<template>
-  <lui-date-picker ref="picker" label="Date" />
-</template>
-
-<script setup>
-import { ref, onMounted } from 'vue';
-const picker = ref(null);
-onMounted(() => {
-  picker.value.presets = true;
-});
-</script>`;
-
-const presetsSvelteCode = `<script>
-  let picker;
-  $: if (picker) {
-    picker.presets = true;
-  }
-</script>
-
-<lui-date-picker bind:this={picker} label="Date" />`;
+const presetsCode = `<lui-date-picker presets label="Date"></lui-date-picker>`;
 
 const inlineCode = `<lui-date-picker label="Date" inline></lui-date-picker>`;
 
@@ -335,21 +292,18 @@ export function DatePickerPage() {
           <section>
             <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-2">Presets</h3>
             <p className="text-gray-500 dark:text-gray-400 mb-4 text-sm">
-              The <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">presets</code> property shows quick-select buttons above the calendar. Set to <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">true</code> for default presets (Today, Tomorrow, Next Week) or pass a custom <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">DatePreset[]</code> array. This is a JS-only property (not an HTML attribute).
+              The <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">presets</code> attribute shows quick-select buttons above the calendar. Set to <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">true</code> for default presets (Today, Tomorrow, Next Week) or pass a custom <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">DatePreset[]</code> array via JS.
             </p>
             <ExampleBlock
               preview={
                 <div className="max-w-xs">
-                  <lui-date-picker
-                    label="Date"
-                    ref={(el: HTMLElement | null) => { if (el) (el as any).presets = true; }}
-                  ></lui-date-picker>
+                  <lui-date-picker presets label="Date"></lui-date-picker>
                 </div>
               }
-              html={presetsHtmlCode}
-              react={presetsReactCode}
-              vue={presetsVueCode}
-              svelte={presetsSvelteCode}
+              html={presetsCode}
+              react={presetsCode}
+              vue={presetsCode}
+              svelte={presetsCode}
             />
           </section>
 

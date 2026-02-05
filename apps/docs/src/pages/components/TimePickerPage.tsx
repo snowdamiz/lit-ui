@@ -118,7 +118,7 @@ const timePickerProps: PropDef[] = [
     name: 'presets',
     type: 'boolean | TimePreset[]',
     default: 'false',
-    description: 'Preset buttons for quick time selection. Set to true for defaults (Morning, Afternoon, Evening) or pass a custom TimePreset array. JS-only property.',
+    description: 'Preset buttons for quick time selection. Set to true for defaults (Morning, Afternoon, Evening) or pass a custom TimePreset array via JS.',
   },
   {
     name: 'businessHours',
@@ -130,7 +130,7 @@ const timePickerProps: PropDef[] = [
     name: 'additionalTimezones',
     type: 'string[]',
     default: '[]',
-    description: 'Additional IANA timezone identifiers for multi-timezone comparison display in the popup (e.g., ["America/Los_Angeles", "Europe/London"]). JS-only property.',
+    description: 'Additional IANA timezone identifiers for multi-timezone comparison display in the popup. Use the additional-timezones attribute with comma-separated values (e.g., "America/Los_Angeles,Europe/London").',
   },
 ];
 
@@ -195,85 +195,15 @@ const dropdownOnlyCode = `<lui-time-picker label="Time" interface-mode="dropdown
 const constraintsCode = `<lui-time-picker label="Appointment" min-time="09:00" max-time="17:00" step="30"></lui-time-picker>`;
 
 // 7. Timezone Display
-const timezoneHtmlCode = `<lui-time-picker id="tz-picker" label="Meeting" show-timezone timezone="America/New_York"></lui-time-picker>
-
-<script>
-  document.getElementById('tz-picker')
-    .additionalTimezones = ['America/Los_Angeles', 'Europe/London'];
-</script>`;
-
-const timezoneReactCode = `<lui-time-picker
+const timezoneCode = `<lui-time-picker
   label="Meeting"
   show-timezone
   timezone="America/New_York"
-  ref={(el) => {
-    if (el) el.additionalTimezones = ['America/Los_Angeles', 'Europe/London'];
-  }}
-/>`;
-
-const timezoneVueCode = `<template>
-  <lui-time-picker
-    ref="tzPicker"
-    label="Meeting"
-    show-timezone
-    timezone="America/New_York"
-  />
-</template>
-
-<script setup>
-import { ref, onMounted } from 'vue';
-const tzPicker = ref(null);
-onMounted(() => {
-  tzPicker.value.additionalTimezones = ['America/Los_Angeles', 'Europe/London'];
-});
-</script>`;
-
-const timezoneSvelteCode = `<script>
-  let picker;
-  $: if (picker) {
-    picker.additionalTimezones = ['America/Los_Angeles', 'Europe/London'];
-  }
-</script>
-
-<lui-time-picker
-  bind:this={picker}
-  label="Meeting"
-  show-timezone
-  timezone="America/New_York"
-/>`;
+  additional-timezones="America/Los_Angeles,Europe/London"
+></lui-time-picker>`;
 
 // 8. Presets
-const presetsHtmlCode = `<lui-time-picker id="preset-picker" label="Time"></lui-time-picker>
-
-<script>
-  document.getElementById('preset-picker').presets = true;
-</script>`;
-
-const presetsReactCode = `<lui-time-picker
-  label="Time"
-  ref={(el) => { if (el) el.presets = true; }}
-/>`;
-
-const presetsVueCode = `<template>
-  <lui-time-picker ref="presetPicker" label="Time" />
-</template>
-
-<script setup>
-import { ref, onMounted } from 'vue';
-const presetPicker = ref(null);
-onMounted(() => {
-  presetPicker.value.presets = true;
-});
-</script>`;
-
-const presetsSvelteCode = `<script>
-  let picker;
-  $: if (picker) {
-    picker.presets = true;
-  }
-</script>
-
-<lui-time-picker bind:this={picker} label="Time" />`;
+const presetsCode = `<lui-time-picker presets label="Time"></lui-time-picker>`;
 
 // 9. Voice Input
 const voiceCode = `<lui-time-picker label="Time" voice></lui-time-picker>`;
@@ -447,18 +377,18 @@ export function TimePickerPage() {
           <section>
             <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-2">Timezone Display</h3>
             <p className="text-gray-500 dark:text-gray-400 mb-4 text-sm">
-              Enable <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">show-timezone</code> to display a timezone abbreviation in the input. Set <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">timezone</code> to an IANA identifier and use the <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">additionalTimezones</code> JS property for multi-timezone comparison.
+              Enable <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">show-timezone</code> to display a timezone abbreviation in the input. Set <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">timezone</code> to an IANA identifier and use <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">additional-timezones</code> for multi-timezone comparison.
             </p>
             <ExampleBlock
               preview={
                 <div className="max-w-xs">
-                  <lui-time-picker label="Meeting" show-timezone timezone="America/New_York"></lui-time-picker>
+                  <lui-time-picker label="Meeting" show-timezone timezone="America/New_York" additional-timezones="America/Los_Angeles,Europe/London"></lui-time-picker>
                 </div>
               }
-              html={timezoneHtmlCode}
-              react={timezoneReactCode}
-              vue={timezoneVueCode}
-              svelte={timezoneSvelteCode}
+              html={timezoneCode}
+              react={timezoneCode}
+              vue={timezoneCode}
+              svelte={timezoneCode}
             />
           </section>
 
@@ -466,18 +396,18 @@ export function TimePickerPage() {
           <section>
             <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-2">Presets</h3>
             <p className="text-gray-500 dark:text-gray-400 mb-4 text-sm">
-              Set the <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">presets</code> JS property to <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">true</code> for default presets (Morning, Afternoon, Evening, plus a Now button) or pass a custom <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">TimePreset[]</code> array.
+              Add the <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">presets</code> attribute for default presets (Morning, Afternoon, Evening, plus a Now button) or pass a custom <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">TimePreset[]</code> array via JS.
             </p>
             <ExampleBlock
               preview={
                 <div className="max-w-xs">
-                  <lui-time-picker label="Time"></lui-time-picker>
+                  <lui-time-picker presets label="Time"></lui-time-picker>
                 </div>
               }
-              html={presetsHtmlCode}
-              react={presetsReactCode}
-              vue={presetsVueCode}
-              svelte={presetsSvelteCode}
+              html={presetsCode}
+              react={presetsCode}
+              vue={presetsCode}
+              svelte={presetsCode}
             />
           </section>
 

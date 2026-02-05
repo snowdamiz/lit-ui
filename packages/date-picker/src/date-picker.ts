@@ -172,7 +172,11 @@ export class DatePicker extends TailwindElement {
    * - `true`: show default presets (Today, Tomorrow, Next Week)
    * - `DatePreset[]`: show custom preset buttons
    */
-  @property({ attribute: false })
+  @property({
+    converter: {
+      fromAttribute: () => true,
+    },
+  })
   presets: DatePreset[] | boolean = false;
 
   /**

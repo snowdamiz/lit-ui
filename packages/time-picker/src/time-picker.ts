@@ -188,7 +188,11 @@ export class TimePicker extends TailwindElement {
    * - `true`: show default presets (Morning, Afternoon, Evening)
    * - `TimePreset[]`: show custom preset buttons
    */
-  @property({ attribute: false })
+  @property({
+    converter: {
+      fromAttribute: () => true,
+    },
+  })
   presets: boolean | TimePreset[] = false;
 
   /**
@@ -213,7 +217,13 @@ export class TimePicker extends TailwindElement {
    * When set, a timezone comparison row appears in the popup.
    * Example: ['America/Los_Angeles', 'Europe/London']
    */
-  @property({ attribute: false })
+  @property({
+    attribute: 'additional-timezones',
+    converter: {
+      fromAttribute: (value: string | null) =>
+        value ? value.split(',').map(s => s.trim()).filter(Boolean) : [],
+    },
+  })
   additionalTimezones: string[] = [];
 
   /**

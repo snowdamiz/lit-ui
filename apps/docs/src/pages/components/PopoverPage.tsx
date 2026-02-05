@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { FrameworkProvider } from '../../contexts/FrameworkContext';
 import { ExampleBlock } from '../../components/ExampleBlock';
 import { PropsTable, type PropDef } from '../../components/PropsTable';
@@ -336,20 +336,15 @@ function ArrowPopoverDemo() {
 
 function ControlledPopoverDemo() {
   const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLElement>(null);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (el) {
-      const handler = (e: Event) => setOpen((e as CustomEvent).detail.open);
-      el.addEventListener('open-changed', handler);
-      return () => el.removeEventListener('open-changed', handler);
-    }
+  const callbackRef = useCallback((el: HTMLElement | null) => {
+    if (!el) return;
+    (el as any).__handler ??= ((e: Event) => setOpen((e as CustomEvent).detail.open));
+    el.addEventListener('open-changed', (el as any).__handler);
   }, []);
 
   return (
     <div className="flex items-center gap-4">
-      <lui-popover ref={ref} {...(open ? { open: true } : {})}>
+      <lui-popover ref={callbackRef} {...(open ? { open: true } : {})}>
         <lui-button onClick={() => setOpen(!open)}>Toggle Popover</lui-button>
         <div slot="content">
           <p className="font-medium mb-1">Controlled Popover</p>

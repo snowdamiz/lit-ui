@@ -19,12 +19,17 @@ interface DialogCloseEvent extends CustomEvent {
   detail: { reason: CloseReason };
 }
 
+// Event handler types
+interface LuiDialogEvents {
+  onClose?: (e: DialogCloseEvent) => void;
+}
+
 // React JSX support
 declare global {
   namespace JSX {
     interface IntrinsicElements {
       'lui-dialog': React.DetailedHTMLProps<
-        React.HTMLAttributes<Dialog> & LuiDialogAttributes,
+        React.HTMLAttributes<Dialog> & LuiDialogAttributes & LuiDialogEvents,
         Dialog
       >;
     }

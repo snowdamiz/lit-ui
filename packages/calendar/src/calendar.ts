@@ -641,7 +641,13 @@ export class Calendar extends TailwindElement {
    * Array of specific disabled dates as ISO strings (YYYY-MM-DD).
    * These dates are visually grayed and not selectable.
    */
-  @property({ type: Array, attribute: false })
+  @property({
+    attribute: 'disabled-dates',
+    converter: {
+      fromAttribute: (value: string | null) =>
+        value ? value.split(',').map(s => s.trim()).filter(Boolean) : [],
+    },
+  })
   disabledDates: string[] = [];
 
   /**

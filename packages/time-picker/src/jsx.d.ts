@@ -24,6 +24,8 @@ interface LuiTimePickerAttributes {
   timezone?: string;
   voice?: boolean;
   'interface-mode'?: 'clock' | 'dropdown' | 'both' | 'wheel' | 'range';
+  presets?: boolean;
+  'additional-timezones'?: string;
   class?: string;
   id?: string;
   slot?: string;

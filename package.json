@@ -11,6 +11,7 @@
   },
   "scripts": {
     "dev": "pnpm -r --parallel run dev",
+    "dev:apps": "concurrently -n landing,docs -c blue,green \"pnpm --filter lit-ui-landing dev\" \"pnpm --filter lit-ui-docs dev\"",
     "build": "pnpm -r run build",
     "build:packages": "pnpm --filter './packages/**' run build",
     "test": "pnpm -r run test",
@@ -31,6 +32,7 @@
   "devDependencies": {
     "@changesets/changelog-github": "^0.5.1",
     "@changesets/cli": "^2.28.1",
+    "concurrently": "^9.2.1",
     "typescript": "^5.9.3"
   }
 }

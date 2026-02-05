@@ -203,7 +203,11 @@ export class DateRangePicker extends TailwindElement {
    * - true: use DEFAULT_RANGE_PRESETS (Last 7 Days, Last 30 Days, This Month)
    * - DateRangePreset[]: custom presets array
    */
-  @property({ attribute: false })
+  @property({
+    converter: {
+      fromAttribute: () => true,
+    },
+  })
   presets: DateRangePreset[] | boolean = false;
 
   // ---------------------------------------------------------------------------

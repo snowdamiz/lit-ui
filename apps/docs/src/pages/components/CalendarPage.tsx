@@ -34,10 +34,10 @@ const calendarProps: PropDef[] = [
     description: 'Maximum selectable date as ISO string. Dates after this are grayed out and not selectable.',
   },
   {
-    name: 'disabledDates',
+    name: 'disabled-dates',
     type: 'string[]',
     default: '[]',
-    description: 'Array of specific disabled dates as ISO strings. Set via JavaScript property.',
+    description: 'Comma-separated list of specific disabled dates as ISO strings (e.g., "2026-02-14,2026-02-15"). Also settable as a JS array.',
   },
   {
     name: 'first-day-of-week',
@@ -114,39 +114,7 @@ const firstDayCode = `<!-- Force Monday start regardless of locale -->
 <!-- Force Sunday start -->
 <lui-calendar first-day-of-week="7"></lui-calendar>`;
 
-const disabledDatesHtmlCode = `<lui-calendar id="my-calendar"></lui-calendar>
-
-<script>
-  document.getElementById('my-calendar')
-    .disabledDates = ['2026-02-14', '2026-02-15', '2026-02-16'];
-</script>`;
-
-const disabledDatesReactCode = `const disabled = ['2026-02-14', '2026-02-15', '2026-02-16'];
-
-<lui-calendar
-  ref={(el) => { if (el) el.disabledDates = disabled; }}
-/>`;
-
-const disabledDatesVueCode = `<template>
-  <lui-calendar ref="cal" />
-</template>
-
-<script setup>
-import { ref, onMounted } from 'vue';
-const cal = ref(null);
-onMounted(() => {
-  cal.value.disabledDates = ['2026-02-14', '2026-02-15', '2026-02-16'];
-});
-</script>`;
-
-const disabledDatesSvelteCode = `<script>
-  let cal;
-  $: if (cal) {
-    cal.disabledDates = ['2026-02-14', '2026-02-15', '2026-02-16'];
-  }
-</script>
-
-<lui-calendar bind:this={cal} />`;
+const disabledDatesCode = `<lui-calendar disabled-dates="2026-02-14,2026-02-15,2026-02-16"></lui-calendar>`;
 
 const eventsHtmlCode = `<lui-calendar
   onchange="console.log('Selected:', this.value)"
@@ -382,19 +350,20 @@ export function CalendarPage() {
           <section>
             <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-2">Disabled Dates</h3>
             <p className="text-gray-500 dark:text-gray-400 mb-4 text-sm">
-              Pass an array of ISO date strings to the <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">disabledDates</code> JavaScript property to disable specific dates. These receive an "unavailable" label for screen readers.
+              Use the <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">disabled-dates</code> attribute with a comma-separated list of ISO date strings to disable specific dates. These receive an "unavailable" label for screen readers.
             </p>
             <ExampleBlock
               preview={
                 <lui-calendar
+                  disabled-dates="2026-02-14,2026-02-15,2026-02-16"
                   min-date={isoDate(-3)}
                   max-date={isoDate(60)}
                 ></lui-calendar>
               }
-              html={disabledDatesHtmlCode}
-              react={disabledDatesReactCode}
-              vue={disabledDatesVueCode}
-              svelte={disabledDatesSvelteCode}
+              html={disabledDatesCode}
+              react={disabledDatesCode}
+              vue={disabledDatesCode}
+              svelte={disabledDatesCode}
             />
           </section>
 

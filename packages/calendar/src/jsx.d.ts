@@ -16,6 +16,8 @@ interface LuiCalendarAttributes {
   'display-month'?: string;
   'hide-navigation'?: boolean;
   'show-week-numbers'?: boolean;
+  'disabled-dates'?: string;
+  'show-constraint-tooltips'?: boolean;
 }
 
 // Common attributes for lui-calendar-multi

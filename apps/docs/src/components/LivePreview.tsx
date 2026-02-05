@@ -214,6 +214,7 @@ declare global {
           'hide-navigation'?: boolean;
           'show-week-numbers'?: boolean;
           'show-constraint-tooltips'?: boolean;
+          'disabled-dates'?: string;
         },
         HTMLElement
       >;
@@ -255,6 +256,7 @@ declare global {
           required?: boolean;
           disabled?: boolean;
           inline?: boolean;
+          presets?: boolean;
         },
         HTMLElement
       >;
@@ -277,6 +279,7 @@ declare global {
           comparison?: boolean;
           'compare-start-date'?: string;
           'compare-end-date'?: string;
+          presets?: boolean;
         },
         HTMLElement
       >;
@@ -299,6 +302,8 @@ declare global {
           timezone?: string;
           voice?: boolean;
           'interface-mode'?: 'clock' | 'dropdown' | 'both' | 'wheel' | 'range';
+          presets?: boolean;
+          'additional-timezones'?: string;
         },
         HTMLElement
       >;

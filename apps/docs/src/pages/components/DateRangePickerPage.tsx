@@ -116,7 +116,7 @@ const dateRangePickerProps: PropDef[] = [
     name: 'presets',
     type: 'boolean | DateRangePreset[]',
     default: 'false',
-    description: 'Preset range buttons. true = default presets (Last 7 Days, Last 30 Days, This Month). Pass an array for custom presets. JS-only property.',
+    description: 'Preset range buttons. true = default presets (Last 7 Days, Last 30 Days, This Month). Pass an array for custom presets via JS.',
   },
 ];
 
@@ -167,47 +167,7 @@ const constraintsCode = `<lui-date-range-picker
   max-days="14"
 ></lui-date-range-picker>`;
 
-const presetsHtmlCode = `<lui-date-range-picker id="range" label="Report Period"></lui-date-range-picker>
-
-<script>
-  // true = default presets (Last 7 Days, Last 30 Days, This Month)
-  document.getElementById('range').presets = true;
-</script>`;
-
-const presetsReactCode = `import { useRef, useEffect } from 'react';
-
-function App() {
-  const ref = useRef(null);
-
-  useEffect(() => {
-    if (ref.current) ref.current.presets = true;
-  }, []);
-
-  return (
-    <lui-date-range-picker ref={ref} label="Report Period" />
-  );
-}`;
-
-const presetsVueCode = `<template>
-  <lui-date-range-picker ref="picker" label="Report Period" />
-</template>
-
-<script setup>
-import { ref, onMounted } from 'vue';
-const picker = ref(null);
-onMounted(() => {
-  picker.value.presets = true;
-});
-</script>`;
-
-const presetsSvelteCode = `<script>
-  let picker;
-  $: if (picker) {
-    picker.presets = true;
-  }
-</script>
-
-<lui-date-range-picker bind:this={picker} label="Report Period" />`;
+const presetsCode = `<lui-date-range-picker presets label="Report Period"></lui-date-range-picker>`;
 
 const comparisonCode = `<lui-date-range-picker
   label="Analytics"
@@ -322,16 +282,16 @@ export function DateRangePickerPage() {
           <section>
             <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-2">Presets</h3>
             <p className="text-gray-500 dark:text-gray-400 mb-4 text-sm">
-              Set the <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">presets</code> JavaScript property to <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">true</code> for default presets (Last 7 Days, Last 30 Days, This Month), or pass a custom <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">DateRangePreset[]</code> array. Presets appear as a sidebar in the popup for one-click range selection.
+              Add the <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">presets</code> attribute for default presets (Last 7 Days, Last 30 Days, This Month), or pass a custom <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">DateRangePreset[]</code> array via JS. Presets appear as a sidebar in the popup for one-click range selection.
             </p>
             <ExampleBlock
               preview={
-                <lui-date-range-picker label="Report Period"></lui-date-range-picker>
+                <lui-date-range-picker presets label="Report Period"></lui-date-range-picker>
               }
-              html={presetsHtmlCode}
-              react={presetsReactCode}
-              vue={presetsVueCode}
-              svelte={presetsSvelteCode}
+              html={presetsCode}
+              react={presetsCode}
+              vue={presetsCode}
+              svelte={presetsCode}
             />
           </section>
 
