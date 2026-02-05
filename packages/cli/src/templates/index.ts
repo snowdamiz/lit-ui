@@ -6,6 +6,7 @@
  */
 
 export { BUTTON_TEMPLATE } from './button.js';
+export { DATA_TABLE_TEMPLATE } from './data-table.js';
 export { DIALOG_TEMPLATE } from './dialog.js';
 export { INPUT_TEMPLATE } from './input.js';
 export { TEXTAREA_TEMPLATE } from './textarea.js';
@@ -30,6 +31,7 @@ export { TABS_TEMPLATE } from './tabs.js';
 export { TAB_PANEL_TEMPLATE } from './tab-panel.js';
 
 import { BUTTON_TEMPLATE } from './button.js';
+import { DATA_TABLE_TEMPLATE } from './data-table.js';
 import { DIALOG_TEMPLATE } from './dialog.js';
 import { INPUT_TEMPLATE } from './input.js';
 import { TEXTAREA_TEMPLATE } from './textarea.js';
@@ -55,6 +57,7 @@ import { TAB_PANEL_TEMPLATE } from './tab-panel.js';
 
 export const COMPONENT_TEMPLATES: Record<string, string> = {
   button: BUTTON_TEMPLATE,
+  'data-table': DATA_TABLE_TEMPLATE,
   dialog: DIALOG_TEMPLATE,
   input: INPUT_TEMPLATE,
   textarea: TEXTAREA_TEMPLATE,
