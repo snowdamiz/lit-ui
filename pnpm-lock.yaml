@@ -38,6 +38,9 @@ importers:
       '@lit-ui/core':
         specifier: workspace:*
         version: link:../../packages/core
+      '@lit-ui/data-table':
+        specifier: workspace:*
+        version: link:../../packages/data-table
       '@lit-ui/date-picker':
         specifier: workspace:*
         version: link:../../packages/date-picker
@@ -403,9 +406,15 @@ importers:
         specifier: ^3.13.6
         version: 3.13.19(lit@3.3.2)
     devDependencies:
+      '@lit-ui/checkbox':
+        specifier: workspace:*
+        version: link:../checkbox
       '@lit-ui/core':
         specifier: workspace:*
         version: link:../core
+      '@lit-ui/popover':
+        specifier: workspace:*
+        version: link:../popover
       '@lit-ui/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
