@@ -4,30 +4,17 @@
 
 A framework-agnostic component library built on Lit.js, following ShadCN's philosophy of beautiful defaults and CLI-driven installation. Components work natively in React, Vue, Svelte, or plain HTML because they're standard web components underneath.
 
-Now with **dual distribution** (copy-source or npm), **SSR support** via Declarative Shadow DOM, **build-time theme customization** via visual configurator, **complete form toolkit** (Input, Textarea, Select, Checkbox, Radio, Switch with group containers), **date/time components** (Calendar, Date Picker, Date Range Picker, Time Picker), **overlay/feedback primitives** (Toast, Tooltip, Popover with shared Floating UI infrastructure), and **layout components** (Accordion, Tabs).
+Now with **dual distribution** (copy-source or npm), **SSR support** via Declarative Shadow DOM, **build-time theme customization** via visual configurator, **complete form toolkit** (Input, Textarea, Select, Checkbox, Radio, Switch with group containers), **date/time components** (Calendar, Date Picker, Date Range Picker, Time Picker), **overlay/feedback primitives** (Toast, Tooltip, Popover with shared Floating UI infrastructure), **layout components** (Accordion, Tabs), and **data table** (virtual scrolling, sorting, filtering, inline editing, selection, bulk actions, column customization, CSV export, expandable rows).
 
 ## Core Value
 
 Developers can use polished, accessible UI components in any framework without lock-in — one component library that works everywhere.
 
-## Current Milestone: v7.0 Data Table
+## Current State (v7.0)
 
-**Goal:** A full-featured data table for admin dashboards — handling massive datasets (100K+ rows) with sorting, filtering, inline editing (cell and row modes), selection with bulk actions, and column customization, all framework-agnostic.
-
-**Target features:**
-- Virtual scrolling for 100K+ rows (DOM recycling via @tanstack/lit-virtual)
-- Sorting — single/multi-column, ascending/descending, server-side support
-- Filtering — per-column filters, global search, server-side support
-- Inline editing — cell-level click-to-edit AND row-level edit mode
-- Selection — row checkboxes, select all, bulk actions (delete, export, custom)
-- Column customization — reorder, resize, show/hide, persist preferences
-- Data source — local data binding for simple cases, async callbacks for server-side
-
-## Current State (v6.0)
-
-- ~63,697 lines TypeScript/CSS across packages and apps
-- Tech stack: Lit.js 3, Tailwind CSS v4, Vite, TypeScript, pnpm workspaces, colorjs.io, Floating UI, @tanstack/lit-virtual, date-fns, composed-offset-position
-- 20 publishable packages: @lit-ui/core, @lit-ui/button, @lit-ui/dialog, @lit-ui/input, @lit-ui/textarea, @lit-ui/select, @lit-ui/checkbox, @lit-ui/radio, @lit-ui/switch, @lit-ui/calendar, @lit-ui/date-picker, @lit-ui/date-range-picker, @lit-ui/time-picker, @lit-ui/tooltip, @lit-ui/popover, @lit-ui/toast, @lit-ui/accordion, @lit-ui/tabs, @lit-ui/ssr, lit-ui (CLI)
+- ~91,000+ lines TypeScript/CSS across packages and apps
+- Tech stack: Lit.js 3, Tailwind CSS v4, Vite, TypeScript, pnpm workspaces, colorjs.io, Floating UI, @tanstack/lit-virtual, @tanstack/lit-table, date-fns, composed-offset-position
+- 21 publishable packages: @lit-ui/core, @lit-ui/button, @lit-ui/dialog, @lit-ui/input, @lit-ui/textarea, @lit-ui/select, @lit-ui/checkbox, @lit-ui/radio, @lit-ui/switch, @lit-ui/calendar, @lit-ui/date-picker, @lit-ui/date-range-picker, @lit-ui/time-picker, @lit-ui/tooltip, @lit-ui/popover, @lit-ui/toast, @lit-ui/accordion, @lit-ui/tabs, @lit-ui/data-table, @lit-ui/ssr, lit-ui (CLI)
 - Framework examples: Next.js App Router, Astro, Express/Node.js
 - Distribution: copy-source (CLI) or npm packages with SSR support
 - Theme customization: Visual configurator + CLI `--theme` parameter
@@ -35,6 +22,7 @@ Developers can use polished, accessible UI components in any framework without l
 - Date/time components: Calendar (standalone), Date Picker (with natural language), Date Range Picker (with comparison mode), Time Picker (with clock face, voice input, scroll wheels)
 - Overlay/feedback components: Tooltip (hover/focus with delay groups), Popover (click-toggle with focus management), Toast (imperative API with queue management)
 - Layout components: Accordion (single/multi-expand, CSS Grid animation, lazy mounting), Tabs (automatic/manual activation, horizontal/vertical, animated indicator, overflow scroll)
+- Data components: Data Table (100K+ row virtual scrolling, sorting, filtering, pagination, inline editing, selection, bulk actions, column customization, CSV export, expandable rows)
 
 ## Requirements
 
@@ -100,14 +88,15 @@ Developers can use polished, accessible UI components in any framework without l
 - ✓ 34+ CSS custom properties for accordion and tabs theming (--ui-accordion-*, --ui-tabs-*) with dark mode — v6.0
 - ✓ CLI registry expanded to 19 components with copy-source templates for accordion and tabs — v6.0
 - ✓ Documentation pages for Accordion and Tabs with interactive demos, API references, and accessibility notes — v6.0
+- ✓ Data Table with virtual scrolling (100K+ rows), sorting, filtering, inline editing (cell + row), selection, bulk actions, column customization, CSV export, expandable rows — v7.0
+- ✓ Server-side data operations via async callbacks with AbortController, debouncing, error handling — v7.0
+- ✓ @lit-ui/data-table package with SSR support, peer dependencies, JSX declarations, 18 CSS custom properties — v7.0
+- ✓ CLI integration with copy-source starter template, registry entry, npm mapping — v7.0
+- ✓ Documentation with 11 interactive demos, API reference (44 properties, 13 events), accessibility guide — v7.0
 
 ### Active
 
-- [ ] Data Table component with virtual scrolling, sorting, filtering, inline editing, selection, column customization
-- [ ] Server-side data operations via async callbacks
-- [ ] @lit-ui/data-table package with SSR support
-- [ ] CLI integration with copy-source templates
-- [ ] Documentation with interactive demos and accessibility notes
+(None — planning next milestone)
 
 ### Deferred
 
@@ -222,6 +211,15 @@ Developers can use polished, accessible UI components in any framework without l
 | CSS transition indicator (no JS animation) | Consistent with project's CSS-first approach | ✓ Good — no runtime overhead |
 | Lazy panels return `nothing` | Zero DOM footprint for unmounted panels | ✓ Good — minimal memory usage |
 | Scroll buttons aria-hidden + tabindex=-1 | Keep scroll nav out of keyboard tab order | ✓ Good — clean tab flow |
+| TanStack Table for headless state | Lit-native reactive controller, handles sort/filter/pagination | ✓ Good — proven, extensible |
+| TanStack Virtual for row virtualization | Already used in Select, proven for 100K+ items | ✓ Good — 60fps with 100K rows |
+| Fixed 48px row height | Variable heights break virtual scroll performance | ✓ Good — consistent performance |
+| Div-based ARIA grid layout | Required for virtualization; native table elements incompatible | ✓ Good — correct ARIA, virtual scroll works |
+| Native HTML inputs in edit cells | LitUI components exceed 48px row height | ✓ Good — compact, fits fixed rows |
+| Cell renderers as factory functions | Not custom elements; matches createSelectionColumn pattern | ✓ Good — no element overhead |
+| Native confirmation dialog for bulk | Avoids lui-dialog dependency overhead | ✓ Good — matches project pattern |
+| Column preferences with version field | Enables future migration of stored preferences | ✓ Good — forward-compatible |
+| Utility column _ prefix exclusion | All columns with _ prefix excluded from CSV export | ✓ Good — clean export output |
 
 ## Shipped Milestones
 
@@ -235,6 +233,7 @@ Developers can use polished, accessible UI components in any framework without l
 - **v4.3 Date/Time Components** (2026-02-02): Calendar, Date Picker, Date Range Picker, Time Picker with full accessibility
 - **v5.0 Overlay & Feedback Components** (2026-02-02): Toast, Tooltip, Popover with shared Floating UI infrastructure
 - **v6.0 Layout Components** (2026-02-02): Accordion, Tabs with full accessibility, animations, SSR, CLI, documentation
+- **v7.0 Data Table** (2026-02-05): Full-featured data table with virtual scrolling, sorting, filtering, inline editing, selection, bulk actions, column customization, CSV export, expandable rows
 
 ---
-*Last updated: 2026-02-02 after v7.0 milestone started*
+*Last updated: 2026-02-05 after v7.0 milestone*

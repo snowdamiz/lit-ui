@@ -1,5 +1,34 @@
 # Project Milestones: LitUI
 
+## v7.0 Data Table (Shipped: 2026-02-05)
+
+**Delivered:** Full-featured data table component for admin dashboards with virtual scrolling (100K+ rows at 60fps), sorting, filtering, inline editing (cell and row modes), selection with bulk actions, column customization, CSV export, and expandable detail rows — using TanStack Table for headless state and TanStack Virtual for row virtualization.
+
+**Phases completed:** 61-68 (28 plans total)
+
+**Key accomplishments:**
+
+- Full-featured Data Table component with virtual scrolling handling 100K+ rows at 60fps using TanStack Table + TanStack Virtual
+- Complete data operations — sorting (single/multi-column), filtering (text/number/date/select/global), pagination with server-side support via async callbacks with AbortController
+- Inline editing at cell and row levels — click-to-edit cells with validation, row edit mode with save/cancel, mutual exclusion between modes
+- Selection with bulk actions — row checkboxes, shift+range select, "select all" banner, floating bulk actions toolbar with confirmation dialogs
+- Column customization — resize, reorder, show/hide, sticky first column, with localStorage persistence and server-side callbacks
+- Export & expandable rows — RFC 4180 CSV export respecting filters/selection/visibility, expandable detail rows with single-expand accordion mode
+
+**Stats:**
+
+- 99 files created/modified
+- 7,342 lines TypeScript (data-table package), 27,776 total insertions
+- 8 phases, 28 plans, 76 requirements
+- 13 days (2026-01-23 → 2026-02-05)
+- 112 commits
+
+**Git range:** `feat(61-01)` → `docs(68)`
+
+**What's next:** Next milestone TBD
+
+---
+
 ## v6.0 Layout Components (Shipped: 2026-02-02)
 
 **Delivered:** Accordion and Tabs layout components with full accessibility, CSS Grid animation, multiple expansion/activation modes, animated indicators, lazy rendering, overflow handling, SSR compatibility, and CLI/documentation integration — bringing the component library to 20 publishable packages.
