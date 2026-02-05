@@ -47,6 +47,31 @@ export type {
 export type FilterType = 'text' | 'number' | 'date' | 'select';
 
 /**
+ * Edit type indicator for column-specific inline edit input.
+ *
+ * Used in column meta to specify which edit input to render:
+ * - 'text': Standard text input
+ * - 'number': Numeric input with step/min/max support
+ * - 'select': Dropdown select from predefined options
+ * - 'date': Date picker input
+ * - 'checkbox': Boolean toggle checkbox
+ */
+export type EditType = 'text' | 'number' | 'select' | 'date' | 'checkbox';
+
+/**
+ * Result of an edit validation function.
+ *
+ * Return from `editValidate` in column meta to indicate whether
+ * the new value is valid, with an optional error message.
+ */
+export interface EditValidationResult {
+  /** Whether the value is valid */
+  valid: boolean;
+  /** Error message to display when invalid */
+  message?: string;
+}
+
+/**
  * LitUI-specific column meta extensions.
  *
  * These will be added to TanStack's column meta for features
@@ -55,11 +80,35 @@ export type FilterType = 'text' | 'number' | 'date' | 'select';
  * @template TData - Row data type
  */
 export interface LitUIColumnMeta<TData extends RowData = RowData> {
-  // Future LitUI-specific extensions:
-  // - editable?: boolean | ((row: TData) => boolean)
-  // - editComponent?: 'input' | 'select' | 'date' | TemplateResult
-  // - filterComponent?: TemplateResult
-  // - pinnedPosition?: 'left' | 'right'
+  /**
+   * Mark column as editable.
+   * - `true`: All rows are editable for this column
+   * - `false` or omitted: Column is not editable
+   * - `(row: TData) => boolean`: Conditional editability per row
+   */
+  editable?: boolean | ((row: TData) => boolean);
+
+  /**
+   * Input type to render in edit mode.
+   * Defaults to 'text' if omitted and `editable` is true.
+   */
+  editType?: EditType;
+
+  /**
+   * Options for select-type edit inputs.
+   * Required when `editType` is 'select'.
+   */
+  editOptions?: Array<{ label: string; value: string }>;
+
+  /**
+   * Custom validation function called before committing an edit.
+   * Return `true`/`false` for simple validation, or an `EditValidationResult`
+   * object for validation with an error message.
+   *
+   * @param value - The new value being committed
+   * @param row - The row data being edited
+   */
+  editValidate?: (value: unknown, row: TData) => EditValidationResult | boolean;
 
   /**
    * Filter type for this column. Determines which filter UI component is rendered.
@@ -421,4 +470,81 @@ export interface ColumnPreferences {
 export interface ColumnPreferencesChangeEvent extends ColumnPreferences {
   /** Table persistence key for identification */
   tableId: string;
+}
+
+// =============================================================================
+// Inline Editing Types (EDIT-*, ROWEDIT-*)
+// =============================================================================
+
+/**
+ * Tracks the currently editing cell for cell-level edit mode.
+ *
+ * Stores the cell identity and original value so the edit can be
+ * cancelled (restoring the original) or committed (dispatching event
+ * with old/new values).
+ */
+export interface EditingCell {
+  /** Row identifier (from getRowId or TanStack default) */
+  rowId: string;
+  /** Column identifier */
+  columnId: string;
+  /** Value before editing started, for cancel/revert */
+  originalValue: unknown;
+}
+
+/**
+ * Tracks row-level edit state when a full row enters edit mode.
+ *
+ * All editable cells in the row become inputs simultaneously.
+ * Pending values accumulate until save or cancel.
+ */
+export interface EditingRow {
+  /** Row identifier */
+  rowId: string;
+  /** Snapshot of original values before editing (keyed by column ID) */
+  originalData: Record<string, unknown>;
+  /** Current pending values during editing (keyed by column ID) */
+  pendingValues: Record<string, unknown>;
+  /** Validation errors per column (keyed by column ID, value is error message) */
+  errors: Record<string, string>;
+}
+
+/**
+ * Event detail for cell edit commit (EDIT-06).
+ *
+ * Dispatched as `ui-cell-edit` when a single cell edit is committed.
+ * The developer should use this to update their data source.
+ *
+ * @template TData - Row data type
+ */
+export interface CellEditEvent<TData extends RowData = RowData> {
+  /** The full row data object */
+  row: TData;
+  /** Row identifier */
+  rowId: string;
+  /** Column identifier of the edited cell */
+  columnId: string;
+  /** Value before the edit */
+  oldValue: unknown;
+  /** New value after the edit */
+  newValue: unknown;
+}
+
+/**
+ * Event detail for row edit save (ROWEDIT-05).
+ *
+ * Dispatched as `ui-row-edit` when a row edit is saved.
+ * Contains all changed values for batch update.
+ *
+ * @template TData - Row data type
+ */
+export interface RowEditEvent<TData extends RowData = RowData> {
+  /** The full row data object */
+  row: TData;
+  /** Row identifier */
+  rowId: string;
+  /** Original values before editing (keyed by column ID) */
+  oldValues: Record<string, unknown>;
+  /** New values after editing (keyed by column ID) */
+  newValues: Record<string, unknown>;
 }
