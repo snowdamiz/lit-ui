@@ -6,6 +6,9 @@
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
+  /* Custom easing */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+
   /* Primary accent - pure grayscale (used by docs site itself, not LitUI components) */
   --color-primary-50: oklch(0.99 0 0);
   --color-primary-100: oklch(0.96 0 0);
@@ -124,13 +127,14 @@ body {
   box-shadow:
     0 1px 3px 0 oklch(0 0 0 / 0.04),
     0 1px 2px -1px oklch(0 0 0 / 0.04);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.4s var(--ease-out-expo);
 }
 
 .card-elevated:hover {
   box-shadow:
+    0 4px 6px -1px oklch(0 0 0 / 0.05),
     0 10px 15px -3px oklch(0 0 0 / 0.08),
-    0 4px 6px -4px oklch(0 0 0 / 0.08);
+    0 20px 25px -5px oklch(0 0 0 / 0.06);
   transform: translateY(-2px);
 }
 
@@ -142,8 +146,9 @@ body {
 
 .dark .card-elevated:hover {
   box-shadow:
+    0 4px 6px -1px oklch(0 0 0 / 0.2),
     0 10px 15px -3px oklch(0 0 0 / 0.3),
-    0 4px 6px -4px oklch(0 0 0 / 0.3);
+    0 20px 25px -5px oklch(0 0 0 / 0.3);
 }
 
 /* Button with subtle shadow */
@@ -174,16 +179,28 @@ body {
 @keyframes fade-in-up {
   from {
     opacity: 0;
-    transform: translateY(16px);
+    transform: translateY(16px) scale(0.98);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 
 .animate-fade-in-up {
-  animation: fade-in-up 0.6s ease-out forwards;
+  animation: fade-in-up 0.6s var(--ease-out-expo) forwards;
+}
+
+/* Scroll-triggered reveal animation */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s var(--ease-out-expo), transform 0.6s var(--ease-out-expo);
+}
+
+.reveal.revealed {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 /* Stagger delays for sequential animations */
@@ -246,7 +263,7 @@ body {
 .token-comment { color: oklch(0.45 0 0); }
 .token-tag { color: oklch(0.75 0.08 25); }
 .token-attr { color: oklch(0.75 0.08 280); }
-.token-value { color: oklch(0.72 0.08 150); }
+.token-value { color: oklch(0.72 0 0.08 150); }
 .token-punctuation { color: oklch(0.55 0 0); }
 
 /* Collapsible animations */
@@ -278,7 +295,7 @@ body {
 
 /* Sheet overlay and content animations */
 .SheetOverlay[data-state='open'] {
-  animation: fadeIn 150ms ease-out;
+  animation: fadeIn 200ms var(--ease-out-expo);
 }
 
 .SheetOverlay[data-state='closed'] {
@@ -286,7 +303,7 @@ body {
 }
 
 .SheetContent[data-state='open'] {
-  animation: slideInLeft 200ms ease-out;
+  animation: slideInLeft 250ms var(--ease-out-expo);
 }
 
 .SheetContent[data-state='closed'] {
@@ -336,8 +353,22 @@ body {
   }
 
   .animate-fade-in-up,
-  .card-elevated {
+  .card-elevated,
+  .link-underline::after {
     animation: none;
     transition: none;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .SheetOverlay[data-state='open'],
+  .SheetOverlay[data-state='closed'],
+  .SheetContent[data-state='open'],
+  .SheetContent[data-state='closed'] {
+    animation: none;
   }
 }

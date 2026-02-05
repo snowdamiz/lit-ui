@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import { getDocsUrl } from '../utils/config'
+import { useReveal } from '../hooks/useReveal'
 
 function Cta() {
   const [copied, setCopied] = useState(false)
+  const { ref, isVisible } = useReveal({ threshold: 0.2 })
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText('npx lit-ui init')
@@ -20,20 +22,20 @@ function Cta() {
       <div className="pointer-events-none absolute -left-48 top-1/2 -translate-y-1/2 h-96 w-96 rounded-full bg-gray-100 opacity-40 blur-3xl animate-[float_20s_ease-in-out_infinite]" />
       <div className="pointer-events-none absolute -right-48 top-1/2 -translate-y-1/2 h-96 w-96 rounded-full bg-gray-100 opacity-40 blur-3xl animate-[float_25s_ease-in-out_infinite_5s]" />
 
-      <div className="relative mx-auto max-w-6xl px-6">
+      <div ref={ref} className="relative mx-auto max-w-6xl px-6">
         <div className="text-center">
-          <p className="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-500">
+          <p className={`mb-4 text-sm font-semibold uppercase tracking-[0.15em] text-gray-500 reveal ${isVisible ? 'revealed' : ''}`}>
             Start Building
           </p>
-          <h2 className="mb-6 text-4xl font-bold text-gray-900 md:text-5xl lg:text-6xl">
+          <h2 className={`mb-6 text-3xl font-bold tracking-[-0.02em] text-gray-900 md:text-4xl lg:text-5xl reveal ${isVisible ? 'revealed' : ''}`} style={{ transitionDelay: '0.05s' }}>
             Ready to Build?
           </h2>
-          <p className="mx-auto mb-12 max-w-xl text-lg text-gray-500 leading-relaxed">
+          <p className={`mx-auto mb-12 max-w-xl text-lg text-gray-500 leading-relaxed reveal ${isVisible ? 'revealed' : ''}`} style={{ transitionDelay: '0.1s' }}>
             Start building beautiful, accessible interfaces today. No complex setup,
             no framework lock-in.
           </p>
 
-          <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
+          <div className={`flex flex-col items-center justify-center gap-4 sm:flex-row reveal ${isVisible ? 'revealed' : ''}`} style={{ transitionDelay: '0.15s' }}>
             <a
               href={getDocsUrl()}
               className="group rounded-xl bg-gray-900 px-8 py-4 text-lg font-bold text-white transition-all hover:bg-gray-800 hover:shadow-lg active:scale-[0.98] btn-shadow focus-ring"
@@ -68,7 +70,7 @@ function Cta() {
           </div>
 
           {/* Quick command */}
-          <div className="mt-14">
+          <div className={`mt-14 reveal ${isVisible ? 'revealed' : ''}`} style={{ transitionDelay: '0.2s' }}>
             <p className="mb-4 text-sm font-medium text-gray-500">Or start right now:</p>
             <div className="inline-flex items-center gap-4 rounded-xl border border-gray-200 bg-white px-5 py-3 shadow-sm transition-all hover:shadow-md hover:border-gray-300">
               <code className="font-mono text-sm">

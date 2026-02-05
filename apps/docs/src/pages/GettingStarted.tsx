@@ -7,6 +7,7 @@ import { CodeBlock } from '../components/CodeBlock';
 import { FrameworkTabs } from '../components/FrameworkTabs';
 import { LivePreview } from '../components/LivePreview';
 import { PrevNextNav } from '../components/PrevNextNav';
+import { useReveal } from '../hooks/useReveal';
 
 const installCommand = `npx lit-ui init`;
 
@@ -118,14 +119,23 @@ const nextSteps = [
 ];
 
 export function GettingStarted() {
+  const { ref: headerRef, isVisible: headerVisible } = useReveal({ threshold: 0.1 })
+  const { ref: installRef, isVisible: installVisible } = useReveal({ threshold: 0.1 })
+  const { ref: quickStartRef, isVisible: quickStartVisible } = useReveal({ threshold: 0.1 })
+  const { ref: structureRef, isVisible: structureVisible } = useReveal({ threshold: 0.1 })
+  const { ref: nextRef, isVisible: nextVisible } = useReveal({ threshold: 0.1 })
+
   return (
     <div className="max-w-4xl">
       {/* Header */}
-      <header className="relative mb-16 animate-fade-in-up opacity-0 stagger-1">
+      <header
+        ref={headerRef}
+        className={`relative mb-16 reveal ${headerVisible ? 'revealed' : ''}`}
+      >
         <div className="pointer-events-none absolute -left-20 -top-10 h-40 w-40 rounded-full bg-gray-100 dark:bg-gray-800 opacity-50 blur-3xl" />
 
         <div className="relative">
-          <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 dark:text-gray-100 mb-4 md:text-5xl">
+          <h1 className="text-4xl font-extrabold tracking-[-0.03em] text-gray-900 dark:text-gray-100 mb-4 md:text-5xl">
             Getting Started
           </h1>
           <p className="text-lg text-gray-500 dark:text-gray-400 leading-relaxed max-w-2xl">
@@ -135,7 +145,11 @@ export function GettingStarted() {
       </header>
 
       {/* Section 1: Installation */}
-      <section id="installation" className="scroll-mt-20 mb-16 animate-fade-in-up opacity-0 stagger-2">
+      <section
+        id="installation"
+        ref={installRef}
+        className={`scroll-mt-20 mb-16 reveal ${installVisible ? 'revealed' : ''}`}
+      >
         <div className="flex items-center gap-4 mb-6">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -185,7 +199,11 @@ export function GettingStarted() {
       </section>
 
       {/* Section 2: Quick Start */}
-      <section id="quick-start" className="scroll-mt-20 mb-16 animate-fade-in-up opacity-0 stagger-3">
+      <section
+        id="quick-start"
+        ref={quickStartRef}
+        className={`scroll-mt-20 mb-16 reveal ${quickStartVisible ? 'revealed' : ''}`}
+      >
         <div className="flex items-center gap-4 mb-6">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -228,7 +246,11 @@ export function GettingStarted() {
       </section>
 
       {/* Section 3: Project Structure */}
-      <section id="project-structure" className="scroll-mt-20 mb-16 animate-fade-in-up opacity-0 stagger-4">
+      <section
+        id="project-structure"
+        ref={structureRef}
+        className={`scroll-mt-20 mb-16 reveal ${structureVisible ? 'revealed' : ''}`}
+      >
         <div className="flex items-center gap-4 mb-6">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -251,12 +273,12 @@ export function GettingStarted() {
           {fileDescriptions.map((file, index) => (
             <div
               key={file.name}
-              className="group relative rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4 card-elevated"
+              className="group relative rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4 card-elevated transition-[border-color] hover:border-gray-300 dark:hover:border-gray-700"
               style={{ animationDelay: `${index * 0.05}s` }}
             >
               <div className="pointer-events-none absolute inset-0 rounded-xl bg-gradient-to-br from-gray-50 dark:from-gray-800 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
               <div className="relative flex items-start gap-4">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 transition-all group-hover:bg-gray-900 dark:group-hover:bg-gray-100 group-hover:text-white dark:group-hover:text-gray-900">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 transition-all duration-300 group-hover:bg-gray-900 dark:group-hover:bg-gray-100 group-hover:text-white dark:group-hover:text-gray-900">
                   {file.icon}
                 </div>
                 <div>
@@ -272,7 +294,11 @@ export function GettingStarted() {
       </section>
 
       {/* Section 4: What's Next */}
-      <section id="whats-next" className="scroll-mt-20 mb-14 animate-fade-in-up opacity-0 stagger-5">
+      <section
+        id="whats-next"
+        ref={nextRef}
+        className={`scroll-mt-20 mb-14 reveal ${nextVisible ? 'revealed' : ''}`}
+      >
         <div className="flex items-center gap-4 mb-6">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -287,16 +313,15 @@ export function GettingStarted() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {nextSteps.map((step, index) => (
+          {nextSteps.map((step) => (
             <a
               key={step.title}
               href={step.href}
-              className="group relative rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-5 card-elevated"
-              style={{ animationDelay: `${index * 0.05}s` }}
+              className="group relative rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-5 card-elevated transition-[border-color] hover:border-gray-300 dark:hover:border-gray-700"
             >
               <div className="pointer-events-none absolute inset-0 rounded-xl bg-gradient-to-br from-gray-50 dark:from-gray-800 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
               <div className="relative">
-                <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100 text-gray-600 transition-all group-hover:bg-gray-900 group-hover:text-white">
+                <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100 text-gray-600 transition-all duration-300 group-hover:bg-gray-900 group-hover:text-white">
                   {step.icon}
                 </div>
                 <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">{step.title}</h3>

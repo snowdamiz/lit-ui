@@ -1,6 +1,15 @@
+import { useState } from 'react'
 import { getDocsUrl } from '../utils/config'
 
 function Hero() {
+  const [copied, setCopied] = useState(false)
+
+  const handleCopy = async () => {
+    await navigator.clipboard.writeText('npx lit-ui init')
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
   return (
     <section className="relative overflow-hidden pt-32 pb-20 md:pt-40 md:pb-32">
       {/* Background decorations */}
@@ -25,7 +34,7 @@ function Hero() {
           </div>
 
           {/* Main headline */}
-          <h1 className="mb-6 text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl md:text-6xl lg:text-7xl animate-fade-in-up opacity-0 stagger-2">
+          <h1 className="mb-6 text-4xl font-extrabold tracking-[-0.03em] text-gray-900 sm:text-5xl md:text-6xl lg:text-7xl animate-fade-in-up opacity-0 stagger-2">
             <span className="block">Web Components that</span>
             <span className="block text-gradient">Work Everywhere</span>
           </h1>
@@ -94,25 +103,46 @@ function Hero() {
                   <span className="font-semibold">npx</span> lit-ui init
                 </span>
                 <button
-                  onClick={() => navigator.clipboard.writeText('npx lit-ui init')}
+                  onClick={handleCopy}
                   className="ml-auto rounded-md p-1.5 text-gray-500 transition-all hover:bg-gray-800 hover:text-gray-300"
                   title="Copy to clipboard"
                 >
-                  <svg
-                    className="h-4 w-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
-                    />
-                  </svg>
+                  {copied ? (
+                    <svg
+                      className="h-4 w-4 text-green-400"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                  ) : (
+                    <svg
+                      className="h-4 w-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                      />
+                    </svg>
+                  )}
                 </button>
               </code>
+              {copied && (
+                <span className="mt-1 block text-xs text-green-400 text-right animate-fade-in-up">
+                  Copied!
+                </span>
+              )}
             </div>
           </div>
         </div>

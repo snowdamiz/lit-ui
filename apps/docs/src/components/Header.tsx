@@ -9,6 +9,7 @@ const isMac = typeof navigator !== 'undefined' && /Mac|iPod|iPhone|iPad/.test(na
 
 export function Header() {
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false)
+  const [isScrolled, setIsScrolled] = useState(false)
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -21,26 +22,40 @@ export function Header() {
     return () => document.removeEventListener('keydown', handler)
   }, [])
 
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10)
+    }
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
   return (
-    <header className="fixed top-0 left-0 right-0 h-16 z-50 bg-white dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800">
+    <header
+      className={`fixed top-0 left-0 right-0 h-16 z-50 transition-all duration-300 ${
+        isScrolled
+          ? 'bg-white/90 dark:bg-gray-950/90 backdrop-blur-md border-b border-gray-200/80 dark:border-gray-800/80 shadow-[0_1px_3px_oklch(0_0_0/0.04)]'
+          : 'bg-white dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800'
+      }`}
+    >
       <div className="h-full px-4 md:px-6 flex items-center justify-between">
         <Link
           to="/"
-          className="group flex items-center gap-2.5"
+          className="group flex items-center gap-2.5 focus-ring rounded-lg"
         >
           <img
             src="/logo-icon.svg"
             alt="lit-ui logo"
-            className="h-8 w-8 rounded-lg shadow-sm transition-transform group-hover:scale-105"
+            className="h-8 w-8 rounded-lg shadow-sm transition-transform duration-300 group-hover:scale-105 group-hover:rotate-[-2deg]"
           />
-          <span className="text-xl font-bold text-gray-900 dark:text-gray-100">lit</span>
+          <span className="text-xl font-bold text-gray-900 dark:text-gray-100 transition-all duration-300 group-hover:tracking-wide">lit</span>
           <span className="text-sm font-medium text-gray-400 dark:text-gray-500 tracking-wide">/ DOCS</span>
         </Link>
         <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={() => setCommandPaletteOpen(true)}
-            className="hidden sm:flex items-center gap-2 rounded-lg border border-gray-200 dark:border-gray-800 px-3 py-1.5 text-sm text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100 transition-colors cursor-pointer"
+            className="hidden sm:flex items-center gap-2 rounded-lg border border-gray-200 dark:border-gray-800 px-3 py-1.5 text-sm text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100 hover:border-gray-300 dark:hover:border-gray-700 transition-all duration-200 cursor-pointer focus-ring"
           >
             <Search className="h-3.5 w-3.5" />
             <span>Search...</span>
@@ -52,7 +67,7 @@ export function Header() {
             href="https://github.com/snowdamiz/lit-ui"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-gray-500 dark:text-gray-400 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100"
+            className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-gray-500 dark:text-gray-400 transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100 focus-ring"
           >
             <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
               <path

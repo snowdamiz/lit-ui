@@ -163,23 +163,167 @@ function SwitchIcon() {
   )
 }
 
+function AccessibilityIcon() {
+  return (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10" />
+      <circle cx="12" cy="7" r="1.5" fill="currentColor" stroke="none" />
+      <path d="M8 11h8" />
+      <path d="M12 11v4" />
+      <path d="M10 19l2-4 2 4" />
+    </svg>
+  )
+}
+
+function FormIcon() {
+  return (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="3" width="18" height="18" rx="2" />
+      <path d="M7 8h4" />
+      <rect x="7" y="11" width="10" height="2.5" rx="0.5" />
+      <path d="M7 17h4" />
+    </svg>
+  )
+}
+
+function GlobeIcon() {
+  return (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10" />
+      <path d="M2 12h20" />
+      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+    </svg>
+  )
+}
+
+function AccordionIcon() {
+  return (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="3" width="18" height="4" rx="1" />
+      <path d="M15 5l-3 0" />
+      <rect x="3" y="10" width="18" height="4" rx="1" />
+      <path d="M15 12h-3" />
+      <rect x="3" y="17" width="18" height="4" rx="1" />
+      <path d="M15 19h-3" />
+    </svg>
+  )
+}
+
+function DataTableIcon() {
+  return (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="3" width="18" height="18" rx="2" />
+      <path d="M3 9h18" />
+      <path d="M3 15h18" />
+      <path d="M9 3v18" />
+    </svg>
+  )
+}
+
+function DatePickerIcon() {
+  return (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="4" width="18" height="18" rx="2" />
+      <path d="M16 2v4" />
+      <path d="M8 2v4" />
+      <path d="M3 10h18" />
+      <rect x="10" y="14" width="4" height="4" rx="0.5" fill="currentColor" stroke="none" />
+    </svg>
+  )
+}
+
+function DateRangeIcon() {
+  return (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="4" width="18" height="18" rx="2" />
+      <path d="M16 2v4" />
+      <path d="M8 2v4" />
+      <path d="M3 10h18" />
+      <rect x="7" y="14" width="3" height="3" rx="0.5" fill="currentColor" stroke="none" />
+      <rect x="14" y="14" width="3" height="3" rx="0.5" fill="currentColor" stroke="none" />
+      <path d="M11.5 15.5h3" />
+    </svg>
+  )
+}
+
+function PopoverIcon() {
+  return (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="10" width="12" height="8" rx="2" />
+      <rect x="10" y="4" width="12" height="8" rx="2" />
+    </svg>
+  )
+}
+
+function TabsIcon() {
+  return (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 8h18v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8z" />
+      <path d="M3 8V6a2 2 0 0 1 2-2h4l2 4" />
+      <path d="M11 4h4l2 4" />
+    </svg>
+  )
+}
+
+function TimePickerIcon() {
+  return (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10" />
+      <path d="M12 6v6l4 2" />
+    </svg>
+  )
+}
+
+function ToastIcon() {
+  return (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="14" width="18" height="6" rx="2" />
+      <path d="M7 17h6" />
+      <path d="M6 10l2 4" />
+      <path d="M18 10l-2 4" />
+      <path d="M6 10h12" />
+    </svg>
+  )
+}
+
+function TooltipIcon() {
+  return (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 4h16a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-5l-3 4-3-4H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" />
+      <path d="M9 9h6" />
+    </svg>
+  )
+}
+
 // Map of item titles to their icons
 const iconMap: Record<string, () => JSX.Element> = {
   'Getting Started': BookIcon,
   'Installation': DownloadIcon,
-  'Styling': StylingIcon,
-  'SSR Setup': ServerIcon,
-  'Migration': MigrationIcon,
+  'Accessibility': AccessibilityIcon,
   'Agent Skills': AgentSkillsIcon,
+  'Form Integration': FormIcon,
+  'Internationalization': GlobeIcon,
+  'Migration': MigrationIcon,
+  'SSR Setup': ServerIcon,
+  'Styling': StylingIcon,
+  'Accordion': AccordionIcon,
   'Button': ButtonIcon,
   'Calendar': CalendarIcon,
   'Checkbox': CheckboxIcon,
+  'Data Table': DataTableIcon,
+  'Date Picker': DatePickerIcon,
+  'Date Range Picker': DateRangeIcon,
   'Dialog': DialogIcon,
   'Input': InputIcon,
+  'Popover': PopoverIcon,
   'Radio': RadioIcon,
   'Select': SelectIcon,
   'Switch': SwitchIcon,
+  'Tabs': TabsIcon,
   'Textarea': TextareaIcon,
+  'Time Picker': TimePickerIcon,
+  'Toast': ToastIcon,
+  'Tooltip': TooltipIcon,
   'Theme Configurator': PaletteIcon,
 }
 
@@ -197,17 +341,23 @@ export function NavSection({ title, items }: NavSectionProps) {
               <NavLink
                 to={item.href}
                 className={({ isActive }) =>
-                  `group flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all duration-150 ${
+                  `group relative flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all duration-200 ${
                     isActive
                       ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-medium'
-                      : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100'
+                      : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-gray-100'
                   }`
                 }
               >
                 {({ isActive }) => (
                   <>
+                    {/* Active indicator bar */}
+                    <span
+                      className={`absolute left-0 top-1.5 bottom-1.5 w-0.5 rounded-full bg-gray-900 dark:bg-gray-100 transition-all duration-300 ${
+                        isActive ? 'opacity-100 scale-y-100' : 'opacity-0 scale-y-50'
+                      }`}
+                    />
                     {IconComponent && (
-                      <span className={`flex-shrink-0 ${isActive ? 'text-gray-500 dark:text-gray-400' : 'text-gray-400 dark:text-gray-500 group-hover:text-gray-500 dark:group-hover:text-gray-400'}`}>
+                      <span className={`flex-shrink-0 transition-colors duration-200 ${isActive ? 'text-gray-500 dark:text-gray-400' : 'text-gray-400 dark:text-gray-500 group-hover:text-gray-500 dark:group-hover:text-gray-400'}`}>
                         <IconComponent />
                       </span>
                     )}

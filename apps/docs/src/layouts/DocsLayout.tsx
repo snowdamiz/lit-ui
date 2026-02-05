@@ -1,10 +1,22 @@
-import { Outlet } from 'react-router'
+import { useEffect } from 'react'
+import { Outlet, useLocation } from 'react-router'
 import { Header } from '../components/Header'
 import { Sidebar } from '../components/Sidebar'
+
+function ScrollToTop() {
+  const { pathname } = useLocation()
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' })
+  }, [pathname])
+
+  return null
+}
 
 export function DocsLayout() {
   return (
     <div className="min-h-screen bg-background relative">
+      <ScrollToTop />
       <div className="pointer-events-none absolute inset-0 grid-pattern" />
       <div className="pointer-events-none absolute inset-0 hero-gradient opacity-50" />
       <div className="relative">

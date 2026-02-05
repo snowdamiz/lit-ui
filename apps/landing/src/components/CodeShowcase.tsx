@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
+import { useReveal } from '../hooks/useReveal'
 
 const frameworks = ['React', 'Vue', 'Svelte', 'HTML'] as const
 type Framework = (typeof frameworks)[number]
@@ -208,6 +209,9 @@ function highlightCode(code: string) {
 function CodeShowcase() {
   const [activeFramework, setActiveFramework] = useState<Framework>('React')
   const [copied, setCopied] = useState(false)
+  const { ref: sectionRef, isVisible } = useReveal({ threshold: 0.15 })
+  const tabsRef = useRef<HTMLDivElement>(null)
+  const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 })
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(codeExamples[activeFramework].code)
@@ -215,17 +219,33 @@ function CodeShowcase() {
     setTimeout(() => setCopied(false), 2000)
   }
 
+  // Update sliding indicator position
+  useEffect(() => {
+    const container = tabsRef.current
+    if (!container) return
+
+    const activeButton = container.querySelector<HTMLButtonElement>(
+      `[data-framework="${activeFramework}"]`
+    )
+    if (!activeButton) return
+
+    setIndicatorStyle({
+      left: activeButton.offsetLeft,
+      width: activeButton.offsetWidth,
+    })
+  }, [activeFramework])
+
   return (
     <section id="code" className="relative py-24 md:py-32">
       {/* Background */}
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-gray-50/50 to-transparent" />
 
-      <div className="relative mx-auto max-w-6xl px-6">
-        <div className="mb-12 text-center">
-          <p className="mb-3 text-sm font-semibold uppercase tracking-wider text-gray-500">
+      <div ref={sectionRef} className="relative mx-auto max-w-6xl px-6">
+        <div className={`mb-12 text-center reveal ${isVisible ? 'revealed' : ''}`}>
+          <p className="mb-3 text-sm font-semibold uppercase tracking-[0.15em] text-gray-500">
             Universal Syntax
           </p>
-          <h2 className="mb-4 text-3xl font-bold text-gray-900 md:text-4xl lg:text-5xl">
+          <h2 className="mb-4 text-3xl font-bold tracking-[-0.02em] text-gray-900 md:text-4xl lg:text-5xl">
             Same Component, Any Framework
           </h2>
           <p className="mx-auto max-w-2xl text-lg text-gray-500 leading-relaxed">
@@ -234,17 +254,30 @@ function CodeShowcase() {
           </p>
         </div>
 
-        <div className="mx-auto max-w-3xl">
+        <div
+          className={`mx-auto max-w-3xl reveal ${isVisible ? 'revealed' : ''}`}
+          style={{ transitionDelay: '0.1s' }}
+        >
           {/* Framework tabs */}
           <div className="mb-4 flex items-center justify-between">
-            <div className="flex gap-1 rounded-lg bg-gray-100 p-1">
+            <div ref={tabsRef} className="relative flex gap-1 rounded-lg bg-gray-100 p-1">
+              {/* Sliding indicator */}
+              <div
+                className="absolute top-1 h-[calc(100%-8px)] rounded-md bg-white shadow-sm transition-all duration-300"
+                style={{
+                  left: `${indicatorStyle.left}px`,
+                  width: `${indicatorStyle.width}px`,
+                  transitionTimingFunction: 'var(--ease-out-expo)',
+                }}
+              />
               {frameworks.map((framework) => (
                 <button
                   key={framework}
+                  data-framework={framework}
                   onClick={() => setActiveFramework(framework)}
-                  className={`rounded-md px-4 py-2 text-sm font-medium transition-all ${
+                  className={`relative z-10 rounded-md px-4 py-2 text-sm font-medium transition-colors duration-200 ${
                     activeFramework === framework
-                      ? 'bg-white text-gray-900 shadow-sm'
+                      ? 'text-gray-900'
                       : 'text-gray-500 hover:text-gray-700'
                   }`}
                 >

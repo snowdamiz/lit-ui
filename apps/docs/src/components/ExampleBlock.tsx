@@ -22,10 +22,10 @@ export function ExampleBlock({
 }: ExampleBlockProps) {
   return (
     <div className="my-6">
-      {title && <h3 className="text-lg font-semibold mb-2">{title}</h3>}
+      {title && <h3 className="text-lg font-semibold mb-2 tracking-[-0.01em]">{title}</h3>}
       {description && <p className="text-gray-600 dark:text-gray-400 mb-4">{description}</p>}
 
-      <div className="group/block rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 card-elevated">
+      <div className="group/block rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 card-elevated transition-[border-color] hover:border-gray-300 dark:hover:border-gray-700">
         {/* Live preview - on top */}
         <div className="relative">
           <div className="flex items-center justify-between px-4 py-2.5 bg-gradient-to-r from-gray-50 dark:from-gray-800 to-gray-50/50 dark:to-gray-800/50 border-b border-gray-100 dark:border-gray-800">

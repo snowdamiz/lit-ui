@@ -353,6 +353,11 @@ export const init = defineCommand({
       description: 'Encoded theme configuration from configurator',
       required: false,
     },
+    skipSkills: {
+      type: 'boolean',
+      description: 'Skip injecting AI agent skills',
+      default: false,
+    },
   },
   async run({ args }) {
     const cwd = resolve(args.cwd);
@@ -526,8 +531,10 @@ Components are ready to use - no additional setup required.
     success('lit-ui initialized successfully!');
 
     // Inject Agent Skills for AI coding tools
-    console.log('');
-    await injectOverviewSkills(cwd, { yes: args.yes });
+    if (!args.skipSkills) {
+      console.log('');
+      await injectOverviewSkills(cwd, { yes: args.yes });
+    }
 
     // Handle theme if provided
     if (args.theme) {

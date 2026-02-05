@@ -1,3 +1,5 @@
+import { useReveal } from '../hooks/useReveal'
+
 const features = [
   {
     title: 'Framework Agnostic',
@@ -128,13 +130,19 @@ const features = [
 ]
 
 function Features() {
+  const { ref: headingRef, isVisible: headingVisible } = useReveal({ threshold: 0.2 })
+  const { ref: gridRef, isVisible: gridVisible } = useReveal({ threshold: 0.1 })
+
   return (
     <section id="features" className="relative py-24 md:py-32">
       {/* Subtle background */}
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-gray-50/50 to-transparent" />
 
       <div className="relative mx-auto max-w-6xl px-6">
-        <div className="mb-16 text-center">
+        <div
+          ref={headingRef}
+          className={`mb-16 text-center reveal ${headingVisible ? 'revealed' : ''}`}
+        >
           <p className="mb-3 text-sm font-semibold uppercase tracking-[0.15em] text-gray-500">
             Why LitUI
           </p>
@@ -147,12 +155,12 @@ function Features() {
           </p>
         </div>
 
-        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+        <div ref={gridRef} className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
           {features.map((feature, index) => (
             <div
               key={feature.title}
-              className="group relative rounded-2xl border border-gray-200 bg-white p-6 card-elevated"
-              style={{ animationDelay: `${index * 0.1}s` }}
+              className={`group relative rounded-2xl border border-gray-200 bg-white p-6 card-elevated transition-[border-color] hover:border-gray-300 reveal ${gridVisible ? 'revealed' : ''}`}
+              style={{ transitionDelay: `${index * 0.08}s` }}
             >
               {/* Subtle gradient on hover */}
               <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-gray-50 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />

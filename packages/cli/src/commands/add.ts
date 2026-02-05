@@ -53,6 +53,11 @@ export const add = defineCommand({
       description: 'Copy source files (override config mode)',
       default: false,
     },
+    skipSkills: {
+      type: 'boolean',
+      description: 'Skip injecting AI agent skills',
+      default: false,
+    },
   },
   async run({ args }) {
     const cwd = resolve(args.cwd);
@@ -77,7 +82,9 @@ export const add = defineCommand({
         process.exit(1);
       }
       // Inject component-specific AI skill
-      await injectComponentSkills(cwd, componentName, { yes: args.yes });
+      if (!args.skipSkills) {
+        await injectComponentSkills(cwd, componentName, { yes: args.yes });
+      }
       return; // Exit early, skip copy logic
     }
 
@@ -172,7 +179,7 @@ export const add = defineCommand({
     }
 
     // Step 9: Inject AI skills for added components
-    if (addedComponents.length > 0) {
+    if (addedComponents.length > 0 && !args.skipSkills) {
       for (const comp of addedComponents) {
         await injectComponentSkills(cwd, comp, { yes: args.yes });
       }

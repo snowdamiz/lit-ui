@@ -77,6 +77,15 @@ body {
   background: linear-gradient(to bottom, transparent 0%, oklch(1 0 0) 100%);
 }
 
+/* Soft gradient overlap between sections */
+.section-fade-top {
+  background: linear-gradient(to bottom, oklch(1 0 0) 0%, transparent 100%);
+}
+
+.section-fade-bottom {
+  background: linear-gradient(to top, oklch(1 0 0) 0%, transparent 100%);
+}
+
 /* Code block styling - enhanced with glow */
 .code-block {
   background: linear-gradient(
@@ -143,6 +152,55 @@ body {
 
 .animate-fade-in-up {
   animation: fade-in-up 0.6s var(--ease-out-expo) forwards;
+}
+
+/* Scroll-triggered reveal animation */
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s var(--ease-out-expo), transform 0.7s var(--ease-out-expo);
+}
+
+.reveal.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Scale pulse for framework logos on reveal */
+@keyframes scale-pulse {
+  0% {
+    transform: scale(0.85);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.reveal-scale {
+  opacity: 0;
+  transform: scale(0.85);
+  transition: opacity 0.5s var(--ease-out-expo), transform 0.5s var(--ease-out-expo);
+}
+
+.reveal-scale.revealed {
+  animation: scale-pulse 0.6s var(--ease-out-expo) forwards;
 }
 
 /* Floating animation for decorative elements */
@@ -245,6 +303,22 @@ body {
 .token-value { color: oklch(0.72 0.08 150); }
 .token-punctuation { color: oklch(0.55 0 0); }
 
+/* Mobile menu animation */
+@keyframes slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.mobile-menu-enter {
+  animation: slide-down 0.25s var(--ease-out-expo) forwards;
+}
+
 /* Smooth scroll behavior for reduced motion preference */
 @media (prefers-reduced-motion: reduce) {
   html {
@@ -256,6 +330,23 @@ body {
   .link-underline::after {
     animation: none;
     transition: none;
+  }
+
+  .reveal,
+  .reveal-scale {
+    opacity: 1;
+    transform: none;
+    animation: none;
+    transition: none;
+  }
+
+  .reveal.revealed,
+  .reveal-scale.revealed {
+    animation: none;
+  }
+
+  .mobile-menu-enter {
+    animation: none;
   }
 
   /* Disable floating animations */

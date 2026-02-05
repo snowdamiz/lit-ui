@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { CodeBlock } from './CodeBlock';
 import { Framework, useFramework } from '../contexts/FrameworkContext';
 
@@ -52,21 +52,50 @@ function FrameworkTabsInner({
     ? ['html', 'react', 'vue', 'svelte']
     : ['react', 'vue', 'svelte'];
 
+  // Sliding indicator
+  const tabsRef = useRef<HTMLDivElement>(null);
+  const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
+
+  useEffect(() => {
+    const container = tabsRef.current;
+    if (!container) return;
+
+    const activeButton = container.querySelector<HTMLButtonElement>(
+      `[data-framework="${effectiveFramework}"]`
+    );
+    if (!activeButton) return;
+
+    setIndicatorStyle({
+      left: activeButton.offsetLeft,
+      width: activeButton.offsetWidth,
+    });
+  }, [effectiveFramework]);
+
   return (
     <div>
       {/* Tab header */}
       <div className="flex items-center justify-between px-4 py-2 bg-gray-50/80 dark:bg-gray-800/80 border-b border-gray-100 dark:border-gray-800">
-        <div className="flex gap-1" role="tablist">
+        <div ref={tabsRef} className="relative flex gap-1" role="tablist">
+          {/* Sliding indicator */}
+          <div
+            className="absolute top-0 h-full rounded-md bg-gray-900 dark:bg-gray-100 transition-all duration-300"
+            style={{
+              left: `${indicatorStyle.left}px`,
+              width: `${indicatorStyle.width}px`,
+              transitionTimingFunction: 'var(--ease-out-expo)',
+            }}
+          />
           {tabs.map((fw) => (
             <button
               key={fw}
               role="tab"
+              data-framework={fw}
               aria-selected={effectiveFramework === fw}
               onClick={() => setFramework(fw)}
-              className={`px-2.5 py-1 text-xs font-medium rounded-md transition-all duration-200 focus-ring ${
+              className={`relative z-10 px-2.5 py-1 text-xs font-medium rounded-md transition-colors duration-200 focus-ring ${
                 effectiveFramework === fw
-                  ? 'bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900'
-                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                  ? 'text-white dark:text-gray-900'
+                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
               }`}
             >
               {labelMap[fw]}

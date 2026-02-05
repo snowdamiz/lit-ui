@@ -2,6 +2,7 @@ import { useRef, useState, useEffect } from 'react'
 import '@lit-ui/button'
 import '@lit-ui/dialog'
 import type { Dialog } from '@lit-ui/dialog'
+import { useReveal } from '../hooks/useReveal'
 
 type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive'
 
@@ -19,6 +20,7 @@ function ComponentPreview() {
   const [isDisabled, setIsDisabled] = useState(false)
   const [dialogOpen, setDialogOpen] = useState(false)
   const dialogRef = useRef<Dialog>(null)
+  const { ref: sectionRef, isVisible } = useReveal({ threshold: 0.1 })
 
   const handleLoadingToggle = () => {
     setIsLoading(true)
@@ -53,12 +55,12 @@ function ComponentPreview() {
       {/* Background */}
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-gray-50/50 to-transparent" />
 
-      <div className="relative mx-auto max-w-6xl px-6">
-        <div className="mb-12 text-center">
-          <p className="mb-3 text-sm font-semibold uppercase tracking-wider text-gray-500">
+      <div ref={sectionRef} className="relative mx-auto max-w-6xl px-6">
+        <div className={`mb-12 text-center reveal ${isVisible ? 'revealed' : ''}`}>
+          <p className="mb-3 text-sm font-semibold uppercase tracking-[0.15em] text-gray-500">
             Interactive Preview
           </p>
-          <h2 className="mb-4 text-3xl font-bold text-gray-900 md:text-4xl lg:text-5xl">
+          <h2 className="mb-4 text-3xl font-bold tracking-[-0.02em] text-gray-900 md:text-4xl lg:text-5xl">
             Beautiful Components
           </h2>
           <p className="mx-auto max-w-2xl text-lg text-gray-500 leading-relaxed">
@@ -67,7 +69,10 @@ function ComponentPreview() {
           </p>
         </div>
 
-        <div className="mx-auto max-w-4xl">
+        <div
+          className={`mx-auto max-w-4xl reveal ${isVisible ? 'revealed' : ''}`}
+          style={{ transitionDelay: '0.1s' }}
+        >
           <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm card-elevated">
             {/* Component header */}
             <div className="flex items-center justify-between border-b border-gray-100 bg-gray-50/50 px-6 py-4">

@@ -25,9 +25,9 @@ export function CodeBlock({ code, language, filename, showHeader = true }: CodeB
         <div className="flex items-center justify-between px-4 py-2 bg-gray-900/80 border-b border-gray-700/50">
           <div className="flex items-center gap-2">
             <div className="flex gap-1.5">
-              <div className="w-3 h-3 rounded-full bg-red-500/80" />
-              <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
-              <div className="w-3 h-3 rounded-full bg-green-500/80" />
+              <div className="w-3 h-3 rounded-full bg-gray-700 transition-colors hover:bg-red-400" />
+              <div className="w-3 h-3 rounded-full bg-gray-700 transition-colors hover:bg-yellow-400" />
+              <div className="w-3 h-3 rounded-full bg-gray-700 transition-colors hover:bg-green-400" />
             </div>
             {filename && (
               <span className="ml-3 text-gray-400 text-sm font-mono">{filename}</span>
@@ -35,10 +35,17 @@ export function CodeBlock({ code, language, filename, showHeader = true }: CodeB
           </div>
           <button
             onClick={handleCopy}
-            className="p-1.5 text-gray-400 hover:text-white hover:bg-gray-700/50 rounded-md transition-colors focus-ring"
+            className="flex items-center gap-1.5 px-2 py-1.5 text-gray-400 hover:text-white hover:bg-gray-700/50 rounded-md transition-all duration-200 focus-ring"
             aria-label={copied ? 'Copied!' : 'Copy code'}
           >
-            {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+            {copied ? (
+              <>
+                <Check className="h-4 w-4 text-green-400" />
+                <span className="text-xs font-medium text-green-400">Copied!</span>
+              </>
+            ) : (
+              <Copy className="h-4 w-4" />
+            )}
           </button>
         </div>
       )}
@@ -47,10 +54,17 @@ export function CodeBlock({ code, language, filename, showHeader = true }: CodeB
         {!showHeader && (
           <button
             onClick={handleCopy}
-            className="absolute top-3 right-3 p-1.5 text-gray-400 hover:text-white hover:bg-gray-700/50 rounded-md transition-all opacity-0 group-hover:opacity-100 focus:opacity-100 focus-ring z-10"
+            className="absolute top-3 right-3 flex items-center gap-1.5 p-1.5 text-gray-400 hover:text-white hover:bg-gray-700/50 rounded-md transition-all duration-200 opacity-0 group-hover:opacity-100 focus:opacity-100 focus-ring z-10"
             aria-label={copied ? 'Copied!' : 'Copy code'}
           >
-            {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+            {copied ? (
+              <>
+                <Check className="h-4 w-4 text-green-400" />
+                <span className="text-xs font-medium text-green-400">Copied!</span>
+              </>
+            ) : (
+              <Copy className="h-4 w-4" />
+            )}
           </button>
         )}
         <Highlight theme={themes.nightOwl} code={code.trim()} language={language}>
