@@ -40,5 +40,8 @@ export { savePreferences, loadPreferences, clearPreferences } from './column-pre
 // Pagination components
 export * from './pagination/index.js';
 
+// Inline editing utilities
+export { renderEditInput, isColumnEditable, renderEditableIndicator, inlineEditingStyles } from './inline-editing.js';
+
 // Filter components
 export * from './filters/index.js';
