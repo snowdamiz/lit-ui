@@ -82,9 +82,9 @@ export class PaginationControls extends TailwindElement {
         justify-content: space-between;
         gap: 1rem;
         padding: 0.75rem 1rem;
-        border-top: 1px solid var(--color-border, #e4e4e7);
+        border-top: 1px solid var(--ui-data-table-border-color);
         font-size: 0.875rem;
-        color: var(--color-muted-foreground, #71717a);
+        color: var(--ui-data-table-header-text);
       }
 
       .page-info {
@@ -120,21 +120,21 @@ export class PaginationControls extends TailwindElement {
         width: 32px;
         height: 32px;
         padding: 0;
-        border: 1px solid var(--color-border, #e4e4e7);
+        border: 1px solid var(--ui-data-table-border-color);
         border-radius: var(--ui-radius-sm, 0.25rem);
-        background: var(--color-background, #ffffff);
-        color: var(--color-foreground, #09090b);
+        background: var(--ui-data-table-row-bg);
+        color: var(--ui-data-table-text-color);
         cursor: pointer;
         transition: background-color 0.15s, border-color 0.15s;
       }
 
       .nav-button:hover:not(:disabled) {
-        background: var(--color-muted, #f4f4f5);
-        border-color: var(--color-border, #e4e4e7);
+        background: var(--ui-data-table-header-bg);
+        border-color: var(--ui-data-table-border-color);
       }
 
       .nav-button:focus-visible {
-        outline: 2px solid var(--color-primary, #3b82f6);
+        outline: 2px solid var(--color-primary, var(--ui-color-primary));
         outline-offset: 2px;
       }
 
@@ -149,20 +149,6 @@ export class PaginationControls extends TailwindElement {
         stroke-width: 2;
         stroke-linecap: round;
         stroke-linejoin: round;
-      }
-
-      :host-context(.dark) {
-        border-color: #3f3f46;
-      }
-
-      :host-context(.dark) .nav-button {
-        background: #09090b;
-        border-color: #3f3f46;
-        color: #fafafa;
-      }
-
-      :host-context(.dark) .nav-button:hover:not(:disabled) {
-        background: #27272a;
       }
 
       @media (max-width: 640px) {

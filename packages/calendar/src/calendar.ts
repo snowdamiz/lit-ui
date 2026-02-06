@@ -146,11 +146,11 @@ export class Calendar extends TailwindElement {
       }
 
       .nav-button:hover {
-        background-color: var(--ui-calendar-hover-bg, #f3f4f6);
+        background-color: var(--ui-calendar-hover-bg);
       }
 
       .nav-button:focus-visible {
-        outline: 2px solid var(--ui-calendar-focus-ring, var(--color-ring, #3b82f6));
+        outline: 2px solid var(--ui-calendar-focus-ring, var(--color-ring));
         outline-offset: 2px;
       }
 
@@ -171,11 +171,11 @@ export class Calendar extends TailwindElement {
       }
 
       .view-heading:hover {
-        background-color: var(--ui-calendar-hover-bg, #f3f4f6);
+        background-color: var(--ui-calendar-hover-bg);
       }
 
       .view-heading:focus-visible {
-        outline: 2px solid var(--ui-calendar-focus-ring, var(--color-ring, #3b82f6));
+        outline: 2px solid var(--ui-calendar-focus-ring, var(--color-ring));
         outline-offset: 2px;
       }
 
@@ -215,7 +215,7 @@ export class Calendar extends TailwindElement {
       .weekday-header {
         font-size: 0.75rem;
         font-weight: 600;
-        color: var(--ui-calendar-weekday-color, #6b7280);
+        color: var(--ui-calendar-weekday-color);
         padding: 0.5rem 0;
       }
 
@@ -235,7 +235,7 @@ export class Calendar extends TailwindElement {
       }
 
       .date-button:hover {
-        background-color: var(--ui-calendar-hover-bg, #f3f4f6);
+        background-color: var(--ui-calendar-hover-bg);
       }
 
       .date-button.outside-month {
@@ -243,22 +243,22 @@ export class Calendar extends TailwindElement {
       }
 
       .date-button.today {
-        border: 2px solid var(--ui-calendar-today-border, var(--color-primary, #3b82f6));
+        border: 2px solid var(--ui-calendar-today-border, var(--color-primary));
         font-weight: 600;
       }
 
       .date-button[aria-selected="true"] {
-        background-color: var(--ui-calendar-selected-bg, var(--color-primary, #3b82f6));
+        background-color: var(--ui-calendar-selected-bg, var(--color-primary));
         color: var(--ui-calendar-selected-text, white);
       }
 
       .date-button[aria-selected="true"]:hover {
-        background-color: var(--ui-calendar-selected-bg, var(--color-primary, #3b82f6));
+        background-color: var(--ui-calendar-selected-bg, var(--color-primary));
         filter: brightness(0.9);
       }
 
       .date-button:focus-visible {
-        outline: 2px solid var(--ui-calendar-focus-ring, var(--color-ring, #3b82f6));
+        outline: 2px solid var(--ui-calendar-focus-ring, var(--color-ring));
         outline-offset: 2px;
       }
 
@@ -292,12 +292,12 @@ export class Calendar extends TailwindElement {
 
       .year-cell:hover,
       .decade-cell:hover {
-        background-color: var(--ui-calendar-hover-bg, #f3f4f6);
+        background-color: var(--ui-calendar-hover-bg);
       }
 
       .year-cell:focus-visible,
       .decade-cell:focus-visible {
-        outline: 2px solid var(--ui-calendar-focus-ring, var(--color-ring, #3b82f6));
+        outline: 2px solid var(--ui-calendar-focus-ring, var(--color-ring));
         outline-offset: 2px;
       }
 
@@ -307,12 +307,12 @@ export class Calendar extends TailwindElement {
       }
 
       .year-cell.current {
-        border-color: var(--ui-calendar-today-border, var(--color-primary, #3b82f6));
+        border-color: var(--ui-calendar-today-border, var(--color-primary));
         font-weight: 600;
       }
 
       .decade-cell.current {
-        border-color: var(--ui-calendar-today-border, var(--color-primary, #3b82f6));
+        border-color: var(--ui-calendar-today-border, var(--color-primary));
         font-weight: 600;
       }
 
@@ -330,7 +330,7 @@ export class Calendar extends TailwindElement {
 
       .help-button {
         font-size: 0.75rem;
-        color: var(--ui-calendar-weekday-color, #6b7280);
+        color: var(--ui-calendar-weekday-color);
         background: none;
         border: none;
         cursor: pointer;
@@ -341,7 +341,7 @@ export class Calendar extends TailwindElement {
       .help-dialog {
         padding: 1rem;
         border-radius: 0.5rem;
-        border: 1px solid var(--ui-calendar-border, #e5e7eb);
+        border: 1px solid var(--ui-calendar-border);
         max-width: 320px;
       }
 
@@ -364,7 +364,7 @@ export class Calendar extends TailwindElement {
 
       .shortcut-list kbd {
         font-family: monospace;
-        background: var(--ui-calendar-hover-bg, #f3f4f6);
+        background: var(--ui-calendar-hover-bg);
         padding: 0.125rem 0.375rem;
         border-radius: 0.25rem;
         font-size: 0.75rem;
@@ -384,65 +384,14 @@ export class Calendar extends TailwindElement {
         left: 50%;
         transform: translateX(-50%);
         padding: 0.25rem 0.5rem;
-        background: var(--ui-calendar-tooltip-bg, #1f2937);
-        color: var(--ui-calendar-tooltip-text, #ffffff);
+        background: var(--ui-calendar-tooltip-bg);
+        color: var(--ui-calendar-tooltip-text);
         font-size: 0.6875rem;
         line-height: 1.25;
         border-radius: 0.25rem;
         white-space: nowrap;
         z-index: 10;
         pointer-events: none;
-      }
-
-      /* Dark mode via :host-context(.dark) */
-      :host-context(.dark) .calendar {
-        color: var(--ui-calendar-text, #f9fafb);
-      }
-
-      :host-context(.dark) .date-button:hover {
-        background-color: var(--ui-calendar-hover-bg, #1f2937);
-      }
-
-      :host-context(.dark) .nav-button:hover {
-        background-color: var(--ui-calendar-hover-bg, #1f2937);
-      }
-
-      :host-context(.dark) .view-heading:hover {
-        background-color: var(--ui-calendar-hover-bg, #1f2937);
-      }
-
-      :host-context(.dark) .view-heading.top-level:hover {
-        background: none;
-      }
-
-      :host-context(.dark) .year-cell:hover,
-      :host-context(.dark) .decade-cell:hover {
-        background-color: var(--ui-calendar-hover-bg, #1f2937);
-      }
-
-      :host-context(.dark) .help-dialog {
-        background: var(--ui-calendar-bg, #030712);
-        border-color: var(--ui-calendar-border, #1f2937);
-        color: var(--ui-calendar-text, #f9fafb);
-      }
-
-      :host-context(.dark) .weekday-header {
-        color: var(--ui-calendar-weekday-color, #9ca3af);
-      }
-
-      :host-context(.dark) .help-button {
-        color: var(--ui-calendar-weekday-color, #9ca3af);
-      }
-
-      :host-context(.dark) .shortcut-list kbd {
-        background: var(--ui-calendar-hover-bg, #1f2937);
-      }
-
-      /* Dark mode tooltip */
-      :host-context(.dark) .date-button[data-tooltip]:hover::after,
-      :host-context(.dark) .date-button-wrapper[data-tooltip]:hover::after {
-        background: var(--ui-calendar-tooltip-bg, #e5e7eb);
-        color: var(--ui-calendar-tooltip-text, #111827);
       }
 
       .month-grid {
@@ -467,7 +416,7 @@ export class Calendar extends TailwindElement {
         align-items: center;
         justify-content: center;
         font-size: 0.75rem;
-        color: var(--ui-calendar-weekday-color, #6b7280);
+        color: var(--ui-calendar-weekday-color);
         cursor: pointer;
         padding: 0.25rem;
         border: none;
@@ -477,11 +426,11 @@ export class Calendar extends TailwindElement {
       }
 
       .week-number:hover {
-        background-color: var(--ui-calendar-hover-bg, #f3f4f6);
+        background-color: var(--ui-calendar-hover-bg);
       }
 
       .week-number:focus-visible {
-        outline: 2px solid var(--ui-calendar-focus-ring, var(--color-ring, #3b82f6));
+        outline: 2px solid var(--ui-calendar-focus-ring, var(--color-ring));
         outline-offset: 2px;
       }
 
@@ -505,7 +454,7 @@ export class Calendar extends TailwindElement {
       }
 
       .date-button-wrapper:hover {
-        background-color: var(--ui-calendar-hover-bg, #f3f4f6);
+        background-color: var(--ui-calendar-hover-bg);
       }
 
       .date-button-wrapper.outside-month {
@@ -513,22 +462,22 @@ export class Calendar extends TailwindElement {
       }
 
       .date-button-wrapper.today {
-        border: 2px solid var(--ui-calendar-today-border, var(--color-primary, #3b82f6));
+        border: 2px solid var(--ui-calendar-today-border, var(--color-primary));
         font-weight: 600;
       }
 
       .date-button-wrapper[aria-selected="true"] {
-        background-color: var(--ui-calendar-selected-bg, var(--color-primary, #3b82f6));
+        background-color: var(--ui-calendar-selected-bg, var(--color-primary));
         color: var(--ui-calendar-selected-text, white);
       }
 
       .date-button-wrapper[aria-selected="true"]:hover {
-        background-color: var(--ui-calendar-selected-bg, var(--color-primary, #3b82f6));
+        background-color: var(--ui-calendar-selected-bg, var(--color-primary));
         filter: brightness(0.9);
       }
 
       .date-button-wrapper:focus-visible {
-        outline: 2px solid var(--ui-calendar-focus-ring, var(--color-ring, #3b82f6));
+        outline: 2px solid var(--ui-calendar-focus-ring, var(--color-ring));
         outline-offset: 2px;
       }
 
@@ -536,18 +485,6 @@ export class Calendar extends TailwindElement {
         opacity: var(--ui-calendar-disabled-opacity, 0.5);
         cursor: not-allowed;
         pointer-events: none;
-      }
-
-      :host-context(.dark) .week-number {
-        color: var(--ui-calendar-weekday-color, #9ca3af);
-      }
-
-      :host-context(.dark) .week-number:hover {
-        background-color: var(--ui-calendar-hover-bg, #1f2937);
-      }
-
-      :host-context(.dark) .date-button-wrapper:hover {
-        background-color: var(--ui-calendar-hover-bg, #1f2937);
       }
 
       /* Container query: compact (<280px) */
@@ -1387,7 +1324,7 @@ export class Calendar extends TailwindElement {
           </ul>
           <button
             @click="${this.closeHelpDialog}"
-            style="margin-top: 0.5rem; padding: 0.375rem 0.75rem; border: 1px solid var(--ui-calendar-border, #e5e7eb); border-radius: 0.25rem; background: none; cursor: pointer;"
+            style="margin-top: 0.5rem; padding: 0.375rem 0.75rem; border: 1px solid var(--ui-calendar-border); border-radius: 0.25rem; background: none; cursor: pointer;"
           >
             Close
           </button>

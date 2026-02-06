@@ -2171,12 +2171,6 @@ export class Select extends TailwindElement {
         50% { opacity: 0.5; }
       }
 
-      /* Dark mode skeleton colors */
-      :host-context(.dark) .skeleton-indicator,
-      :host-context(.dark) .skeleton-text {
-        background: var(--ui-select-skeleton-bg, hsl(200, 10%, 30%));
-      }
-
       /* Infinite scroll sentinel and loading */
       .load-more-sentinel {
         height: 1px;

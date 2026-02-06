@@ -326,8 +326,9 @@ export class Textarea extends TailwindElement {
       }
 
       textarea:focus {
-        outline: none;
         border-color: var(--ui-input-border-focus);
+        outline: 2px solid var(--ui-focus-ring-color, var(--ui-textarea-ring));
+        outline-offset: 2px;
       }
 
       /* Error state */

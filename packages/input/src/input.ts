@@ -293,6 +293,8 @@ export class Input extends TailwindElement {
 
       .input-container:focus-within {
         border-color: var(--ui-input-border-focus);
+        outline: 2px solid var(--ui-focus-ring-color, var(--ui-input-ring));
+        outline-offset: 2px;
       }
 
       .input-container.container-error {

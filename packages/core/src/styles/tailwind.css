@@ -79,8 +79,8 @@
   /* Shadows */
   --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.07);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.08);
   --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
   --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
 
@@ -184,7 +184,7 @@
   /* Borders and inputs */
   --color-border: var(--color-gray-800);
   --color-input: var(--color-gray-800);
-  --color-ring: var(--color-brand-300);
+  --color-ring: oklch(0.55 0 0);
 
   /* Card */
   --color-card: var(--color-gray-900);
@@ -243,6 +243,134 @@
   --ui-tabs-tab-active-bg: var(--color-gray-900);
   --ui-tabs-panel-text: var(--color-gray-50);
   --ui-tabs-indicator-color: var(--color-primary, var(--ui-color-primary));
+
+  /* Time Picker dark mode */
+  --ui-time-picker-bg: var(--color-gray-950);
+  --ui-time-picker-text: var(--color-gray-50);
+  --ui-time-picker-border: var(--color-gray-700);
+  --ui-time-picker-placeholder: var(--color-gray-500);
+  --ui-time-picker-label-text: var(--color-gray-50);
+  --ui-time-picker-popup-bg: var(--color-gray-900);
+  --ui-time-picker-popup-border: var(--color-gray-700);
+  --ui-time-picker-hover-bg: var(--color-gray-800);
+  --ui-time-picker-disabled-bg: var(--color-gray-900);
+  --ui-time-picker-disabled-border: var(--color-gray-700);
+  --ui-time-picker-tab-bg: var(--color-gray-900);
+  --ui-time-picker-tab-text: var(--color-gray-50);
+  --ui-time-picker-tab-border: var(--color-gray-600);
+  --ui-time-picker-tab-hover-bg: var(--color-gray-700);
+  --ui-time-picker-preset-bg: var(--color-gray-900);
+  --ui-time-picker-preset-text: var(--color-gray-50);
+  --ui-time-picker-preset-border: var(--color-gray-600);
+  --ui-time-picker-preset-hover-bg: var(--color-gray-700);
+  --ui-time-picker-preset-hover-border: var(--color-gray-500);
+  --ui-time-picker-muted-text: var(--color-gray-400);
+  --ui-time-picker-dropdown-bg: var(--color-gray-900);
+  --ui-time-picker-dropdown-border: var(--color-gray-700);
+  --ui-time-picker-option-text: var(--color-gray-200);
+  --ui-time-picker-option-hover-bg: var(--color-gray-700);
+  --ui-time-picker-option-selected-bg: oklch(0.30 0.06 250);
+  --ui-time-picker-option-selected-text: oklch(0.78 0.10 250);
+  --ui-time-picker-business-accent: oklch(0.70 0.18 150);
+  --ui-time-picker-business-bg: oklch(0.20 0.04 150);
+  --ui-time-picker-business-hover-bg: oklch(0.25 0.06 150);
+  --ui-time-picker-spinbutton-bg: var(--color-gray-900);
+  --ui-time-picker-spinbutton-text: var(--color-gray-50);
+  --ui-time-picker-spinbutton-border: var(--color-gray-600);
+  --ui-time-picker-separator-color: var(--color-gray-500);
+  --ui-time-picker-period-bg: var(--color-gray-900);
+  --ui-time-picker-period-text: var(--color-gray-50);
+  --ui-time-picker-period-border: var(--color-gray-600);
+  --ui-time-picker-period-hover-bg: var(--color-gray-700);
+  --ui-time-picker-clock-bg: var(--color-gray-900);
+  --ui-time-picker-clock-border: var(--color-gray-700);
+  --ui-time-picker-clock-text: var(--color-gray-300);
+  --ui-time-picker-voice-bg: var(--color-gray-900);
+  --ui-time-picker-voice-text: var(--color-gray-300);
+  --ui-time-picker-voice-border: var(--color-gray-600);
+  --ui-time-picker-range-label: var(--color-gray-200);
+  --ui-time-picker-range-muted: var(--color-gray-400);
+  --ui-time-picker-range-track: var(--color-gray-700);
+  --ui-time-picker-range-thumb-bg: var(--color-gray-900);
+  --ui-time-picker-wheel-text: var(--color-gray-300);
+  --ui-time-picker-wheel-highlight-border: var(--color-gray-600);
+  --ui-time-picker-wheel-highlight-bg: oklch(0.25 0.02 250);
+  --ui-time-picker-wheel-separator: var(--color-gray-500);
+  --ui-time-picker-timezone-text: var(--color-gray-400);
+  --ui-time-picker-timezone-separator: var(--color-gray-600);
+
+  /* Date Picker dark mode */
+  --ui-date-picker-bg: var(--color-gray-950);
+  --ui-date-picker-text: var(--color-gray-50);
+  --ui-date-picker-border: var(--color-gray-700);
+  --ui-date-picker-placeholder: var(--color-gray-500);
+  --ui-date-picker-label-text: var(--color-gray-50);
+  --ui-date-picker-popup-bg: var(--color-gray-900);
+  --ui-date-picker-popup-border: var(--color-gray-700);
+  --ui-date-picker-hover-bg: var(--color-gray-800);
+  --ui-date-picker-disabled-bg: var(--color-gray-900);
+  --ui-date-picker-disabled-border: var(--color-gray-700);
+  --ui-date-picker-helper-text: var(--color-gray-400);
+  --ui-date-picker-action-text: var(--color-gray-400);
+  --ui-date-picker-preset-bg: var(--color-gray-900);
+  --ui-date-picker-preset-text: var(--color-gray-50);
+  --ui-date-picker-preset-border: var(--color-gray-600);
+  --ui-date-picker-preset-hover-bg: var(--color-gray-700);
+  --ui-date-picker-preset-hover-border: var(--color-gray-500);
+
+  /* Date Range Picker dark mode */
+  --ui-date-range-bg: var(--color-gray-950);
+  --ui-date-range-text: var(--color-gray-50);
+  --ui-date-range-border: var(--color-gray-700);
+  --ui-date-range-placeholder: var(--color-gray-500);
+  --ui-date-range-label-text: var(--color-gray-50);
+  --ui-date-range-popup-bg: var(--color-gray-900);
+  --ui-date-range-popup-border: var(--color-gray-700);
+  --ui-date-range-hover-bg: var(--color-gray-800);
+  --ui-date-range-disabled-bg: var(--color-gray-900);
+  --ui-date-range-disabled-border: var(--color-gray-700);
+  --ui-date-range-helper-text: var(--color-gray-400);
+  --ui-date-range-action-text: var(--color-gray-400);
+  --ui-date-range-preset-bg: var(--color-gray-900);
+  --ui-date-range-preset-text: var(--color-gray-50);
+  --ui-date-range-preset-border: var(--color-gray-600);
+  --ui-date-range-preset-hover-bg: var(--color-gray-700);
+  --ui-date-range-sidebar-border: var(--color-gray-700);
+  --ui-date-range-footer-border: var(--color-gray-700);
+  --ui-date-range-clear-border: var(--color-gray-600);
+  --ui-date-range-clear-text: var(--color-gray-50);
+  --ui-date-range-clear-hover-bg: var(--color-gray-700);
+  --ui-date-range-toggle-border: var(--color-gray-600);
+  --ui-date-range-toggle-hover-bg: var(--color-gray-800);
+  --ui-date-range-compare-highlight-bg: oklch(0.30 0.06 85);
+  --ui-date-range-compare-preview-bg: oklch(0.22 0.04 85);
+
+  /* Data Table dark mode */
+  --ui-data-table-header-bg: var(--color-gray-800);
+  --ui-data-table-row-bg: var(--color-gray-950);
+  --ui-data-table-row-hover-bg: var(--color-gray-800);
+  --ui-data-table-border-color: var(--color-gray-700);
+  --ui-data-table-text-color: var(--color-gray-50);
+  --ui-data-table-header-text: var(--color-gray-400);
+  --ui-data-table-selected-bg: oklch(0.25 0.03 250);
+  --ui-data-table-selected-hover-bg: oklch(0.28 0.04 250);
+  --ui-data-table-skeleton-base: var(--color-gray-700);
+  --ui-data-table-skeleton-highlight: var(--color-gray-600);
+  --ui-data-table-header-hover-bg: rgba(255, 255, 255, 0.05);
+  --ui-data-table-sticky-shadow: rgba(0, 0, 0, 0.2);
+  --ui-data-table-menu-bg: var(--color-gray-900);
+  --ui-data-table-badge-default-bg: rgba(255, 255, 255, 0.1);
+  --ui-data-table-badge-default-text: var(--color-gray-50);
+  --ui-data-table-badge-green-bg: oklch(0.30 0.06 150);
+  --ui-data-table-badge-green-text: oklch(0.80 0.12 150);
+  --ui-data-table-badge-blue-bg: oklch(0.30 0.06 250);
+  --ui-data-table-badge-blue-text: oklch(0.80 0.10 250);
+  --ui-data-table-badge-red-bg: oklch(0.30 0.06 25);
+  --ui-data-table-badge-red-text: oklch(0.80 0.10 25);
+  --ui-data-table-badge-yellow-bg: oklch(0.30 0.06 85);
+  --ui-data-table-badge-yellow-text: oklch(0.85 0.12 85);
+  --ui-data-table-badge-purple-bg: oklch(0.30 0.06 310);
+  --ui-data-table-badge-purple-text: oklch(0.80 0.10 310);
 }
 
 /* ==========================================================================
@@ -282,6 +410,11 @@
   --ui-color-foreground: oklch(0.13 0.028 261.692); /* gray-950 */
   --ui-color-border: oklch(0.928 0.006 264.531); /* gray-200 */
   --ui-color-ring: oklch(0.10 0 0); /* brand-950 (near-black) */
+
+  /* Focus Ring System */
+  --ui-focus-ring-width: 2px;
+  --ui-focus-ring-offset: 2px;
+  --ui-focus-ring-color: var(--color-ring, var(--ui-color-ring));
   --ui-color-card: white;
   --ui-color-card-foreground: oklch(0.13 0.028 261.692); /* gray-950 */
 
@@ -466,7 +599,7 @@
   --ui-select-dropdown-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   --ui-select-dropdown-max-height: 15rem;
   --ui-select-option-height: 2.25rem;
-  --ui-select-z-index: 50;
+  --ui-select-z-index: 40;
 
   /* Typography */
   --ui-select-font-size-sm: 0.875rem;
@@ -713,7 +846,7 @@
   --ui-tooltip-padding-x: 0.75rem;
   --ui-tooltip-padding-y: 0.375rem;
   --ui-tooltip-font-size: 0.875rem;
-  --ui-tooltip-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --ui-tooltip-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
   --ui-tooltip-arrow-size: 8px;
   --ui-tooltip-max-width: 20rem;
   --ui-tooltip-z-index: 50;
@@ -727,10 +860,10 @@
   --ui-popover-border: var(--color-border, var(--ui-color-border));
   --ui-popover-radius: 0.5rem;
   --ui-popover-padding: 1rem;
-  --ui-popover-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --ui-popover-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.08);
   --ui-popover-arrow-size: 8px;
   --ui-popover-max-width: 20rem;
-  --ui-popover-z-index: 50;
+  --ui-popover-z-index: 45;
 
   /* -------------------------------------------------------------------------
    * Toast Component
@@ -744,7 +877,7 @@
   --ui-toast-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
   --ui-toast-max-width: 24rem;
   --ui-toast-gap: 0.75rem;
-  --ui-toast-z-index: 50;
+  --ui-toast-z-index: 55;
   /* Toast variant colors */
   --ui-toast-success-bg: oklch(0.95 0.05 150);
   --ui-toast-success-border: oklch(0.70 0.15 150);
@@ -833,6 +966,187 @@
 
   /* Scroll buttons */
   --ui-tabs-scroll-button-size: 2rem;
+
+  /* -------------------------------------------------------------------------
+   * Time Picker Component
+   * ------------------------------------------------------------------------- */
+
+  --ui-time-picker-bg: var(--color-background, white);
+  --ui-time-picker-text: var(--color-foreground, var(--ui-color-foreground));
+  --ui-time-picker-border: var(--color-border, var(--ui-color-border));
+  --ui-time-picker-placeholder: var(--color-muted-foreground, var(--ui-color-muted-foreground));
+  --ui-time-picker-label-text: var(--color-foreground, var(--ui-color-foreground));
+  --ui-time-picker-error: var(--color-destructive, var(--ui-color-destructive));
+  --ui-time-picker-ring: var(--color-ring, var(--ui-color-ring));
+  --ui-time-picker-popup-bg: var(--color-card, var(--ui-color-card));
+  --ui-time-picker-popup-border: var(--color-border, var(--ui-color-border));
+  --ui-time-picker-popup-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.08);
+  --ui-time-picker-hover-bg: var(--color-muted, var(--ui-color-muted));
+  --ui-time-picker-disabled-bg: var(--color-muted, var(--ui-color-muted));
+  --ui-time-picker-disabled-border: var(--color-border, var(--ui-color-border));
+  --ui-time-picker-tab-bg: var(--color-background, white);
+  --ui-time-picker-tab-text: var(--color-foreground, var(--ui-color-foreground));
+  --ui-time-picker-tab-border: var(--color-border, var(--ui-color-border));
+  --ui-time-picker-tab-hover-bg: var(--color-muted, var(--ui-color-muted));
+  --ui-time-picker-tab-active-bg: var(--color-primary, var(--ui-color-primary));
+  --ui-time-picker-tab-active-text: var(--color-primary-foreground, var(--ui-color-primary-foreground));
+  --ui-time-picker-preset-bg: var(--color-background, white);
+  --ui-time-picker-preset-text: var(--color-foreground, var(--ui-color-foreground));
+  --ui-time-picker-preset-border: var(--color-border, var(--ui-color-border));
+  --ui-time-picker-preset-hover-bg: var(--color-muted, var(--ui-color-muted));
+  --ui-time-picker-preset-hover-border: var(--color-muted-foreground, var(--ui-color-muted-foreground));
+  --ui-time-picker-muted-text: var(--color-muted-foreground, var(--ui-color-muted-foreground));
+  --ui-time-picker-z-index: 40;
+
+  /* Time Dropdown */
+  --ui-time-picker-dropdown-bg: var(--color-card, var(--ui-color-card));
+  --ui-time-picker-dropdown-border: var(--color-border, var(--ui-color-border));
+  --ui-time-picker-option-text: var(--color-foreground, var(--ui-color-foreground));
+  --ui-time-picker-option-hover-bg: var(--color-muted, var(--ui-color-muted));
+  --ui-time-picker-option-selected-bg: oklch(0.95 0.03 250);
+  --ui-time-picker-option-selected-text: oklch(0.45 0.15 250);
+  --ui-time-picker-business-accent: oklch(0.60 0.18 150);
+  --ui-time-picker-business-bg: oklch(0.97 0.02 150);
+  --ui-time-picker-business-hover-bg: oklch(0.93 0.04 150);
+
+  /* Time Input */
+  --ui-time-picker-spinbutton-bg: var(--color-background, white);
+  --ui-time-picker-spinbutton-text: var(--color-foreground, var(--ui-color-foreground));
+  --ui-time-picker-spinbutton-border: var(--color-border, var(--ui-color-border));
+  --ui-time-picker-separator-color: var(--color-muted-foreground, var(--ui-color-muted-foreground));
+  --ui-time-picker-period-bg: var(--color-background, white);
+  --ui-time-picker-period-text: var(--color-foreground, var(--ui-color-foreground));
+  --ui-time-picker-period-border: var(--color-border, var(--ui-color-border));
+  --ui-time-picker-period-hover-bg: var(--color-muted, var(--ui-color-muted));
+
+  /* Clock Face */
+  --ui-time-picker-clock-bg: var(--color-muted, var(--ui-color-muted));
+  --ui-time-picker-clock-border: var(--color-border, var(--ui-color-border));
+  --ui-time-picker-clock-text: var(--color-foreground, var(--ui-color-foreground));
+  --ui-time-picker-clock-selected-bg: var(--color-primary, var(--ui-color-primary));
+  --ui-time-picker-clock-selected-text: var(--color-primary-foreground, var(--ui-color-primary-foreground));
+  --ui-time-picker-clock-hand: var(--color-primary, var(--ui-color-primary));
+
+  /* Voice Input */
+  --ui-time-picker-voice-bg: var(--color-background, white);
+  --ui-time-picker-voice-text: var(--color-foreground, var(--ui-color-foreground));
+  --ui-time-picker-voice-border: var(--color-border, var(--ui-color-border));
+  --ui-time-picker-voice-hover-border: var(--color-primary, var(--ui-color-primary));
+  --ui-time-picker-voice-hover-text: var(--color-primary, var(--ui-color-primary));
+
+  /* Range Slider */
+  --ui-time-picker-range-label: var(--color-foreground, var(--ui-color-foreground));
+  --ui-time-picker-range-muted: var(--color-muted-foreground, var(--ui-color-muted-foreground));
+  --ui-time-picker-range-track: var(--color-border, var(--ui-color-border));
+  --ui-time-picker-range-fill: var(--color-primary, var(--ui-color-primary));
+  --ui-time-picker-range-thumb-bg: var(--color-background, white);
+  --ui-time-picker-range-thumb-border: var(--color-primary, var(--ui-color-primary));
+
+  /* Scroll Wheel */
+  --ui-time-picker-wheel-text: var(--color-foreground, var(--ui-color-foreground));
+  --ui-time-picker-wheel-selected-text: var(--color-primary, var(--ui-color-primary));
+  --ui-time-picker-wheel-highlight-border: var(--color-border, var(--ui-color-border));
+  --ui-time-picker-wheel-highlight-bg: oklch(0.97 0.01 250);
+  --ui-time-picker-wheel-separator: var(--color-muted-foreground, var(--ui-color-muted-foreground));
+
+  /* Timezone Display */
+  --ui-time-picker-timezone-text: var(--color-muted-foreground, var(--ui-color-muted-foreground));
+  --ui-time-picker-timezone-separator: var(--color-border, var(--ui-color-border));
+
+  /* -------------------------------------------------------------------------
+   * Date Picker Component
+   * ------------------------------------------------------------------------- */
+
+  --ui-date-picker-bg: var(--color-background, white);
+  --ui-date-picker-text: var(--color-foreground, var(--ui-color-foreground));
+  --ui-date-picker-border: var(--color-border, var(--ui-color-border));
+  --ui-date-picker-placeholder: var(--color-muted-foreground, var(--ui-color-muted-foreground));
+  --ui-date-picker-label-text: var(--color-foreground, var(--ui-color-foreground));
+  --ui-date-picker-error: var(--color-destructive, var(--ui-color-destructive));
+  --ui-date-picker-ring: var(--color-ring, var(--ui-color-ring));
+  --ui-date-picker-popup-bg: var(--color-card, var(--ui-color-card));
+  --ui-date-picker-popup-border: var(--color-border, var(--ui-color-border));
+  --ui-date-picker-popup-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.08);
+  --ui-date-picker-hover-bg: var(--color-muted, var(--ui-color-muted));
+  --ui-date-picker-disabled-bg: var(--color-muted, var(--ui-color-muted));
+  --ui-date-picker-disabled-border: var(--color-border, var(--ui-color-border));
+  --ui-date-picker-helper-text: var(--color-muted-foreground, var(--ui-color-muted-foreground));
+  --ui-date-picker-action-text: var(--color-muted-foreground, var(--ui-color-muted-foreground));
+  --ui-date-picker-preset-bg: var(--color-background, white);
+  --ui-date-picker-preset-text: var(--color-foreground, var(--ui-color-foreground));
+  --ui-date-picker-preset-border: var(--color-border, var(--ui-color-border));
+  --ui-date-picker-preset-hover-bg: var(--color-muted, var(--ui-color-muted));
+  --ui-date-picker-preset-hover-border: var(--color-muted-foreground, var(--ui-color-muted-foreground));
+  --ui-date-picker-z-index: 40;
+
+  /* -------------------------------------------------------------------------
+   * Date Range Picker Component
+   * ------------------------------------------------------------------------- */
+
+  --ui-date-range-bg: var(--color-background, white);
+  --ui-date-range-text: var(--color-foreground, var(--ui-color-foreground));
+  --ui-date-range-border: var(--color-border, var(--ui-color-border));
+  --ui-date-range-placeholder: var(--color-muted-foreground, var(--ui-color-muted-foreground));
+  --ui-date-range-label-text: var(--color-foreground, var(--ui-color-foreground));
+  --ui-date-range-error: var(--color-destructive, var(--ui-color-destructive));
+  --ui-date-range-ring: var(--color-ring, var(--ui-color-ring));
+  --ui-date-range-popup-bg: var(--color-card, var(--ui-color-card));
+  --ui-date-range-popup-border: var(--color-border, var(--ui-color-border));
+  --ui-date-range-popup-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.08);
+  --ui-date-range-hover-bg: var(--color-muted, var(--ui-color-muted));
+  --ui-date-range-disabled-bg: var(--color-muted, var(--ui-color-muted));
+  --ui-date-range-disabled-border: var(--color-border, var(--ui-color-border));
+  --ui-date-range-helper-text: var(--color-muted-foreground, var(--ui-color-muted-foreground));
+  --ui-date-range-action-text: var(--color-muted-foreground, var(--ui-color-muted-foreground));
+  --ui-date-range-preset-bg: var(--color-background, white);
+  --ui-date-range-preset-text: var(--color-foreground, var(--ui-color-foreground));
+  --ui-date-range-preset-border: var(--color-border, var(--ui-color-border));
+  --ui-date-range-preset-hover-bg: var(--color-muted, var(--ui-color-muted));
+  --ui-date-range-sidebar-border: var(--color-border, var(--ui-color-border));
+  --ui-date-range-footer-border: var(--color-border, var(--ui-color-border));
+  --ui-date-range-clear-border: var(--color-border, var(--ui-color-border));
+  --ui-date-range-clear-text: var(--color-foreground, var(--ui-color-foreground));
+  --ui-date-range-clear-hover-bg: var(--color-muted, var(--ui-color-muted));
+  --ui-date-range-toggle-border: var(--color-border, var(--ui-color-border));
+  --ui-date-range-toggle-hover-bg: var(--color-muted, var(--ui-color-muted));
+  --ui-date-range-toggle-active-bg: var(--color-primary, var(--ui-color-primary));
+  --ui-date-range-toggle-active-text: var(--color-primary-foreground, var(--ui-color-primary-foreground));
+  --ui-date-range-compare-highlight-bg: oklch(0.93 0.06 85);
+  --ui-date-range-compare-preview-bg: oklch(0.97 0.03 85);
+  --ui-date-range-z-index: 40;
+
+  /* -------------------------------------------------------------------------
+   * Data Table Component
+   * ------------------------------------------------------------------------- */
+
+  --ui-data-table-header-bg: var(--color-muted, var(--ui-color-muted));
+  --ui-data-table-row-bg: var(--color-background, white);
+  --ui-data-table-row-hover-bg: var(--color-muted, var(--ui-color-muted));
+  --ui-data-table-border-color: var(--color-border, var(--ui-color-border));
+  --ui-data-table-text-color: var(--color-foreground, var(--ui-color-foreground));
+  --ui-data-table-header-text: var(--color-muted-foreground, var(--ui-color-muted-foreground));
+  --ui-data-table-selected-bg: oklch(0.97 0.01 250);
+  --ui-data-table-selected-hover-bg: oklch(0.94 0.02 250);
+  --ui-data-table-skeleton-base: var(--color-border, var(--ui-color-border));
+  --ui-data-table-skeleton-highlight: var(--color-muted, var(--ui-color-muted));
+  --ui-data-table-header-hover-bg: rgba(0, 0, 0, 0.05);
+  --ui-data-table-sticky-shadow: rgba(0, 0, 0, 0.06);
+  --ui-data-table-menu-bg: var(--color-card, var(--ui-color-card));
+  --ui-data-table-menu-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.07);
+
+  /* Data Table Badge Colors */
+  --ui-data-table-badge-default-bg: var(--color-muted, var(--ui-color-muted));
+  --ui-data-table-badge-default-text: var(--color-foreground, var(--ui-color-foreground));
+  --ui-data-table-badge-green-bg: oklch(0.93 0.06 150);
+  --ui-data-table-badge-green-text: oklch(0.35 0.10 150);
+  --ui-data-table-badge-blue-bg: oklch(0.93 0.06 250);
+  --ui-data-table-badge-blue-text: oklch(0.35 0.10 250);
+  --ui-data-table-badge-red-bg: oklch(0.93 0.06 25);
+  --ui-data-table-badge-red-text: oklch(0.35 0.10 25);
+  --ui-data-table-badge-yellow-bg: oklch(0.93 0.06 85);
+  --ui-data-table-badge-yellow-text: oklch(0.40 0.12 85);
+  --ui-data-table-badge-purple-bg: oklch(0.93 0.06 310);
+  --ui-data-table-badge-purple-text: oklch(0.35 0.10 310);
 }
 
 /* ==========================================================================

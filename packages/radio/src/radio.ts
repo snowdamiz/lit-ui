@@ -173,8 +173,8 @@ export class Radio extends TailwindElement {
 
       /* Focus ring */
       .radio-circle:focus-visible {
-        outline: none;
-        box-shadow: 0 0 0 2px var(--ui-radio-ring);
+        outline: 2px solid var(--ui-focus-ring-color, var(--ui-radio-ring));
+        outline-offset: 2px;
       }
 
       /* Disabled */

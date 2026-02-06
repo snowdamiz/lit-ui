@@ -269,8 +269,8 @@ export class Switch extends TailwindElement {
 
       /* Focus ring */
       .switch-track:focus-visible {
-        outline: none;
-        box-shadow: 0 0 0 2px var(--ui-switch-ring);
+        outline: 2px solid var(--ui-focus-ring-color, var(--ui-switch-ring));
+        outline-offset: 2px;
       }
 
       /* Error state */

@@ -2741,26 +2741,17 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
     css`
       :host {
         display: block;
-        --ui-data-table-header-bg: var(--color-muted, #f4f4f5);
-        --ui-data-table-row-bg: var(--color-background, #ffffff);
-        --ui-data-table-row-hover-bg: var(--color-muted, #f4f4f5);
-        --ui-data-table-border-color: var(--color-border, #e4e4e7);
-        --ui-data-table-text-color: var(--color-foreground, #09090b);
-        --ui-data-table-header-text: var(--color-muted-foreground, #71717a);
+        --ui-data-table-header-bg: var(--color-muted);
+        --ui-data-table-row-bg: var(--color-background);
+        --ui-data-table-row-hover-bg: var(--color-muted);
+        --ui-data-table-border-color: var(--color-border);
+        --ui-data-table-text-color: var(--color-foreground);
+        --ui-data-table-header-text: var(--color-muted-foreground);
         --ui-data-table-row-height: 48px;
         --ui-data-table-header-height: 48px;
         --ui-data-table-cell-padding: 0.75rem 1rem;
         --ui-data-table-font-size: 0.875rem;
         --ui-data-table-header-font-weight: 500;
-      }
-
-      :host-context(.dark) {
-        --ui-data-table-header-bg: #27272a;
-        --ui-data-table-row-bg: #09090b;
-        --ui-data-table-row-hover-bg: #27272a;
-        --ui-data-table-border-color: #3f3f46;
-        --ui-data-table-text-color: #fafafa;
-        --ui-data-table-header-text: #a1a1aa;
       }
 
       .data-table-container {
@@ -2825,7 +2816,7 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
       }
 
       .data-table-cell:focus-visible {
-        outline: 2px solid var(--color-primary, #3b82f6);
+        outline: 2px solid var(--color-primary, var(--ui-color-primary));
         outline-offset: -2px;
         border-radius: 2px;
       }
@@ -2855,17 +2846,13 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
       }
 
       .data-table-header-cell.sortable:hover {
-        background: var(--ui-data-table-header-hover-bg, rgba(0, 0, 0, 0.05));
+        background: var(--ui-data-table-header-hover-bg);
       }
 
       .data-table-header-cell.sortable:focus-visible {
-        outline: 2px solid var(--color-primary, #3b82f6);
+        outline: 2px solid var(--color-primary, var(--ui-color-primary));
         outline-offset: -2px;
         border-radius: 2px;
-      }
-
-      :host-context(.dark) .data-table-header-cell.sortable:hover {
-        --ui-data-table-header-hover-bg: rgba(255, 255, 255, 0.05);
       }
 
       /* Column resize handle styles */
@@ -2884,11 +2871,11 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
 
       .column-resize-handle:hover,
       .column-resize-handle.is-resizing {
-        background: var(--color-primary, #3b82f6);
+        background: var(--color-primary, var(--ui-color-primary));
       }
 
       .column-resize-handle:focus-visible {
-        outline: 2px solid var(--color-primary, #3b82f6);
+        outline: 2px solid var(--color-primary, var(--ui-color-primary));
         outline-offset: -2px;
       }
 
@@ -2914,7 +2901,7 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
 
       .data-table-header-cell.drop-target {
         background: var(--color-primary-100, color-mix(in oklch, var(--color-primary, var(--ui-color-primary)) 10%, transparent));
-        border-left: 2px solid var(--color-primary, #3b82f6);
+        border-left: 2px solid var(--color-primary, var(--ui-color-primary));
       }
 
       :host([data-dragging]) {
@@ -2950,8 +2937,8 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        background: var(--color-primary, #3b82f6);
-        color: var(--color-primary-foreground, #ffffff);
+        background: var(--color-primary, var(--ui-color-primary));
+        color: var(--color-primary-foreground);
         border-radius: 50%;
       }
 
@@ -2959,7 +2946,7 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
       .filter-indicator {
         display: inline-flex;
         align-items: center;
-        color: var(--color-primary, #3b82f6);
+        color: var(--color-primary, var(--ui-color-primary));
         margin-left: 4px;
       }
 
@@ -2985,11 +2972,6 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
         background: var(--ui-data-table-selected-hover-bg, color-mix(in oklch, var(--color-primary, var(--ui-color-primary)) 15%, transparent));
       }
 
-      :host-context(.dark) .data-table-row.selected {
-        --ui-data-table-selected-bg: color-mix(in oklch, var(--color-primary, var(--ui-color-primary)) 20%, transparent);
-        --ui-data-table-selected-hover-bg: color-mix(in oklch, var(--color-primary, var(--ui-color-primary)) 25%, transparent);
-      }
-
       /* Selection banner styles */
       .selection-banner {
         display: flex;
@@ -3003,14 +2985,10 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
         color: var(--ui-data-table-text-color);
       }
 
-      :host-context(.dark) .selection-banner {
-        --ui-data-table-banner-bg: color-mix(in oklch, var(--color-primary, var(--ui-color-primary)) 15%, transparent);
-      }
-
       .selection-banner-link {
         background: none;
         border: none;
-        color: var(--color-primary, #3b82f6);
+        color: var(--color-primary, var(--ui-color-primary));
         font-weight: 500;
         cursor: pointer;
         text-decoration: underline;
@@ -3022,7 +3000,7 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
       }
 
       .selection-banner-link:focus-visible {
-        outline: 2px solid var(--color-primary, #3b82f6);
+        outline: 2px solid var(--color-primary, var(--ui-color-primary));
         outline-offset: 2px;
         border-radius: 2px;
       }
@@ -3069,20 +3047,7 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
         bottom: 0;
         width: 8px;
         pointer-events: none;
-        background: linear-gradient(
-          to right,
-          rgba(0, 0, 0, 0.06),
-          transparent
-        );
-      }
-
-      :host-context(.dark):host([sticky-first-column]) .data-table-cell:first-child::after,
-      :host-context(.dark):host([sticky-first-column]) .data-table-header-cell:first-child::after {
-        background: linear-gradient(
-          to right,
-          rgba(0, 0, 0, 0.2),
-          transparent
-        );
+        background: var(--ui-data-table-sticky-shadow);
       }
 
       /* Virtual scrolling styles */
@@ -3104,18 +3069,13 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
         height: 1em;
         background: linear-gradient(
           90deg,
-          var(--ui-data-table-skeleton-base, #e4e4e7) 25%,
-          var(--ui-data-table-skeleton-highlight, #f4f4f5) 50%,
-          var(--ui-data-table-skeleton-base, #e4e4e7) 75%
+          var(--ui-data-table-skeleton-base) 25%,
+          var(--ui-data-table-skeleton-highlight) 50%,
+          var(--ui-data-table-skeleton-base) 75%
         );
         background-size: 200% 100%;
         animation: skeleton-pulse 1.5s ease-in-out infinite;
         border-radius: 4px;
-      }
-
-      :host-context(.dark) .skeleton-pulse {
-        --ui-data-table-skeleton-base: #3f3f46;
-        --ui-data-table-skeleton-highlight: #52525b;
       }
 
       @keyframes skeleton-pulse {
@@ -3130,7 +3090,7 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
       @media (prefers-reduced-motion: reduce) {
         .skeleton-pulse {
           animation: none;
-          background: var(--ui-data-table-skeleton-base, #e4e4e7);
+          background: var(--ui-data-table-skeleton-base);
         }
       }
 
@@ -3188,7 +3148,7 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
       }
 
       .error-state-icon {
-        color: var(--color-destructive, #ef4444);
+        color: var(--color-destructive, var(--ui-color-destructive));
         margin-bottom: 1rem;
       }
 
@@ -3226,7 +3186,7 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
       }
 
       .error-retry-button:focus-visible {
-        outline: 2px solid var(--color-primary, #3b82f6);
+        outline: 2px solid var(--color-primary, var(--ui-color-primary));
         outline-offset: 2px;
       }
 
@@ -3238,22 +3198,18 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
       .updating-overlay {
         position: absolute;
         inset: 0;
-        background: var(--ui-data-table-overlay-bg, rgba(255, 255, 255, 0.7));
+        background: var(--ui-data-table-overlay-bg);
         display: flex;
         align-items: center;
         justify-content: center;
         z-index: 20;
       }
 
-      :host-context(.dark) .updating-overlay {
-        --ui-data-table-overlay-bg: rgba(9, 9, 11, 0.7);
-      }
-
       .updating-spinner {
         width: 24px;
         height: 24px;
         border: 2px solid var(--ui-data-table-border-color);
-        border-top-color: var(--color-primary, #3b82f6);
+        border-top-color: var(--color-primary, var(--ui-color-primary));
         border-radius: 50%;
         animation: spin 0.8s linear infinite;
       }

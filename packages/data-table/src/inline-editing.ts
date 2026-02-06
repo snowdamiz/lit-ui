@@ -382,10 +382,10 @@ export const inlineEditingStyles = css`
     padding: 4px 8px;
     font-size: var(--ui-data-table-font-size, 14px);
     font-family: inherit;
-    border: 1px solid var(--color-primary, #3b82f6);
+    border: 1px solid var(--color-primary, var(--ui-color-primary));
     border-radius: 4px;
-    background: var(--ui-data-table-row-bg, #ffffff);
-    color: var(--ui-data-table-text-color, #09090b);
+    background: var(--ui-data-table-row-bg);
+    color: var(--ui-data-table-text-color);
     outline: none;
     box-sizing: border-box;
   }
@@ -396,7 +396,7 @@ export const inlineEditingStyles = css`
   }
 
   .cell-edit-input.has-error {
-    border-color: var(--color-destructive, #ef4444);
+    border-color: var(--color-destructive, var(--ui-color-destructive));
   }
 
   .cell-edit-input.has-error:focus {
@@ -407,7 +407,7 @@ export const inlineEditingStyles = css`
   .cell-edit-checkbox {
     width: 18px;
     height: 18px;
-    accent-color: var(--color-primary, #3b82f6);
+    accent-color: var(--color-primary, var(--ui-color-primary));
     cursor: pointer;
   }
 
@@ -417,7 +417,7 @@ export const inlineEditingStyles = css`
     bottom: -16px;
     left: 0;
     font-size: 11px;
-    color: var(--color-destructive, #ef4444);
+    color: var(--color-destructive, var(--ui-color-destructive));
     white-space: nowrap;
     z-index: 10;
     pointer-events: none;
@@ -428,7 +428,7 @@ export const inlineEditingStyles = css`
     opacity: 0;
     transition: opacity 0.15s;
     margin-left: 4px;
-    color: var(--color-muted-foreground, #71717a);
+    color: var(--color-muted-foreground);
     flex-shrink: 0;
     display: inline-flex;
     align-items: center;
@@ -442,7 +442,7 @@ export const inlineEditingStyles = css`
   /* ── Editable cell hover state (EDIT-01) ── */
   .data-table-cell.editable:hover {
     cursor: pointer;
-    background: var(--ui-data-table-editable-hover-bg, rgba(59, 130, 246, 0.04));
+    background: var(--ui-data-table-editable-hover-bg);
   }
 
   /* ── Cell in edit mode ── */
@@ -450,18 +450,6 @@ export const inlineEditingStyles = css`
     position: relative;
     overflow: visible;
     padding: 4px 8px;
-  }
-
-  /* ── Dark mode overrides ── */
-  :host-context(.dark) .cell-edit-input,
-  :host-context(.dark) .cell-edit-select {
-    background: var(--ui-data-table-row-bg, #09090b);
-    color: var(--ui-data-table-text-color, #fafafa);
-    border-color: var(--color-primary, #3b82f6);
-  }
-
-  :host-context(.dark) .data-table-cell.editable:hover {
-    background: var(--ui-data-table-editable-hover-bg, rgba(59, 130, 246, 0.08));
   }
 
   /* ── Row edit action buttons (ROWEDIT-01, ROWEDIT-03) ── */
@@ -483,43 +471,43 @@ export const inlineEditingStyles = css`
     border-radius: 4px;
     cursor: pointer;
     background: transparent;
-    color: var(--color-muted-foreground, #71717a);
+    color: var(--color-muted-foreground);
     transition: background-color 0.15s, color 0.15s;
   }
 
   .row-edit-trigger:hover {
-    background: var(--ui-data-table-row-hover-bg, #f4f4f5);
-    color: var(--ui-data-table-text-color, #09090b);
+    background: var(--ui-data-table-row-hover-bg);
+    color: var(--ui-data-table-text-color);
   }
 
   .row-edit-save {
-    color: var(--color-success, #22c55e);
+    color: var(--color-success);
   }
 
   .row-edit-save:hover {
     background: rgba(34, 197, 94, 0.1);
-    color: var(--color-success, #16a34a);
+    color: var(--color-success);
   }
 
   .row-edit-cancel {
-    color: var(--color-destructive, #ef4444);
+    color: var(--color-destructive, var(--ui-color-destructive));
   }
 
   .row-edit-cancel:hover {
     background: rgba(239, 68, 68, 0.1);
-    color: var(--color-destructive, #dc2626);
+    color: var(--color-destructive, var(--ui-color-destructive));
   }
 
   .row-edit-trigger:focus-visible,
   .row-edit-save:focus-visible,
   .row-edit-cancel:focus-visible {
-    outline: 2px solid var(--color-primary, #3b82f6);
+    outline: 2px solid var(--color-primary, var(--ui-color-primary));
     outline-offset: 1px;
   }
 
   /* ── Row in edit mode highlight ── */
   .data-table-row.row-editing {
-    background: var(--ui-data-table-editing-bg, rgba(59, 130, 246, 0.06));
+    background: var(--ui-data-table-editing-bg);
   }
 
   /* ── Row actions cell ── */
@@ -529,16 +517,4 @@ export const inlineEditingStyles = css`
     justify-content: center;
   }
 
-  /* ── Dark mode overrides for row edit ── */
-  :host-context(.dark) .row-edit-trigger:hover {
-    background: rgba(255, 255, 255, 0.1);
-  }
-
-  :host-context(.dark) .row-edit-save {
-    color: #4ade80;
-  }
-
-  :host-context(.dark) .row-edit-cancel {
-    color: #f87171;
-  }
 `;

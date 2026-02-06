@@ -190,7 +190,7 @@ export const bulkActionsStyles = css`
     align-items: center;
     gap: 8px;
     padding: 8px 16px;
-    background: var(--color-primary, #3b82f6);
+    background: var(--color-primary, var(--ui-color-primary));
     color: white;
     font-size: 14px;
     border-radius: 0;
@@ -289,7 +289,7 @@ export const bulkActionsStyles = css`
 
   /* ── Confirmation Dialog ── */
   .bulk-confirm-dialog {
-    background: var(--ui-data-table-row-bg, #fff);
+    background: var(--ui-data-table-row-bg);
     border-radius: 8px;
     padding: 24px;
     max-width: 400px;
@@ -301,13 +301,13 @@ export const bulkActionsStyles = css`
     margin: 0 0 8px;
     font-size: 18px;
     font-weight: 600;
-    color: var(--ui-data-table-text-color, #09090b);
+    color: var(--ui-data-table-text-color);
   }
 
   .bulk-confirm-message {
     margin: 0 0 24px;
     font-size: 14px;
-    color: var(--color-muted-foreground, #71717a);
+    color: var(--color-muted-foreground);
     line-height: 1.5;
   }
 
@@ -319,10 +319,10 @@ export const bulkActionsStyles = css`
 
   .bulk-confirm-cancel {
     padding: 6px 16px;
-    border: 1px solid var(--ui-data-table-border-color, #e4e4e7);
+    border: 1px solid var(--ui-data-table-border-color);
     border-radius: 6px;
     background: transparent;
-    color: var(--ui-data-table-text-color, #09090b);
+    color: var(--ui-data-table-text-color);
     cursor: pointer;
     font-size: 14px;
     font-family: inherit;
@@ -331,14 +331,14 @@ export const bulkActionsStyles = css`
   }
 
   .bulk-confirm-cancel:hover {
-    background: var(--color-muted, #f4f4f5);
+    background: var(--color-muted);
   }
 
   .bulk-confirm-action {
     padding: 6px 16px;
     border: 1px solid transparent;
     border-radius: 6px;
-    background: var(--color-destructive, #ef4444);
+    background: var(--color-destructive, var(--ui-color-destructive));
     color: white;
     cursor: pointer;
     font-size: 14px;
@@ -348,31 +348,13 @@ export const bulkActionsStyles = css`
   }
 
   .bulk-confirm-action:hover {
-    background: var(--color-destructive-hover, #dc2626);
+    background: var(--color-destructive-hover);
   }
 
   .bulk-confirm-cancel:focus-visible,
   .bulk-confirm-action:focus-visible {
-    outline: 2px solid var(--color-primary, #3b82f6);
+    outline: 2px solid var(--color-primary, var(--ui-color-primary));
     outline-offset: 1px;
   }
 
-  /* ── Dark Mode Overrides ── */
-  :host-context(.dark) .bulk-confirm-dialog {
-    background: var(--ui-data-table-row-bg, #18181b);
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-  }
-
-  :host-context(.dark) .bulk-confirm-title {
-    color: var(--ui-data-table-text-color, #fafafa);
-  }
-
-  :host-context(.dark) .bulk-confirm-cancel {
-    border-color: var(--ui-data-table-border-color, #27272a);
-    color: var(--ui-data-table-text-color, #fafafa);
-  }
-
-  :host-context(.dark) .bulk-confirm-cancel:hover {
-    background: rgba(255, 255, 255, 0.08);
-  }
 `;

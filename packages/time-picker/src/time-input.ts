@@ -103,9 +103,9 @@ export class TimeInput extends TailwindElement {
         text-align: center;
         padding: 0.375rem 0.5rem;
         border-radius: 0.375rem;
-        border: 1px solid var(--ui-time-picker-border, var(--ui-input-border, #d1d5db));
-        background: var(--ui-time-picker-bg, var(--ui-input-bg, #ffffff));
-        color: var(--ui-time-picker-text, var(--ui-input-text, #1f2937));
+        border: 1px solid var(--ui-time-picker-spinbutton-border, var(--ui-input-border));
+        background: var(--ui-time-picker-spinbutton-bg, var(--ui-input-bg));
+        color: var(--ui-time-picker-spinbutton-text, var(--ui-input-text));
         font-variant-numeric: tabular-nums;
         cursor: default;
         user-select: none;
@@ -115,8 +115,8 @@ export class TimeInput extends TailwindElement {
       }
 
       .spinbutton:focus {
-        border-color: var(--ui-time-picker-focus-ring, var(--ui-input-focus-ring, #3b82f6));
-        box-shadow: 0 0 0 2px var(--ui-time-picker-focus-ring, var(--ui-input-focus-ring, #3b82f6));
+        border-color: var(--ui-time-picker-focus-ring, var(--ui-input-focus-ring));
+        box-shadow: 0 0 0 2px var(--ui-time-picker-focus-ring, var(--ui-input-focus-ring));
       }
 
       .spinbutton[aria-disabled='true'] {
@@ -125,7 +125,7 @@ export class TimeInput extends TailwindElement {
       }
 
       .separator {
-        color: var(--ui-time-picker-separator, var(--ui-input-text, #9ca3af));
+        color: var(--ui-time-picker-separator-color, var(--ui-input-text));
         font-weight: 500;
         user-select: none;
       }
@@ -134,9 +134,9 @@ export class TimeInput extends TailwindElement {
         margin-left: 0.25rem;
         padding: 0.375rem 0.5rem;
         border-radius: 0.375rem;
-        border: 1px solid var(--ui-time-picker-border, var(--ui-input-border, #d1d5db));
-        background: var(--ui-time-picker-toggle-bg, var(--ui-input-bg, #ffffff));
-        color: var(--ui-time-picker-text, var(--ui-input-text, #1f2937));
+        border: 1px solid var(--ui-time-picker-period-border, var(--ui-input-border));
+        background: var(--ui-time-picker-period-bg, var(--ui-input-bg));
+        color: var(--ui-time-picker-period-text, var(--ui-input-text));
         cursor: pointer;
         font-size: inherit;
         line-height: 1.5;
@@ -145,12 +145,12 @@ export class TimeInput extends TailwindElement {
       }
 
       .period-toggle:hover:not(:disabled) {
-        background: var(--ui-time-picker-toggle-hover-bg, var(--ui-input-hover-bg, #f3f4f6));
+        background: var(--ui-time-picker-period-hover-bg, var(--ui-input-hover-bg));
       }
 
       .period-toggle:focus {
-        border-color: var(--ui-time-picker-focus-ring, var(--ui-input-focus-ring, #3b82f6));
-        box-shadow: 0 0 0 2px var(--ui-time-picker-focus-ring, var(--ui-input-focus-ring, #3b82f6));
+        border-color: var(--ui-time-picker-focus-ring, var(--ui-input-focus-ring));
+        box-shadow: 0 0 0 2px var(--ui-time-picker-focus-ring, var(--ui-input-focus-ring));
       }
 
       .period-toggle:disabled {
@@ -158,25 +158,6 @@ export class TimeInput extends TailwindElement {
         cursor: not-allowed;
       }
 
-      :host-context(.dark) .spinbutton {
-        border-color: var(--ui-time-picker-border, var(--ui-input-border, #4b5563));
-        background: var(--ui-time-picker-bg, var(--ui-input-bg, #1f2937));
-        color: var(--ui-time-picker-text, var(--ui-input-text, #f9fafb));
-      }
-
-      :host-context(.dark) .separator {
-        color: var(--ui-time-picker-separator, var(--ui-input-text, #6b7280));
-      }
-
-      :host-context(.dark) .period-toggle {
-        border-color: var(--ui-time-picker-border, var(--ui-input-border, #4b5563));
-        background: var(--ui-time-picker-toggle-bg, var(--ui-input-bg, #1f2937));
-        color: var(--ui-time-picker-text, var(--ui-input-text, #f9fafb));
-      }
-
-      :host-context(.dark) .period-toggle:hover:not(:disabled) {
-        background: var(--ui-time-picker-toggle-hover-bg, var(--ui-input-hover-bg, #374151));
-      }
     `,
   ];
 

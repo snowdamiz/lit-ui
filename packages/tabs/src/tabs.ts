@@ -536,14 +536,13 @@ export class Tabs extends TailwindElement {
       }
 
       .tab-button:focus-visible {
-        outline: none;
-        box-shadow: 0 0 0 2px var(--ui-tabs-ring);
+        outline: 2px solid var(--ui-focus-ring-color, var(--ui-tabs-ring));
+        outline-offset: 2px;
       }
 
       .tab-button.tab-active:focus-visible {
-        box-shadow:
-          var(--ui-tabs-tab-active-shadow),
-          0 0 0 2px var(--ui-tabs-ring);
+        outline: 2px solid var(--ui-focus-ring-color, var(--ui-tabs-ring));
+        outline-offset: 2px;
       }
 
       .scroll-button {

@@ -136,9 +136,9 @@ export class Tooltip extends TailwindElement implements TooltipInstance {
         /* Animation: fade only (TIP-13 respected via prefers-reduced-motion) */
         opacity: 0;
         transition:
-          opacity 100ms ease-out,
-          display 100ms allow-discrete,
-          overlay 100ms allow-discrete;
+          opacity 150ms ease-out,
+          display 150ms allow-discrete,
+          overlay 150ms allow-discrete;
       }
 
       .tooltip-panel[data-open] {

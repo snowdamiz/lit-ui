@@ -153,8 +153,8 @@ export class Button extends TailwindElement {
     }
 
     button:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-ring, var(--ui-color-ring));
+      outline: 2px solid var(--ui-focus-ring-color, var(--color-ring, var(--ui-color-ring)));
+      outline-offset: 2px;
     }
 
     /* -------------------------------------------------------------------------
