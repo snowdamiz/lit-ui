@@ -8,12 +8,12 @@ function Footer() {
           {/* Logo and tagline */}
           <div className="lg:col-span-2">
             <a href="/" className="group inline-flex items-center gap-2.5">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-900 shadow-sm transition-transform group-hover:scale-105">
-                <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5">
-                  <path d="M6 4h4v16H6V4zm8 6h4v10h-4V10z" fill="white" />
-                </svg>
-              </div>
-              <span className="text-xl font-bold text-gray-900">lit</span>
+              <img
+                src="/logo-icon.svg"
+                alt="lit-ui logo"
+                className="h-8 w-8 rounded-lg shadow-sm transition-transform duration-300 group-hover:scale-105 group-hover:rotate-[-2deg]"
+              />
+              <span className="text-xl font-bold text-gray-900 transition-all duration-300 group-hover:tracking-wide">lit</span>
             </a>
             <p className="mt-4 max-w-xs text-sm text-gray-500 leading-relaxed">
               Beautiful, accessible UI components built with Lit. Works with any framework.
