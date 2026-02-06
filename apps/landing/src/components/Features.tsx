@@ -136,20 +136,20 @@ function Features() {
   return (
     <section id="features" className="relative py-24 md:py-32">
       {/* Subtle background */}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-gray-50/50 to-transparent" />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-gray-50/50 dark:from-gray-900/50 to-transparent" />
 
       <div className="relative mx-auto max-w-6xl px-6">
         <div
           ref={headingRef}
           className={`mb-16 text-center reveal ${headingVisible ? 'revealed' : ''}`}
         >
-          <p className="mb-3 text-sm font-semibold uppercase tracking-[0.15em] text-gray-500">
+          <p className="mb-3 text-sm font-semibold uppercase tracking-[0.15em] text-gray-500 dark:text-gray-400">
             Why LitUI
           </p>
-          <h2 className="mb-4 text-3xl font-bold tracking-[-0.02em] text-gray-900 md:text-4xl lg:text-5xl">
+          <h2 className="mb-4 text-3xl font-bold tracking-[-0.02em] text-gray-900 dark:text-gray-100 md:text-4xl lg:text-5xl">
             Built for Modern Development
           </h2>
-          <p className="mx-auto max-w-2xl text-lg text-gray-500 leading-relaxed">
+          <p className="mx-auto max-w-2xl text-lg text-gray-500 dark:text-gray-400 leading-relaxed">
             Everything you need to build beautiful, accessible interfaces without
             the framework lock-in.
           </p>
@@ -159,20 +159,20 @@ function Features() {
           {features.map((feature, index) => (
             <div
               key={feature.title}
-              className={`group relative rounded-2xl border border-gray-200 bg-white p-6 card-elevated transition-[border-color] hover:border-gray-300 reveal ${gridVisible ? 'revealed' : ''}`}
+              className={`group relative rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 card-elevated transition-[border-color] hover:border-gray-300 dark:hover:border-gray-700 reveal ${gridVisible ? 'revealed' : ''}`}
               style={{ transitionDelay: `${index * 0.08}s` }}
             >
               {/* Subtle gradient on hover */}
-              <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-gray-50 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+              <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-gray-50 dark:from-gray-800 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
 
               <div className="relative">
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100 text-gray-900 transition-all duration-400 group-hover:bg-gray-900 group-hover:text-white group-hover:shadow-md group-hover:scale-105">
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 transition-all duration-400 group-hover:bg-gray-900 dark:group-hover:bg-gray-100 group-hover:text-white dark:group-hover:text-gray-900 group-hover:shadow-md group-hover:scale-105">
                   {feature.icon}
                 </div>
-                <h3 className="mb-2 text-lg font-semibold text-gray-900 transition-transform duration-300 group-hover:translate-x-0.5">
+                <h3 className="mb-2 text-lg font-semibold text-gray-900 dark:text-gray-100 transition-transform duration-300 group-hover:translate-x-0.5">
                   {feature.title}
                 </h3>
-                <p className="text-sm leading-relaxed text-gray-500">
+                <p className="text-sm leading-relaxed text-gray-500 dark:text-gray-400">
                   {feature.description}
                 </p>
               </div>

@@ -48,19 +48,19 @@ export class TimeRangeSlider extends TailwindElement {
       }
 
       .range-label {
-        color: var(--ui-time-picker-text, #1f2937);
+        color: var(--ui-time-picker-range-label-text);
         font-variant-numeric: tabular-nums;
       }
 
       .range-duration {
         font-size: 0.75rem;
-        color: var(--ui-time-picker-timezone-text, #6b7280);
+        color: var(--ui-time-picker-range-duration-text);
       }
 
       .range-track {
         position: relative;
         height: 6px;
-        background: var(--ui-time-picker-range-track-bg, #e5e7eb);
+        background: var(--ui-time-picker-range-track-bg);
         border-radius: 3px;
         cursor: pointer;
         touch-action: none;
@@ -69,7 +69,7 @@ export class TimeRangeSlider extends TailwindElement {
       .range-fill {
         position: absolute;
         height: 100%;
-        background: var(--ui-time-picker-primary, var(--ui-primary, #3b82f6));
+        background: var(--ui-time-picker-range-fill-bg, var(--ui-primary));
         border-radius: 3px;
       }
 
@@ -78,8 +78,8 @@ export class TimeRangeSlider extends TailwindElement {
         top: 50%;
         width: 20px;
         height: 20px;
-        background: white;
-        border: 2px solid var(--ui-time-picker-primary, var(--ui-primary, #3b82f6));
+        background: var(--ui-time-picker-range-thumb-bg);
+        border: 2px solid var(--ui-time-picker-range-thumb-border, var(--ui-primary));
         border-radius: 50%;
         transform: translate(-50%, -50%);
         cursor: grab;
@@ -88,7 +88,7 @@ export class TimeRangeSlider extends TailwindElement {
       }
 
       .range-thumb:focus-visible {
-        box-shadow: 0 0 0 3px var(--ui-time-picker-focus-ring, rgba(59, 130, 246, 0.4));
+        box-shadow: 0 0 0 3px var(--ui-time-picker-range-focus-ring);
       }
 
       .range-thumb:active {
@@ -104,7 +104,7 @@ export class TimeRangeSlider extends TailwindElement {
 
       .tick-label {
         font-size: 0.625rem;
-        color: var(--ui-time-picker-timezone-text, #9ca3af);
+        color: var(--ui-time-picker-range-tick-text);
         text-align: center;
         min-width: 2rem;
       }
@@ -118,27 +118,6 @@ export class TimeRangeSlider extends TailwindElement {
         cursor: default;
       }
 
-      /* Dark mode */
-      :host-context(.dark) .range-track {
-        background: #374151;
-      }
-
-      :host-context(.dark) .range-thumb {
-        background: #1f2937;
-        border-color: var(--ui-time-picker-primary, var(--ui-primary, #3b82f6));
-      }
-
-      :host-context(.dark) .range-label {
-        color: #e5e7eb;
-      }
-
-      :host-context(.dark) .range-duration {
-        color: #9ca3af;
-      }
-
-      :host-context(.dark) .tick-label {
-        color: #6b7280;
-      }
     `,
   ];
 

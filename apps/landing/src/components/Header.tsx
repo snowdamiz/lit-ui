@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef, useCallback } from 'react'
 import { getDocsUrl } from '../utils/config'
+import { ThemeToggle } from './ThemeToggle'
 
 const navLinks = [
   { href: '#features', label: 'Features' },
@@ -121,7 +122,7 @@ function Header() {
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         isScrolled
-          ? 'border-b border-gray-200/80 bg-white/90 backdrop-blur-md shadow-[0_1px_3px_oklch(0_0_0/0.04)]'
+          ? 'border-b border-gray-200/80 bg-white/90 backdrop-blur-md shadow-[0_1px_3px_oklch(0_0_0/0.04)] dark:border-gray-800/80 dark:bg-gray-950/90'
           : 'bg-transparent'
       }`}
     >
@@ -132,7 +133,7 @@ function Header() {
             alt="lit-ui logo"
             className="h-8 w-8 rounded-lg shadow-sm transition-transform duration-300 group-hover:scale-105 group-hover:rotate-[-2deg]"
           />
-          <span className="text-xl font-bold text-gray-900 transition-all duration-300 group-hover:tracking-wide">lit</span>
+          <span className="text-xl font-bold text-gray-900 dark:text-gray-100 transition-all duration-300 group-hover:tracking-wide">lit</span>
         </a>
 
         {/* Desktop nav */}
@@ -144,13 +145,13 @@ function Header() {
               aria-current={activeSection === link.href ? 'true' : undefined}
               className={`group relative rounded-lg px-4 py-2 text-sm font-medium transition-colors focus-ring ${
                 activeSection === link.href
-                  ? 'text-gray-900'
-                  : 'text-gray-500 hover:text-gray-900'
+                  ? 'text-gray-900 dark:text-gray-100'
+                  : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100'
               }`}
             >
               {link.label}
               <span
-                className={`absolute bottom-1.5 left-4 right-4 h-px bg-gray-900 origin-left transition-transform duration-300 ${
+                className={`absolute bottom-1.5 left-4 right-4 h-px bg-gray-900 dark:bg-gray-100 origin-left transition-transform duration-300 ${
                   activeSection === link.href
                     ? 'scale-x-100'
                     : 'scale-x-0 group-hover:scale-x-100'
@@ -162,7 +163,7 @@ function Header() {
             href="https://github.com/snowdamiz/lit-ui"
             target="_blank"
             rel="noopener noreferrer"
-            className="group relative flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium text-gray-500 transition-colors hover:text-gray-900 focus-ring"
+            className="group relative flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium text-gray-500 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 focus-ring"
           >
             <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
               <path
@@ -172,11 +173,13 @@ function Header() {
               />
             </svg>
             GitHub
-            <span className="absolute bottom-1.5 left-4 right-4 h-px bg-gray-900 origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100" />
+            <span className="absolute bottom-1.5 left-4 right-4 h-px bg-gray-900 dark:bg-gray-100 origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100" />
           </a>
         </div>
 
         <div className="flex items-center gap-3">
+          <ThemeToggle />
+
           {/* Hamburger button (mobile only) */}
           <button
             ref={buttonRef}
@@ -184,7 +187,7 @@ function Header() {
             aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
             aria-expanded={mobileMenuOpen}
             aria-controls="mobile-menu"
-            className="relative flex h-10 w-10 items-center justify-center rounded-lg text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 focus-ring md:hidden"
+            className="relative flex h-10 w-10 items-center justify-center rounded-lg text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100 focus-ring md:hidden"
           >
             <span className="sr-only">{mobileMenuOpen ? 'Close menu' : 'Open menu'}</span>
             <svg
@@ -209,7 +212,7 @@ function Header() {
 
           <a
             href={getDocsUrl()}
-            className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-all hover:bg-gray-800 btn-shadow focus-ring"
+            className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-all hover:bg-gray-800 dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-gray-200 btn-shadow focus-ring"
           >
             Get Started
           </a>
@@ -224,7 +227,7 @@ function Header() {
           role="navigation"
           aria-label="Mobile navigation"
           onKeyDown={handleMenuKeyDown}
-          className="border-t border-gray-200/80 bg-white/95 backdrop-blur-md md:hidden mobile-menu-enter"
+          className="border-t border-gray-200/80 bg-white/95 backdrop-blur-md dark:border-gray-800/80 dark:bg-gray-950/95 md:hidden mobile-menu-enter"
         >
           <div className="mx-auto max-w-6xl space-y-1 px-6 py-4">
             {navLinks.map((link, i) => (
@@ -236,8 +239,8 @@ function Header() {
                 aria-current={activeSection === link.href ? 'true' : undefined}
                 className={`block rounded-lg px-4 py-3 text-base font-medium transition-colors focus-ring ${
                   activeSection === link.href
-                    ? 'bg-gray-100 text-gray-900'
-                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                    ? 'bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-100'
+                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800/50 dark:hover:text-gray-100'
                 }`}
               >
                 {link.label}
@@ -248,7 +251,7 @@ function Header() {
               target="_blank"
               rel="noopener noreferrer"
               onClick={closeMobileMenu}
-              className="flex items-center gap-2 rounded-lg px-4 py-3 text-base font-medium text-gray-600 transition-colors hover:bg-gray-50 hover:text-gray-900 focus-ring"
+              className="flex items-center gap-2 rounded-lg px-4 py-3 text-base font-medium text-gray-600 transition-colors hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800/50 dark:hover:text-gray-100 focus-ring"
             >
               <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
                 <path

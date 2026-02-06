@@ -391,7 +391,7 @@ export const cellRendererStyles = css`
 
   /* ── Empty Value ── */
   .cell-empty {
-    color: var(--color-muted-foreground, #71717a);
+    color: var(--color-muted-foreground);
   }
 
   /* ── Date Renderer ── */
@@ -406,11 +406,11 @@ export const cellRendererStyles = css`
   }
 
   .cell-boolean--true {
-    color: var(--color-success, #22c55e);
+    color: var(--color-success);
   }
 
   .cell-boolean--false {
-    color: var(--color-muted-foreground, #71717a);
+    color: var(--color-muted-foreground);
   }
 
   /* ── Badge Renderer ── */
@@ -425,33 +425,33 @@ export const cellRendererStyles = css`
   }
 
   .cell-badge--default {
-    background: var(--color-muted, #f4f4f5);
-    color: var(--ui-data-table-text-color, #09090b);
+    background: var(--ui-data-table-badge-default-bg);
+    color: var(--ui-data-table-badge-default-text);
   }
 
   .cell-badge--green {
-    background: #dcfce7;
-    color: #166534;
+    background: var(--ui-data-table-badge-green-bg);
+    color: var(--ui-data-table-badge-green-text);
   }
 
   .cell-badge--blue {
-    background: #dbeafe;
-    color: #1e40af;
+    background: var(--ui-data-table-badge-blue-bg);
+    color: var(--ui-data-table-badge-blue-text);
   }
 
   .cell-badge--red {
-    background: #fee2e2;
-    color: #991b1b;
+    background: var(--ui-data-table-badge-red-bg);
+    color: var(--ui-data-table-badge-red-text);
   }
 
   .cell-badge--yellow {
-    background: #fef9c3;
-    color: #854d0e;
+    background: var(--ui-data-table-badge-yellow-bg);
+    color: var(--ui-data-table-badge-yellow-text);
   }
 
   .cell-badge--purple {
-    background: #f3e8ff;
-    color: #6b21a8;
+    background: var(--ui-data-table-badge-purple-bg);
+    color: var(--ui-data-table-badge-purple-text);
   }
 
   /* ── Progress Renderer ── */
@@ -465,7 +465,7 @@ export const cellRendererStyles = css`
   .cell-progress {
     flex: 1;
     height: 8px;
-    background: var(--color-muted, #f4f4f5);
+    background: var(--color-muted);
     border-radius: 4px;
     overflow: hidden;
     position: relative;
@@ -473,14 +473,14 @@ export const cellRendererStyles = css`
 
   .cell-progress-bar {
     height: 100%;
-    background: var(--color-primary, #3b82f6);
+    background: var(--color-primary, var(--ui-color-primary));
     border-radius: 4px;
     transition: width 0.3s ease;
   }
 
   .cell-progress-label {
     font-size: 12px;
-    color: var(--color-muted-foreground, #71717a);
+    color: var(--color-muted-foreground);
     flex-shrink: 0;
     min-width: 32px;
     text-align: right;
@@ -497,46 +497,11 @@ export const cellRendererStyles = css`
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background: var(--color-muted, #f4f4f5);
-    color: var(--color-muted-foreground, #71717a);
+    background: var(--color-muted);
+    color: var(--color-muted-foreground);
     font-size: 11px;
     font-weight: 600;
     border-radius: 50%;
   }
 
-  /* ── Dark Mode Overrides ── */
-  :host-context(.dark) .cell-badge--default {
-    background: rgba(255, 255, 255, 0.1);
-    color: var(--ui-data-table-text-color, #fafafa);
-  }
-
-  :host-context(.dark) .cell-badge--green {
-    background: rgba(34, 197, 94, 0.15);
-    color: #86efac;
-  }
-
-  :host-context(.dark) .cell-badge--blue {
-    background: rgba(59, 130, 246, 0.15);
-    color: #93c5fd;
-  }
-
-  :host-context(.dark) .cell-badge--red {
-    background: rgba(239, 68, 68, 0.15);
-    color: #fca5a5;
-  }
-
-  :host-context(.dark) .cell-badge--yellow {
-    background: rgba(234, 179, 8, 0.15);
-    color: #fde047;
-  }
-
-  :host-context(.dark) .cell-badge--purple {
-    background: rgba(168, 85, 247, 0.15);
-    color: #d8b4fe;
-  }
-
-  :host-context(.dark) .cell-avatar--initials {
-    background: rgba(255, 255, 255, 0.1);
-    color: var(--color-muted-foreground, #a1a1aa);
-  }
 `;

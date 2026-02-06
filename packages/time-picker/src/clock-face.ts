@@ -67,38 +67,20 @@ export class ClockFace extends TailwindElement {
       }
 
       .clock-bg {
-        fill: var(--ui-time-picker-clock-bg, #f9fafb);
-        stroke: var(--ui-time-picker-clock-border, #e5e7eb);
+        fill: var(--ui-time-picker-clock-bg);
+        stroke: var(--ui-time-picker-clock-border);
       }
 
       .clock-number {
-        fill: var(--ui-time-picker-clock-text, #374151);
+        fill: var(--ui-time-picker-clock-text);
       }
 
       .clock-tick {
-        fill: var(--ui-time-picker-clock-text, #374151);
-      }
-
-      /* Dark mode */
-      :host-context(.dark) .clock-bg {
-        fill: var(--ui-time-picker-clock-bg, #1f2937);
-        stroke: var(--ui-time-picker-clock-border, #374151);
-      }
-
-      :host-context(.dark) .clock-number {
-        fill: var(--ui-time-picker-clock-text, #d1d5db);
-      }
-
-      :host-context(.dark) .clock-tick {
-        fill: var(--ui-time-picker-clock-text, #d1d5db);
+        fill: var(--ui-time-picker-clock-text);
       }
 
       .business-indicator {
-        fill: var(--ui-time-picker-business-hour-accent, #22c55e);
-      }
-
-      :host-context(.dark) .business-indicator {
-        fill: var(--ui-time-picker-business-hour-accent, #4ade80);
+        fill: var(--ui-time-picker-business-accent);
       }
     `,
   ];
@@ -178,7 +160,7 @@ export class ClockFace extends TailwindElement {
         ${isSelected ? svg`
           <circle
             cx="${pos.x}" cy="${pos.y}" r="${MARKER_RADIUS}"
-            fill="var(--ui-time-picker-primary, var(--ui-primary, #3b82f6))"
+            fill="var(--ui-time-picker-clock-selected-bg, var(--ui-primary))"
           />
         ` : ''}
         ${isBusiness && !isSelected ? svg`
@@ -218,7 +200,7 @@ export class ClockFace extends TailwindElement {
         ${isSelected ? svg`
           <circle
             cx="${pos.x}" cy="${pos.y}" r="${MARKER_RADIUS}"
-            fill="var(--ui-time-picker-primary, var(--ui-primary, #3b82f6))"
+            fill="var(--ui-time-picker-clock-selected-bg, var(--ui-primary))"
           />
         ` : ''}
         ${isBusiness && !isSelected ? svg`
@@ -252,7 +234,7 @@ export class ClockFace extends TailwindElement {
         ${isSelected ? svg`
           <circle
             cx="${pos.x}" cy="${pos.y}" r="${MARKER_RADIUS}"
-            fill="var(--ui-time-picker-primary, var(--ui-primary, #3b82f6))"
+            fill="var(--ui-time-picker-clock-selected-bg, var(--ui-primary))"
           />
         ` : ''}
         ${isBusiness && !isSelected ? svg`
@@ -291,7 +273,7 @@ export class ClockFace extends TailwindElement {
           ${isSelected ? svg`
             <circle
               cx="${pos.x}" cy="${pos.y}" r="${MARKER_RADIUS}"
-              fill="var(--ui-time-picker-primary, var(--ui-primary, #3b82f6))"
+              fill="var(--ui-time-picker-clock-selected-bg, var(--ui-primary))"
             />
           ` : ''}
           <text
@@ -318,7 +300,7 @@ export class ClockFace extends TailwindElement {
             ${isSelected ? svg`
               <circle
                 cx="${pos.x}" cy="${pos.y}" r="${MARKER_RADIUS}"
-                fill="var(--ui-time-picker-primary, var(--ui-primary, #3b82f6))"
+                fill="var(--ui-time-picker-clock-selected-bg, var(--ui-primary))"
               />
             ` : ''}
             <text
@@ -335,7 +317,7 @@ export class ClockFace extends TailwindElement {
             ${isSelected ? svg`
               <circle
                 cx="${pos.x}" cy="${pos.y}" r="${MARKER_RADIUS}"
-                fill="var(--ui-time-picker-primary, var(--ui-primary, #3b82f6))"
+                fill="var(--ui-time-picker-clock-selected-bg, var(--ui-primary))"
               />
             ` : ''}
             <circle
@@ -381,13 +363,13 @@ export class ClockFace extends TailwindElement {
         class="clock-hand"
         x1="${CENTER}" y1="${CENTER}"
         x2="${pos.x}" y2="${pos.y}"
-        stroke="var(--ui-time-picker-primary, var(--ui-primary, #3b82f6))"
+        stroke="var(--ui-time-picker-clock-selected-bg, var(--ui-primary))"
         stroke-width="2"
       />
       <circle
         class="clock-marker"
         cx="${pos.x}" cy="${pos.y}" r="3"
-        fill="var(--ui-time-picker-primary, var(--ui-primary, #3b82f6))"
+        fill="var(--ui-time-picker-clock-selected-bg, var(--ui-primary))"
       />
     `;
   }
@@ -528,7 +510,7 @@ export class ClockFace extends TailwindElement {
         <!-- Center dot -->
         <circle
           cx="${CENTER}" cy="${CENTER}" r="3"
-          fill="var(--ui-time-picker-primary, var(--ui-primary, #3b82f6))"
+          fill="var(--ui-time-picker-clock-selected-bg, var(--ui-primary))"
         />
       </svg>
     `;

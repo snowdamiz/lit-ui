@@ -260,8 +260,8 @@ export class Checkbox extends TailwindElement {
 
       /* Focus ring */
       .checkbox-box:focus-visible {
-        outline: none;
-        box-shadow: 0 0 0 2px var(--ui-checkbox-ring);
+        outline: 2px solid var(--ui-focus-ring-color, var(--ui-checkbox-ring));
+        outline-offset: 2px;
       }
 
       /* Disabled */

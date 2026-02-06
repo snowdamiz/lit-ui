@@ -48,12 +48,12 @@ export class TimezoneDisplay extends TailwindElement {
         align-items: center;
         gap: 0.5rem;
         font-size: 0.75rem;
-        color: var(--ui-time-picker-timezone-text, var(--ui-input-placeholder, #6b7280));
+        color: var(--ui-time-picker-timezone-text, var(--ui-input-placeholder));
         padding: 0.25rem 0;
       }
 
       .tz-separator {
-        color: var(--ui-time-picker-timezone-separator, #d1d5db);
+        color: var(--ui-time-picker-timezone-separator);
       }
 
       .tz-entry {
@@ -72,13 +72,6 @@ export class TimezoneDisplay extends TailwindElement {
         opacity: 0.8;
       }
 
-      :host-context(.dark) .timezone-display {
-        color: var(--ui-time-picker-timezone-text, #9ca3af);
-      }
-
-      :host-context(.dark) .tz-separator {
-        color: var(--ui-time-picker-timezone-separator, #4b5563);
-      }
     `,
   ];
 

@@ -99,7 +99,7 @@ export const expandColumnStyles = css`
   }
 
   .expand-toggle:focus-visible {
-    outline: 2px solid var(--ui-ring, #2563eb);
+    outline: 2px solid var(--color-primary, var(--ui-color-primary));
     outline-offset: -2px;
   }
 

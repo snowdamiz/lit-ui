@@ -80,7 +80,7 @@ export class ColumnDateFilter extends TailwindElement {
 
       label {
         font-size: 0.75rem;
-        color: var(--color-muted-foreground, #71717a);
+        color: var(--color-muted-foreground);
         min-width: 40px;
       }
 
@@ -88,27 +88,17 @@ export class ColumnDateFilter extends TailwindElement {
         flex: 1;
         padding: 0.375rem 0.5rem;
         font-size: 0.875rem;
-        border: 1px solid var(--color-border, #e4e4e7);
+        border: 1px solid var(--color-border);
         border-radius: var(--ui-radius-sm, 0.25rem);
-        background: var(--color-background, #ffffff);
-        color: var(--color-foreground, #09090b);
+        background: var(--color-background);
+        color: var(--color-foreground);
       }
 
       input[type='date']:focus {
-        outline: 2px solid var(--color-primary, #3b82f6);
+        outline: 2px solid var(--color-primary, var(--ui-color-primary));
         outline-offset: -1px;
       }
 
-      :host-context(.dark) input[type='date'] {
-        background: #09090b;
-        border-color: #3f3f46;
-        color: #fafafa;
-      }
-
-      /* Fix for date input color scheme in dark mode */
-      :host-context(.dark) input[type='date']::-webkit-calendar-picker-indicator {
-        filter: invert(1);
-      }
     `,
   ];
 

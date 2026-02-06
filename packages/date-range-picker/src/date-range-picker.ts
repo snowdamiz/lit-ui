@@ -291,22 +291,22 @@ export class DateRangePicker extends TailwindElement {
       .date-range-label {
         font-weight: 500;
         font-size: 0.875rem;
-        color: var(--ui-date-picker-text, var(--ui-input-text, inherit));
+        color: var(--ui-date-range-label-text);
       }
 
       .required-indicator {
-        color: var(--ui-date-picker-error, var(--ui-input-text-error, #ef4444));
+        color: var(--ui-date-range-error, var(--ui-input-text-error));
         margin-left: 0.125rem;
       }
 
       .input-container {
         display: flex;
         align-items: center;
-        border-radius: var(--ui-date-picker-radius, var(--ui-input-radius, 0.375rem));
-        border-width: var(--ui-date-picker-border-width, var(--ui-input-border-width, 1px));
+        border-radius: var(--ui-date-range-radius, var(--ui-input-radius));
+        border-width: var(--ui-date-range-border-width, var(--ui-input-border-width));
         border-style: solid;
-        border-color: var(--ui-date-picker-border, var(--ui-input-border, #d1d5db));
-        background-color: var(--ui-date-picker-bg, var(--ui-input-bg, white));
+        border-color: var(--ui-date-range-border, var(--ui-input-border));
+        background-color: var(--ui-date-range-bg, var(--ui-input-bg));
         transition:
           border-color 150ms,
           box-shadow 150ms;
@@ -314,16 +314,16 @@ export class DateRangePicker extends TailwindElement {
       }
 
       .input-container:focus-within {
-        border-color: var(--ui-date-picker-border-focus, var(--ui-input-border-focus, #3b82f6));
+        border-color: var(--ui-date-range-border-focus, var(--ui-input-border-focus));
       }
 
       .input-container.container-error {
-        border-color: var(--ui-date-picker-error, var(--ui-input-border-error, #ef4444));
+        border-color: var(--ui-date-range-error, var(--ui-input-border-error));
       }
 
       .input-container.container-disabled {
-        background-color: var(--ui-date-picker-bg-disabled, var(--ui-input-bg-disabled, #f3f4f6));
-        border-color: var(--ui-date-picker-border-disabled, var(--ui-input-border-disabled, #e5e7eb));
+        background-color: var(--ui-date-range-bg-disabled, var(--ui-input-bg-disabled));
+        border-color: var(--ui-date-range-border-disabled, var(--ui-input-border-disabled));
         cursor: not-allowed;
       }
 
@@ -332,7 +332,7 @@ export class DateRangePicker extends TailwindElement {
         min-width: 0;
         border: none;
         background: transparent;
-        color: var(--ui-date-picker-text, var(--ui-input-text, inherit));
+        color: var(--ui-date-range-text, var(--ui-input-text));
         outline: none;
         padding: 0.5rem 0.75rem;
         font-size: 0.875rem;
@@ -340,11 +340,11 @@ export class DateRangePicker extends TailwindElement {
       }
 
       input::placeholder {
-        color: var(--ui-date-picker-placeholder, var(--ui-input-placeholder, #9ca3af));
+        color: var(--ui-date-range-placeholder, var(--ui-input-placeholder));
       }
 
       input:disabled {
-        color: var(--ui-date-picker-text-disabled, var(--ui-input-text-disabled, #9ca3af));
+        color: var(--ui-date-range-text-disabled, var(--ui-input-text-disabled));
         cursor: not-allowed;
       }
 
@@ -356,7 +356,7 @@ export class DateRangePicker extends TailwindElement {
         margin-right: 0.25rem;
         border: none;
         background: transparent;
-        color: var(--color-muted-foreground, #6b7280);
+        color: var(--ui-date-range-action-text);
         cursor: pointer;
         border-radius: 0.25rem;
         transition:
@@ -365,12 +365,12 @@ export class DateRangePicker extends TailwindElement {
       }
 
       .action-button:hover {
-        color: var(--ui-date-picker-text, var(--ui-input-text, inherit));
-        background-color: var(--color-muted, #f3f4f6);
+        color: var(--ui-date-range-text, var(--ui-input-text));
+        background-color: var(--ui-date-range-hover-bg);
       }
 
       .action-button:focus-visible {
-        outline: 2px solid var(--color-ring, #3b82f6);
+        outline: 2px solid var(--ui-date-range-ring);
         outline-offset: 1px;
       }
 
@@ -381,9 +381,9 @@ export class DateRangePicker extends TailwindElement {
 
       .popup {
         position: fixed;
-        z-index: 50;
-        background-color: var(--ui-date-picker-popup-bg, white);
-        border: 1px solid var(--ui-date-picker-popup-border, #e5e7eb);
+        z-index: var(--ui-date-range-z-index);
+        background-color: var(--ui-date-range-popup-bg);
+        border: 1px solid var(--ui-date-range-popup-border);
         border-radius: 0.5rem;
         box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
         padding: 0.5rem;
@@ -391,12 +391,12 @@ export class DateRangePicker extends TailwindElement {
 
       .helper-text {
         font-size: 0.75rem;
-        color: var(--color-muted-foreground, #6b7280);
+        color: var(--ui-date-range-helper-text);
       }
 
       .error-text {
         font-size: 0.75rem;
-        color: var(--ui-date-picker-error, var(--ui-input-text-error, #ef4444));
+        color: var(--ui-date-range-error, var(--ui-input-text-error));
       }
 
       .popup-footer {
@@ -404,33 +404,33 @@ export class DateRangePicker extends TailwindElement {
         align-items: center;
         justify-content: space-between;
         padding: 0.5rem;
-        border-top: 1px solid var(--ui-date-picker-popup-border, #e5e7eb);
+        border-top: 1px solid var(--ui-date-range-footer-border);
         margin-top: 0.25rem;
       }
 
       .footer-status {
         font-size: 0.75rem;
-        color: var(--color-muted-foreground, #6b7280);
+        color: var(--ui-date-range-helper-text);
       }
 
       .footer-clear-button {
         font-size: 0.75rem;
         padding: 0.25rem 0.75rem;
-        border: 1px solid var(--ui-date-picker-border, var(--ui-input-border, #d1d5db));
+        border: 1px solid var(--ui-date-range-clear-border);
         border-radius: 0.25rem;
         background: transparent;
-        color: var(--ui-date-picker-text, var(--ui-input-text, inherit));
+        color: var(--ui-date-range-clear-text);
         cursor: pointer;
         transition: background-color 150ms, border-color 150ms;
       }
 
       .footer-clear-button:hover {
-        background-color: var(--color-muted, #f3f4f6);
-        border-color: var(--color-muted-foreground, #9ca3af);
+        background-color: var(--ui-date-range-clear-hover-bg);
+        border-color: var(--ui-date-range-clear-hover-border);
       }
 
       .footer-clear-button:focus-visible {
-        outline: 2px solid var(--color-ring, #3b82f6);
+        outline: 2px solid var(--ui-date-range-ring);
         outline-offset: 1px;
       }
 
@@ -472,11 +472,11 @@ export class DateRangePicker extends TailwindElement {
       }
 
       .nav-button:hover {
-        background-color: var(--ui-calendar-hover-bg, #f3f4f6);
+        background-color: var(--ui-date-range-hover-bg);
       }
 
       .nav-button:focus-visible {
-        outline: 2px solid var(--ui-calendar-focus-ring, var(--color-ring, #3b82f6));
+        outline: 2px solid var(--ui-date-range-ring);
         outline-offset: 2px;
       }
 
@@ -494,7 +494,7 @@ export class DateRangePicker extends TailwindElement {
         flex-direction: column;
         gap: 0.25rem;
         padding: 0.5rem;
-        border-right: 1px solid var(--ui-date-picker-popup-border, #e5e7eb);
+        border-right: 1px solid var(--ui-date-range-sidebar-border);
         min-width: 120px;
       }
 
@@ -504,7 +504,7 @@ export class DateRangePicker extends TailwindElement {
         border: none;
         border-radius: 0.25rem;
         background: transparent;
-        color: var(--ui-date-picker-text, var(--ui-input-text, inherit));
+        color: var(--ui-date-range-text, var(--ui-input-text));
         cursor: pointer;
         text-align: left;
         white-space: nowrap;
@@ -512,11 +512,11 @@ export class DateRangePicker extends TailwindElement {
       }
 
       .preset-button:hover:not(:disabled) {
-        background-color: var(--color-muted, #f3f4f6);
+        background-color: var(--ui-date-range-hover-bg);
       }
 
       .preset-button:focus-visible {
-        outline: 2px solid var(--color-ring, #3b82f6);
+        outline: 2px solid var(--ui-date-range-ring);
         outline-offset: 1px;
       }
 
@@ -531,161 +531,45 @@ export class DateRangePicker extends TailwindElement {
         -webkit-user-select: none;
       }
 
-      /* Dark mode */
-      :host-context(.dark) .input-container {
-        border-color: var(--ui-date-picker-border, var(--ui-input-border, #374151));
-        background-color: var(--ui-date-picker-bg, var(--ui-input-bg, #111827));
-      }
-
-      :host-context(.dark) .input-container:focus-within {
-        border-color: var(--ui-date-picker-border-focus, var(--ui-input-border-focus, #3b82f6));
-      }
-
-      :host-context(.dark) input {
-        color: var(--ui-date-picker-text, var(--ui-input-text, #f9fafb));
-      }
-
-      :host-context(.dark) input::placeholder {
-        color: var(--ui-date-picker-placeholder, var(--ui-input-placeholder, #6b7280));
-      }
-
-      :host-context(.dark) .action-button:hover {
-        background-color: var(--color-muted, #1f2937);
-      }
-
-      :host-context(.dark) .popup {
-        background-color: var(--ui-date-picker-popup-bg, #1f2937);
-        border-color: var(--ui-date-picker-popup-border, #374151);
-      }
-
-      :host-context(.dark) .date-range-label {
-        color: var(--ui-date-picker-text, var(--ui-input-text, #f9fafb));
-      }
-
-      :host-context(.dark) .helper-text {
-        color: var(--color-muted-foreground, #9ca3af);
-      }
-
-      :host-context(.dark) .input-container.container-disabled {
-        background-color: var(--ui-date-picker-bg-disabled, var(--ui-input-bg-disabled, #1f2937));
-        border-color: var(--ui-date-picker-border-disabled, var(--ui-input-border-disabled, #374151));
-      }
-
-      :host-context(.dark) .nav-button:hover {
-        background-color: var(--ui-calendar-hover-bg, #1f2937);
-      }
-
-      :host-context(.dark) .popup-footer {
-        border-top-color: var(--ui-date-picker-popup-border, #374151);
-      }
-
-      :host-context(.dark) .footer-status {
-        color: var(--color-muted-foreground, #9ca3af);
-      }
-
-      :host-context(.dark) .footer-clear-button {
-        border-color: var(--ui-date-picker-border, var(--ui-input-border, #4b5563));
-        color: var(--ui-date-picker-text, var(--ui-input-text, #f9fafb));
-      }
-
-      :host-context(.dark) .footer-clear-button:hover {
-        background-color: var(--color-muted, #374151);
-        border-color: var(--color-muted-foreground, #6b7280);
-      }
-
-      :host-context(.dark) .range-heading {
-        color: var(--ui-date-picker-text, var(--ui-input-text, #f9fafb));
-      }
-
-      :host-context(.dark) .nav-button {
-        color: var(--ui-calendar-nav-color, #f9fafb);
-      }
-
-      :host-context(.dark) .action-button {
-        color: var(--color-muted-foreground, #9ca3af);
-      }
-
-      :host-context(.dark) .error-text {
-        color: var(--ui-date-picker-error, var(--ui-input-text-error, #f87171));
-      }
-
-      :host-context(.dark) .required-indicator {
-        color: var(--ui-date-picker-error, var(--ui-input-text-error, #f87171));
-      }
-
-      :host-context(.dark) input:disabled {
-        color: var(--ui-date-picker-text-disabled, var(--ui-input-text-disabled, #6b7280));
-      }
-
-      :host-context(.dark) .preset-sidebar {
-        border-right-color: var(--ui-date-picker-popup-border, #374151);
-      }
-
-      :host-context(.dark) .preset-button {
-        color: var(--ui-date-picker-text, var(--ui-input-text, #f9fafb));
-      }
-
-      :host-context(.dark) .preset-button:hover:not(:disabled) {
-        background-color: var(--color-muted, #1f2937);
-      }
-
-      :host-context(.dark) {
-        --ui-range-compare-highlight-bg: #78350f;
-        --ui-range-compare-preview-bg: #451a03;
-      }
-
       /* Comparison toggle buttons */
       .comparison-toggle {
         display: flex;
         gap: 0.25rem;
         padding: 0.25rem 0.5rem;
-        border-bottom: 1px solid var(--ui-date-picker-popup-border, #e5e7eb);
+        border-bottom: 1px solid var(--ui-date-range-popup-border);
       }
 
       .toggle-button {
         flex: 1;
         font-size: 0.75rem;
         padding: 0.375rem 0.5rem;
-        border: 1px solid var(--ui-date-picker-border, var(--ui-input-border, #d1d5db));
+        border: 1px solid var(--ui-date-range-toggle-border);
         border-radius: 0.25rem;
         background: transparent;
-        color: var(--ui-date-picker-text, var(--ui-input-text, inherit));
+        color: var(--ui-date-range-toggle-text);
         cursor: pointer;
         transition: background-color 150ms, border-color 150ms;
       }
 
       .toggle-button:hover {
-        background-color: var(--color-muted, #f3f4f6);
+        background-color: var(--ui-date-range-toggle-hover-bg);
       }
 
       .toggle-button:focus-visible {
-        outline: 2px solid var(--color-ring, #3b82f6);
+        outline: 2px solid var(--ui-date-range-ring);
         outline-offset: 1px;
       }
 
       .toggle-active.toggle-primary {
-        background-color: var(--ui-range-selected-bg, var(--color-primary, #3b82f6));
-        color: var(--ui-range-selected-text, white);
-        border-color: var(--ui-range-selected-bg, var(--color-primary, #3b82f6));
+        background-color: var(--ui-range-selected-bg, var(--color-primary));
+        color: var(--ui-range-selected-text);
+        border-color: var(--ui-range-selected-bg, var(--color-primary));
       }
 
       .toggle-active.toggle-comparison {
-        background-color: var(--ui-range-compare-bg, #f59e0b);
-        color: var(--ui-range-compare-text, white);
-        border-color: var(--ui-range-compare-bg, #f59e0b);
-      }
-
-      :host-context(.dark) .comparison-toggle {
-        border-bottom-color: var(--ui-date-picker-popup-border, #374151);
-      }
-
-      :host-context(.dark) .toggle-button {
-        border-color: var(--ui-date-picker-border, var(--ui-input-border, #4b5563));
-        color: var(--ui-date-picker-text, var(--ui-input-text, #f9fafb));
-      }
-
-      :host-context(.dark) .toggle-button:hover {
-        background-color: var(--color-muted, #1f2937);
+        background-color: var(--ui-date-range-compare-bg);
+        color: var(--ui-date-range-compare-text);
+        border-color: var(--ui-date-range-compare-bg);
       }
 
       /* Container query: vertical stacking for narrow containers */
@@ -698,11 +582,7 @@ export class DateRangePicker extends TailwindElement {
           flex-direction: row;
           flex-wrap: wrap;
           border-right: none;
-          border-bottom: 1px solid var(--ui-date-picker-popup-border, #e5e7eb);
-        }
-
-        :host-context(.dark) .preset-sidebar {
-          border-bottom-color: var(--ui-date-picker-popup-border, #374151);
+          border-bottom: 1px solid var(--ui-date-range-sidebar-border);
         }
 
         .calendars-wrapper {
@@ -1310,66 +1190,66 @@ export class DateRangePicker extends TailwindElement {
     if (isSingleDay) {
       // Single-day range: full circle
       styles.push(
-        'background-color: var(--ui-range-selected-bg, var(--color-primary, #3b82f6))',
-        'color: var(--ui-range-selected-text, white)',
+        'background-color: var(--ui-range-selected-bg, var(--color-primary))',
+        'color: var(--ui-range-selected-text)',
         'border-radius: 9999px',
       );
     } else if (isStart) {
       // Start date: rounded left
       styles.push(
-        'background-color: var(--ui-range-selected-bg, var(--color-primary, #3b82f6))',
-        'color: var(--ui-range-selected-text, white)',
+        'background-color: var(--ui-range-selected-bg, var(--color-primary))',
+        'color: var(--ui-range-selected-text)',
         'border-radius: 9999px 0 0 9999px',
       );
     } else if (isEnd) {
       // End date: rounded right
       styles.push(
-        'background-color: var(--ui-range-selected-bg, var(--color-primary, #3b82f6))',
-        'color: var(--ui-range-selected-text, white)',
+        'background-color: var(--ui-range-selected-bg, var(--color-primary))',
+        'color: var(--ui-range-selected-text)',
         'border-radius: 0 9999px 9999px 0',
       );
     } else if (inRange) {
       // In-range: highlight background, no rounding
       styles.push(
-        'background-color: var(--ui-range-highlight-bg, color-mix(in oklch, var(--color-primary, var(--ui-color-primary)) 12%, var(--color-background, white)))',
-        'color: var(--ui-range-highlight-text, inherit)',
+        'background-color: var(--ui-range-highlight-bg, color-mix(in oklch, var(--color-primary, var(--ui-color-primary)) 12%, var(--color-background)))',
+        'color: var(--ui-range-highlight-text)',
       );
     } else if (inPreview) {
       // Preview: lighter highlight background, no rounding
       styles.push(
-        'background-color: var(--ui-range-preview-bg, color-mix(in oklch, var(--color-primary, var(--ui-color-primary)) 6%, var(--color-background, white)))',
+        'background-color: var(--ui-range-preview-bg, color-mix(in oklch, var(--color-primary, var(--ui-color-primary)) 6%, var(--color-background)))',
       );
     } else if (isCompareStart && isCompareEnd) {
       // Comparison single-day: full circle in amber
       styles.push(
-        'background-color: var(--ui-range-compare-bg, #f59e0b)',
-        'color: var(--ui-range-compare-text, white)',
+        'background-color: var(--ui-date-range-compare-bg)',
+        'color: var(--ui-date-range-compare-text)',
         'border-radius: 9999px',
       );
     } else if (isCompareStart) {
       // Comparison start: rounded left in amber
       styles.push(
-        'background-color: var(--ui-range-compare-bg, #f59e0b)',
-        'color: var(--ui-range-compare-text, white)',
+        'background-color: var(--ui-date-range-compare-bg)',
+        'color: var(--ui-date-range-compare-text)',
         'border-radius: 9999px 0 0 9999px',
       );
     } else if (isCompareEnd) {
       // Comparison end: rounded right in amber
       styles.push(
-        'background-color: var(--ui-range-compare-bg, #f59e0b)',
-        'color: var(--ui-range-compare-text, white)',
+        'background-color: var(--ui-date-range-compare-bg)',
+        'color: var(--ui-date-range-compare-text)',
         'border-radius: 0 9999px 9999px 0',
       );
     } else if (inCompareRange) {
       // In comparison range: amber highlight
       styles.push(
-        'background-color: var(--ui-range-compare-highlight-bg, #fef3c7)',
+        'background-color: var(--ui-date-range-compare-highlight-bg)',
         'color: inherit',
       );
     } else if (inComparePreview) {
       // Comparison preview: lighter amber highlight
       styles.push(
-        'background-color: var(--ui-range-compare-preview-bg, #fffbeb)',
+        'background-color: var(--ui-date-range-compare-preview-bg)',
       );
     }
 

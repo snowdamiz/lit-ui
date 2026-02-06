@@ -92,7 +92,7 @@ export class Toast extends TailwindElement {
         width: 100%;
         position: relative;
         touch-action: pan-y;
-        cursor: grab;
+        cursor: default;
         user-select: none;
         box-sizing: border-box;
         pointer-events: auto;

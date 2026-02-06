@@ -249,26 +249,26 @@ export const rowActionsStyles = css`
     border-radius: 4px;
     cursor: pointer;
     background: transparent;
-    color: var(--color-muted-foreground, #71717a);
+    color: var(--color-muted-foreground);
     transition: background-color 0.15s, color 0.15s;
   }
 
   .row-action-btn:hover {
-    background: var(--ui-data-table-row-hover-bg, #f4f4f5);
-    color: var(--ui-data-table-text-color, #09090b);
+    background: var(--ui-data-table-row-hover-bg);
+    color: var(--ui-data-table-text-color);
   }
 
   .row-action-btn.destructive {
-    color: var(--color-destructive, #ef4444);
+    color: var(--color-destructive, var(--ui-color-destructive));
   }
 
   .row-action-btn.destructive:hover {
-    background: rgba(239, 68, 68, 0.1);
-    color: var(--color-destructive, #dc2626);
+    background: color-mix(in oklch, var(--color-destructive, var(--ui-color-destructive)) 10%, transparent);
+    color: var(--color-destructive, var(--ui-color-destructive));
   }
 
   .row-action-btn:disabled {
-    color: var(--color-muted-foreground, #71717a);
+    color: var(--color-muted-foreground);
     opacity: 0.5;
     cursor: not-allowed;
   }
@@ -288,22 +288,23 @@ export const rowActionsStyles = css`
     border-radius: 4px;
     cursor: pointer;
     background: transparent;
-    color: var(--color-muted-foreground, #71717a);
+    color: var(--color-muted-foreground);
     transition: background-color 0.15s, color 0.15s;
   }
 
   .row-action-kebab:hover {
-    background: var(--ui-data-table-row-hover-bg, #f4f4f5);
-    color: var(--ui-data-table-text-color, #09090b);
+    background: var(--ui-data-table-row-hover-bg);
+    color: var(--ui-data-table-text-color);
   }
 
   /* ── Dropdown Menu ── */
   .row-actions-menu {
     min-width: 160px;
     padding: 4px 0;
-    background: var(--ui-data-table-row-bg, #ffffff);
+    background: var(--ui-data-table-menu-bg);
+    border: 1px solid var(--ui-data-table-border-color);
     border-radius: 6px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--ui-data-table-menu-shadow);
   }
 
   .row-actions-menu-item {
@@ -317,25 +318,25 @@ export const rowActionsStyles = css`
     cursor: pointer;
     font-size: 14px;
     font-family: inherit;
-    color: var(--ui-data-table-text-color, #09090b);
+    color: var(--ui-data-table-text-color);
     text-align: left;
     transition: background-color 0.1s;
   }
 
   .row-actions-menu-item:hover {
-    background: var(--color-muted, #f4f4f5);
+    background: var(--ui-data-table-row-hover-bg);
   }
 
   .row-actions-menu-item.destructive {
-    color: var(--color-destructive, #ef4444);
+    color: var(--color-destructive, var(--ui-color-destructive));
   }
 
   .row-actions-menu-item.destructive:hover {
-    background: rgba(239, 68, 68, 0.08);
+    background: color-mix(in oklch, var(--color-destructive, var(--ui-color-destructive)) 8%, transparent);
   }
 
   .row-actions-menu-item:disabled {
-    color: var(--color-muted-foreground, #71717a);
+    color: var(--color-muted-foreground);
     opacity: 0.5;
     cursor: not-allowed;
   }
@@ -360,12 +361,12 @@ export const rowActionsStyles = css`
   /* ── Focus-Visible Outlines ── */
   .row-action-btn:focus-visible,
   .row-action-kebab:focus-visible {
-    outline: 2px solid var(--color-primary, #3b82f6);
+    outline: 2px solid var(--color-primary, var(--ui-color-primary));
     outline-offset: 1px;
   }
 
   .row-actions-menu-item:focus-visible {
-    outline: 2px solid var(--color-primary, #3b82f6);
+    outline: 2px solid var(--color-primary, var(--ui-color-primary));
     outline-offset: -2px;
   }
 
@@ -392,41 +393,4 @@ export const rowActionsStyles = css`
     }
   }
 
-  /* ── Dark Mode Overrides ── */
-  :host-context(.dark) .row-action-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
-  }
-
-  :host-context(.dark) .row-action-kebab:hover {
-    background: rgba(255, 255, 255, 0.1);
-  }
-
-  :host-context(.dark) .row-actions-menu {
-    background: var(--ui-data-table-row-bg, #18181b);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  }
-
-  :host-context(.dark) .row-actions-menu-item {
-    color: var(--ui-data-table-text-color, #fafafa);
-  }
-
-  :host-context(.dark) .row-actions-menu-item:hover {
-    background: rgba(255, 255, 255, 0.08);
-  }
-
-  :host-context(.dark) .row-actions-menu-item.destructive {
-    color: #f87171;
-  }
-
-  :host-context(.dark) .row-actions-menu-item.destructive:hover {
-    background: rgba(248, 113, 113, 0.1);
-  }
-
-  :host-context(.dark) .row-action-btn.destructive {
-    color: #f87171;
-  }
-
-  :host-context(.dark) .row-action-btn.destructive:hover {
-    background: rgba(248, 113, 113, 0.1);
-  }
 `;

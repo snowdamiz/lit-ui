@@ -41,11 +41,11 @@ export class TimeDropdown extends TailwindElement {
       .time-dropdown-wrapper {
         max-height: var(--ui-time-picker-dropdown-height, 240px);
         overflow-y: auto;
-        border: 1px solid var(--ui-time-picker-border, var(--ui-input-border, #e5e7eb));
+        border: 1px solid var(--ui-time-picker-dropdown-border, var(--ui-input-border));
         border-radius: var(--ui-time-picker-radius, var(--ui-input-radius, 0.375rem));
-        background: var(--ui-time-picker-bg, var(--ui-input-bg, #fff));
+        background: var(--ui-time-picker-dropdown-bg, var(--ui-input-bg));
         scrollbar-width: thin;
-        scrollbar-color: var(--ui-time-picker-scrollbar, #d1d5db) transparent;
+        scrollbar-color: var(--ui-time-picker-scrollbar) transparent;
       }
 
       .time-dropdown-wrapper::-webkit-scrollbar {
@@ -57,7 +57,7 @@ export class TimeDropdown extends TailwindElement {
       }
 
       .time-dropdown-wrapper::-webkit-scrollbar-thumb {
-        background: var(--ui-time-picker-scrollbar, #d1d5db);
+        background: var(--ui-time-picker-scrollbar);
         border-radius: 3px;
       }
 
@@ -66,27 +66,27 @@ export class TimeDropdown extends TailwindElement {
         cursor: pointer;
         font-size: 0.875rem;
         line-height: 1.25rem;
-        color: var(--ui-time-picker-text, var(--ui-input-text, #1f2937));
+        color: var(--ui-time-picker-option-text, var(--ui-input-text));
         transition: background-color 0.1s ease;
         user-select: none;
       }
 
       .time-option:hover {
-        background: var(--ui-time-picker-hover-bg, var(--ui-input-hover-bg, #f3f4f6));
+        background: var(--ui-time-picker-option-hover-bg, var(--ui-input-hover-bg));
       }
 
       .time-option.highlighted {
-        background: var(--ui-time-picker-highlight-bg, #f3f4f6);
+        background: var(--ui-time-picker-option-hover-bg);
       }
 
       .time-option.selected {
-        background: var(--ui-time-picker-selected-bg, #eff6ff);
-        color: var(--ui-time-picker-selected-text, #1d4ed8);
+        background: var(--ui-time-picker-option-selected-bg);
+        color: var(--ui-time-picker-option-selected-text);
         font-weight: 500;
       }
 
       .time-option.selected.highlighted {
-        background: var(--ui-time-picker-selected-bg, #eff6ff);
+        background: var(--ui-time-picker-option-selected-bg);
       }
 
       .time-option[aria-disabled='true'] {
@@ -95,46 +95,18 @@ export class TimeDropdown extends TailwindElement {
         pointer-events: none;
       }
 
-      :host-context(.dark) .time-dropdown-wrapper {
-        border-color: var(--ui-time-picker-border, var(--ui-input-border, #374151));
-        background: var(--ui-time-picker-bg, var(--ui-input-bg, #1f2937));
-      }
-
-      :host-context(.dark) .time-option {
-        color: var(--ui-time-picker-text, var(--ui-input-text, #e5e7eb));
-      }
-
-      :host-context(.dark) .time-option:hover,
-      :host-context(.dark) .time-option.highlighted {
-        background: var(--ui-time-picker-hover-bg, var(--ui-input-hover-bg, #374151));
-      }
-
-      :host-context(.dark) .time-option.selected {
-        background: var(--ui-time-picker-selected-bg, #1e3a5f);
-        color: var(--ui-time-picker-selected-text, #93c5fd);
-      }
-
       .time-option.business-hour {
-        border-left: 3px solid var(--ui-time-picker-business-hour-accent, #22c55e);
-        background: var(--ui-time-picker-business-hour-bg, #f0fdf4);
+        border-left: 3px solid var(--ui-time-picker-business-accent);
+        background: var(--ui-time-picker-business-bg);
       }
 
       .time-option.business-hour:hover {
-        background: var(--ui-time-picker-business-hour-bg-hover, #dcfce7);
+        background: var(--ui-time-picker-business-hover-bg);
       }
 
       .time-option.business-hour.selected {
-        background: var(--ui-time-picker-business-hour-bg, #f0fdf4);
-        border-left-color: var(--ui-time-picker-business-hour-accent, #22c55e);
-      }
-
-      :host-context(.dark) .time-option.business-hour {
-        border-left-color: var(--ui-time-picker-business-hour-accent, #4ade80);
-        background: var(--ui-time-picker-business-hour-bg, #052e16);
-      }
-
-      :host-context(.dark) .time-option.business-hour:hover {
-        background: var(--ui-time-picker-business-hour-bg-hover, #064e3b);
+        background: var(--ui-time-picker-business-bg);
+        border-left-color: var(--ui-time-picker-business-accent);
       }
     `,
   ];

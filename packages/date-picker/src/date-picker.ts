@@ -12,7 +12,7 @@
  * - Clear button to reset value
  * - Form participation via ElementInternals (ISO 8601 submission)
  * - SSR compatible via isServer guards
- * - Dark mode via :host-context(.dark)
+ * - Dark mode via CSS custom properties (tokens defined in tailwind.css)
  *
  * @element lui-date-picker
  * @fires change - Dispatched when a date is selected or cleared, with { date: Date | null, isoString: string }
@@ -274,38 +274,38 @@ export class DatePicker extends TailwindElement {
       .date-picker-label {
         font-weight: 500;
         font-size: 0.875rem;
-        color: var(--ui-date-picker-text, var(--ui-input-text, inherit));
+        color: var(--ui-date-picker-label-text);
       }
 
       .required-indicator {
-        color: var(--ui-date-picker-error, var(--ui-input-text-error, #ef4444));
+        color: var(--ui-date-picker-error, var(--ui-input-text-error));
         margin-left: 0.125rem;
       }
 
       .input-container {
         display: flex;
         align-items: center;
-        border-radius: var(--ui-date-picker-radius, var(--ui-input-radius, 0.375rem));
-        border-width: var(--ui-date-picker-border-width, var(--ui-input-border-width, 1px));
+        border-radius: var(--ui-date-picker-radius, var(--ui-input-radius));
+        border-width: var(--ui-date-picker-border-width, var(--ui-input-border-width));
         border-style: solid;
-        border-color: var(--ui-date-picker-border, var(--ui-input-border, #d1d5db));
-        background-color: var(--ui-date-picker-bg, var(--ui-input-bg, white));
+        border-color: var(--ui-date-picker-border, var(--ui-input-border));
+        background-color: var(--ui-date-picker-bg, var(--ui-input-bg));
         transition:
           border-color 150ms,
           box-shadow 150ms;
       }
 
       .input-container:focus-within {
-        border-color: var(--ui-date-picker-border-focus, var(--ui-input-border-focus, #3b82f6));
+        border-color: var(--ui-date-picker-border-focus, var(--ui-input-border-focus));
       }
 
       .input-container.container-error {
-        border-color: var(--ui-date-picker-error, var(--ui-input-border-error, #ef4444));
+        border-color: var(--ui-date-picker-error, var(--ui-input-border-error));
       }
 
       .input-container.container-disabled {
-        background-color: var(--ui-date-picker-bg-disabled, var(--ui-input-bg-disabled, #f3f4f6));
-        border-color: var(--ui-date-picker-border-disabled, var(--ui-input-border-disabled, #e5e7eb));
+        background-color: var(--ui-date-picker-bg-disabled, var(--ui-input-bg-disabled));
+        border-color: var(--ui-date-picker-border-disabled, var(--ui-input-border-disabled));
         cursor: not-allowed;
       }
 
@@ -314,18 +314,18 @@ export class DatePicker extends TailwindElement {
         min-width: 0;
         border: none;
         background: transparent;
-        color: var(--ui-date-picker-text, var(--ui-input-text, inherit));
+        color: var(--ui-date-picker-text, var(--ui-input-text));
         outline: none;
         padding: 0.5rem 0.75rem;
         font-size: 0.875rem;
       }
 
       input::placeholder {
-        color: var(--ui-date-picker-placeholder, var(--ui-input-placeholder, #9ca3af));
+        color: var(--ui-date-picker-placeholder, var(--ui-input-placeholder));
       }
 
       input:disabled {
-        color: var(--ui-date-picker-text-disabled, var(--ui-input-text-disabled, #9ca3af));
+        color: var(--ui-date-picker-text-disabled, var(--ui-input-text-disabled));
         cursor: not-allowed;
       }
 
@@ -337,7 +337,7 @@ export class DatePicker extends TailwindElement {
         margin-right: 0.25rem;
         border: none;
         background: transparent;
-        color: var(--color-muted-foreground, #6b7280);
+        color: var(--ui-date-picker-action-text);
         cursor: pointer;
         border-radius: 0.25rem;
         transition:
@@ -346,12 +346,12 @@ export class DatePicker extends TailwindElement {
       }
 
       .action-button:hover {
-        color: var(--ui-date-picker-text, var(--ui-input-text, inherit));
-        background-color: var(--color-muted, #f3f4f6);
+        color: var(--ui-date-picker-text, var(--ui-input-text));
+        background-color: var(--ui-date-picker-hover-bg);
       }
 
       .action-button:focus-visible {
-        outline: 2px solid var(--color-ring, #3b82f6);
+        outline: 2px solid var(--ui-date-picker-ring);
         outline-offset: 1px;
       }
 
@@ -362,19 +362,19 @@ export class DatePicker extends TailwindElement {
 
       .helper-text {
         font-size: 0.75rem;
-        color: var(--color-muted-foreground, #6b7280);
+        color: var(--ui-date-picker-helper-text);
       }
 
       .error-text {
         font-size: 0.75rem;
-        color: var(--ui-date-picker-error, var(--ui-input-text-error, #ef4444));
+        color: var(--ui-date-picker-error, var(--ui-input-text-error));
       }
 
       .popup {
         position: fixed;
-        z-index: 50;
-        background-color: var(--ui-date-picker-popup-bg, white);
-        border: 1px solid var(--ui-date-picker-popup-border, #e5e7eb);
+        z-index: var(--ui-date-picker-z-index);
+        background-color: var(--ui-date-picker-popup-bg);
+        border: 1px solid var(--ui-date-picker-popup-border);
         border-radius: 0.5rem;
         box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
       }
@@ -383,29 +383,29 @@ export class DatePicker extends TailwindElement {
         display: flex;
         gap: 0.25rem;
         padding: 0.5rem;
-        border-bottom: 1px solid var(--ui-date-picker-popup-border, #e5e7eb);
+        border-bottom: 1px solid var(--ui-date-picker-popup-border);
       }
 
       .preset-button {
         flex: 1;
         padding: 0.375rem 0.5rem;
         font-size: 0.75rem;
-        border: 1px solid var(--ui-date-picker-preset-border, #d1d5db);
+        border: 1px solid var(--ui-date-picker-preset-border);
         border-radius: 0.25rem;
-        background: var(--ui-date-picker-preset-bg, #f9fafb);
-        color: var(--ui-date-picker-preset-text, inherit);
+        background: var(--ui-date-picker-preset-bg);
+        color: var(--ui-date-picker-preset-text);
         cursor: pointer;
         transition: background-color 150ms, border-color 150ms;
         white-space: nowrap;
       }
 
       .preset-button:hover:not(:disabled) {
-        background: var(--ui-date-picker-preset-bg-hover, #e5e7eb);
-        border-color: var(--ui-date-picker-preset-border-hover, #9ca3af);
+        background: var(--ui-date-picker-preset-bg-hover);
+        border-color: var(--ui-date-picker-preset-border-hover);
       }
 
       .preset-button:focus-visible {
-        outline: 2px solid var(--color-ring, #3b82f6);
+        outline: 2px solid var(--ui-date-picker-ring);
         outline-offset: 1px;
       }
 
@@ -438,64 +438,6 @@ export class DatePicker extends TailwindElement {
         gap: 0.25rem;
       }
 
-      /* Dark mode */
-      :host-context(.dark) .input-container {
-        border-color: var(--ui-date-picker-border, var(--ui-input-border, #374151));
-        background-color: var(--ui-date-picker-bg, var(--ui-input-bg, #111827));
-      }
-
-      :host-context(.dark) .input-container:focus-within {
-        border-color: var(--ui-date-picker-border-focus, var(--ui-input-border-focus, #3b82f6));
-      }
-
-      :host-context(.dark) input {
-        color: var(--ui-date-picker-text, var(--ui-input-text, #f9fafb));
-      }
-
-      :host-context(.dark) input::placeholder {
-        color: var(--ui-date-picker-placeholder, var(--ui-input-placeholder, #6b7280));
-      }
-
-      :host-context(.dark) .action-button:hover {
-        background-color: var(--color-muted, #1f2937);
-      }
-
-      :host-context(.dark) .popup {
-        background-color: var(--ui-date-picker-popup-bg, #1f2937);
-        border-color: var(--ui-date-picker-popup-border, #374151);
-      }
-
-      :host-context(.dark) .date-picker-label {
-        color: var(--ui-date-picker-text, var(--ui-input-text, #f9fafb));
-      }
-
-      :host-context(.dark) .helper-text {
-        color: var(--color-muted-foreground, #9ca3af);
-      }
-
-      :host-context(.dark) .input-container.container-disabled {
-        background-color: var(--ui-date-picker-bg-disabled, var(--ui-input-bg-disabled, #1f2937));
-        border-color: var(--ui-date-picker-border-disabled, var(--ui-input-border-disabled, #374151));
-      }
-
-      :host-context(.dark) .preset-buttons {
-        border-bottom-color: var(--ui-date-picker-popup-border, #374151);
-      }
-
-      :host-context(.dark) .preset-button {
-        border-color: var(--ui-date-picker-preset-border, #4b5563);
-        background: var(--ui-date-picker-preset-bg, #1f2937);
-        color: var(--ui-date-picker-preset-text, #f9fafb);
-      }
-
-      :host-context(.dark) .preset-button:hover:not(:disabled) {
-        background: var(--ui-date-picker-preset-bg-hover, #374151);
-        border-color: var(--ui-date-picker-preset-border-hover, #6b7280);
-      }
-
-      :host-context(.dark) .inline-wrapper {
-        color: var(--ui-date-picker-text, #f9fafb);
-      }
     `,
   ];
 

@@ -69,7 +69,7 @@ export class TimeScrollWheel extends TailwindElement {
         justify-content: center;
         font-size: 1rem;
         font-variant-numeric: tabular-nums;
-        color: var(--ui-time-picker-text, #374151);
+        color: var(--ui-time-picker-wheel-text);
         opacity: 0.4;
         transition: opacity 0.15s ease;
       }
@@ -77,7 +77,7 @@ export class TimeScrollWheel extends TailwindElement {
       .wheel-item.selected {
         opacity: 1;
         font-weight: 600;
-        color: var(--ui-time-picker-primary, var(--ui-primary, #3b82f6));
+        color: var(--ui-time-picker-wheel-selected-text, var(--ui-primary));
       }
 
       .wheel-highlight {
@@ -87,9 +87,9 @@ export class TimeScrollWheel extends TailwindElement {
         top: 50%;
         transform: translateY(-50%);
         height: ${ITEM_HEIGHT}px;
-        border-top: 1px solid var(--ui-time-picker-border, #d1d5db);
-        border-bottom: 1px solid var(--ui-time-picker-border, #d1d5db);
-        background: var(--ui-time-picker-highlight-bg, rgba(59, 130, 246, 0.05));
+        border-top: 1px solid var(--ui-time-picker-wheel-highlight-border);
+        border-bottom: 1px solid var(--ui-time-picker-wheel-highlight-border);
+        background: var(--ui-time-picker-wheel-highlight-bg);
         pointer-events: none;
         z-index: 1;
       }
@@ -97,21 +97,8 @@ export class TimeScrollWheel extends TailwindElement {
       .wheel-separator {
         font-size: 1.25rem;
         font-weight: 600;
-        color: var(--ui-time-picker-separator, #9ca3af);
+        color: var(--ui-time-picker-wheel-separator);
         user-select: none;
-      }
-
-      :host-context(.dark) .wheel-item {
-        color: var(--ui-time-picker-text, #d1d5db);
-      }
-
-      :host-context(.dark) .wheel-highlight {
-        border-color: var(--ui-time-picker-border, #4b5563);
-        background: rgba(59, 130, 246, 0.1);
-      }
-
-      :host-context(.dark) .wheel-separator {
-        color: var(--ui-time-picker-separator, #6b7280);
       }
     `,
   ];

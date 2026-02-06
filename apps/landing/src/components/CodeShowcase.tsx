@@ -238,17 +238,17 @@ function CodeShowcase() {
   return (
     <section id="code" className="relative py-24 md:py-32">
       {/* Background */}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-gray-50/50 to-transparent" />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-gray-50/50 dark:via-gray-900/50 to-transparent" />
 
       <div ref={sectionRef} className="relative mx-auto max-w-6xl px-6">
         <div className={`mb-12 text-center reveal ${isVisible ? 'revealed' : ''}`}>
-          <p className="mb-3 text-sm font-semibold uppercase tracking-[0.15em] text-gray-500">
+          <p className="mb-3 text-sm font-semibold uppercase tracking-[0.15em] text-gray-500 dark:text-gray-400">
             Universal Syntax
           </p>
-          <h2 className="mb-4 text-3xl font-bold tracking-[-0.02em] text-gray-900 md:text-4xl lg:text-5xl">
+          <h2 className="mb-4 text-3xl font-bold tracking-[-0.02em] text-gray-900 dark:text-gray-100 md:text-4xl lg:text-5xl">
             Same Component, Any Framework
           </h2>
-          <p className="mx-auto max-w-2xl text-lg text-gray-500 leading-relaxed">
+          <p className="mx-auto max-w-2xl text-lg text-gray-500 dark:text-gray-400 leading-relaxed">
             Write once, use everywhere. lit-ui components work seamlessly across
             all major frameworks.
           </p>
@@ -260,10 +260,10 @@ function CodeShowcase() {
         >
           {/* Framework tabs */}
           <div className="mb-4 flex items-center justify-between">
-            <div ref={tabsRef} className="relative flex gap-1 rounded-lg bg-gray-100 p-1">
+            <div ref={tabsRef} className="relative flex gap-1 rounded-lg bg-gray-100 dark:bg-gray-800 p-1">
               {/* Sliding indicator */}
               <div
-                className="absolute top-1 h-[calc(100%-8px)] rounded-md bg-white shadow-sm transition-all duration-300"
+                className="absolute top-1 h-[calc(100%-8px)] rounded-md bg-white dark:bg-gray-700 shadow-sm transition-all duration-300"
                 style={{
                   left: `${indicatorStyle.left}px`,
                   width: `${indicatorStyle.width}px`,
@@ -277,8 +277,8 @@ function CodeShowcase() {
                   onClick={() => setActiveFramework(framework)}
                   className={`relative z-10 rounded-md px-4 py-2 text-sm font-medium transition-colors duration-200 ${
                     activeFramework === framework
-                      ? 'text-gray-900'
-                      : 'text-gray-500 hover:text-gray-700'
+                      ? 'text-gray-900 dark:text-gray-100'
+                      : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
                   }`}
                 >
                   {framework}

@@ -84,17 +84,17 @@ function ComponentPreview() {
 
   return (
     <section id="components" className="relative py-24 md:py-32">
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-gray-50/50 to-transparent" />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-gray-50/50 dark:from-gray-900/50 to-transparent" />
 
       <div ref={sectionRef} className="relative mx-auto max-w-6xl px-6">
         <div className={`mb-12 text-center reveal ${isVisible ? 'revealed' : ''}`}>
-          <p className="mb-3 text-sm font-semibold uppercase tracking-[0.15em] text-gray-500">
+          <p className="mb-3 text-sm font-semibold uppercase tracking-[0.15em] text-gray-500 dark:text-gray-400">
             Interactive Preview
           </p>
-          <h2 className="mb-4 text-3xl font-bold tracking-[-0.02em] text-gray-900 md:text-4xl lg:text-5xl">
+          <h2 className="mb-4 text-3xl font-bold tracking-[-0.02em] text-gray-900 dark:text-gray-100 md:text-4xl lg:text-5xl">
             Built for Real Apps
           </h2>
-          <p className="mx-auto max-w-2xl text-lg text-gray-500 leading-relaxed">
+          <p className="mx-auto max-w-2xl text-lg text-gray-500 dark:text-gray-400 leading-relaxed">
             See how components work together in a real dashboard.
             Everything you see below is built with Lit UI.
           </p>
@@ -104,15 +104,15 @@ function ComponentPreview() {
           className={`mx-auto max-w-5xl reveal ${isVisible ? 'revealed' : ''}`}
           style={{ transitionDelay: '0.1s' }}
         >
-          <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white card-elevated" style={{ boxShadow: '0 1px 2px rgba(0,0,0,0.04), 0 4px 8px -1px rgba(0,0,0,0.06), 0 12px 24px -4px rgba(0,0,0,0.05)' }}>
+          <div className="overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 card-elevated" style={{ boxShadow: '0 1px 2px rgba(0,0,0,0.04), 0 4px 8px -1px rgba(0,0,0,0.06), 0 12px 24px -4px rgba(0,0,0,0.05)' }}>
             {/* Window chrome */}
-            <div className="flex items-center gap-2 border-b border-gray-200/80 bg-gray-50/80 px-4 py-3">
+            <div className="flex items-center gap-2 border-b border-gray-200/80 dark:border-gray-800/80 bg-gray-50/80 dark:bg-gray-900/80 px-4 py-3">
               <div className="flex gap-1.5">
                 <div className="h-3 w-3 rounded-full" style={{ background: '#FF5F57', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.35)' }} />
                 <div className="h-3 w-3 rounded-full" style={{ background: '#FDBC40', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.35)' }} />
                 <div className="h-3 w-3 rounded-full" style={{ background: '#33C748', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.35)' }} />
               </div>
-              <div className="mx-auto flex items-center gap-2 rounded-md bg-white px-3 py-1 text-xs text-gray-400 border border-gray-200" style={{ boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.06)' }}>
+              <div className="mx-auto flex items-center gap-2 rounded-md bg-white dark:bg-gray-800 px-3 py-1 text-xs text-gray-400 dark:text-gray-500 border border-gray-200 dark:border-gray-700" style={{ boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.06)' }}>
                 <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
@@ -121,13 +121,13 @@ function ComponentPreview() {
             </div>
 
             {/* Dashboard header */}
-            <div className="flex items-center justify-between border-b border-gray-100 px-6 py-3">
+            <div className="flex items-center justify-between border-b border-gray-100 dark:border-gray-800 px-6 py-3">
               <div>
-                <h3 className="text-sm font-semibold text-gray-900">Dashboard</h3>
-                <p className="text-xs text-gray-400">Jan 1 – Jan 31, 2025</p>
+                <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Dashboard</h3>
+                <p className="text-xs text-gray-400 dark:text-gray-500">Jan 1 – Jan 31, 2025</p>
               </div>
               <div className="flex items-center gap-3">
-                <button className="relative rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors">
+                <button className="relative rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:text-gray-500 dark:hover:bg-gray-800 dark:hover:text-gray-300 transition-colors">
                   <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
                   </svg>
@@ -150,14 +150,14 @@ function ComponentPreview() {
                     {/* Stats row */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       {stats.map((stat) => (
-                        <div key={stat.label} className="stat-card rounded-xl border border-gray-200/60 bg-white p-4">
+                        <div key={stat.label} className="stat-card rounded-xl border border-gray-200/60 dark:border-gray-800/60 bg-white dark:bg-gray-900 p-4">
                           <div className="flex items-start justify-between mb-3">
-                            <p className="text-[11px] font-medium uppercase tracking-wide text-gray-500">{stat.label}</p>
-                            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 text-gray-500">
+                            <p className="text-[11px] font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">{stat.label}</p>
+                            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400">
                               {stat.icon}
                             </div>
                           </div>
-                          <p className="text-2xl font-bold text-gray-900 tracking-tight">{stat.value}</p>
+                          <p className="text-2xl font-bold text-gray-900 dark:text-gray-100 tracking-tight">{stat.value}</p>
                           <div className="flex items-center gap-1 mt-1.5">
                             <svg className={`h-3.5 w-3.5 ${stat.up ? 'text-emerald-600' : 'text-red-500'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                               <path strokeLinecap="round" strokeLinejoin="round" d={stat.up ? 'M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25' : 'M4.5 4.5l15 15m0 0V8.25m0 11.25H8.25'} />
@@ -165,7 +165,7 @@ function ComponentPreview() {
                             <p className={`text-xs font-medium ${stat.up ? 'text-emerald-600' : 'text-red-500'}`}>
                               {stat.change}
                             </p>
-                            <p className="text-xs text-gray-400 ml-0.5">vs last month</p>
+                            <p className="text-xs text-gray-400 dark:text-gray-500 ml-0.5">vs last month</p>
                           </div>
                         </div>
                       ))}
@@ -175,8 +175,8 @@ function ComponentPreview() {
                     <div>
                       <div className="flex items-center justify-between mb-4">
                         <div>
-                          <h4 className="text-sm font-semibold text-gray-900">Recent Orders</h4>
-                          <p className="text-xs text-gray-400 mt-0.5">Showing 4 of 128 orders</p>
+                          <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Recent Orders</h4>
+                          <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">Showing 4 of 128 orders</p>
                         </div>
                         <lui-button variant="outline" size="sm">
                           <svg slot="icon-start" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -185,31 +185,31 @@ function ComponentPreview() {
                           Export
                         </lui-button>
                       </div>
-                      <div className="overflow-hidden rounded-lg border border-gray-200">
+                      <div className="overflow-hidden rounded-lg border border-gray-200 dark:border-gray-800">
                         <table className="w-full text-sm">
                           <thead>
-                            <tr className="border-b border-gray-100 bg-gray-50/80">
-                              <th className="px-4 py-2.5 text-left text-[11px] font-medium uppercase tracking-wider text-gray-500">Order</th>
-                              <th className="px-4 py-2.5 text-left text-[11px] font-medium uppercase tracking-wider text-gray-500">Customer</th>
-                              <th className="px-4 py-2.5 text-left text-[11px] font-medium uppercase tracking-wider text-gray-500 hidden sm:table-cell">Status</th>
-                              <th className="px-4 py-2.5 text-right text-[11px] font-medium uppercase tracking-wider text-gray-500">Amount</th>
+                            <tr className="border-b border-gray-100 dark:border-gray-800 bg-gray-50/80 dark:bg-gray-800/80">
+                              <th className="px-4 py-2.5 text-left text-[11px] font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Order</th>
+                              <th className="px-4 py-2.5 text-left text-[11px] font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Customer</th>
+                              <th className="px-4 py-2.5 text-left text-[11px] font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400 hidden sm:table-cell">Status</th>
+                              <th className="px-4 py-2.5 text-right text-[11px] font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Amount</th>
                             </tr>
                           </thead>
-                          <tbody className="divide-y divide-gray-100">
+                          <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
                             {[
                               { id: '#4021', customer: 'Sarah Chen', status: 'Completed', amount: '$250.00' },
                               { id: '#4020', customer: 'Marcus Johnson', status: 'Processing', amount: '$128.50' },
                               { id: '#4019', customer: 'Priya Patel', status: 'Completed', amount: '$89.00' },
                               { id: '#4018', customer: 'Alex Rivera', status: 'Pending', amount: '$340.00' },
                             ].map((order) => (
-                              <tr key={order.id} className="hover:bg-gray-50/50 transition-colors">
-                                <td className="px-4 py-3 font-mono text-xs text-gray-500">{order.id}</td>
+                              <tr key={order.id} className="hover:bg-gray-50/50 dark:hover:bg-gray-800/50 transition-colors">
+                                <td className="px-4 py-3 font-mono text-xs text-gray-500 dark:text-gray-400">{order.id}</td>
                                 <td className="px-4 py-3">
                                   <div className="flex items-center gap-2.5">
-                                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gray-100 text-[10px] font-semibold text-gray-600">
+                                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800 text-[10px] font-semibold text-gray-600 dark:text-gray-400">
                                       {order.customer.split(' ').map(n => n[0]).join('')}
                                     </div>
-                                    <span className="text-gray-700">{order.customer}</span>
+                                    <span className="text-gray-700 dark:text-gray-300">{order.customer}</span>
                                   </div>
                                 </td>
                                 <td className="px-4 py-3 hidden sm:table-cell">
@@ -230,7 +230,7 @@ function ComponentPreview() {
                                     {order.status}
                                   </span>
                                 </td>
-                                <td className="px-4 py-3 text-right font-semibold text-gray-900">{order.amount}</td>
+                                <td className="px-4 py-3 text-right font-semibold text-gray-900 dark:text-gray-100">{order.amount}</td>
                               </tr>
                             ))}
                           </tbody>
@@ -271,16 +271,16 @@ function ComponentPreview() {
                     </div>
 
                     {/* Team list */}
-                    <div className="divide-y divide-gray-100 rounded-lg border border-gray-200 overflow-hidden">
+                    <div className="divide-y divide-gray-100 dark:divide-gray-800 rounded-lg border border-gray-200 dark:border-gray-800 overflow-hidden">
                       {teamMembers.map((member) => (
-                        <div key={member.email} className="flex items-center justify-between px-4 py-3 hover:bg-gray-50/50 transition-colors">
+                        <div key={member.email} className="flex items-center justify-between px-4 py-3 hover:bg-gray-50/50 dark:hover:bg-gray-800/50 transition-colors">
                           <div className="flex items-center gap-3 min-w-0">
-                            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gray-100 text-sm font-semibold text-gray-600">
+                            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800 text-sm font-semibold text-gray-600 dark:text-gray-400">
                               {member.name.split(' ').map(n => n[0]).join('')}
                             </div>
                             <div className="min-w-0">
-                              <p className="text-sm font-medium text-gray-900 truncate">{member.name}</p>
-                              <p className="text-xs text-gray-500 truncate">{member.role} &middot; {member.email}</p>
+                              <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{member.name}</p>
+                              <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{member.role} &middot; {member.email}</p>
                             </div>
                           </div>
                           <div className="flex items-center gap-3 shrink-0">
@@ -326,22 +326,22 @@ function ComponentPreview() {
                         <div className="space-y-4 py-2">
                           <div className="flex items-center justify-between">
                             <div>
-                              <p className="text-sm font-medium text-gray-900">Email notifications</p>
-                              <p className="text-xs text-gray-500">Receive order updates via email</p>
+                              <p className="text-sm font-medium text-gray-900 dark:text-gray-100">Email notifications</p>
+                              <p className="text-xs text-gray-500 dark:text-gray-400">Receive order updates via email</p>
                             </div>
                             <lui-switch checked size="sm" />
                           </div>
                           <div className="flex items-center justify-between">
                             <div>
-                              <p className="text-sm font-medium text-gray-900">Push notifications</p>
-                              <p className="text-xs text-gray-500">Browser push for real-time alerts</p>
+                              <p className="text-sm font-medium text-gray-900 dark:text-gray-100">Push notifications</p>
+                              <p className="text-xs text-gray-500 dark:text-gray-400">Browser push for real-time alerts</p>
                             </div>
                             <lui-switch size="sm" />
                           </div>
                           <div className="flex items-center justify-between">
                             <div>
-                              <p className="text-sm font-medium text-gray-900">Weekly digest</p>
-                              <p className="text-xs text-gray-500">Summary of activity every Monday</p>
+                              <p className="text-sm font-medium text-gray-900 dark:text-gray-100">Weekly digest</p>
+                              <p className="text-xs text-gray-500 dark:text-gray-400">Summary of activity every Monday</p>
                             </div>
                             <lui-switch checked size="sm" />
                           </div>
@@ -353,8 +353,8 @@ function ComponentPreview() {
                         <div className="space-y-4 py-2">
                           <div className="flex items-center justify-between">
                             <div>
-                              <p className="text-sm font-medium text-gray-900">Two-factor authentication</p>
-                              <p className="text-xs text-gray-500">Add an extra layer of security</p>
+                              <p className="text-sm font-medium text-gray-900 dark:text-gray-100">Two-factor authentication</p>
+                              <p className="text-xs text-gray-500 dark:text-gray-400">Add an extra layer of security</p>
                             </div>
                             <lui-switch checked size="sm" />
                           </div>
@@ -380,23 +380,23 @@ function ComponentPreview() {
           {/* Component count badge */}
           <div className="mt-6 flex flex-wrap items-center justify-center gap-2 text-xs text-gray-400">
             <span className="mr-1 text-gray-400 font-medium">Built with</span>
-            <span className="rounded-full bg-white border border-gray-200 px-2.5 py-1 font-medium text-gray-500" style={{ boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }}>lui-tabs</span>
-            <span className="rounded-full bg-white border border-gray-200 px-2.5 py-1 font-medium text-gray-500" style={{ boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }}>lui-input</span>
-            <span className="rounded-full bg-white border border-gray-200 px-2.5 py-1 font-medium text-gray-500" style={{ boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }}>lui-select</span>
-            <span className="rounded-full bg-white border border-gray-200 px-2.5 py-1 font-medium text-gray-500" style={{ boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }}>lui-switch</span>
-            <span className="rounded-full bg-white border border-gray-200 px-2.5 py-1 font-medium text-gray-500" style={{ boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }}>lui-button</span>
-            <span className="rounded-full bg-white border border-gray-200 px-2.5 py-1 font-medium text-gray-500" style={{ boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }}>lui-dialog</span>
-            <span className="rounded-full bg-white border border-gray-200 px-2.5 py-1 font-medium text-gray-500" style={{ boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }}>lui-accordion</span>
-            <span className="rounded-full bg-white border border-gray-200 px-2.5 py-1 font-medium text-gray-500" style={{ boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }}>lui-checkbox</span>
-            <span className="rounded-full bg-white border border-gray-200 px-2.5 py-1 font-medium text-gray-500" style={{ boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }}>lui-tooltip</span>
+            <span className="rounded-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 px-2.5 py-1 font-medium text-gray-500 dark:text-gray-400" style={{ boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }}>lui-tabs</span>
+            <span className="rounded-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 px-2.5 py-1 font-medium text-gray-500 dark:text-gray-400" style={{ boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }}>lui-input</span>
+            <span className="rounded-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 px-2.5 py-1 font-medium text-gray-500 dark:text-gray-400" style={{ boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }}>lui-select</span>
+            <span className="rounded-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 px-2.5 py-1 font-medium text-gray-500 dark:text-gray-400" style={{ boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }}>lui-switch</span>
+            <span className="rounded-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 px-2.5 py-1 font-medium text-gray-500 dark:text-gray-400" style={{ boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }}>lui-button</span>
+            <span className="rounded-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 px-2.5 py-1 font-medium text-gray-500 dark:text-gray-400" style={{ boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }}>lui-dialog</span>
+            <span className="rounded-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 px-2.5 py-1 font-medium text-gray-500 dark:text-gray-400" style={{ boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }}>lui-accordion</span>
+            <span className="rounded-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 px-2.5 py-1 font-medium text-gray-500 dark:text-gray-400" style={{ boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }}>lui-checkbox</span>
+            <span className="rounded-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 px-2.5 py-1 font-medium text-gray-500 dark:text-gray-400" style={{ boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }}>lui-tooltip</span>
           </div>
         </div>
 
         {/* Confirm delete dialog */}
         <lui-dialog ref={dialogRef} show-close-button>
           <span slot="title">Remove Team Member</span>
-          <p className="text-sm text-gray-500 leading-relaxed">
-            Are you sure you want to remove <strong className="text-gray-900">{deleteTarget}</strong> from the team?
+          <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
+            Are you sure you want to remove <strong className="text-gray-900 dark:text-gray-100">{deleteTarget}</strong> from the team?
             This action cannot be undone.
           </p>
           <div slot="footer">

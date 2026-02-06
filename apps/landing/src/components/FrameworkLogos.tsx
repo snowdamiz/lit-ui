@@ -59,9 +59,9 @@ function FrameworkLogos() {
 
       <div ref={ref} className="mx-auto max-w-6xl px-6 py-14">
         <div className="text-center">
-          <p className={`mb-10 text-lg text-gray-500 reveal ${isVisible ? 'revealed' : ''}`}>
+          <p className={`mb-10 text-lg text-gray-500 dark:text-gray-400 reveal ${isVisible ? 'revealed' : ''}`}>
             One component.{' '}
-            <span className="font-semibold text-gray-900">Every framework.</span>
+            <span className="font-semibold text-gray-900 dark:text-gray-100">Every framework.</span>
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-6 md:gap-10">
@@ -71,10 +71,10 @@ function FrameworkLogos() {
                 className={`group flex flex-col items-center gap-3 reveal-scale ${isVisible ? 'revealed' : ''}`}
                 style={{ transitionDelay: `${index * 0.08}s`, animationDelay: `${index * 0.08}s` }}
               >
-                <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-gray-200 bg-white text-gray-400 shadow-sm transition-all duration-300 group-hover:border-gray-300 group-hover:bg-gray-50 group-hover:text-gray-900 group-hover:shadow-md group-hover:-translate-y-1">
+                <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 text-gray-400 dark:text-gray-500 shadow-sm transition-all duration-300 group-hover:border-gray-300 dark:group-hover:border-gray-700 group-hover:bg-gray-50 dark:group-hover:bg-gray-800 group-hover:text-gray-900 dark:group-hover:text-gray-100 group-hover:shadow-md group-hover:-translate-y-1">
                   {framework.icon}
                 </div>
-                <span className="text-sm font-medium text-gray-400 transition-colors duration-300 group-hover:text-gray-900">
+                <span className="text-sm font-medium text-gray-400 dark:text-gray-500 transition-colors duration-300 group-hover:text-gray-900 dark:group-hover:text-gray-100">
                   {framework.name}
                 </span>
               </div>

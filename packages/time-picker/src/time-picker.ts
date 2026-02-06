@@ -303,7 +303,7 @@ export class TimePicker extends TailwindElement {
       }
 
       .required-indicator {
-        color: var(--ui-time-picker-error, var(--ui-input-text-error, #ef4444));
+        color: var(--ui-time-picker-error, var(--ui-input-text-error));
         margin-left: 0.125rem;
       }
 
@@ -313,8 +313,8 @@ export class TimePicker extends TailwindElement {
         border-radius: var(--ui-time-picker-radius, var(--ui-input-radius, 0.375rem));
         border-width: var(--ui-time-picker-border-width, var(--ui-input-border-width, 1px));
         border-style: solid;
-        border-color: var(--ui-time-picker-border, var(--ui-input-border, #d1d5db));
-        background-color: var(--ui-time-picker-bg, var(--ui-input-bg, white));
+        border-color: var(--ui-time-picker-border, var(--ui-input-border));
+        background-color: var(--ui-time-picker-bg, var(--ui-input-bg));
         transition:
           border-color 150ms,
           box-shadow 150ms;
@@ -322,16 +322,16 @@ export class TimePicker extends TailwindElement {
       }
 
       .input-display:focus-within {
-        border-color: var(--ui-time-picker-border-focus, var(--ui-input-border-focus, #3b82f6));
+        border-color: var(--ui-time-picker-border-focus, var(--ui-input-border-focus));
       }
 
       .input-display.has-error {
-        border-color: var(--ui-time-picker-error, var(--ui-input-border-error, #ef4444));
+        border-color: var(--ui-time-picker-error, var(--ui-input-border-error));
       }
 
       .input-display.is-disabled {
-        background-color: var(--ui-time-picker-bg-disabled, var(--ui-input-bg-disabled, #f3f4f6));
-        border-color: var(--ui-time-picker-border-disabled, var(--ui-input-border-disabled, #e5e7eb));
+        background-color: var(--ui-time-picker-bg-disabled, var(--ui-input-bg-disabled));
+        border-color: var(--ui-time-picker-border-disabled, var(--ui-input-border-disabled));
         cursor: not-allowed;
       }
 
@@ -345,12 +345,12 @@ export class TimePicker extends TailwindElement {
       }
 
       .display-text.is-placeholder {
-        color: var(--ui-time-picker-placeholder, var(--ui-input-placeholder, #9ca3af));
+        color: var(--ui-time-picker-placeholder, var(--ui-input-placeholder));
       }
 
       .timezone-label {
         font-size: 0.75rem;
-        color: var(--ui-time-picker-timezone-text, var(--ui-input-placeholder, #6b7280));
+        color: var(--ui-time-picker-timezone-text, var(--ui-input-placeholder));
         padding-right: 0.25rem;
         white-space: nowrap;
       }
@@ -363,7 +363,7 @@ export class TimePicker extends TailwindElement {
         margin-right: 0.25rem;
         border: none;
         background: transparent;
-        color: var(--color-muted-foreground, #6b7280);
+        color: var(--color-muted-foreground, var(--ui-time-picker-muted-text));
         cursor: pointer;
         border-radius: 0.25rem;
         transition:
@@ -373,11 +373,11 @@ export class TimePicker extends TailwindElement {
 
       .action-button:hover {
         color: var(--ui-time-picker-text, var(--ui-input-text, inherit));
-        background-color: var(--color-muted, #f3f4f6);
+        background-color: var(--color-muted, var(--ui-time-picker-hover-bg));
       }
 
       .action-button:focus-visible {
-        outline: 2px solid var(--color-ring, #3b82f6);
+        outline: 2px solid var(--color-ring, var(--ui-time-picker-ring));
         outline-offset: 1px;
       }
 
@@ -388,9 +388,9 @@ export class TimePicker extends TailwindElement {
 
       .time-picker-popup {
         position: fixed;
-        z-index: 50;
-        background-color: var(--ui-time-picker-popup-bg, white);
-        border: 1px solid var(--ui-time-picker-popup-border, #e5e7eb);
+        z-index: var(--ui-time-picker-z-index);
+        background-color: var(--ui-time-picker-popup-bg);
+        border: 1px solid var(--ui-time-picker-popup-border);
         border-radius: 0.5rem;
         box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
         padding: 0.75rem;
@@ -403,7 +403,7 @@ export class TimePicker extends TailwindElement {
       .interface-tabs {
         display: flex;
         gap: 0.25rem;
-        border-bottom: 1px solid var(--ui-time-picker-popup-border, #e5e7eb);
+        border-bottom: 1px solid var(--ui-time-picker-popup-border);
         padding-bottom: 0.5rem;
       }
 
@@ -411,9 +411,9 @@ export class TimePicker extends TailwindElement {
         flex: 1;
         padding: 0.375rem 0.5rem;
         font-size: 0.75rem;
-        border: 1px solid var(--ui-time-picker-border, #d1d5db);
+        border: 1px solid var(--ui-time-picker-border);
         border-radius: 0.25rem;
-        background: var(--ui-time-picker-tab-bg, #f9fafb);
+        background: var(--ui-time-picker-tab-bg);
         color: var(--ui-time-picker-text, inherit);
         cursor: pointer;
         transition: background-color 150ms, border-color 150ms;
@@ -421,7 +421,7 @@ export class TimePicker extends TailwindElement {
       }
 
       .interface-tab:hover {
-        background: var(--ui-time-picker-tab-bg-hover, #e5e7eb);
+        background: var(--ui-time-picker-tab-bg-hover);
       }
 
       .interface-tab[aria-selected='true'] {
@@ -431,7 +431,7 @@ export class TimePicker extends TailwindElement {
       }
 
       .interface-tab:focus-visible {
-        outline: 2px solid var(--color-ring, #3b82f6);
+        outline: 2px solid var(--color-ring, var(--ui-time-picker-ring));
         outline-offset: 1px;
       }
 
@@ -445,9 +445,9 @@ export class TimePicker extends TailwindElement {
         flex: 1;
         padding: 0.375rem 0.5rem;
         font-size: 0.75rem;
-        border: 1px solid var(--ui-time-picker-preset-border, #d1d5db);
+        border: 1px solid var(--ui-time-picker-preset-border);
         border-radius: 0.25rem;
-        background: var(--ui-time-picker-preset-bg, #f9fafb);
+        background: var(--ui-time-picker-preset-bg);
         color: var(--ui-time-picker-preset-text, inherit);
         cursor: pointer;
         transition: background-color 150ms, border-color 150ms;
@@ -455,12 +455,12 @@ export class TimePicker extends TailwindElement {
       }
 
       .preset-btn:hover:not(:disabled) {
-        background: var(--ui-time-picker-preset-bg-hover, #e5e7eb);
-        border-color: var(--ui-time-picker-preset-border-hover, #9ca3af);
+        background: var(--ui-time-picker-preset-bg-hover);
+        border-color: var(--ui-time-picker-preset-border-hover);
       }
 
       .preset-btn:focus-visible {
-        outline: 2px solid var(--color-ring, #3b82f6);
+        outline: 2px solid var(--color-ring, var(--ui-time-picker-ring));
         outline-offset: 1px;
       }
 
@@ -483,77 +483,9 @@ export class TimePicker extends TailwindElement {
 
       .error-message {
         font-size: 0.75rem;
-        color: var(--ui-time-picker-error, var(--ui-input-text-error, #ef4444));
+        color: var(--ui-time-picker-error, var(--ui-input-text-error));
       }
 
-      /* Dark mode */
-      :host-context(.dark) .time-picker-label {
-        color: var(--ui-time-picker-label-text, var(--ui-input-text, #f9fafb));
-      }
-
-      :host-context(.dark) .input-display {
-        border-color: var(--ui-time-picker-border, var(--ui-input-border, #374151));
-        background-color: var(--ui-time-picker-bg, var(--ui-input-bg, #111827));
-      }
-
-      :host-context(.dark) .input-display:focus-within {
-        border-color: var(--ui-time-picker-border-focus, var(--ui-input-border-focus, #3b82f6));
-      }
-
-      :host-context(.dark) .display-text {
-        color: var(--ui-time-picker-text, var(--ui-input-text, #f9fafb));
-      }
-
-      :host-context(.dark) .display-text.is-placeholder {
-        color: var(--ui-time-picker-placeholder, var(--ui-input-placeholder, #6b7280));
-      }
-
-      :host-context(.dark) .action-button:hover {
-        background-color: var(--color-muted, #1f2937);
-      }
-
-      :host-context(.dark) .time-picker-popup {
-        background-color: var(--ui-time-picker-popup-bg, #1f2937);
-        border-color: var(--ui-time-picker-popup-border, #374151);
-      }
-
-      :host-context(.dark) .interface-tabs {
-        border-bottom-color: var(--ui-time-picker-popup-border, #374151);
-      }
-
-      :host-context(.dark) .interface-tab {
-        border-color: var(--ui-time-picker-border, #4b5563);
-        background: var(--ui-time-picker-tab-bg, #1f2937);
-        color: var(--ui-time-picker-text, #f9fafb);
-      }
-
-      :host-context(.dark) .interface-tab:hover {
-        background: var(--ui-time-picker-tab-bg-hover, #374151);
-      }
-
-      :host-context(.dark) .input-display.is-disabled {
-        background-color: var(--ui-time-picker-bg-disabled, var(--ui-input-bg-disabled, #1f2937));
-        border-color: var(--ui-time-picker-border-disabled, var(--ui-input-border-disabled, #374151));
-      }
-
-      :host-context(.dark) .preset-buttons {
-        border-bottom-color: var(--ui-time-picker-popup-border, #374151);
-      }
-
-      :host-context(.dark) .preset-btn {
-        border-color: var(--ui-time-picker-preset-border, #4b5563);
-        background: var(--ui-time-picker-preset-bg, #1f2937);
-        color: var(--ui-time-picker-preset-text, #f9fafb);
-      }
-
-      :host-context(.dark) .preset-btn:hover:not(:disabled) {
-        background: var(--ui-time-picker-preset-bg-hover, #374151);
-        border-color: var(--ui-time-picker-preset-border-hover, #6b7280);
-      }
-
-      :host-context(.dark) .timezone-label {
-        color: var(--ui-time-picker-timezone-text, #9ca3af);
-      }
     `,
   ];
 

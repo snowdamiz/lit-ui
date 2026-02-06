@@ -52,21 +52,21 @@ export class TimeVoiceInput extends TailwindElement {
         justify-content: center;
         width: 2rem;
         height: 2rem;
-        border: 1px solid var(--ui-time-picker-border, #d1d5db);
+        border: 1px solid var(--ui-time-picker-voice-border);
         border-radius: 50%;
-        background: var(--ui-time-picker-bg, white);
-        color: var(--ui-time-picker-text, #374151);
+        background: var(--ui-time-picker-voice-bg);
+        color: var(--ui-time-picker-voice-text);
         cursor: pointer;
         transition: border-color 150ms, color 150ms;
       }
 
       .voice-btn:hover:not(:disabled) {
-        border-color: var(--ui-time-picker-primary, #3b82f6);
-        color: var(--ui-time-picker-primary, #3b82f6);
+        border-color: var(--ui-time-picker-voice-hover-border);
+        color: var(--ui-time-picker-voice-hover-text);
       }
 
       .voice-btn:focus-visible {
-        outline: 2px solid var(--ui-time-picker-focus-ring, #3b82f6);
+        outline: 2px solid var(--ui-time-picker-voice-focus-ring);
         outline-offset: 2px;
       }
 
@@ -76,8 +76,8 @@ export class TimeVoiceInput extends TailwindElement {
       }
 
       .voice-btn.listening {
-        border-color: var(--ui-time-picker-error, #ef4444);
-        color: var(--ui-time-picker-error, #ef4444);
+        border-color: var(--ui-time-picker-voice-listening);
+        color: var(--ui-time-picker-voice-listening);
       }
 
       .voice-icon {
@@ -88,7 +88,7 @@ export class TimeVoiceInput extends TailwindElement {
       .listening-pulse {
         position: absolute;
         inset: -3px;
-        border: 2px solid var(--ui-time-picker-error, #ef4444);
+        border: 2px solid var(--ui-time-picker-voice-listening);
         border-radius: 50%;
         animation: pulse 1.5s ease-in-out infinite;
       }
@@ -107,19 +107,7 @@ export class TimeVoiceInput extends TailwindElement {
 
       .voice-error {
         font-size: 0.75rem;
-        color: var(--ui-time-picker-error, #ef4444);
-      }
-
-      /* Dark mode */
-      :host-context(.dark) .voice-btn {
-        border-color: var(--ui-time-picker-border, #4b5563);
-        background: var(--ui-time-picker-bg, #1f2937);
-        color: var(--ui-time-picker-text, #d1d5db);
-      }
-
-      :host-context(.dark) .voice-btn:hover:not(:disabled) {
-        border-color: var(--ui-time-picker-primary, #3b82f6);
-        color: var(--ui-time-picker-primary, #3b82f6);
+        color: var(--ui-time-picker-error);
       }
     `,
   ];

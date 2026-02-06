@@ -115,8 +115,8 @@ export class AccordionItem extends TailwindElement {
       }
 
       .header-button:focus-visible {
-        outline: none;
-        box-shadow: 0 0 0 2px var(--ui-accordion-ring, currentColor);
+        outline: 2px solid var(--ui-focus-ring-color, var(--ui-accordion-ring, currentColor));
+        outline-offset: 2px;
       }
 
       .panel-wrapper {

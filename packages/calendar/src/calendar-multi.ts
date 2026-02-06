@@ -73,22 +73,17 @@ export class CalendarMulti extends TailwindElement {
       }
 
       .nav-button:hover {
-        background-color: var(--ui-calendar-hover-bg, #f3f4f6);
+        background-color: var(--ui-calendar-hover-bg);
       }
 
       .nav-button:focus-visible {
-        outline: 2px solid var(--ui-calendar-focus-ring, var(--color-ring, #3b82f6));
+        outline: 2px solid var(--ui-calendar-focus-ring, var(--color-ring));
         outline-offset: 2px;
       }
 
       .nav-button svg {
         width: 1rem;
         height: 1rem;
-      }
-
-      /* Dark mode */
-      :host-context(.dark) .nav-button:hover {
-        background-color: var(--ui-calendar-hover-bg, #1f2937);
       }
 
       /* Container query: vertical stacking for narrow containers */
