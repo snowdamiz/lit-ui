@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
@@ -42,6 +44,14 @@
   --color-gray-950: oklch(0.08 0 0);
 }
 
+.dark {
+  --color-background: oklch(0.10 0 0);
+  --color-foreground: oklch(0.95 0 0);
+  --color-muted-foreground: oklch(0.65 0 0);
+  --color-border: oklch(0.25 0 0);
+  --color-card: oklch(0.12 0 0);
+}
+
 html {
   scroll-behavior: smooth;
 }
@@ -59,6 +69,11 @@ body {
   color: white;
 }
 
+.dark ::selection {
+  background-color: oklch(0.70 0 0);
+  color: oklch(0.10 0 0);
+}
+
 /* Subtle grid background pattern */
 .grid-pattern {
   background-image:
@@ -67,9 +82,19 @@ body {
   background-size: 48px 48px;
 }
 
+.dark .grid-pattern {
+  background-image:
+    linear-gradient(to right, oklch(0.18 0 0) 1px, transparent 1px),
+    linear-gradient(to bottom, oklch(0.18 0 0) 1px, transparent 1px);
+}
+
 /* Radial gradient overlay for hero sections */
 .hero-gradient {
   background: radial-gradient(ellipse 80% 50% at 50% -20%, oklch(0.92 0 0) 0%, transparent 70%);
+}
+
+.dark .hero-gradient {
+  background: radial-gradient(ellipse 80% 50% at 50% -20%, oklch(0.18 0 0) 0%, transparent 70%);
 }
 
 /* Bottom fade gradient */
@@ -77,13 +102,25 @@ body {
   background: linear-gradient(to bottom, transparent 0%, oklch(1 0 0) 100%);
 }
 
+.dark .bottom-fade {
+  background: linear-gradient(to bottom, transparent 0%, oklch(0.10 0 0) 100%);
+}
+
 /* Soft gradient overlap between sections */
 .section-fade-top {
   background: linear-gradient(to bottom, oklch(1 0 0) 0%, transparent 100%);
 }
 
+.dark .section-fade-top {
+  background: linear-gradient(to bottom, oklch(0.10 0 0) 0%, transparent 100%);
+}
+
 .section-fade-bottom {
   background: linear-gradient(to top, oklch(1 0 0) 0%, transparent 100%);
+}
+
+.dark .section-fade-bottom {
+  background: linear-gradient(to top, oklch(0.10 0 0) 0%, transparent 100%);
 }
 
 /* Code block styling - enhanced with glow */
@@ -115,6 +152,18 @@ body {
     0 8px 15px -3px oklch(0 0 0 / 0.05);
 }
 
+.dark .stat-card {
+  box-shadow:
+    0 1px 2px 0 oklch(0 0 0 / 0.2),
+    0 1px 3px 0 oklch(0 0 0 / 0.15);
+}
+
+.dark .stat-card:hover {
+  box-shadow:
+    0 4px 6px -1px oklch(0 0 0 / 0.3),
+    0 8px 15px -3px oklch(0 0 0 / 0.25);
+}
+
 /* Card with subtle shadow and hover lift */
 .card-elevated {
   box-shadow:
@@ -130,6 +179,19 @@ body {
     0 10px 15px -3px oklch(0 0 0 / 0.08),
     0 20px 25px -5px oklch(0 0 0 / 0.06);
   transform: translateY(-2px);
+}
+
+.dark .card-elevated {
+  box-shadow:
+    0 1px 3px 0 oklch(0 0 0 / 0.2),
+    0 1px 2px -1px oklch(0 0 0 / 0.2);
+}
+
+.dark .card-elevated:hover {
+  box-shadow:
+    0 4px 6px -1px oklch(0 0 0 / 0.2),
+    0 10px 15px -3px oklch(0 0 0 / 0.3),
+    0 20px 25px -5px oklch(0 0 0 / 0.3);
 }
 
 /* Button with subtle shadow */
@@ -150,6 +212,10 @@ body {
 .focus-ring:focus-visible {
   outline: none;
   box-shadow: 0 0 0 2px oklch(1 0 0), 0 0 0 4px oklch(0.22 0 0);
+}
+
+.dark .focus-ring:focus-visible {
+  box-shadow: 0 0 0 2px oklch(0.10 0 0), 0 0 0 4px oklch(0.70 0 0);
 }
 
 /* Smooth fade-in animation with subtle scale */
@@ -281,10 +347,21 @@ body {
   background-clip: text;
 }
 
+.dark .text-gradient {
+  background: linear-gradient(135deg, oklch(0.95 0 0) 0%, oklch(0.65 0 0) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
 /* Divider with fade */
 .divider-fade {
   background: linear-gradient(to right, transparent, oklch(0.88 0 0), transparent);
   height: 1px;
+}
+
+.dark .divider-fade {
+  background: linear-gradient(to right, transparent, oklch(0.25 0 0), transparent);
 }
 
 /* Terminal glow effect */

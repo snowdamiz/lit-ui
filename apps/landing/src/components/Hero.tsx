@@ -17,30 +17,30 @@ function Hero() {
       <div className="pointer-events-none absolute inset-0 hero-gradient" />
 
       {/* Decorative circles with subtle pulsing */}
-      <div className="pointer-events-none absolute -left-32 top-20 h-64 w-64 rounded-full bg-gray-100 opacity-60 blur-3xl animate-[pulse_8s_ease-in-out_infinite]" />
-      <div className="pointer-events-none absolute -right-32 top-40 h-80 w-80 rounded-full bg-gray-100 opacity-50 blur-3xl animate-[pulse_10s_ease-in-out_infinite_2s]" />
+      <div className="pointer-events-none absolute -left-32 top-20 h-64 w-64 rounded-full bg-gray-100 dark:bg-gray-800 opacity-60 blur-3xl animate-[pulse_8s_ease-in-out_infinite]" />
+      <div className="pointer-events-none absolute -right-32 top-40 h-80 w-80 rounded-full bg-gray-100 dark:bg-gray-800 opacity-50 blur-3xl animate-[pulse_10s_ease-in-out_infinite_2s]" />
 
       <div className="relative mx-auto max-w-6xl px-6">
         <div className="text-center">
           {/* Badge */}
-          <div className="mb-8 inline-flex items-center gap-2.5 rounded-full border border-gray-200/80 bg-white/80 px-4 py-2 shadow-[0_1px_2px_oklch(0_0_0/0.04),inset_0_1px_0_oklch(1_0_0/0.8)] backdrop-blur-sm animate-fade-in-up opacity-0 stagger-1">
+          <div className="mb-8 inline-flex items-center gap-2.5 rounded-full border border-gray-200/80 dark:border-gray-800/80 bg-white/80 dark:bg-gray-900/80 px-4 py-2 shadow-[0_1px_2px_oklch(0_0_0/0.04),inset_0_1px_0_oklch(1_0_0/0.8)] backdrop-blur-sm animate-fade-in-up opacity-0 stagger-1">
             <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-gray-400 opacity-75" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-gray-900" />
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-gray-400 dark:bg-gray-500 opacity-75" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-gray-900 dark:bg-gray-100" />
             </span>
-            <span className="text-sm font-medium text-gray-700">
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
               Framework Agnostic Components
             </span>
           </div>
 
           {/* Main headline */}
-          <h1 className="mb-6 text-4xl font-extrabold tracking-[-0.03em] text-gray-900 sm:text-5xl md:text-6xl lg:text-7xl animate-fade-in-up opacity-0 stagger-2">
+          <h1 className="mb-6 text-4xl font-extrabold tracking-[-0.03em] text-gray-900 dark:text-gray-100 sm:text-5xl md:text-6xl lg:text-7xl animate-fade-in-up opacity-0 stagger-2">
             <span className="block">Web Components that</span>
             <span className="block text-gradient">Work Everywhere</span>
           </h1>
 
           {/* Subheadline */}
-          <p className="mx-auto mb-12 max-w-2xl text-lg text-gray-500 md:text-xl leading-relaxed animate-fade-in-up opacity-0 stagger-3">
+          <p className="mx-auto mb-12 max-w-2xl text-lg text-gray-500 dark:text-gray-400 md:text-xl leading-relaxed animate-fade-in-up opacity-0 stagger-3">
             Beautiful, accessible UI components for React, Vue, Svelte, and more.
             <br className="hidden sm:block" />
             No framework lock-in. Own your code.
@@ -50,7 +50,7 @@ function Hero() {
           <div className="flex flex-col items-center justify-center gap-4 sm:flex-row animate-fade-in-up opacity-0 stagger-4">
             <a
               href={getDocsUrl()}
-              className="group flex items-center gap-2 rounded-xl bg-gray-900 px-7 py-3.5 text-base font-bold text-white transition-all hover:bg-gray-800 hover:shadow-lg active:scale-[0.98] btn-shadow focus-ring"
+              className="group flex items-center gap-2 rounded-xl bg-gray-900 dark:bg-gray-100 px-7 py-3.5 text-base font-bold text-white dark:text-gray-900 transition-all hover:bg-gray-800 dark:hover:bg-gray-200 hover:shadow-lg active:scale-[0.98] btn-shadow focus-ring"
             >
               Get Started
               <svg
@@ -71,7 +71,7 @@ function Hero() {
               href="https://github.com/snowdamiz/lit-ui"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2.5 rounded-xl border border-gray-200 bg-white px-7 py-3.5 text-base font-semibold text-gray-900 transition-all hover:border-gray-300 hover:bg-gray-50 hover:shadow-md active:scale-[0.98] shadow-sm focus-ring"
+              className="flex items-center gap-2.5 rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 px-7 py-3.5 text-base font-semibold text-gray-900 dark:text-gray-100 transition-all hover:border-gray-300 dark:hover:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 hover:shadow-md active:scale-[0.98] shadow-sm focus-ring"
             >
               <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
                 <path

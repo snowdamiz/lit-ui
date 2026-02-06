@@ -35,6 +35,19 @@
   --color-brand-900: oklch(0.18 0 0);
   --color-brand-950: oklch(0.10 0 0);
 
+  /* Gray Scale - pure neutrals (override Tailwind's blue-tinted defaults) */
+  --color-gray-50: oklch(0.985 0 0);
+  --color-gray-100: oklch(0.96 0 0);
+  --color-gray-200: oklch(0.90 0 0);
+  --color-gray-300: oklch(0.82 0 0);
+  --color-gray-400: oklch(0.71 0 0);
+  --color-gray-500: oklch(0.55 0 0);
+  --color-gray-600: oklch(0.45 0 0);
+  --color-gray-700: oklch(0.37 0 0);
+  --color-gray-800: oklch(0.27 0 0);
+  --color-gray-900: oklch(0.18 0 0);
+  --color-gray-950: oklch(0.10 0 0);
+
   /* Spacing Scale (extends Tailwind defaults) */
   --spacing-0: 0px;
   --spacing-px: 1px;
@@ -371,6 +384,10 @@
   --ui-data-table-badge-yellow-text: oklch(0.85 0.12 85);
   --ui-data-table-badge-purple-bg: oklch(0.30 0.06 310);
   --ui-data-table-badge-purple-text: oklch(0.80 0.10 310);
+  --ui-data-table-overlay-bg: rgba(0, 0, 0, 0.5);
+  --ui-data-table-editable-hover-bg: rgba(255, 255, 255, 0.05);
+  --ui-data-table-editing-bg: color-mix(in oklch, var(--color-primary, var(--ui-color-primary)) 8%, var(--color-gray-950));
+  --ui-data-table-menu-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.2);
 
   /* Button dark mode */
   --ui-button-primary-bg: oklch(0.985 0 0);
@@ -1224,6 +1241,9 @@
   --ui-data-table-sticky-shadow: rgba(0, 0, 0, 0.06);
   --ui-data-table-menu-bg: var(--color-card, var(--ui-color-card));
   --ui-data-table-menu-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.07);
+  --ui-data-table-overlay-bg: rgba(255, 255, 255, 0.6);
+  --ui-data-table-editable-hover-bg: rgba(0, 0, 0, 0.03);
+  --ui-data-table-editing-bg: color-mix(in oklch, var(--color-primary, var(--ui-color-primary)) 5%, var(--color-background, white));
 
   /* Data Table Badge Colors */
   --ui-data-table-badge-default-bg: var(--color-muted, var(--ui-color-muted));

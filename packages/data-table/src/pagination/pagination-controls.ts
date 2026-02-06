@@ -102,6 +102,22 @@ export class PaginationControls extends TailwindElement {
         white-space: nowrap;
       }
 
+      .page-size-selector select {
+        padding: 4px 8px;
+        font-size: 0.875rem;
+        font-family: inherit;
+        border: 1px solid var(--ui-data-table-border-color);
+        border-radius: var(--ui-radius-sm, 0.25rem);
+        background: var(--ui-data-table-row-bg);
+        color: var(--ui-data-table-text-color);
+        cursor: pointer;
+      }
+
+      .page-size-selector select:focus-visible {
+        outline: 2px solid var(--color-primary, var(--ui-color-primary));
+        outline-offset: 2px;
+      }
+
       .page-nav {
         display: flex;
         align-items: center;

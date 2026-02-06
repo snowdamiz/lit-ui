@@ -392,7 +392,7 @@ export const inlineEditingStyles = css`
 
   .cell-edit-input:focus,
   .cell-edit-select:focus {
-    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+    box-shadow: 0 0 0 2px color-mix(in oklch, var(--color-primary, var(--ui-color-primary)) 25%, transparent);
   }
 
   .cell-edit-input.has-error {
@@ -400,7 +400,7 @@ export const inlineEditingStyles = css`
   }
 
   .cell-edit-input.has-error:focus {
-    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.25);
+    box-shadow: 0 0 0 2px color-mix(in oklch, var(--color-destructive, var(--ui-color-destructive)) 25%, transparent);
   }
 
   /* ── Checkbox input ── */
@@ -485,7 +485,7 @@ export const inlineEditingStyles = css`
   }
 
   .row-edit-save:hover {
-    background: rgba(34, 197, 94, 0.1);
+    background: color-mix(in oklch, var(--color-success) 10%, transparent);
     color: var(--color-success);
   }
 
@@ -494,7 +494,7 @@ export const inlineEditingStyles = css`
   }
 
   .row-edit-cancel:hover {
-    background: rgba(239, 68, 68, 0.1);
+    background: color-mix(in oklch, var(--color-destructive, var(--ui-color-destructive)) 10%, transparent);
     color: var(--color-destructive, var(--ui-color-destructive));
   }
 

@@ -2741,12 +2741,6 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
     css`
       :host {
         display: block;
-        --ui-data-table-header-bg: var(--color-muted);
-        --ui-data-table-row-bg: var(--color-background);
-        --ui-data-table-row-hover-bg: var(--color-muted);
-        --ui-data-table-border-color: var(--color-border);
-        --ui-data-table-text-color: var(--color-foreground);
-        --ui-data-table-header-text: var(--color-muted-foreground);
         --ui-data-table-row-height: 48px;
         --ui-data-table-header-height: 48px;
         --ui-data-table-cell-padding: 0.75rem 1rem;

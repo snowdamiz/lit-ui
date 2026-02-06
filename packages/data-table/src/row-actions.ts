@@ -263,7 +263,7 @@ export const rowActionsStyles = css`
   }
 
   .row-action-btn.destructive:hover {
-    background: rgba(239, 68, 68, 0.1);
+    background: color-mix(in oklch, var(--color-destructive, var(--ui-color-destructive)) 10%, transparent);
     color: var(--color-destructive, var(--ui-color-destructive));
   }
 
@@ -302,8 +302,9 @@ export const rowActionsStyles = css`
     min-width: 160px;
     padding: 4px 0;
     background: var(--ui-data-table-menu-bg);
+    border: 1px solid var(--ui-data-table-border-color);
     border-radius: 6px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--ui-data-table-menu-shadow);
   }
 
   .row-actions-menu-item {
@@ -331,7 +332,7 @@ export const rowActionsStyles = css`
   }
 
   .row-actions-menu-item.destructive:hover {
-    background: rgba(239, 68, 68, 0.08);
+    background: color-mix(in oklch, var(--color-destructive, var(--ui-color-destructive)) 8%, transparent);
   }
 
   .row-actions-menu-item:disabled {
