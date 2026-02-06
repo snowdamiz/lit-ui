@@ -127,6 +127,33 @@ export function deriveDarkMode(lightColor: string): string {
 }
 
 /**
+ * Derive a tinted color by mixing a base color with a background at a given ratio.
+ *
+ * @param baseColor - The color to tint (e.g., primary)
+ * @param background - The background color to mix with
+ * @param amount - Mix ratio (0 = all background, 1 = all base)
+ * @returns Tinted OKLCH color string
+ */
+export function deriveTint(baseColor: string, background: string, amount: number): string {
+  const base = new Color(baseColor);
+  const bg = new Color(background);
+
+  // Mix base into background at the given amount
+  const mixed = base.mix(bg, 1 - amount, { space: 'oklch' });
+
+  // Gamut map if needed
+  if (!mixed.inGamut('srgb')) {
+    mixed.toGamut('srgb');
+  }
+
+  const l = formatNumber(mixed.oklch.l);
+  const c = formatNumber(mixed.oklch.c);
+  const h = Number.isNaN(mixed.oklch.h) ? '0' : formatNumber(mixed.oklch.h, 0);
+
+  return `oklch(${l} ${c} ${h})`;
+}
+
+/**
  * Derive a high-contrast foreground color for a background.
  *
  * @param backgroundColor - Background OKLCH color string

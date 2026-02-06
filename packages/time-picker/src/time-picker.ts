@@ -425,9 +425,9 @@ export class TimePicker extends TailwindElement {
       }
 
       .interface-tab[aria-selected='true'] {
-        background: var(--ui-time-picker-primary, var(--ui-primary, #3b82f6));
+        background: var(--ui-time-picker-primary, var(--color-primary, var(--ui-color-primary)));
         color: white;
-        border-color: var(--ui-time-picker-primary, var(--ui-primary, #3b82f6));
+        border-color: var(--ui-time-picker-primary, var(--color-primary, var(--ui-color-primary)));
       }
 
       .interface-tab:focus-visible {
@@ -470,15 +470,15 @@ export class TimePicker extends TailwindElement {
       }
 
       .now-btn {
-        background: var(--ui-time-picker-primary, var(--ui-primary, #3b82f6));
+        background: var(--ui-time-picker-primary, var(--color-primary, var(--ui-color-primary)));
         color: white;
-        border-color: var(--ui-time-picker-primary, var(--ui-primary, #3b82f6));
+        border-color: var(--ui-time-picker-primary, var(--color-primary, var(--ui-color-primary)));
       }
 
       .now-btn:hover:not(:disabled) {
         opacity: 0.9;
-        background: var(--ui-time-picker-primary, var(--ui-primary, #3b82f6));
-        border-color: var(--ui-time-picker-primary, var(--ui-primary, #3b82f6));
+        background: var(--ui-time-picker-primary, var(--color-primary, var(--ui-color-primary)));
+        border-color: var(--ui-time-picker-primary, var(--color-primary, var(--ui-color-primary)));
       }
 
       .error-message {

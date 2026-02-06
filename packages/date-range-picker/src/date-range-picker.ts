@@ -1331,13 +1331,13 @@ export class DateRangePicker extends TailwindElement {
     } else if (inRange) {
       // In-range: highlight background, no rounding
       styles.push(
-        'background-color: var(--ui-range-highlight-bg, #dbeafe)',
+        'background-color: var(--ui-range-highlight-bg, color-mix(in oklch, var(--color-primary, var(--ui-color-primary)) 12%, var(--color-background, white)))',
         'color: var(--ui-range-highlight-text, inherit)',
       );
     } else if (inPreview) {
       // Preview: lighter highlight background, no rounding
       styles.push(
-        'background-color: var(--ui-range-preview-bg, #eff6ff)',
+        'background-color: var(--ui-range-preview-bg, color-mix(in oklch, var(--color-primary, var(--ui-color-primary)) 6%, var(--color-background, white)))',
       );
     } else if (isCompareStart && isCompareEnd) {
       // Comparison single-day: full circle in amber

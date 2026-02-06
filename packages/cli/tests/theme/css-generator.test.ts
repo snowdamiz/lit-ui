@@ -43,117 +43,211 @@ describe('generateThemeCSS', () => {
     });
   });
 
-  describe('color variables', () => {
-    it('defines --lui-primary variable', () => {
+  describe('semantic color variables', () => {
+    it('defines --color-primary variable', () => {
       const css = generateThemeCSS(defaultTheme);
-      expect(css).toContain('--lui-primary:');
+      expect(css).toContain('--color-primary:');
     });
 
-    it('defines --lui-primary-foreground variable', () => {
+    it('defines --color-primary-foreground variable', () => {
       const css = generateThemeCSS(defaultTheme);
-      expect(css).toContain('--lui-primary-foreground:');
+      expect(css).toContain('--color-primary-foreground:');
     });
 
-    it('defines --lui-secondary variable', () => {
+    it('defines --color-secondary variable', () => {
       const css = generateThemeCSS(defaultTheme);
-      expect(css).toContain('--lui-secondary:');
+      expect(css).toContain('--color-secondary:');
     });
 
-    it('defines --lui-secondary-foreground variable', () => {
+    it('defines --color-secondary-foreground variable', () => {
       const css = generateThemeCSS(defaultTheme);
-      expect(css).toContain('--lui-secondary-foreground:');
+      expect(css).toContain('--color-secondary-foreground:');
     });
 
-    it('defines --lui-destructive variable', () => {
+    it('defines --color-destructive variable', () => {
       const css = generateThemeCSS(defaultTheme);
-      expect(css).toContain('--lui-destructive:');
+      expect(css).toContain('--color-destructive:');
     });
 
-    it('defines --lui-destructive-foreground variable', () => {
+    it('defines --color-destructive-foreground variable', () => {
       const css = generateThemeCSS(defaultTheme);
-      expect(css).toContain('--lui-destructive-foreground:');
+      expect(css).toContain('--color-destructive-foreground:');
     });
 
-    it('defines --lui-background variable', () => {
+    it('defines --color-background variable', () => {
       const css = generateThemeCSS(defaultTheme);
-      expect(css).toContain('--lui-background:');
+      expect(css).toContain('--color-background:');
     });
 
-    it('defines --lui-foreground variable', () => {
+    it('defines --color-foreground variable', () => {
       const css = generateThemeCSS(defaultTheme);
-      expect(css).toContain('--lui-foreground:');
+      expect(css).toContain('--color-foreground:');
     });
 
-    it('defines --lui-muted variable', () => {
+    it('defines --color-muted variable', () => {
       const css = generateThemeCSS(defaultTheme);
-      expect(css).toContain('--lui-muted:');
+      expect(css).toContain('--color-muted:');
     });
 
-    it('defines --lui-muted-foreground variable', () => {
+    it('defines --color-muted-foreground variable', () => {
       const css = generateThemeCSS(defaultTheme);
-      expect(css).toContain('--lui-muted-foreground:');
+      expect(css).toContain('--color-muted-foreground:');
     });
 
-    it('all color variables have oklch values', () => {
+    it('defines --color-ring variable', () => {
       const css = generateThemeCSS(defaultTheme);
-      // Extract all --lui-* color definitions
-      const colorVars = css.match(/--lui-\w+:\s*[^;]+/g) || [];
-      const colorOnlyVars = colorVars.filter(v =>
-        !v.includes('radius') // Exclude radius vars
-      );
+      expect(css).toContain('--color-ring:');
+    });
+
+    it('defines --color-card variable', () => {
+      const css = generateThemeCSS(defaultTheme);
+      expect(css).toContain('--color-card:');
+    });
+
+    it('all semantic color variables have oklch values', () => {
+      const css = generateThemeCSS(defaultTheme);
+      // Extract all --color-* definitions from :root block
+      const rootMatch = css.match(/:root\s*\{([\s\S]*?)\n\}/);
+      expect(rootMatch).not.toBeNull();
+      const rootBlock = rootMatch![1];
+      const colorVars = rootBlock.match(/--color-[\w-]+:\s*[^;]+/g) || [];
 
       // All color vars should have oklch values
-      for (const varDef of colorOnlyVars) {
+      for (const varDef of colorVars) {
         expect(varDef).toMatch(/oklch\(/);
       }
     });
   });
 
-  describe('radius variables', () => {
-    it('defines --lui-radius-sm variable', () => {
+  describe('component variables', () => {
+    it('defines button component variables', () => {
       const css = generateThemeCSS(defaultTheme);
-      expect(css).toContain('--lui-radius-sm:');
+      expect(css).toContain('--ui-button-radius:');
+      expect(css).toContain('--ui-button-primary-bg:');
+      expect(css).toContain('--ui-button-primary-text:');
+      expect(css).toContain('--ui-button-secondary-bg:');
+      expect(css).toContain('--ui-button-destructive-bg:');
+      expect(css).toContain('--ui-button-outline-bg:');
+      expect(css).toContain('--ui-button-ghost-bg:');
     });
 
-    it('defines --lui-radius-md variable', () => {
+    it('defines dialog component variables', () => {
       const css = generateThemeCSS(defaultTheme);
-      expect(css).toContain('--lui-radius-md:');
+      expect(css).toContain('--ui-dialog-radius:');
+      expect(css).toContain('--ui-dialog-bg:');
+      expect(css).toContain('--ui-dialog-text:');
     });
 
-    it('defines --lui-radius-lg variable', () => {
+    it('defines input component variables', () => {
       const css = generateThemeCSS(defaultTheme);
-      expect(css).toContain('--lui-radius-lg:');
+      expect(css).toContain('--ui-input-radius:');
+      expect(css).toContain('--ui-input-bg:');
+      expect(css).toContain('--ui-input-text:');
+      expect(css).toContain('--ui-input-border:');
+      expect(css).toContain('--ui-input-border-focus:');
+      expect(css).toContain('--ui-input-ring:');
+      expect(css).toContain('--ui-input-border-error:');
     });
 
-    it('radius values use rem units', () => {
+    it('defines switch component variables', () => {
       const css = generateThemeCSS(defaultTheme);
-      // Extract radius definitions
-      const radiusMatches = css.match(/--lui-radius-\w+:\s*[\d.]+rem/g) || [];
-      expect(radiusMatches.length).toBeGreaterThanOrEqual(3);
+      expect(css).toContain('--ui-switch-track-bg:');
+      expect(css).toContain('--ui-switch-track-bg-checked:');
+      expect(css).toContain('--ui-switch-ring:');
     });
 
+    it('defines checkbox component variables', () => {
+      const css = generateThemeCSS(defaultTheme);
+      expect(css).toContain('--ui-checkbox-bg-checked:');
+      expect(css).toContain('--ui-checkbox-border-checked:');
+      expect(css).toContain('--ui-checkbox-ring:');
+    });
+
+    it('defines radio component variables', () => {
+      const css = generateThemeCSS(defaultTheme);
+      expect(css).toContain('--ui-radio-border-checked:');
+      expect(css).toContain('--ui-radio-dot-color:');
+      expect(css).toContain('--ui-radio-ring:');
+    });
+
+    it('defines select component variables', () => {
+      const css = generateThemeCSS(defaultTheme);
+      expect(css).toContain('--ui-select-bg:');
+      expect(css).toContain('--ui-select-border:');
+      expect(css).toContain('--ui-select-border-focus:');
+      expect(css).toContain('--ui-select-dropdown-bg:');
+      expect(css).toContain('--ui-select-option-check:');
+    });
+
+    it('defines tabs component variables', () => {
+      const css = generateThemeCSS(defaultTheme);
+      expect(css).toContain('--ui-tabs-list-bg:');
+      expect(css).toContain('--ui-tabs-tab-text:');
+      expect(css).toContain('--ui-tabs-tab-active-bg:');
+      expect(css).toContain('--ui-tabs-indicator-color:');
+    });
+
+    it('defines accordion component variables', () => {
+      const css = generateThemeCSS(defaultTheme);
+      expect(css).toContain('--ui-accordion-border:');
+      expect(css).toContain('--ui-accordion-header-text:');
+      expect(css).toContain('--ui-accordion-panel-text:');
+    });
+
+    it('defines calendar component variables', () => {
+      const css = generateThemeCSS(defaultTheme);
+      expect(css).toContain('--ui-calendar-bg:');
+      expect(css).toContain('--ui-calendar-selected-bg:');
+      expect(css).toContain('--ui-calendar-today-border:');
+    });
+
+    it('defines popover component variables', () => {
+      const css = generateThemeCSS(defaultTheme);
+      expect(css).toContain('--ui-popover-bg:');
+      expect(css).toContain('--ui-popover-text:');
+      expect(css).toContain('--ui-popover-border:');
+    });
+
+    it('defines tooltip component variables', () => {
+      const css = generateThemeCSS(defaultTheme);
+      expect(css).toContain('--ui-tooltip-bg:');
+      expect(css).toContain('--ui-tooltip-text:');
+    });
+  });
+
+  describe('radius values', () => {
     it('uses correct sm radius values', () => {
       const smConfig = { ...defaultTheme, radius: 'sm' as const };
       const css = generateThemeCSS(smConfig);
-      expect(css).toContain('--lui-radius-sm: 0.125rem');
-      expect(css).toContain('--lui-radius-md: 0.25rem');
-      expect(css).toContain('--lui-radius-lg: 0.375rem');
+      expect(css).toContain('--ui-button-radius: 0.25rem');
+      expect(css).toContain('--ui-dialog-radius: 0.375rem');
+      expect(css).toContain('--ui-input-radius: 0.25rem');
     });
 
     it('uses correct md radius values', () => {
       const mdConfig = { ...defaultTheme, radius: 'md' as const };
       const css = generateThemeCSS(mdConfig);
-      expect(css).toContain('--lui-radius-sm: 0.125rem');
-      expect(css).toContain('--lui-radius-md: 0.375rem');
-      expect(css).toContain('--lui-radius-lg: 0.5rem');
+      expect(css).toContain('--ui-button-radius: 0.375rem');
+      expect(css).toContain('--ui-dialog-radius: 0.5rem');
+      expect(css).toContain('--ui-input-radius: 0.375rem');
     });
 
     it('uses correct lg radius values', () => {
       const lgConfig = { ...defaultTheme, radius: 'lg' as const };
       const css = generateThemeCSS(lgConfig);
-      expect(css).toContain('--lui-radius-sm: 0.25rem');
-      expect(css).toContain('--lui-radius-md: 0.5rem');
-      expect(css).toContain('--lui-radius-lg: 0.75rem');
+      expect(css).toContain('--ui-button-radius: 0.5rem');
+      expect(css).toContain('--ui-dialog-radius: 0.75rem');
+      expect(css).toContain('--ui-input-radius: 0.5rem');
+    });
+
+    it('radius variables only appear in :root block', () => {
+      const css = generateThemeCSS(defaultTheme);
+      // Dark mode should not redefine radius (it inherits from :root)
+      const darkMatch = css.match(/\.dark\s*\{([\s\S]*?)\n\}/);
+      expect(darkMatch).not.toBeNull();
+      const darkBlock = darkMatch![1];
+      expect(darkBlock).not.toContain('--ui-button-radius:');
+      expect(darkBlock).not.toContain('--ui-dialog-radius:');
     });
   });
 
@@ -161,11 +255,11 @@ describe('generateThemeCSS', () => {
     it('.dark block contains color overrides', () => {
       const css = generateThemeCSS(defaultTheme);
       // Extract .dark block
-      const darkMatch = css.match(/\.dark\s*\{([^}]+)\}/);
+      const darkMatch = css.match(/\.dark\s*\{([\s\S]*?)\n\}/);
       expect(darkMatch).not.toBeNull();
       const darkBlock = darkMatch![1];
-      expect(darkBlock).toContain('--lui-primary:');
-      expect(darkBlock).toContain('--lui-background:');
+      expect(darkBlock).toContain('--color-primary:');
+      expect(darkBlock).toContain('--color-background:');
     });
 
     it('@media block contains :root:not(.light) selector', () => {
@@ -177,31 +271,42 @@ describe('generateThemeCSS', () => {
       const css = generateThemeCSS(defaultTheme);
 
       // Extract :root block colors
-      const rootMatch = css.match(/:root\s*\{([^}]+)\}/);
+      const rootMatch = css.match(/:root\s*\{([\s\S]*?)\n\}/);
       expect(rootMatch).not.toBeNull();
       const rootBlock = rootMatch![1];
 
       // Extract .dark block colors
-      const darkMatch = css.match(/\.dark\s*\{([^}]+)\}/);
+      const darkMatch = css.match(/\.dark\s*\{([\s\S]*?)\n\}/);
       expect(darkMatch).not.toBeNull();
       const darkBlock = darkMatch![1];
 
       // Primary color should be different
-      const rootPrimary = rootBlock.match(/--lui-primary:\s*([^;]+)/);
-      const darkPrimary = darkBlock.match(/--lui-primary:\s*([^;]+)/);
+      const rootPrimary = rootBlock.match(/--color-primary:\s*([^;]+)/);
+      const darkPrimary = darkBlock.match(/--color-primary:\s*([^;]+)/);
 
       expect(rootPrimary).not.toBeNull();
       expect(darkPrimary).not.toBeNull();
       expect(rootPrimary![1].trim()).not.toBe(darkPrimary![1].trim());
+    });
+
+    it('dark block contains component variable overrides', () => {
+      const css = generateThemeCSS(defaultTheme);
+      const darkMatch = css.match(/\.dark\s*\{([\s\S]*?)\n\}/);
+      expect(darkMatch).not.toBeNull();
+      const darkBlock = darkMatch![1];
+      expect(darkBlock).toContain('--ui-button-primary-bg:');
+      expect(darkBlock).toContain('--ui-input-bg:');
+      expect(darkBlock).toContain('--ui-switch-track-bg-checked:');
     });
   });
 
   describe('comments', () => {
     it('includes section comments', () => {
       const css = generateThemeCSS(defaultTheme);
-      // Should have section dividers/comments
-      expect(css).toMatch(/\/\*.*colors.*\*\//i);
-      expect(css).toMatch(/\/\*.*radius.*\*\//i);
+      // Should have component section comments
+      expect(css).toMatch(/\/\*.*Button.*\*\//i);
+      expect(css).toMatch(/\/\*.*Dialog.*\*\//i);
+      expect(css).toMatch(/\/\*.*Input.*\*\//i);
     });
 
     it('header includes generation metadata', () => {
@@ -227,14 +332,13 @@ describe('generateThemeCSS', () => {
 
     it('all variable definitions end with semicolon', () => {
       const css = generateThemeCSS(defaultTheme);
-      // Find all variable definitions
-      const varDefs = css.match(/--lui-[\w-]+:\s*[^;]+/g) || [];
+      // Find all variable definitions (--color-* and --ui-*)
+      const varDefs = css.match(/--(?:color|ui)-[\w-]+:\s*[^;]+/g) || [];
       // There should be many variable definitions
-      expect(varDefs.length).toBeGreaterThan(10);
+      expect(varDefs.length).toBeGreaterThan(30);
 
       // Check each definition is followed by a semicolon in the original CSS
       for (const varDef of varDefs) {
-        // The match should be followed by ; in the css
         const fullPattern = new RegExp(
           varDef.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ';'
         );
@@ -255,6 +359,23 @@ describe('generateThemeCSS', () => {
       const css = generateThemeCSS(customConfig);
       // Should contain the custom primary color (or derived value)
       expect(css).toContain('oklch(0.7');
+    });
+
+    it('primary color appears in button, checkbox, switch, and other components', () => {
+      const customConfig = {
+        ...defaultTheme,
+        colors: {
+          ...defaultTheme.colors,
+          primary: 'oklch(0.55 0.22 290)', // Violet primary
+        },
+      };
+      const css = generateThemeCSS(customConfig);
+      // Primary should flow through to all components
+      expect(css).toContain('--ui-button-primary-bg: oklch(0.55 0.22 290)');
+      expect(css).toContain('--ui-checkbox-bg-checked: oklch(0.55 0.22 290)');
+      expect(css).toContain('--ui-switch-track-bg-checked: oklch(0.55 0.22 290)');
+      expect(css).toContain('--ui-radio-dot-color: oklch(0.55 0.22 290)');
+      expect(css).toContain('--ui-tabs-indicator-color: oklch(0.55 0.22 290)');
     });
   });
 });

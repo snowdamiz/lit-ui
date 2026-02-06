@@ -54,7 +54,7 @@ describe("Theme Pipeline Integration", () => {
 
       // Verify custom values appear in CSS
       expect(css).toContain("oklch(0.6 0.2 250)"); // primary
-      expect(css).toContain("--lui-radius-lg: 0.75rem"); // lg radius
+      expect(css).toContain("--ui-dialog-radius: 0.75rem"); // lg radius
     });
 
     it("should preserve all color values through round-trip", () => {
@@ -79,21 +79,23 @@ describe("Theme Pipeline Integration", () => {
       const css = generateThemeCSS(defaultTheme);
 
       // All semantic colors present
-      expect(css).toContain("--lui-primary:");
-      expect(css).toContain("--lui-primary-foreground:");
-      expect(css).toContain("--lui-secondary:");
-      expect(css).toContain("--lui-secondary-foreground:");
-      expect(css).toContain("--lui-destructive:");
-      expect(css).toContain("--lui-destructive-foreground:");
-      expect(css).toContain("--lui-background:");
-      expect(css).toContain("--lui-foreground:");
-      expect(css).toContain("--lui-muted:");
-      expect(css).toContain("--lui-muted-foreground:");
+      expect(css).toContain("--color-primary:");
+      expect(css).toContain("--color-primary-foreground:");
+      expect(css).toContain("--color-secondary:");
+      expect(css).toContain("--color-secondary-foreground:");
+      expect(css).toContain("--color-destructive:");
+      expect(css).toContain("--color-destructive-foreground:");
+      expect(css).toContain("--color-background:");
+      expect(css).toContain("--color-foreground:");
+      expect(css).toContain("--color-muted:");
+      expect(css).toContain("--color-muted-foreground:");
+      expect(css).toContain("--color-ring:");
+      expect(css).toContain("--color-card:");
 
-      // Border radius tokens
-      expect(css).toContain("--lui-radius-sm:");
-      expect(css).toContain("--lui-radius-md:");
-      expect(css).toContain("--lui-radius-lg:");
+      // Component radius tokens
+      expect(css).toContain("--ui-button-radius:");
+      expect(css).toContain("--ui-dialog-radius:");
+      expect(css).toContain("--ui-input-radius:");
     });
   });
 
@@ -119,9 +121,9 @@ describe("Theme Pipeline Integration", () => {
       const css = generateThemeCSS(merged);
 
       // All variables present (defaults filled in)
-      expect(css).toContain("--lui-primary: oklch(0.55 0.25 280)");
-      expect(css).toContain(`--lui-secondary: ${defaultTheme.colors.secondary}`);
-      expect(css).toContain("--lui-radius-md:"); // default is md
+      expect(css).toContain("--color-primary: oklch(0.55 0.25 280)");
+      expect(css).toContain(`--color-secondary: ${defaultTheme.colors.secondary}`);
+      expect(css).toContain("--ui-button-radius:"); // default is md
     });
 
     it("should merge only specified properties", () => {
@@ -162,7 +164,7 @@ describe("Theme Pipeline Integration", () => {
 
       // Verify CSS generation works
       const css = generateThemeCSS(merged);
-      expect(css).toContain("--lui-primary: oklch(0.6 0.2 200)");
+      expect(css).toContain("--color-primary: oklch(0.6 0.2 200)");
     });
   });
 
@@ -322,10 +324,10 @@ describe("Theme Pipeline Integration", () => {
         const config: ThemeConfig = { ...defaultTheme, radius };
         const css = generateThemeCSS(config);
 
-        // Each option should produce valid CSS
-        expect(css).toContain("--lui-radius-sm:");
-        expect(css).toContain("--lui-radius-md:");
-        expect(css).toContain("--lui-radius-lg:");
+        // Each option should produce valid CSS with component radius variables
+        expect(css).toContain("--ui-button-radius:");
+        expect(css).toContain("--ui-dialog-radius:");
+        expect(css).toContain("--ui-input-radius:");
       }
     });
 

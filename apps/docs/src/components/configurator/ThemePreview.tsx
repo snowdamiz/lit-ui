@@ -1,7 +1,7 @@
 /**
  * ThemePreview - Live Component Preview with CSS Injection
  *
- * Displays Button and Dialog components with dynamically injected theme CSS.
+ * Displays a variety of components with dynamically injected theme CSS.
  * The preview updates in real-time as the user adjusts colors in the configurator.
  */
 
@@ -11,9 +11,13 @@ import { useConfigurator } from "../../contexts/ConfiguratorContext";
 // Side-effect imports to register custom elements
 import "@lit-ui/button";
 import "@lit-ui/dialog";
+import "@lit-ui/input";
+import "@lit-ui/switch";
+import "@lit-ui/checkbox";
+import "@lit-ui/tabs";
 
-// Note: JSX types for lui-button and lui-dialog are declared in
-// pages/components/ButtonPage.tsx and DialogPage.tsx
+// Note: JSX types for custom elements are declared globally in
+// components/LivePreview.tsx
 
 const STYLE_ID = "configurator-preview-theme";
 const PREVIEW_ID = "theme-preview-container";
@@ -202,6 +206,106 @@ export function ThemePreview() {
                 <lui-button variant="ghost">Ghost</lui-button>
               </div>
             </div>
+          </div>
+        </section>
+
+        {/* Section: Form Controls */}
+        <section>
+          <h3
+            className="text-sm font-semibold uppercase tracking-wider mb-4"
+            style={{ color: colors.labelText }}
+          >
+            Form Controls
+          </h3>
+          <div
+            className="p-6 rounded-lg border space-y-5"
+            style={{
+              backgroundColor: colors.sectionBg,
+              borderColor: colors.sectionBorder,
+            }}
+          >
+            {/* Input */}
+            <div>
+              <p
+                className="text-xs font-medium mb-2"
+                style={{ color: colors.labelText }}
+              >
+                Input
+              </p>
+              <div className="flex flex-wrap gap-3">
+                <div className="flex-1 min-w-[180px]">
+                  <lui-input label="Name" placeholder="Enter your name" />
+                </div>
+                <div className="flex-1 min-w-[180px]">
+                  <lui-input label="Email" placeholder="you@example.com" type="email" />
+                </div>
+              </div>
+            </div>
+
+            {/* Switch */}
+            <div>
+              <p
+                className="text-xs font-medium mb-2"
+                style={{ color: colors.labelText }}
+              >
+                Switch
+              </p>
+              <div className="flex flex-wrap gap-4">
+                <lui-switch label="Notifications" checked />
+                <lui-switch label="Dark mode" />
+                <lui-switch label="Disabled" disabled />
+              </div>
+            </div>
+
+            {/* Checkbox */}
+            <div>
+              <p
+                className="text-xs font-medium mb-2"
+                style={{ color: colors.labelText }}
+              >
+                Checkbox
+              </p>
+              <div className="flex flex-wrap gap-4">
+                <lui-checkbox label="Accept terms" checked />
+                <lui-checkbox label="Subscribe" />
+                <lui-checkbox label="Disabled" disabled />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Section: Tabs */}
+        <section>
+          <h3
+            className="text-sm font-semibold uppercase tracking-wider mb-4"
+            style={{ color: colors.labelText }}
+          >
+            Tabs
+          </h3>
+          <div
+            className="p-6 rounded-lg border"
+            style={{
+              backgroundColor: colors.sectionBg,
+              borderColor: colors.sectionBorder,
+            }}
+          >
+            <lui-tabs default-value="account">
+              <lui-tab-panel value="account" label="Account">
+                <p style={{ color: colors.bodyText }}>
+                  Manage your account settings and preferences.
+                </p>
+              </lui-tab-panel>
+              <lui-tab-panel value="notifications" label="Notifications">
+                <p style={{ color: colors.bodyText }}>
+                  Configure how you receive notifications.
+                </p>
+              </lui-tab-panel>
+              <lui-tab-panel value="security" label="Security">
+                <p style={{ color: colors.bodyText }}>
+                  Update your password and security settings.
+                </p>
+              </lui-tab-panel>
+            </lui-tabs>
           </div>
         </section>
 

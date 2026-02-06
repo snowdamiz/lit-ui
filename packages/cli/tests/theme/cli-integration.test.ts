@@ -221,7 +221,7 @@ describe('CLI Theme Integration', () => {
 
       expect(await pathExists(themePath)).toBe(true);
       const content = await readFile(themePath, 'utf-8');
-      expect(content).toContain('--lui-');
+      expect(content).toContain('--color-');
       expect(content).toContain(':root');
     });
 
@@ -230,21 +230,21 @@ describe('CLI Theme Integration', () => {
 
       // Light mode variables
       expect(css).toContain(':root');
-      expect(css).toContain('--lui-primary:');
-      expect(css).toContain('--lui-secondary:');
-      expect(css).toContain('--lui-destructive:');
-      expect(css).toContain('--lui-background:');
-      expect(css).toContain('--lui-foreground:');
-      expect(css).toContain('--lui-muted:');
+      expect(css).toContain('--color-primary:');
+      expect(css).toContain('--color-secondary:');
+      expect(css).toContain('--color-destructive:');
+      expect(css).toContain('--color-background:');
+      expect(css).toContain('--color-foreground:');
+      expect(css).toContain('--color-muted:');
 
       // Dark mode
       expect(css).toContain('.dark');
       expect(css).toContain('@media (prefers-color-scheme: dark)');
 
       // Radius tokens
-      expect(css).toContain('--lui-radius-sm:');
-      expect(css).toContain('--lui-radius-md:');
-      expect(css).toContain('--lui-radius-lg:');
+      expect(css).toContain('--ui-button-radius:');
+      expect(css).toContain('--ui-dialog-radius:');
+      expect(css).toContain('--ui-input-radius:');
     });
   });
 
@@ -256,7 +256,7 @@ describe('CLI Theme Integration', () => {
 
       expect(css).toContain(':root');
       expect(css).toContain('.dark');
-      expect(css).toContain('--lui-primary');
+      expect(css).toContain('--color-primary');
     });
 
     it('preserves custom colors through round-trip', () => {
@@ -349,7 +349,7 @@ describe('CLI Theme Integration', () => {
       // Verify theme was applied
       const themeContent = await readFile(themePath, 'utf-8');
       expect(themeContent).toContain(':root');
-      expect(themeContent).toContain('--lui-primary');
+      expect(themeContent).toContain('--color-primary');
 
       const cssContent = await readFile(cssPath, 'utf-8');
       expect(cssContent).toContain('lit-ui-theme.css');

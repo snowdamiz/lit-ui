@@ -2913,7 +2913,7 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
       }
 
       .data-table-header-cell.drop-target {
-        background: var(--color-primary-100, rgba(59, 130, 246, 0.1));
+        background: var(--color-primary-100, color-mix(in oklch, var(--color-primary, var(--ui-color-primary)) 10%, transparent));
         border-left: 2px solid var(--color-primary, #3b82f6);
       }
 
@@ -2978,16 +2978,16 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
 
       /* Selected row highlight */
       .data-table-row.selected {
-        background: var(--ui-data-table-selected-bg, rgba(59, 130, 246, 0.1));
+        background: var(--ui-data-table-selected-bg, color-mix(in oklch, var(--color-primary, var(--ui-color-primary)) 10%, transparent));
       }
 
       .data-table-row.selected:hover {
-        background: var(--ui-data-table-selected-hover-bg, rgba(59, 130, 246, 0.15));
+        background: var(--ui-data-table-selected-hover-bg, color-mix(in oklch, var(--color-primary, var(--ui-color-primary)) 15%, transparent));
       }
 
       :host-context(.dark) .data-table-row.selected {
-        --ui-data-table-selected-bg: rgba(59, 130, 246, 0.2);
-        --ui-data-table-selected-hover-bg: rgba(59, 130, 246, 0.25);
+        --ui-data-table-selected-bg: color-mix(in oklch, var(--color-primary, var(--ui-color-primary)) 20%, transparent);
+        --ui-data-table-selected-hover-bg: color-mix(in oklch, var(--color-primary, var(--ui-color-primary)) 25%, transparent);
       }
 
       /* Selection banner styles */
@@ -2997,14 +2997,14 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
         justify-content: center;
         gap: 0.5rem;
         padding: 0.5rem 1rem;
-        background: var(--ui-data-table-banner-bg, #eff6ff);
+        background: var(--ui-data-table-banner-bg, color-mix(in oklch, var(--color-primary, var(--ui-color-primary)) 8%, var(--color-background, white)));
         border-bottom: 1px solid var(--ui-data-table-border-color);
         font-size: 0.875rem;
         color: var(--ui-data-table-text-color);
       }
 
       :host-context(.dark) .selection-banner {
-        --ui-data-table-banner-bg: rgba(59, 130, 246, 0.15);
+        --ui-data-table-banner-bg: color-mix(in oklch, var(--color-primary, var(--ui-color-primary)) 15%, transparent);
       }
 
       .selection-banner-link {
@@ -3051,7 +3051,7 @@ export class DataTable<TData extends RowData = RowData> extends TailwindElement 
       }
 
       :host([sticky-first-column]) .data-table-row.selected .data-table-cell:first-child {
-        background: var(--ui-data-table-selected-bg, rgba(59, 130, 246, 0.1));
+        background: var(--ui-data-table-selected-bg, color-mix(in oklch, var(--color-primary, var(--ui-color-primary)) 10%, transparent));
       }
 
       :host([sticky-first-column]) .data-table-header-cell:first-child {
