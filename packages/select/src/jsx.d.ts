@@ -1,35 +1,33 @@
 /**
- * JSX type declarations for lui-select custom elements.
+ * JSX type declarations for lui-select, lui-option, and lui-option-group custom elements.
  * Provides type support for React, Vue, and Svelte.
  */
 
-import type { Select, SelectSize } from './select.js';
-import type { Option } from './option.js';
-import type { OptionGroup } from './option-group.js';
+import type { Select, SelectSize, Option, OptionGroup } from '@lit-ui/select';
 
-// Common attributes for lui-select
 interface LuiSelectAttributes {
   size?: SelectSize;
-  name?: string;
-  value?: string;
   placeholder?: string;
-  required?: boolean;
+  name?: string;
+  value?: string | string[];
   disabled?: boolean;
+  required?: boolean;
+  clearable?: boolean;
+  multiple?: boolean;
+  searchable?: boolean;
+  creatable?: boolean;
+  'no-results-message'?: string;
+  label?: string;
 }
 
-// Common attributes for lui-option
 interface LuiOptionAttributes {
   value?: string;
   label?: string;
   disabled?: boolean;
-  selected?: boolean;
-  children?: any;
 }
 
-// Common attributes for lui-option-group
 interface LuiOptionGroupAttributes {
   label?: string;
-  children?: any;
 }
 
 // React JSX support
@@ -65,8 +63,7 @@ declare module 'vue' {
 declare namespace svelteHTML {
   interface IntrinsicElements {
     'lui-select': LuiSelectAttributes & {
-      onchange?: (e: Event) => void;
-      'on:change'?: (e: CustomEvent) => void;
+      'on:ui-change'?: (e: CustomEvent) => void;
     };
     'lui-option': LuiOptionAttributes;
     'lui-option-group': LuiOptionGroupAttributes;

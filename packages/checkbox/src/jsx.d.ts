@@ -3,9 +3,8 @@
  * Provides type support for React, Vue, and Svelte.
  */
 
-import type { Checkbox, CheckboxSize } from './checkbox.js';
+import type { Checkbox, CheckboxSize, CheckboxGroup } from '@lit-ui/checkbox';
 
-// Common attributes for lui-checkbox
 interface LuiCheckboxAttributes {
   checked?: boolean;
   disabled?: boolean;
@@ -17,7 +16,6 @@ interface LuiCheckboxAttributes {
   size?: CheckboxSize;
 }
 
-// Common attributes for lui-checkbox-group
 interface LuiCheckboxGroupAttributes {
   label?: string;
   disabled?: boolean;
@@ -35,8 +33,8 @@ declare global {
         Checkbox
       >;
       'lui-checkbox-group': React.DetailedHTMLProps<
-        React.HTMLAttributes<HTMLElement> & LuiCheckboxGroupAttributes,
-        HTMLElement
+        React.HTMLAttributes<CheckboxGroup> & LuiCheckboxGroupAttributes,
+        CheckboxGroup
       >;
     }
   }
@@ -54,10 +52,10 @@ declare module 'vue' {
 declare namespace svelteHTML {
   interface IntrinsicElements {
     'lui-checkbox': LuiCheckboxAttributes & {
-      'on:ui-change'?: (e: CustomEvent) => void;
+      'on:ui-change'?: (e: CustomEvent<{ checked: boolean; value: string | null }>) => void;
     };
     'lui-checkbox-group': LuiCheckboxGroupAttributes & {
-      'on:ui-change'?: (e: CustomEvent) => void;
+      'on:ui-change'?: (e: CustomEvent<{ allChecked: boolean; checkedCount: number; totalCount: number }>) => void;
     };
   }
 }

@@ -101,6 +101,20 @@ body {
     0 0 40px -10px oklch(0.20 0 0 / 0.3);
 }
 
+/* Stat card with hover shadow transition */
+.stat-card {
+  box-shadow:
+    0 1px 2px 0 oklch(0 0 0 / 0.04),
+    0 1px 3px 0 oklch(0 0 0 / 0.03);
+  transition: box-shadow 0.3s var(--ease-out-expo);
+}
+
+.stat-card:hover {
+  box-shadow:
+    0 4px 6px -1px oklch(0 0 0 / 0.06),
+    0 8px 15px -3px oklch(0 0 0 / 0.05);
+}
+
 /* Card with subtle shadow and hover lift */
 .card-elevated {
   box-shadow:
@@ -327,6 +341,7 @@ body {
 
   .animate-fade-in-up,
   .card-elevated,
+  .stat-card,
   .link-underline::after {
     animation: none;
     transition: none;

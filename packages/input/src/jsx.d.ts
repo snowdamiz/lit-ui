@@ -3,28 +3,27 @@
  * Provides type support for React, Vue, and Svelte.
  */
 
-import type { Input, InputType, InputSize } from './input.js';
+import type { Input, InputType, InputSize } from '@lit-ui/input';
 
-// Common attributes for lui-input
 interface LuiInputAttributes {
   type?: InputType;
   size?: InputSize;
   name?: string;
   value?: string;
   placeholder?: string;
+  disabled?: boolean;
+  readonly?: boolean;
+  required?: boolean;
+  minlength?: number;
+  maxlength?: number;
+  pattern?: string;
+  min?: number;
+  max?: number;
   label?: string;
   'helper-text'?: string;
   'required-indicator'?: 'asterisk' | 'text';
-  required?: boolean;
-  disabled?: boolean;
-  readonly?: boolean;
   clearable?: boolean;
   'show-count'?: boolean;
-  minlength?: number;
-  maxlength?: number;
-  min?: number;
-  max?: number;
-  pattern?: string;
 }
 
 // React JSX support
@@ -32,7 +31,7 @@ declare global {
   namespace JSX {
     interface IntrinsicElements {
       'lui-input': React.DetailedHTMLProps<
-        React.InputHTMLAttributes<Input> & LuiInputAttributes,
+        React.HTMLAttributes<Input> & LuiInputAttributes,
         Input
       >;
     }
@@ -50,8 +49,8 @@ declare module 'vue' {
 declare namespace svelteHTML {
   interface IntrinsicElements {
     'lui-input': LuiInputAttributes & {
-      oninput?: (e: InputEvent) => void;
-      'on:input'?: (e: CustomEvent<InputEvent>) => void;
+      'on:input'?: (e: Event) => void;
+      'on:change'?: (e: Event) => void;
     };
   }
 }

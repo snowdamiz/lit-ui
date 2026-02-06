@@ -3,7 +3,7 @@
  * Provides type support for React, Vue, and Svelte.
  */
 
-import type { Button, ButtonVariant, ButtonSize, ButtonType } from './button.js';
+import type { Button, ButtonVariant, ButtonSize, ButtonType } from '@lit-ui/button';
 
 // Common attributes for lui-button
 interface LuiButtonAttributes {

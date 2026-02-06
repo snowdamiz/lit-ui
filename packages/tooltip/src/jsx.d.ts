@@ -3,10 +3,8 @@
  * Provides type support for React, Vue, and Svelte.
  */
 
-import type { Tooltip } from './tooltip.js';
-import type { Placement } from '@lit-ui/core/floating';
+import type { Tooltip, Placement } from '@lit-ui/tooltip';
 
-// Common attributes for lui-tooltip
 interface LuiTooltipAttributes {
   content?: string;
   placement?: Placement;

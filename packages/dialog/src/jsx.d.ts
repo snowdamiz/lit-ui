@@ -3,9 +3,8 @@
  * Provides type support for React, Vue, and Svelte.
  */
 
-import type { Dialog, DialogSize, CloseReason } from './dialog.js';
+import type { Dialog, DialogSize, CloseReason } from '@lit-ui/dialog';
 
-// Common attributes for lui-dialog
 interface LuiDialogAttributes {
   open?: boolean;
   size?: DialogSize;
@@ -14,22 +13,12 @@ interface LuiDialogAttributes {
   'dialog-class'?: string;
 }
 
-// Close event detail type
-interface DialogCloseEvent extends CustomEvent {
-  detail: { reason: CloseReason };
-}
-
-// Event handler types
-interface LuiDialogEvents {
-  onClose?: (e: DialogCloseEvent) => void;
-}
-
 // React JSX support
 declare global {
   namespace JSX {
     interface IntrinsicElements {
       'lui-dialog': React.DetailedHTMLProps<
-        React.HTMLAttributes<Dialog> & LuiDialogAttributes & LuiDialogEvents,
+        React.HTMLAttributes<Dialog> & LuiDialogAttributes,
         Dialog
       >;
     }
@@ -47,8 +36,7 @@ declare module 'vue' {
 declare namespace svelteHTML {
   interface IntrinsicElements {
     'lui-dialog': LuiDialogAttributes & {
-      onclose?: (e: DialogCloseEvent) => void;
-      'on:close'?: (e: DialogCloseEvent) => void;
+      'on:close'?: (e: CustomEvent<{ reason: CloseReason }>) => void;
     };
   }
 }

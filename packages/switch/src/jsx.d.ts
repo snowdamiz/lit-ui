@@ -3,9 +3,8 @@
  * Provides type support for React, Vue, and Svelte.
  */
 
-import type { Switch, SwitchSize } from './switch.js';
+import type { Switch, SwitchSize } from '@lit-ui/switch';
 
-// Common attributes for lui-switch
 interface LuiSwitchAttributes {
   checked?: boolean;
   disabled?: boolean;
@@ -39,7 +38,7 @@ declare module 'vue' {
 declare namespace svelteHTML {
   interface IntrinsicElements {
     'lui-switch': LuiSwitchAttributes & {
-      'on:ui-change'?: (e: CustomEvent) => void;
+      'on:ui-change'?: (e: CustomEvent<{ checked: boolean; value: string | null }>) => void;
     };
   }
 }

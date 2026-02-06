@@ -3,10 +3,8 @@
  * Provides type support for React, Vue, and Svelte.
  */
 
-import type { Accordion } from './accordion.js';
-import type { AccordionItem } from './accordion-item.js';
+import type { Accordion, AccordionItem } from '@lit-ui/accordion';
 
-// Common attributes for lui-accordion
 interface LuiAccordionAttributes {
   value?: string;
   'default-value'?: string;
@@ -15,13 +13,11 @@ interface LuiAccordionAttributes {
   disabled?: boolean;
 }
 
-// Common attributes for lui-accordion-item
 interface LuiAccordionItemAttributes {
   value?: string;
-  expanded?: boolean;
   disabled?: boolean;
-  lazy?: boolean;
   'heading-level'?: number;
+  lazy?: boolean;
 }
 
 // React JSX support
@@ -52,11 +48,9 @@ declare module 'vue' {
 declare namespace svelteHTML {
   interface IntrinsicElements {
     'lui-accordion': LuiAccordionAttributes & {
-      'on:ui-change'?: (e: CustomEvent) => void;
+      'on:ui-change'?: (e: CustomEvent<{ value: string; expandedItems: string[] }>) => void;
     };
-    'lui-accordion-item': LuiAccordionItemAttributes & {
-      'on:ui-accordion-toggle'?: (e: CustomEvent) => void;
-    };
+    'lui-accordion-item': LuiAccordionItemAttributes;
   }
 }
 

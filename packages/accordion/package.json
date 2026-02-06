@@ -25,10 +25,14 @@
     ".": {
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
+    },
+    "./jsx": {
+      "types": "./src/jsx.d.ts"
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "src/jsx.d.ts"
   ],
   "sideEffects": true,
   "scripts": {

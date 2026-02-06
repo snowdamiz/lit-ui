@@ -3,10 +3,8 @@
  * Provides type support for React, Vue, and Svelte.
  */
 
-import type { Tabs } from './tabs.js';
-import type { TabPanel } from './tab-panel.js';
+import type { Tabs, TabPanel } from '@lit-ui/tabs';
 
-// Common attributes for lui-tabs
 interface LuiTabsAttributes {
   value?: string;
   'default-value'?: string;
@@ -16,12 +14,10 @@ interface LuiTabsAttributes {
   'activation-mode'?: 'automatic' | 'manual';
 }
 
-// Common attributes for lui-tab-panel
 interface LuiTabPanelAttributes {
   value?: string;
   label?: string;
   disabled?: boolean;
-  active?: boolean;
   lazy?: boolean;
 }
 
@@ -53,11 +49,9 @@ declare module 'vue' {
 declare namespace svelteHTML {
   interface IntrinsicElements {
     'lui-tabs': LuiTabsAttributes & {
-      'on:ui-change'?: (e: CustomEvent) => void;
+      'on:ui-change'?: (e: CustomEvent<{ value: string }>) => void;
     };
-    'lui-tab-panel': LuiTabPanelAttributes & {
-      'on:ui-tab-panel-update'?: (e: CustomEvent) => void;
-    };
+    'lui-tab-panel': LuiTabPanelAttributes;
   }
 }
 

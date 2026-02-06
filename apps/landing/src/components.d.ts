@@ -1,10 +1,17 @@
 /**
  * JSX type declarations for Lit UI components used in React.
- * These augment the global JSX namespace to provide type safety.
+ * Each package exports its own JSX IntrinsicElements via the /jsx subpath.
  */
 
-import type { Button, ButtonVariant, ButtonSize, ButtonType } from '@lit-ui/button'
-import type { Dialog, DialogSize, CloseReason } from '@lit-ui/dialog'
+import '@lit-ui/button/jsx'
+import '@lit-ui/dialog/jsx'
+import '@lit-ui/tabs/jsx'
+import '@lit-ui/input/jsx'
+import '@lit-ui/select/jsx'
+import '@lit-ui/switch/jsx'
+import '@lit-ui/checkbox/jsx'
+import '@lit-ui/accordion/jsx'
+import '@lit-ui/tooltip/jsx'
 
 // Augment React's intrinsic elements to support the 'slot' attribute on all elements
 // This is needed for web component slot assignment
@@ -14,42 +21,6 @@ declare module 'react' {
   }
   interface SVGProps<T> {
     slot?: string
-  }
-}
-
-interface LuiButtonAttributes {
-  variant?: ButtonVariant
-  size?: ButtonSize
-  type?: ButtonType
-  disabled?: boolean
-  loading?: boolean
-  'btn-class'?: string
-  onClick?: (e: MouseEvent) => void
-  children?: React.ReactNode
-}
-
-interface LuiDialogAttributes {
-  open?: boolean
-  size?: DialogSize
-  dismissible?: boolean
-  'show-close-button'?: boolean
-  'dialog-class'?: string
-  ref?: React.Ref<Dialog>
-  children?: React.ReactNode
-}
-
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      'lui-button': React.DetailedHTMLProps<
-        React.HTMLAttributes<Button> & LuiButtonAttributes,
-        Button
-      >
-      'lui-dialog': React.DetailedHTMLProps<
-        React.HTMLAttributes<Dialog> & LuiDialogAttributes,
-        Dialog
-      >
-    }
   }
 }
 
