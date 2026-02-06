@@ -15,7 +15,6 @@ const buttonVariants: { name: ButtonVariant; label: string }[] = [
 ]
 
 function ComponentPreview() {
-  const [activeVariant, setActiveVariant] = useState<ButtonVariant>('primary')
   const [isLoading, setIsLoading] = useState(false)
   const [isDisabled, setIsDisabled] = useState(false)
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -104,28 +103,6 @@ function ComponentPreview() {
 
             {/* Preview area */}
             <div className="p-8">
-              {/* Variant selector */}
-              <div className="mb-8">
-                <label className="mb-3 block text-sm font-medium text-gray-700">
-                  Variant
-                </label>
-                <div className="flex flex-wrap gap-2">
-                  {buttonVariants.map((variant) => (
-                    <button
-                      key={variant.name}
-                      onClick={() => setActiveVariant(variant.name)}
-                      className={`rounded-lg px-3.5 py-2 text-sm font-medium transition-all ${
-                        activeVariant === variant.name
-                          ? 'bg-gray-900 text-white shadow-sm'
-                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-900'
-                      }`}
-                    >
-                      {variant.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
               {/* State toggles */}
               <div className="mb-8">
                 <label className="mb-3 block text-sm font-medium text-gray-700">
@@ -177,27 +154,42 @@ function ComponentPreview() {
                 </div>
               </div>
 
-              {/* Button preview */}
-              <div className="flex flex-wrap items-center gap-4 rounded-2xl border border-gray-100 bg-gray-50 p-8">
-                <lui-button
-                  variant={activeVariant}
-                  loading={isLoading || undefined}
-                  disabled={isDisabled || undefined}
-                  onClick={handleLoadingToggle}
-                  btn-class="bg-gray-900"
-                >
-                  {isLoading ? 'Loading...' : 'Click me'}
-                </lui-button>
+              {/* Variants preview - all variants shown like docs page */}
+              <div className="mb-6">
+                <label className="mb-3 block text-sm font-medium text-gray-700">
+                  Variants
+                </label>
+                <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-gray-100 bg-gray-50 p-8">
+                  {buttonVariants.map((variant) => (
+                    <lui-button
+                      key={variant.name}
+                      variant={variant.name}
+                      loading={isLoading || undefined}
+                      disabled={isDisabled || undefined}
+                      onClick={handleLoadingToggle}
+                    >
+                      {isLoading ? 'Loading...' : variant.label}
+                    </lui-button>
+                  ))}
+                </div>
+              </div>
 
-                <lui-button
-                  variant="outline"
-                  onClick={() => setDialogOpen(true)}
-                >
-                  <svg slot="icon-start" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" />
-                  </svg>
-                  Open Dialog
-                </lui-button>
+              {/* Dialog demo */}
+              <div>
+                <label className="mb-3 block text-sm font-medium text-gray-700">
+                  Dialog
+                </label>
+                <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-gray-100 bg-gray-50 p-8">
+                  <lui-button
+                    variant="outline"
+                    onClick={() => setDialogOpen(true)}
+                  >
+                    <svg slot="icon-start" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" />
+                    </svg>
+                    Open Dialog
+                  </lui-button>
+                </div>
               </div>
             </div>
           </div>
