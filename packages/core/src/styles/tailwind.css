@@ -371,6 +371,97 @@
   --ui-data-table-badge-yellow-text: oklch(0.85 0.12 85);
   --ui-data-table-badge-purple-bg: oklch(0.30 0.06 310);
   --ui-data-table-badge-purple-text: oklch(0.80 0.10 310);
+
+  /* Button dark mode */
+  --ui-button-primary-bg: oklch(0.985 0 0);
+  --ui-button-primary-text: oklch(0.18 0 0);
+  --ui-button-secondary-bg: oklch(0.27 0 0);
+  --ui-button-secondary-text: oklch(0.96 0 0);
+  --ui-button-secondary-hover-bg: oklch(0.37 0 0);
+  --ui-button-outline-bg: transparent;
+  --ui-button-outline-text: oklch(0.985 0 0);
+  --ui-button-outline-border: oklch(0.37 0 0);
+  --ui-button-outline-hover-bg: oklch(0.27 0 0);
+  --ui-button-ghost-bg: transparent;
+  --ui-button-ghost-text: oklch(0.985 0 0);
+  --ui-button-ghost-hover-bg: oklch(0.27 0 0);
+  --ui-button-destructive-bg: oklch(0.55 0.22 25);
+  --ui-button-destructive-text: white;
+
+  /* Dialog dark mode */
+  --ui-dialog-bg: oklch(0.18 0 0);
+  --ui-dialog-text: oklch(0.985 0 0);
+  --ui-dialog-body-color: oklch(0.71 0 0);
+
+  /* Input dark mode */
+  --ui-input-bg: oklch(0.10 0 0);
+  --ui-input-text: oklch(0.985 0 0);
+  --ui-input-border: oklch(0.37 0 0);
+  --ui-input-placeholder: oklch(0.55 0 0);
+  --ui-input-border-focus: oklch(0.71 0 0);
+  --ui-input-ring: oklch(0.55 0 0);
+  --ui-input-bg-disabled: oklch(0.18 0 0);
+  --ui-input-text-disabled: oklch(0.55 0 0);
+  --ui-input-border-disabled: oklch(0.37 0 0);
+
+  /* Textarea dark mode */
+  --ui-textarea-bg: oklch(0.10 0 0);
+  --ui-textarea-text: oklch(0.985 0 0);
+  --ui-textarea-border: oklch(0.37 0 0);
+  --ui-textarea-placeholder: oklch(0.55 0 0);
+  --ui-textarea-border-focus: oklch(0.71 0 0);
+  --ui-textarea-ring: oklch(0.55 0 0);
+  --ui-textarea-bg-disabled: oklch(0.18 0 0);
+  --ui-textarea-text-disabled: oklch(0.55 0 0);
+  --ui-textarea-border-disabled: oklch(0.37 0 0);
+
+  /* Select dark mode */
+  --ui-select-bg: oklch(0.10 0 0);
+  --ui-select-text: oklch(0.985 0 0);
+  --ui-select-border: oklch(0.37 0 0);
+  --ui-select-placeholder: oklch(0.55 0 0);
+  --ui-select-border-focus: oklch(0.71 0 0);
+  --ui-select-ring: oklch(0.55 0 0);
+  --ui-select-bg-disabled: oklch(0.18 0 0);
+  --ui-select-text-disabled: oklch(0.55 0 0);
+  --ui-select-border-disabled: oklch(0.37 0 0);
+  --ui-select-dropdown-bg: oklch(0.18 0 0);
+  --ui-select-dropdown-border: oklch(0.37 0 0);
+  --ui-select-option-bg-hover: oklch(0.27 0 0);
+  --ui-select-option-bg-active: oklch(0.27 0 0);
+  --ui-select-option-text: oklch(0.985 0 0);
+  --ui-select-option-text-disabled: oklch(0.55 0 0);
+  --ui-select-option-check: oklch(0.985 0 0);
+  --ui-select-tag-bg: oklch(0.27 0 0);
+  --ui-select-tag-text: oklch(0.96 0 0);
+  --ui-select-checkbox-border: oklch(0.45 0 0);
+  --ui-select-checkbox-bg-checked: oklch(0.985 0 0);
+
+  /* Switch dark mode */
+  --ui-switch-track-bg: oklch(0.37 0 0);
+  --ui-switch-track-border: oklch(0.45 0 0);
+  --ui-switch-thumb-bg: oklch(0.82 0 0);
+  --ui-switch-track-bg-checked: oklch(0.985 0 0);
+  --ui-switch-track-bg-disabled: oklch(0.27 0 0);
+  --ui-switch-thumb-bg-disabled: oklch(0.45 0 0);
+  --ui-switch-ring: oklch(0.55 0 0);
+
+  /* Checkbox dark mode */
+  --ui-checkbox-bg: oklch(0.10 0 0);
+  --ui-checkbox-border: oklch(0.45 0 0);
+  --ui-checkbox-bg-checked: oklch(0.985 0 0);
+  --ui-checkbox-border-checked: oklch(0.985 0 0);
+  --ui-checkbox-check-color: oklch(0.18 0 0);
+  --ui-checkbox-bg-indeterminate: oklch(0.985 0 0);
+  --ui-checkbox-border-indeterminate: oklch(0.985 0 0);
+  --ui-checkbox-ring: oklch(0.55 0 0);
+
+  /* Radio dark mode */
+  --ui-radio-bg: oklch(0.10 0 0);
+  --ui-radio-border: oklch(0.45 0 0);
+  --ui-radio-border-checked: oklch(0.985 0 0);
+  --ui-radio-dot-color: oklch(0.985 0 0);
+  --ui-radio-ring: oklch(0.55 0 0);
 }
 
 /* ==========================================================================
