@@ -42,7 +42,7 @@
     "lit": "^3.0.0"
   },
   "dependencies": {
-    "@floating-ui/dom": "^1.7.4"
+    "@floating-ui/dom": "^1.7.5"
   },
   "devDependencies": {
     "@lit-ui/core": "workspace:*",
