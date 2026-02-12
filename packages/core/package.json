@@ -62,7 +62,7 @@
     "vite-plugin-dts": "^4.5.4"
   },
   "dependencies": {
-    "@floating-ui/dom": "^1.7.4",
+    "@floating-ui/dom": "^1.7.5",
     "composed-offset-position": "^0.0.6"
   }
 }
