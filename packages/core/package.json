@@ -54,15 +54,15 @@
   "devDependencies": {
     "@lit-ui/typescript-config": "workspace:*",
     "@lit-ui/vite-config": "workspace:*",
-    "@tailwindcss/vite": "^4.1.18",
+    "@tailwindcss/vite": "^4.2.1",
     "lit": "^3.3.2",
-    "tailwindcss": "^4.1.18",
+    "tailwindcss": "^4.2.1",
     "typescript": "^5.9.3",
     "vite": "^7.3.1",
     "vite-plugin-dts": "^4.5.4"
   },
   "dependencies": {
-    "@floating-ui/dom": "^1.7.4",
+    "@floating-ui/dom": "^1.7.5",
     "composed-offset-position": "^0.0.6"
   }
 }
