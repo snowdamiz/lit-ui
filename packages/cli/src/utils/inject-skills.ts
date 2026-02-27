@@ -1,6 +1,7 @@
 import { existsSync } from 'node:fs';
-import { resolve, join } from 'pathe';
-import fsExtra from 'fs-extra';
+import fs from 'node:fs/promises';
+import { fileURLToPath } from 'node:url';
+import { resolve, dirname, join } from 'pathe';
 import { consola } from 'consola';
 
 import {
@@ -8,60 +9,15 @@ import {
   getAllPlatforms,
   type AIPlatform,
 } from './detect-ai-platform';
-import {
-  LIT_UI_OVERVIEW_SKILL,
-  COMPONENT_SKILLS,
-} from './skill-content';
-import { info, success, warn, highlight } from './logger';
-
-const { ensureDir, writeFile, pathExists } = fsExtra;
+import { info, success, highlight } from './logger';
 
 /**
- * Write a SKILL.md file to a skill directory.
- * Creates the directory if it doesn't exist.
+ * Resolve the skill/ directory bundled with this package.
+ * In dist/utils/inject-skills.js → dist/ → package root → skill/
  */
-async function writeSkillFile(
-  skillDir: string,
-  content: string,
-  overwrite: boolean = false
-): Promise<boolean> {
-  const skillFile = join(skillDir, 'SKILL.md');
-
-  if (!overwrite && existsSync(skillFile)) {
-    return false; // Already exists, don't overwrite
-  }
-
-  await ensureDir(skillDir);
-  await writeFile(skillFile, content, 'utf-8');
-  return true;
-}
-
-/**
- * Inject the overview skill (lit-ui) into a platform's skills directory.
- */
-async function injectOverviewSkill(
-  cwd: string,
-  platform: AIPlatform,
-  overwrite: boolean = false
-): Promise<boolean> {
-  const skillDir = resolve(cwd, platform.skillsDir, 'lit-ui');
-  return writeSkillFile(skillDir, LIT_UI_OVERVIEW_SKILL, overwrite);
-}
-
-/**
- * Inject a component-specific skill into a platform's skills directory.
- */
-async function injectComponentSkill(
-  cwd: string,
-  platform: AIPlatform,
-  componentName: string,
-  overwrite: boolean = false
-): Promise<boolean> {
-  const content = COMPONENT_SKILLS[componentName];
-  if (!content) return false;
-
-  const skillDir = resolve(cwd, platform.skillsDir, `lit-ui-${componentName}`);
-  return writeSkillFile(skillDir, content, overwrite);
+function getSkillSourceDir(): string {
+  const __filename = fileURLToPath(import.meta.url);
+  return join(dirname(__filename), '..', '..', 'skill');
 }
 
 export interface InjectSkillsOptions {
@@ -72,7 +28,40 @@ export interface InjectSkillsOptions {
 }
 
 /**
- * Detect AI platforms and inject the overview skill during `lit-ui init`.
+ * Copy the full skill/ tree into a platform's skills directory.
+ * Target: <cwd>/<platform.skillsDir>/lit-ui/
+ */
+async function copySkillTree(
+  cwd: string,
+  platform: AIPlatform,
+  overwrite: boolean = false
+): Promise<boolean> {
+  const sourceDir = getSkillSourceDir();
+
+  if (!existsSync(sourceDir)) {
+    return false;
+  }
+
+  const targetDir = resolve(cwd, platform.skillsDir, 'lit-ui');
+  const rootSkillFile = join(targetDir, 'SKILL.md');
+
+  if (!overwrite && existsSync(rootSkillFile)) {
+    return false; // Already installed, skip
+  }
+
+  await fs.mkdir(targetDir, { recursive: true });
+  await fs.cp(sourceDir, targetDir, {
+    recursive: true,
+    force: overwrite,
+    errorOnExist: false,
+    filter: (src) => !src.endsWith('.DS_Store'),
+  });
+
+  return true;
+}
+
+/**
+ * Detect AI platforms and inject the lit-ui skill tree during `lit-ui init`.
  * Prompts the user to confirm or select platforms if multiple are detected.
  *
  * @returns The platforms that skills were injected into
@@ -85,7 +74,6 @@ export async function injectOverviewSkills(
   let platforms: AIPlatform[] = [];
 
   if (detected.length > 0) {
-    // Platforms detected - confirm injection
     const platformNames = detected.map((p) => p.name).join(', ');
 
     if (options.yes) {
@@ -103,7 +91,6 @@ export async function injectOverviewSkills(
       }
     }
   } else {
-    // No platforms detected - ask if they want to set one up
     if (!options.yes) {
       const setupSkills = await consola.prompt(
         'No AI coding tools detected. Set up Agent Skills for an AI tool?',
@@ -134,11 +121,10 @@ export async function injectOverviewSkills(
 
   if (platforms.length === 0) return [];
 
-  // Inject overview skill into each platform
   const injected: AIPlatform[] = [];
 
   for (const platform of platforms) {
-    const written = await injectOverviewSkill(cwd, platform, options.overwrite);
+    const written = await copySkillTree(cwd, platform, options.overwrite);
     if (written) {
       injected.push(platform);
     }
@@ -154,61 +140,50 @@ export async function injectOverviewSkills(
 }
 
 /**
- * Inject a component-specific skill during `lit-ui add`.
- * Only injects if platforms are already set up (skills directory exists).
- *
- * @returns Number of platforms the skill was injected into
+ * Re-inject/update the skill tree into all platforms that already have it installed.
+ * Called during `lit-ui add` to keep skills up to date.
  */
 export async function injectComponentSkills(
   cwd: string,
-  componentName: string,
+  _componentName: string,
   options: InjectSkillsOptions = {}
 ): Promise<number> {
-  if (!COMPONENT_SKILLS[componentName]) return 0;
-
-  // Find platforms that already have the overview skill (i.e., skills were set up)
+  // Find platforms that already have the skill installed
   const allPlatforms = getAllPlatforms();
   const activePlatforms = allPlatforms.filter((p) => {
-    const overviewSkill = resolve(cwd, p.skillsDir, 'lit-ui', 'SKILL.md');
-    return existsSync(overviewSkill);
+    const rootSkill = resolve(cwd, p.skillsDir, 'lit-ui', 'SKILL.md');
+    return existsSync(rootSkill);
   });
 
   if (activePlatforms.length === 0) return 0;
 
-  let injectedCount = 0;
-
+  let count = 0;
   for (const platform of activePlatforms) {
-    const written = await injectComponentSkill(
-      cwd,
-      platform,
-      componentName,
-      options.overwrite
-    );
-    if (written) {
-      injectedCount++;
-    }
+    const written = await copySkillTree(cwd, platform, true); // always overwrite to pick up new component skill
+    if (written) count++;
   }
 
-  if (injectedCount > 0) {
-    info(`Injected ${highlight(componentName)} skill for AI tools`);
-  }
-
-  return injectedCount;
+  return count;
 }
 
 /**
- * Inject all available component skills at once (for bulk setup).
+ * Inject/refresh the full skill tree into all active platforms.
  */
 export async function injectAllComponentSkills(
   cwd: string,
   options: InjectSkillsOptions = {}
 ): Promise<number> {
-  let totalInjected = 0;
+  const allPlatforms = getAllPlatforms();
+  const activePlatforms = allPlatforms.filter((p) => {
+    const rootSkill = resolve(cwd, p.skillsDir, 'lit-ui', 'SKILL.md');
+    return existsSync(rootSkill);
+  });
 
-  for (const componentName of Object.keys(COMPONENT_SKILLS)) {
-    const count = await injectComponentSkills(cwd, componentName, options);
-    totalInjected += count;
+  let count = 0;
+  for (const platform of activePlatforms) {
+    const written = await copySkillTree(cwd, platform, options.overwrite ?? true);
+    if (written) count++;
   }
 
-  return totalInjected;
+  return count;
 }
