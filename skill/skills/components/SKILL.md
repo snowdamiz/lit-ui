@@ -169,4 +169,25 @@ toast({ title: 'Saved', description: 'Your changes were saved.', variant: 'succe
 
 ## Per-Component Deep Skills
 
-When working with a specific component, load the component-specific skill injected by `npx lit-ui add <component>`. That skill contains the full property table, all events, all CSS tokens, and complete examples.
+Each component has a dedicated skill file with the full property table, all events, all CSS tokens, and complete examples:
+
+| Component | Skill File |
+|-----------|------------|
+| Button | `skill/skills/button/SKILL.md` |
+| Input | `skill/skills/input/SKILL.md` |
+| Textarea | `skill/skills/textarea/SKILL.md` |
+| Select | `skill/skills/select/SKILL.md` |
+| Checkbox | `skill/skills/checkbox/SKILL.md` |
+| Radio | `skill/skills/radio/SKILL.md` |
+| Switch | `skill/skills/switch/SKILL.md` |
+| Calendar | `skill/skills/calendar/SKILL.md` |
+| Date Picker | `skill/skills/date-picker/SKILL.md` |
+| Date Range Picker | `skill/skills/date-range-picker/SKILL.md` |
+| Time Picker | `skill/skills/time-picker/SKILL.md` |
+| Dialog | `skill/skills/dialog/SKILL.md` |
+| Accordion | `skill/skills/accordion/SKILL.md` |
+| Tabs | `skill/skills/tabs/SKILL.md` |
+| Tooltip | `skill/skills/tooltip/SKILL.md` |
+| Popover | `skill/skills/popover/SKILL.md` |
+| Toast | `skill/skills/toast/SKILL.md` |
+| Data Table | `skill/skills/data-table/SKILL.md` |
