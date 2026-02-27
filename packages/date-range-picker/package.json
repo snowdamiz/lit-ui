@@ -1,6 +1,6 @@
 {
   "name": "@lit-ui/date-range-picker",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Accessible date range picker component built with Lit, Tailwind CSS, and date-fns",
   "author": "",
   "license": "MIT",
