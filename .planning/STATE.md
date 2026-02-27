@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-05)
 **Milestone:** v7.0 Data Table — SHIPPED
 **Phase:** All 8 phases complete (61-68)
 **Status:** Milestone archived
-**Last activity:** 2026-02-05 — v7.0 milestone complete
+**Last activity:** 2026-02-27 — Completed quick task 2: Create agents skill with progressive disclosure router and global injection support
 
 **Progress:**
 ```
