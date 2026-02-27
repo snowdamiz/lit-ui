@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-05)
 **Milestone:** v7.0 Data Table — SHIPPED
 **Phase:** All 8 phases complete (61-68)
 **Status:** Milestone archived
-**Last activity:** 2026-02-27 — Completed quick task 2: Create agents skill with progressive disclosure router and global injection support
+**Last activity:** 2026-02-27 — Completed quick task 3: Split components skill into 18 individual per-component skills
 
 **Progress:**
 ```
@@ -55,6 +55,7 @@ Cleared — see PROJECT.md Key Decisions table for cumulative record.
 |----|------|----------|------|
 | quick-001 | Cmd+K command palette with full-text search | 2m 55s | 2026-02-02 |
 | quick-002 | Agents skill with progressive disclosure router + global installer | 5m 25s | 2026-02-27 |
+| quick-003 | Split components skill into 18 individual per-component skills based on docs pages | - | 2026-02-27 |
 
 ## Session Continuity
 

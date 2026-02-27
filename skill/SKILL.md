@@ -34,17 +34,40 @@ description: >-
 
 ## Available Sub-Skills
 
-1. `skills/components` — All lui-* tags, properties, attributes, events, slots, and CSS tokens
-2. `skills/cli` — CLI commands: init, add, list, migrate, theme — flags and workflows
-3. `skills/authoring` — Creating new components: TailwindElement, ElementInternals, SSR guards, decorators
-4. `skills/theming` — CSS custom properties, design tokens, dark mode, ::part() selectors
-5. `skills/framework-usage` — React, Vue, Svelte, Angular, and vanilla HTML integration patterns
-6. `skills/ssr` — Server-side rendering: renderToString, hydration, isServer guards
+**Components (load the specific one when a component is mentioned):**
+
+1. `skills/button` — lui-button: variants, sizes, loading, icons, form submission
+2. `skills/input` — lui-input: types, validation, label, prefix/suffix, clearable, password toggle
+3. `skills/textarea` — lui-textarea: resize, auto-resize, character count, validation
+4. `skills/select` — lui-select + lui-option + lui-option-group: single/multi, searchable, creatable, async
+5. `skills/checkbox` — lui-checkbox + lui-checkbox-group: indeterminate, select-all, orientation
+6. `skills/radio` — lui-radio + lui-radio-group: orientation, keyboard nav, form participation
+7. `skills/switch` — lui-switch: checked state, label, form participation
+8. `skills/calendar` — lui-calendar + lui-calendar-multi: modes, date constraints, presets, week numbers
+9. `skills/date-picker` — lui-date-picker: formats, presets, min/max, locale, form participation
+10. `skills/date-range-picker` — lui-date-range-picker: start/end dates, min/max days, comparison mode
+11. `skills/time-picker` — lui-time-picker: 12/24h, seconds, timezone, voice input, presets
+12. `skills/dialog` — lui-dialog: open/close, slots (title, footer), dismissible, show/hide methods
+13. `skills/accordion` — lui-accordion + lui-accordion-item: single/multiple open, animated, heading level
+14. `skills/tabs` — lui-tabs + lui-tab-panel: orientation, activation-mode, disabled tabs
+15. `skills/tooltip` — lui-tooltip: placement, delay, rich content (title + content slots), arrow
+16. `skills/popover` — lui-popover: placement, light dismiss, match-trigger-width, open/close events
+17. `skills/toast` — lui-toaster + toast() API: variants, duration, actions, programmatic usage
+18. `skills/data-table` — lui-data-table: columns def, sorting, filtering, pagination, selection, editing, export
+
+**Tooling & patterns:**
+
+19. `skills/cli` — CLI commands: init, add, list, migrate, theme — flags and workflows
+20. `skills/authoring` — Creating new components: TailwindElement, ElementInternals, SSR guards, decorators
+21. `skills/theming` — CSS custom properties, design tokens, dark mode, ::part() selectors
+22. `skills/framework-usage` — React, Vue, Svelte, Angular, and vanilla HTML integration patterns
+23. `skills/ssr` — Server-side rendering: renderToString, hydration, isServer guards
 
 ## Routing Rules
 
 1. After delivering the overview, check if the question maps to a specific sub-skill.
 2. Load the matching sub-skill(s) for deep answers — do not improvise from the overview alone.
-3. When in doubt, load `skills/components` first — it covers the most common questions.
-4. For CLI questions (npx lit-ui ...), load `skills/cli`.
-5. For "how do I build a component" questions, load `skills/authoring`.
+3. For a question about a specific component (e.g. "how do I use lui-button"), load that component's skill directly.
+4. For cross-topic questions (e.g. "lui-select in React with dark mode"), load both the component skill and the relevant tooling skill.
+5. For CLI questions (npx lit-ui ...), load `skills/cli`.
+6. For "how do I build a component" questions, load `skills/authoring`.
