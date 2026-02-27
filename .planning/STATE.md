@@ -54,6 +54,7 @@ Cleared — see PROJECT.md Key Decisions table for cumulative record.
 | ID | Name | Duration | Date |
 |----|------|----------|------|
 | quick-001 | Cmd+K command palette with full-text search | 2m 55s | 2026-02-02 |
+| quick-002 | Agents skill with progressive disclosure router + global installer | 5m 25s | 2026-02-27 |
 
 ## Session Continuity
 
@@ -76,4 +77,4 @@ Start next milestone with `/gsd:new-milestone` in a fresh context window.
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-02-05 (v7.0 milestone archived)*
+*Last updated: 2026-02-27 (quick-002: agents skill with progressive disclosure)*
