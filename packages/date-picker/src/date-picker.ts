@@ -372,6 +372,8 @@ export class DatePicker extends TailwindElement {
 
       .popup {
         position: fixed;
+        inset: auto;
+        margin: 0;
         z-index: var(--ui-date-picker-z-index);
         background-color: var(--ui-date-picker-popup-bg);
         border: 1px solid var(--ui-date-picker-popup-border);
@@ -692,8 +694,9 @@ export class DatePicker extends TailwindElement {
     this.open = true;
     this.triggerElement = this.inputEl;
 
-    // Wait for popup to render, then position and focus calendar
+    // Wait for popup to render, then promote to top layer, position, and focus
     await this.updateComplete;
+    this.popupEl?.showPopover();
     this.positionPopup();
     requestAnimationFrame(() => {
       this.focusCalendar();
@@ -704,6 +707,7 @@ export class DatePicker extends TailwindElement {
    * Close the calendar popup and restore focus to the trigger element.
    */
   private closePopup(): void {
+    try { this.popupEl?.hidePopover(); } catch { /* already hidden or removed */ }
     this.open = false;
     requestAnimationFrame(() => {
       this.triggerElement?.focus();
@@ -1100,6 +1104,7 @@ export class DatePicker extends TailwindElement {
           ? html`
               <div
                 class="popup"
+                popover="manual"
                 role="dialog"
                 aria-modal="true"
                 aria-label="Choose date"

@@ -416,10 +416,10 @@ export function FormIntegrationGuide() {
           <CodeBlock code={reactExample} language="tsx" filename="BookingForm.tsx" />
 
           <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mt-8 mb-4">Vue</h3>
-          <CodeBlock code={vueExample} language="vue" filename="BookingForm.vue" />
+          <CodeBlock code={vueExample} language="html" filename="BookingForm.vue" />
 
           <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mt-8 mb-4">Svelte</h3>
-          <CodeBlock code={svelteExample} language="svelte" filename="BookingForm.svelte" />
+          <CodeBlock code={svelteExample} language="html" filename="BookingForm.svelte" />
 
           <div className="mt-6 p-4 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700">
             <p className="text-sm text-gray-600 dark:text-gray-400">

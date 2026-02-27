@@ -272,9 +272,8 @@ export class DateRangePicker extends TailwindElement {
     ...tailwindBaseStyles,
     css`
       :host {
-        display: inline-block;
+        display: block;
         width: 100%;
-        container-type: inline-size;
       }
 
       :host([disabled]) {
@@ -381,7 +380,9 @@ export class DateRangePicker extends TailwindElement {
 
       .popup {
         position: fixed;
-        z-index: var(--ui-date-range-z-index);
+        inset: auto;
+        margin: 0;
+        z-index: var(--ui-date-range-z-index, 50);
         background-color: var(--ui-date-range-popup-bg);
         border: 1px solid var(--ui-date-range-popup-border);
         border-radius: 0.5rem;
@@ -572,8 +573,8 @@ export class DateRangePicker extends TailwindElement {
         border-color: var(--ui-date-range-compare-bg);
       }
 
-      /* Container query: vertical stacking for narrow containers */
-      @container (max-width: 599px) {
+      /* Media query: vertical stacking for narrow viewports */
+      @media (max-width: 599px) {
         .popup-body {
           flex-direction: column;
         }
@@ -590,8 +591,8 @@ export class DateRangePicker extends TailwindElement {
         }
       }
 
-      /* Container query: wider gap for spacious containers */
-      @container (min-width: 800px) {
+      /* Media query: wider gap for spacious viewports */
+      @media (min-width: 800px) {
         .calendars-wrapper {
           gap: 1.5rem;
         }
@@ -1327,8 +1328,9 @@ export class DateRangePicker extends TailwindElement {
     this.isOpen = true;
     this.triggerElement = (this.shadowRoot?.activeElement as HTMLElement) || this.inputEl;
 
-    // Wait for popup to render, then position and focus calendar
+    // Wait for popup to render, then promote to top layer, position, and focus
     await this.updateComplete;
+    this.popupEl?.showPopover();
     this.positionPopup();
     requestAnimationFrame(() => {
       this.focusCalendar();
@@ -1340,6 +1342,7 @@ export class DateRangePicker extends TailwindElement {
    * Clears hover preview state for clean reopen.
    */
   closePopup(): void {
+    try { this.popupEl?.hidePopover(); } catch { /* already hidden or removed */ }
     this.isOpen = false;
     this.hoveredDate = '';
     requestAnimationFrame(() => {
@@ -1633,6 +1636,7 @@ export class DateRangePicker extends TailwindElement {
           ? html`
               <div
                 class="popup"
+                popover="manual"
                 role="dialog"
                 aria-modal="true"
                 aria-label="Choose date range"

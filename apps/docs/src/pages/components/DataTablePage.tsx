@@ -315,7 +315,8 @@ function ServerSideDemoWrapper() {
 // Code examples (shown in code tabs - Lit HTML usage, not React wrapper)
 // ---------------------------------------------------------------------------
 
-const basicCode = `import '@lit-ui/data-table';
+const basicCode = {
+  html: `import '@lit-ui/data-table';
 import { html } from 'lit';
 
 const columns = [
@@ -332,9 +333,99 @@ const data = [
   // ...
 ];
 
-html\`<lui-data-table .columns=\${columns} .data=\${data}></lui-data-table>\``;
+html\`<lui-data-table .columns=\${columns} .data=\${data}></lui-data-table>\``,
 
-const sortingCode = `import '@lit-ui/data-table';
+  react: `import '@lit-ui/data-table';
+import { useRef, useEffect } from 'react';
+
+const columns = [
+  { accessorKey: 'name', header: 'Name' },
+  { accessorKey: 'email', header: 'Email' },
+  { accessorKey: 'role', header: 'Role' },
+  { accessorKey: 'status', header: 'Status' },
+];
+
+const data = [
+  { id: 1, name: 'Alice Johnson', email: 'alice@example.com', role: 'Admin', status: 'Active' },
+  { id: 2, name: 'Bob Smith', email: 'bob@example.com', role: 'Editor', status: 'Active' },
+  { id: 3, name: 'Carol Williams', email: 'carol@example.com', role: 'Viewer', status: 'Inactive' },
+  // ...
+];
+
+function MyTable() {
+  const tableRef = useRef(null);
+
+  useEffect(() => {
+    if (tableRef.current) {
+      tableRef.current.columns = columns;
+      tableRef.current.data = data;
+    }
+  }, []);
+
+  return <lui-data-table ref={tableRef} />;
+}`,
+
+  vue: `<script setup>
+import '@lit-ui/data-table';
+import { ref, onMounted } from 'vue';
+
+const tableRef = ref(null);
+
+const columns = [
+  { accessorKey: 'name', header: 'Name' },
+  { accessorKey: 'email', header: 'Email' },
+  { accessorKey: 'role', header: 'Role' },
+  { accessorKey: 'status', header: 'Status' },
+];
+
+const data = [
+  { id: 1, name: 'Alice Johnson', email: 'alice@example.com', role: 'Admin', status: 'Active' },
+  { id: 2, name: 'Bob Smith', email: 'bob@example.com', role: 'Editor', status: 'Active' },
+  { id: 3, name: 'Carol Williams', email: 'carol@example.com', role: 'Viewer', status: 'Inactive' },
+  // ...
+];
+
+onMounted(() => {
+  tableRef.value.columns = columns;
+  tableRef.value.data = data;
+});
+</script>
+
+<template>
+  <lui-data-table ref="tableRef" />
+</template>`,
+
+  svelte: `<script>
+  import '@lit-ui/data-table';
+  import { onMount } from 'svelte';
+
+  let tableEl;
+
+  const columns = [
+    { accessorKey: 'name', header: 'Name' },
+    { accessorKey: 'email', header: 'Email' },
+    { accessorKey: 'role', header: 'Role' },
+    { accessorKey: 'status', header: 'Status' },
+  ];
+
+  const data = [
+    { id: 1, name: 'Alice Johnson', email: 'alice@example.com', role: 'Admin', status: 'Active' },
+    { id: 2, name: 'Bob Smith', email: 'bob@example.com', role: 'Editor', status: 'Active' },
+    { id: 3, name: 'Carol Williams', email: 'carol@example.com', role: 'Viewer', status: 'Inactive' },
+    // ...
+  ];
+
+  onMount(() => {
+    tableEl.columns = columns;
+    tableEl.data = data;
+  });
+</script>
+
+<lui-data-table bind:this={tableEl} />`,
+};
+
+const sortingCode = {
+  html: `import '@lit-ui/data-table';
 import { html } from 'lit';
 
 const columns = [
@@ -351,9 +442,93 @@ html\`
     .data=\${data}
     @ui-sort-change=\${(e) => console.log('Sort:', e.detail.sorting)}
   ></lui-data-table>
-\``;
+\``,
 
-const selectionCode = `import '@lit-ui/data-table';
+  react: `import '@lit-ui/data-table';
+import { useRef, useEffect } from 'react';
+
+const columns = [
+  { accessorKey: 'name', header: 'Name', enableSorting: true },
+  { accessorKey: 'email', header: 'Email', enableSorting: true },
+  { accessorKey: 'role', header: 'Role', enableSorting: true },
+  { accessorKey: 'age', header: 'Age', enableSorting: true },
+];
+
+// Click a column header to sort. Shift+click for multi-column sort.
+function SortableTable({ data }) {
+  const tableRef = useRef(null);
+
+  useEffect(() => {
+    if (tableRef.current) {
+      tableRef.current.columns = columns;
+      tableRef.current.data = data;
+      tableRef.current.addEventListener('ui-sort-change', (e) => {
+        console.log('Sort:', e.detail.sorting);
+      });
+    }
+  }, [data]);
+
+  return <lui-data-table ref={tableRef} />;
+}`,
+
+  vue: `<script setup>
+import '@lit-ui/data-table';
+import { ref, onMounted } from 'vue';
+
+const tableRef = ref(null);
+
+const columns = [
+  { accessorKey: 'name', header: 'Name', enableSorting: true },
+  { accessorKey: 'email', header: 'Email', enableSorting: true },
+  { accessorKey: 'role', header: 'Role', enableSorting: true },
+  { accessorKey: 'age', header: 'Age', enableSorting: true },
+];
+
+onMounted(() => {
+  tableRef.value.columns = columns;
+  tableRef.value.data = data;
+});
+
+function onSortChange(e) {
+  console.log('Sort:', e.detail.sorting);
+}
+</script>
+
+<template>
+  <!-- Click a column header to sort. Shift+click for multi-column sort. -->
+  <lui-data-table ref="tableRef" @ui-sort-change="onSortChange" />
+</template>`,
+
+  svelte: `<script>
+  import '@lit-ui/data-table';
+  import { onMount } from 'svelte';
+
+  export let data;
+  let tableEl;
+
+  const columns = [
+    { accessorKey: 'name', header: 'Name', enableSorting: true },
+    { accessorKey: 'email', header: 'Email', enableSorting: true },
+    { accessorKey: 'role', header: 'Role', enableSorting: true },
+    { accessorKey: 'age', header: 'Age', enableSorting: true },
+  ];
+
+  onMount(() => {
+    tableEl.columns = columns;
+    tableEl.data = data;
+  });
+
+  function handleSortChange(e) {
+    console.log('Sort:', e.detail.sorting);
+  }
+</script>
+
+<!-- Click a column header to sort. Shift+click for multi-column sort. -->
+<lui-data-table bind:this={tableEl} on:ui-sort-change={handleSortChange} />`,
+};
+
+const selectionCode = {
+  html: `import '@lit-ui/data-table';
 import { createSelectionColumn } from '@lit-ui/data-table';
 import { html } from 'lit';
 
@@ -375,9 +550,107 @@ html\`
       console.log('Count:', e.detail.selectedCount);
     }}
   ></lui-data-table>
-\``;
+\``,
 
-const filteringCode = `import '@lit-ui/data-table';
+  react: `import '@lit-ui/data-table';
+import { createSelectionColumn } from '@lit-ui/data-table';
+import { useRef, useEffect } from 'react';
+
+const columns = [
+  createSelectionColumn(),
+  { accessorKey: 'name', header: 'Name' },
+  { accessorKey: 'email', header: 'Email' },
+  { accessorKey: 'role', header: 'Role' },
+  { accessorKey: 'status', header: 'Status' },
+];
+
+function SelectableTable({ data }) {
+  const tableRef = useRef(null);
+
+  useEffect(() => {
+    if (tableRef.current) {
+      tableRef.current.columns = columns;
+      tableRef.current.data = data;
+      tableRef.current.addEventListener('ui-selection-change', (e) => {
+        console.log('Selected:', e.detail.selectedRows);
+        console.log('Count:', e.detail.selectedCount);
+      });
+    }
+  }, [data]);
+
+  return <lui-data-table ref={tableRef} enable-selection />;
+}`,
+
+  vue: `<script setup>
+import '@lit-ui/data-table';
+import { createSelectionColumn } from '@lit-ui/data-table';
+import { ref, onMounted } from 'vue';
+
+const tableRef = ref(null);
+
+const columns = [
+  createSelectionColumn(),
+  { accessorKey: 'name', header: 'Name' },
+  { accessorKey: 'email', header: 'Email' },
+  { accessorKey: 'role', header: 'Role' },
+  { accessorKey: 'status', header: 'Status' },
+];
+
+onMounted(() => {
+  tableRef.value.columns = columns;
+  tableRef.value.data = data;
+});
+
+function onSelectionChange(e) {
+  console.log('Selected:', e.detail.selectedRows);
+  console.log('Count:', e.detail.selectedCount);
+}
+</script>
+
+<template>
+  <lui-data-table
+    ref="tableRef"
+    enable-selection
+    @ui-selection-change="onSelectionChange"
+  />
+</template>`,
+
+  svelte: `<script>
+  import '@lit-ui/data-table';
+  import { createSelectionColumn } from '@lit-ui/data-table';
+  import { onMount } from 'svelte';
+
+  export let data;
+  let tableEl;
+
+  const columns = [
+    createSelectionColumn(),
+    { accessorKey: 'name', header: 'Name' },
+    { accessorKey: 'email', header: 'Email' },
+    { accessorKey: 'role', header: 'Role' },
+    { accessorKey: 'status', header: 'Status' },
+  ];
+
+  onMount(() => {
+    tableEl.columns = columns;
+    tableEl.data = data;
+  });
+
+  function handleSelectionChange(e) {
+    console.log('Selected:', e.detail.selectedRows);
+    console.log('Count:', e.detail.selectedCount);
+  }
+</script>
+
+<lui-data-table
+  bind:this={tableEl}
+  enable-selection
+  on:ui-selection-change={handleSelectionChange}
+/>`,
+};
+
+const filteringCode = {
+  html: `import '@lit-ui/data-table';
 import { html } from 'lit';
 
 const columns = [
@@ -407,9 +680,132 @@ html\`
     .data=\${data}
     @ui-filter-change=\${(e) => console.log('Filters:', e.detail)}
   ></lui-data-table>
-\``;
+\``,
 
-const paginationCode = `import '@lit-ui/data-table';
+  react: `import '@lit-ui/data-table';
+import { useRef, useEffect } from 'react';
+
+const columns = [
+  { accessorKey: 'name', header: 'Name', meta: { filterType: 'text' } },
+  { accessorKey: 'email', header: 'Email', meta: { filterType: 'text' } },
+  {
+    accessorKey: 'role',
+    header: 'Role',
+    meta: {
+      filterType: 'select',
+      filterOptions: ['Admin', 'Editor', 'Viewer'],
+    },
+  },
+  {
+    accessorKey: 'status',
+    header: 'Status',
+    meta: {
+      filterType: 'select',
+      filterOptions: ['Active', 'Inactive', 'Pending'],
+    },
+  },
+];
+
+function FilterableTable({ data }) {
+  const tableRef = useRef(null);
+
+  useEffect(() => {
+    if (tableRef.current) {
+      tableRef.current.columns = columns;
+      tableRef.current.data = data;
+      tableRef.current.addEventListener('ui-filter-change', (e) => {
+        console.log('Filters:', e.detail);
+      });
+    }
+  }, [data]);
+
+  return <lui-data-table ref={tableRef} />;
+}`,
+
+  vue: `<script setup>
+import '@lit-ui/data-table';
+import { ref, onMounted } from 'vue';
+
+const tableRef = ref(null);
+
+const columns = [
+  { accessorKey: 'name', header: 'Name', meta: { filterType: 'text' } },
+  { accessorKey: 'email', header: 'Email', meta: { filterType: 'text' } },
+  {
+    accessorKey: 'role',
+    header: 'Role',
+    meta: {
+      filterType: 'select',
+      filterOptions: ['Admin', 'Editor', 'Viewer'],
+    },
+  },
+  {
+    accessorKey: 'status',
+    header: 'Status',
+    meta: {
+      filterType: 'select',
+      filterOptions: ['Active', 'Inactive', 'Pending'],
+    },
+  },
+];
+
+onMounted(() => {
+  tableRef.value.columns = columns;
+  tableRef.value.data = data;
+});
+
+function onFilterChange(e) {
+  console.log('Filters:', e.detail);
+}
+</script>
+
+<template>
+  <lui-data-table ref="tableRef" @ui-filter-change="onFilterChange" />
+</template>`,
+
+  svelte: `<script>
+  import '@lit-ui/data-table';
+  import { onMount } from 'svelte';
+
+  export let data;
+  let tableEl;
+
+  const columns = [
+    { accessorKey: 'name', header: 'Name', meta: { filterType: 'text' } },
+    { accessorKey: 'email', header: 'Email', meta: { filterType: 'text' } },
+    {
+      accessorKey: 'role',
+      header: 'Role',
+      meta: {
+        filterType: 'select',
+        filterOptions: ['Admin', 'Editor', 'Viewer'],
+      },
+    },
+    {
+      accessorKey: 'status',
+      header: 'Status',
+      meta: {
+        filterType: 'select',
+        filterOptions: ['Active', 'Inactive', 'Pending'],
+      },
+    },
+  ];
+
+  onMount(() => {
+    tableEl.columns = columns;
+    tableEl.data = data;
+  });
+
+  function handleFilterChange(e) {
+    console.log('Filters:', e.detail);
+  }
+</script>
+
+<lui-data-table bind:this={tableEl} on:ui-filter-change={handleFilterChange} />`,
+};
+
+const paginationCode = {
+  html: `import '@lit-ui/data-table';
 import { html } from 'lit';
 
 const columns = [
@@ -430,9 +826,102 @@ html\`
       console.log('Page size:', e.detail.pageSize);
     }}
   ></lui-data-table>
-\``;
+\``,
 
-const columnCustomizationCode = `import '@lit-ui/data-table';
+  react: `import '@lit-ui/data-table';
+import { useRef, useEffect } from 'react';
+
+const columns = [
+  { accessorKey: 'name', header: 'Name' },
+  { accessorKey: 'email', header: 'Email' },
+  { accessorKey: 'role', header: 'Role' },
+  { accessorKey: 'status', header: 'Status' },
+];
+
+// Set pagination with initial page size of 5
+function PaginatedTable({ data }) {
+  const tableRef = useRef(null);
+
+  useEffect(() => {
+    if (tableRef.current) {
+      tableRef.current.columns = columns;
+      tableRef.current.data = data;
+      tableRef.current.pagination = { pageIndex: 0, pageSize: 5 };
+      tableRef.current.addEventListener('ui-pagination-change', (e) => {
+        console.log('Page:', e.detail.pageIndex);
+        console.log('Page size:', e.detail.pageSize);
+      });
+    }
+  }, [data]);
+
+  return <lui-data-table ref={tableRef} />;
+}`,
+
+  vue: `<script setup>
+import '@lit-ui/data-table';
+import { ref, onMounted } from 'vue';
+
+const tableRef = ref(null);
+
+const columns = [
+  { accessorKey: 'name', header: 'Name' },
+  { accessorKey: 'email', header: 'Email' },
+  { accessorKey: 'role', header: 'Role' },
+  { accessorKey: 'status', header: 'Status' },
+];
+
+// Set pagination with initial page size of 5
+onMounted(() => {
+  tableRef.value.columns = columns;
+  tableRef.value.data = data;
+  tableRef.value.pagination = { pageIndex: 0, pageSize: 5 };
+});
+
+function onPaginationChange(e) {
+  console.log('Page:', e.detail.pageIndex);
+  console.log('Page size:', e.detail.pageSize);
+}
+</script>
+
+<template>
+  <lui-data-table ref="tableRef" @ui-pagination-change="onPaginationChange" />
+</template>`,
+
+  svelte: `<script>
+  import '@lit-ui/data-table';
+  import { onMount } from 'svelte';
+
+  export let data;
+  let tableEl;
+
+  const columns = [
+    { accessorKey: 'name', header: 'Name' },
+    { accessorKey: 'email', header: 'Email' },
+    { accessorKey: 'role', header: 'Role' },
+    { accessorKey: 'status', header: 'Status' },
+  ];
+
+  // Set pagination with initial page size of 5
+  onMount(() => {
+    tableEl.columns = columns;
+    tableEl.data = data;
+    tableEl.pagination = { pageIndex: 0, pageSize: 5 };
+  });
+
+  function handlePaginationChange(e) {
+    console.log('Page:', e.detail.pageIndex);
+    console.log('Page size:', e.detail.pageSize);
+  }
+</script>
+
+<lui-data-table
+  bind:this={tableEl}
+  on:ui-pagination-change={handlePaginationChange}
+/>`,
+};
+
+const columnCustomizationCode = {
+  html: `import '@lit-ui/data-table';
 import { html } from 'lit';
 
 const columns = [
@@ -452,9 +941,122 @@ html\`
     @ui-column-visibility-change=\${(e) => console.log('Visibility:', e.detail)}
     @ui-column-order-change=\${(e) => console.log('Order:', e.detail)}
   ></lui-data-table>
-\``;
+\``,
 
-const inlineEditingCode = `import '@lit-ui/data-table';
+  react: `import '@lit-ui/data-table';
+import { useRef, useEffect } from 'react';
+
+const columns = [
+  { accessorKey: 'name', header: 'Name', size: 200 },
+  { accessorKey: 'email', header: 'Email', size: 250 },
+  { accessorKey: 'role', header: 'Role', size: 120 },
+  { accessorKey: 'status', header: 'Status', size: 120 },
+];
+
+function CustomizableTable({ data }) {
+  const tableRef = useRef(null);
+
+  useEffect(() => {
+    if (tableRef.current) {
+      tableRef.current.columns = columns;
+      tableRef.current.data = data;
+      tableRef.current.addEventListener('ui-column-visibility-change', (e) => {
+        console.log('Visibility:', e.detail);
+      });
+      tableRef.current.addEventListener('ui-column-order-change', (e) => {
+        console.log('Order:', e.detail);
+      });
+    }
+  }, [data]);
+
+  return (
+    <lui-data-table
+      ref={tableRef}
+      enable-column-resizing
+      show-column-picker
+      enable-column-reorder
+    />
+  );
+}`,
+
+  vue: `<script setup>
+import '@lit-ui/data-table';
+import { ref, onMounted } from 'vue';
+
+const tableRef = ref(null);
+
+const columns = [
+  { accessorKey: 'name', header: 'Name', size: 200 },
+  { accessorKey: 'email', header: 'Email', size: 250 },
+  { accessorKey: 'role', header: 'Role', size: 120 },
+  { accessorKey: 'status', header: 'Status', size: 120 },
+];
+
+onMounted(() => {
+  tableRef.value.columns = columns;
+  tableRef.value.data = data;
+});
+
+function onVisibilityChange(e) {
+  console.log('Visibility:', e.detail);
+}
+
+function onOrderChange(e) {
+  console.log('Order:', e.detail);
+}
+</script>
+
+<template>
+  <lui-data-table
+    ref="tableRef"
+    enable-column-resizing
+    show-column-picker
+    enable-column-reorder
+    @ui-column-visibility-change="onVisibilityChange"
+    @ui-column-order-change="onOrderChange"
+  />
+</template>`,
+
+  svelte: `<script>
+  import '@lit-ui/data-table';
+  import { onMount } from 'svelte';
+
+  export let data;
+  let tableEl;
+
+  const columns = [
+    { accessorKey: 'name', header: 'Name', size: 200 },
+    { accessorKey: 'email', header: 'Email', size: 250 },
+    { accessorKey: 'role', header: 'Role', size: 120 },
+    { accessorKey: 'status', header: 'Status', size: 120 },
+  ];
+
+  onMount(() => {
+    tableEl.columns = columns;
+    tableEl.data = data;
+  });
+
+  function handleVisibilityChange(e) {
+    console.log('Visibility:', e.detail);
+  }
+
+  function handleOrderChange(e) {
+    console.log('Order:', e.detail);
+  }
+</script>
+
+<lui-data-table
+  bind:this={tableEl}
+  enable-column-resizing
+  show-column-picker
+  enable-column-reorder
+  on:ui-column-visibility-change={handleVisibilityChange}
+  on:ui-column-order-change={handleOrderChange}
+/>`,
+};
+
+const inlineEditingCode = {
+  html: `import '@lit-ui/data-table';
 import { html } from 'lit';
 
 const columns = [
@@ -488,9 +1090,147 @@ html\`
       console.log('Row edit saved:', e.detail.newValues);
     }}
   ></lui-data-table>
-\``;
+\``,
 
-const rowActionsCode = `import '@lit-ui/data-table';
+  react: `import '@lit-ui/data-table';
+import { useRef, useEffect } from 'react';
+
+const columns = [
+  { accessorKey: 'name', header: 'Name', meta: { editable: true, editType: 'text' } },
+  { accessorKey: 'email', header: 'Email', meta: { editable: true, editType: 'text' } },
+  {
+    accessorKey: 'role',
+    header: 'Role',
+    meta: {
+      editable: true,
+      editType: 'select',
+      editOptions: [
+        { label: 'Admin', value: 'Admin' },
+        { label: 'Editor', value: 'Editor' },
+        { label: 'Viewer', value: 'Viewer' },
+      ],
+    },
+  },
+  { accessorKey: 'status', header: 'Status' },
+];
+
+function EditableTable({ data }) {
+  const tableRef = useRef(null);
+
+  useEffect(() => {
+    if (tableRef.current) {
+      tableRef.current.columns = columns;
+      tableRef.current.data = data;
+      tableRef.current.addEventListener('ui-cell-edit', (e) => {
+        console.log('Cell edit:', e.detail.columnId, e.detail.oldValue, '->', e.detail.newValue);
+      });
+      tableRef.current.addEventListener('ui-row-edit', (e) => {
+        console.log('Row edit saved:', e.detail.newValues);
+      });
+    }
+  }, [data]);
+
+  return <lui-data-table ref={tableRef} enable-row-editing />;
+}`,
+
+  vue: `<script setup>
+import '@lit-ui/data-table';
+import { ref, onMounted } from 'vue';
+
+const tableRef = ref(null);
+
+const columns = [
+  { accessorKey: 'name', header: 'Name', meta: { editable: true, editType: 'text' } },
+  { accessorKey: 'email', header: 'Email', meta: { editable: true, editType: 'text' } },
+  {
+    accessorKey: 'role',
+    header: 'Role',
+    meta: {
+      editable: true,
+      editType: 'select',
+      editOptions: [
+        { label: 'Admin', value: 'Admin' },
+        { label: 'Editor', value: 'Editor' },
+        { label: 'Viewer', value: 'Viewer' },
+      ],
+    },
+  },
+  { accessorKey: 'status', header: 'Status' },
+];
+
+onMounted(() => {
+  tableRef.value.columns = columns;
+  tableRef.value.data = data;
+});
+
+function onCellEdit(e) {
+  console.log('Cell edit:', e.detail.columnId, e.detail.oldValue, '->', e.detail.newValue);
+}
+
+function onRowEdit(e) {
+  console.log('Row edit saved:', e.detail.newValues);
+}
+</script>
+
+<template>
+  <lui-data-table
+    ref="tableRef"
+    enable-row-editing
+    @ui-cell-edit="onCellEdit"
+    @ui-row-edit="onRowEdit"
+  />
+</template>`,
+
+  svelte: `<script>
+  import '@lit-ui/data-table';
+  import { onMount } from 'svelte';
+
+  export let data;
+  let tableEl;
+
+  const columns = [
+    { accessorKey: 'name', header: 'Name', meta: { editable: true, editType: 'text' } },
+    { accessorKey: 'email', header: 'Email', meta: { editable: true, editType: 'text' } },
+    {
+      accessorKey: 'role',
+      header: 'Role',
+      meta: {
+        editable: true,
+        editType: 'select',
+        editOptions: [
+          { label: 'Admin', value: 'Admin' },
+          { label: 'Editor', value: 'Editor' },
+          { label: 'Viewer', value: 'Viewer' },
+        ],
+      },
+    },
+    { accessorKey: 'status', header: 'Status' },
+  ];
+
+  onMount(() => {
+    tableEl.columns = columns;
+    tableEl.data = data;
+  });
+
+  function handleCellEdit(e) {
+    console.log('Cell edit:', e.detail.columnId, e.detail.oldValue, '->', e.detail.newValue);
+  }
+
+  function handleRowEdit(e) {
+    console.log('Row edit saved:', e.detail.newValues);
+  }
+</script>
+
+<lui-data-table
+  bind:this={tableEl}
+  enable-row-editing
+  on:ui-cell-edit={handleCellEdit}
+  on:ui-row-edit={handleRowEdit}
+/>`,
+};
+
+const rowActionsCode = {
+  html: `import '@lit-ui/data-table';
 import { html } from 'lit';
 
 const columns = [
@@ -516,9 +1256,119 @@ html\`
       console.log('Action:', e.detail.actionId, 'on row:', e.detail.row);
     }}
   ></lui-data-table>
-\``;
+\``,
 
-const expandableRowsCode = `import '@lit-ui/data-table';
+  react: `import '@lit-ui/data-table';
+import { useRef, useEffect } from 'react';
+
+const columns = [
+  { accessorKey: 'name', header: 'Name' },
+  { accessorKey: 'email', header: 'Email' },
+  { accessorKey: 'role', header: 'Role' },
+  { accessorKey: 'status', header: 'Status' },
+];
+
+const rowActions = [
+  { id: 'view', label: 'View', variant: 'default' },
+  { id: 'edit', label: 'Edit', variant: 'default' },
+  { id: 'delete', label: 'Delete', variant: 'destructive' },
+];
+
+function ActionTable({ data }) {
+  const tableRef = useRef(null);
+
+  useEffect(() => {
+    if (tableRef.current) {
+      tableRef.current.columns = columns;
+      tableRef.current.data = data;
+      tableRef.current.rowActions = rowActions;
+      tableRef.current.addEventListener('ui-row-action', (e) => {
+        console.log('Action:', e.detail.actionId, 'on row:', e.detail.row);
+      });
+    }
+  }, [data]);
+
+  return <lui-data-table ref={tableRef} hover-reveal-actions />;
+}`,
+
+  vue: `<script setup>
+import '@lit-ui/data-table';
+import { ref, onMounted } from 'vue';
+
+const tableRef = ref(null);
+
+const columns = [
+  { accessorKey: 'name', header: 'Name' },
+  { accessorKey: 'email', header: 'Email' },
+  { accessorKey: 'role', header: 'Role' },
+  { accessorKey: 'status', header: 'Status' },
+];
+
+const rowActions = [
+  { id: 'view', label: 'View', variant: 'default' },
+  { id: 'edit', label: 'Edit', variant: 'default' },
+  { id: 'delete', label: 'Delete', variant: 'destructive' },
+];
+
+onMounted(() => {
+  tableRef.value.columns = columns;
+  tableRef.value.data = data;
+  tableRef.value.rowActions = rowActions;
+});
+
+function onRowAction(e) {
+  console.log('Action:', e.detail.actionId, 'on row:', e.detail.row);
+}
+</script>
+
+<template>
+  <lui-data-table
+    ref="tableRef"
+    hover-reveal-actions
+    @ui-row-action="onRowAction"
+  />
+</template>`,
+
+  svelte: `<script>
+  import '@lit-ui/data-table';
+  import { onMount } from 'svelte';
+
+  export let data;
+  let tableEl;
+
+  const columns = [
+    { accessorKey: 'name', header: 'Name' },
+    { accessorKey: 'email', header: 'Email' },
+    { accessorKey: 'role', header: 'Role' },
+    { accessorKey: 'status', header: 'Status' },
+  ];
+
+  const rowActions = [
+    { id: 'view', label: 'View', variant: 'default' },
+    { id: 'edit', label: 'Edit', variant: 'default' },
+    { id: 'delete', label: 'Delete', variant: 'destructive' },
+  ];
+
+  onMount(() => {
+    tableEl.columns = columns;
+    tableEl.data = data;
+    tableEl.rowActions = rowActions;
+  });
+
+  function handleRowAction(e) {
+    console.log('Action:', e.detail.actionId, 'on row:', e.detail.row);
+  }
+</script>
+
+<lui-data-table
+  bind:this={tableEl}
+  hover-reveal-actions
+  on:ui-row-action={handleRowAction}
+/>`,
+};
+
+const expandableRowsCode = {
+  html: `import '@lit-ui/data-table';
 import { html } from 'lit';
 
 const columns = [
@@ -545,9 +1395,131 @@ html\`
     \`}
     @ui-expanded-change=\${(e) => console.log('Expanded:', e.detail)}
   ></lui-data-table>
-\``;
+\``,
 
-const serverSideCode = `import '@lit-ui/data-table';
+  react: `import '@lit-ui/data-table';
+import { html } from 'lit';
+import { useRef, useEffect } from 'react';
+
+const columns = [
+  { accessorKey: 'name', header: 'Name' },
+  { accessorKey: 'email', header: 'Email' },
+  { accessorKey: 'role', header: 'Role' },
+  { accessorKey: 'status', header: 'Status' },
+];
+
+function ExpandableTable({ data }) {
+  const tableRef = useRef(null);
+
+  useEffect(() => {
+    if (tableRef.current) {
+      tableRef.current.columns = columns;
+      tableRef.current.data = data;
+      tableRef.current.renderDetailContent = (rowData) => html\`
+        <div style="padding: 1rem;">
+          <h4 style="margin: 0 0 0.5rem;">\${rowData.name} Details</h4>
+          <p style="margin: 0; color: #71717a;">
+            Email: \${rowData.email}<br />
+            Age: \${rowData.age}<br />
+            Joined: \${rowData.joined}
+          </p>
+        </div>
+      \`;
+      tableRef.current.addEventListener('ui-expanded-change', (e) => {
+        console.log('Expanded:', e.detail);
+      });
+    }
+  }, [data]);
+
+  return <lui-data-table ref={tableRef} single-expand />;
+}`,
+
+  vue: `<script setup>
+import '@lit-ui/data-table';
+import { html } from 'lit';
+import { ref, onMounted } from 'vue';
+
+const tableRef = ref(null);
+
+const columns = [
+  { accessorKey: 'name', header: 'Name' },
+  { accessorKey: 'email', header: 'Email' },
+  { accessorKey: 'role', header: 'Role' },
+  { accessorKey: 'status', header: 'Status' },
+];
+
+onMounted(() => {
+  tableRef.value.columns = columns;
+  tableRef.value.data = data;
+  tableRef.value.renderDetailContent = (rowData) => html\`
+    <div style="padding: 1rem;">
+      <h4 style="margin: 0 0 0.5rem;">\${rowData.name} Details</h4>
+      <p style="margin: 0; color: #71717a;">
+        Email: \${rowData.email}<br />
+        Age: \${rowData.age}<br />
+        Joined: \${rowData.joined}
+      </p>
+    </div>
+  \`;
+});
+
+function onExpandedChange(e) {
+  console.log('Expanded:', e.detail);
+}
+</script>
+
+<template>
+  <lui-data-table
+    ref="tableRef"
+    single-expand
+    @ui-expanded-change="onExpandedChange"
+  />
+</template>`,
+
+  svelte: `<script>
+  import '@lit-ui/data-table';
+  import { html } from 'lit';
+  import { onMount } from 'svelte';
+
+  export let data;
+  let tableEl;
+
+  const columns = [
+    { accessorKey: 'name', header: 'Name' },
+    { accessorKey: 'email', header: 'Email' },
+    { accessorKey: 'role', header: 'Role' },
+    { accessorKey: 'status', header: 'Status' },
+  ];
+
+  onMount(() => {
+    tableEl.columns = columns;
+    tableEl.data = data;
+    tableEl.renderDetailContent = (rowData) => html\`
+      <div style="padding: 1rem;">
+        <h4 style="margin: 0 0 0.5rem;">\${rowData.name} Details</h4>
+        <p style="margin: 0; color: #71717a;">
+          Email: \${rowData.email}<br />
+          Age: \${rowData.age}<br />
+          Joined: \${rowData.joined}
+        </p>
+      </div>
+    \`;
+  });
+
+  function handleExpandedChange(e) {
+    console.log('Expanded:', e.detail);
+  }
+</script>
+
+<lui-data-table
+  bind:this={tableEl}
+  single-expand
+  on:ui-expanded-change={handleExpandedChange}
+/>`,
+};
+
+const serverSideCode = {
+  html: `import '@lit-ui/data-table';
 import { html } from 'lit';
 
 const columns = [
@@ -579,9 +1551,140 @@ html\`
       };
     }}
   ></lui-data-table>
-\``;
+\``,
 
-const csvExportCode = `import '@lit-ui/data-table';
+  react: `import '@lit-ui/data-table';
+import { useRef, useEffect } from 'react';
+
+const columns = [
+  { accessorKey: 'name', header: 'Name', enableSorting: true },
+  { accessorKey: 'email', header: 'Email', enableSorting: true },
+  { accessorKey: 'role', header: 'Role' },
+  { accessorKey: 'age', header: 'Age', enableSorting: true },
+];
+
+function ServerSideTable() {
+  const tableRef = useRef(null);
+
+  useEffect(() => {
+    if (tableRef.current) {
+      tableRef.current.columns = columns;
+      tableRef.current.data = [];
+      tableRef.current.dataCallback = async (params, signal) => {
+        const res = await fetch(\`/api/users?\${new URLSearchParams({
+          page: String(params.pageIndex),
+          size: String(params.pageSize),
+          sort: JSON.stringify(params.sorting),
+          filters: JSON.stringify(params.columnFilters),
+          q: params.globalFilter,
+        })}\`, { signal });
+
+        const json = await res.json();
+        return {
+          data: json.rows,
+          totalRowCount: json.total,
+        };
+      };
+    }
+  }, []);
+
+  return (
+    <lui-data-table
+      ref={tableRef}
+      manual-sorting
+      manual-filtering
+      manual-pagination
+    />
+  );
+}`,
+
+  vue: `<script setup>
+import '@lit-ui/data-table';
+import { ref, onMounted } from 'vue';
+
+const tableRef = ref(null);
+
+const columns = [
+  { accessorKey: 'name', header: 'Name', enableSorting: true },
+  { accessorKey: 'email', header: 'Email', enableSorting: true },
+  { accessorKey: 'role', header: 'Role' },
+  { accessorKey: 'age', header: 'Age', enableSorting: true },
+];
+
+onMounted(() => {
+  tableRef.value.columns = columns;
+  tableRef.value.data = [];
+  tableRef.value.dataCallback = async (params, signal) => {
+    const res = await fetch(\`/api/users?\${new URLSearchParams({
+      page: String(params.pageIndex),
+      size: String(params.pageSize),
+      sort: JSON.stringify(params.sorting),
+      filters: JSON.stringify(params.columnFilters),
+      q: params.globalFilter,
+    })}\`, { signal });
+
+    const json = await res.json();
+    return {
+      data: json.rows,
+      totalRowCount: json.total,
+    };
+  };
+});
+</script>
+
+<template>
+  <lui-data-table
+    ref="tableRef"
+    manual-sorting
+    manual-filtering
+    manual-pagination
+  />
+</template>`,
+
+  svelte: `<script>
+  import '@lit-ui/data-table';
+  import { onMount } from 'svelte';
+
+  let tableEl;
+
+  const columns = [
+    { accessorKey: 'name', header: 'Name', enableSorting: true },
+    { accessorKey: 'email', header: 'Email', enableSorting: true },
+    { accessorKey: 'role', header: 'Role' },
+    { accessorKey: 'age', header: 'Age', enableSorting: true },
+  ];
+
+  onMount(() => {
+    tableEl.columns = columns;
+    tableEl.data = [];
+    tableEl.dataCallback = async (params, signal) => {
+      const res = await fetch(\`/api/users?\${new URLSearchParams({
+        page: String(params.pageIndex),
+        size: String(params.pageSize),
+        sort: JSON.stringify(params.sorting),
+        filters: JSON.stringify(params.columnFilters),
+        q: params.globalFilter,
+      })}\`, { signal });
+
+      const json = await res.json();
+      return {
+        data: json.rows,
+        totalRowCount: json.total,
+      };
+    };
+  });
+</script>
+
+<lui-data-table
+  bind:this={tableEl}
+  manual-sorting
+  manual-filtering
+  manual-pagination
+/>`,
+};
+
+const csvExportCode = {
+  html: `import '@lit-ui/data-table';
 import { html } from 'lit';
 
 // Get a reference to the table element
@@ -608,7 +1711,115 @@ html\`
       // Download blob...
     }}
   ></lui-data-table>
-\``;
+\``,
+
+  react: `import '@lit-ui/data-table';
+import { useRef, useEffect } from 'react';
+
+function ExportTable({ columns, data }) {
+  const tableRef = useRef(null);
+
+  useEffect(() => {
+    if (tableRef.current) {
+      tableRef.current.columns = columns;
+      tableRef.current.data = data;
+      // Optional: server-side export callback
+      tableRef.current.onExport = async (params) => {
+        const res = await fetch('/api/export', {
+          method: 'POST',
+          body: JSON.stringify(params),
+        });
+        const blob = await res.blob();
+        // Download blob...
+      };
+    }
+  }, [columns, data]);
+
+  const handleExport = () => {
+    tableRef.current?.exportCsv({ filename: 'users.csv' });
+  };
+
+  const handleExportSelected = () => {
+    tableRef.current?.exportCsv({ filename: 'selected-users.csv', selectedOnly: true });
+  };
+
+  return (
+    <>
+      <button onClick={handleExport}>Export CSV</button>
+      <button onClick={handleExportSelected}>Export Selected</button>
+      <lui-data-table ref={tableRef} enable-selection />
+    </>
+  );
+}`,
+
+  vue: `<script setup>
+import '@lit-ui/data-table';
+import { ref, onMounted } from 'vue';
+
+const tableRef = ref(null);
+
+onMounted(() => {
+  tableRef.value.columns = columns;
+  tableRef.value.data = data;
+  // Optional: server-side export callback
+  tableRef.value.onExport = async (params) => {
+    const res = await fetch('/api/export', {
+      method: 'POST',
+      body: JSON.stringify(params),
+    });
+    const blob = await res.blob();
+    // Download blob...
+  };
+});
+
+function exportCsv() {
+  tableRef.value.exportCsv({ filename: 'users.csv' });
+}
+
+function exportSelected() {
+  tableRef.value.exportCsv({ filename: 'selected-users.csv', selectedOnly: true });
+}
+</script>
+
+<template>
+  <button @click="exportCsv">Export CSV</button>
+  <button @click="exportSelected">Export Selected</button>
+  <lui-data-table ref="tableRef" enable-selection />
+</template>`,
+
+  svelte: `<script>
+  import '@lit-ui/data-table';
+  import { onMount } from 'svelte';
+
+  let tableEl;
+
+  onMount(() => {
+    tableEl.columns = columns;
+    tableEl.data = data;
+    // Optional: server-side export callback
+    tableEl.onExport = async (params) => {
+      const res = await fetch('/api/export', {
+        method: 'POST',
+        body: JSON.stringify(params),
+      });
+      const blob = await res.blob();
+      // Download blob...
+    };
+  });
+
+  function exportCsv() {
+    tableEl.exportCsv({ filename: 'users.csv' });
+  }
+
+  function exportSelected() {
+    tableEl.exportCsv({ filename: 'selected-users.csv', selectedOnly: true });
+  }
+</script>
+
+<button on:click={exportCsv}>Export CSV</button>
+<button on:click={exportSelected}>Export Selected</button>
+<lui-data-table bind:this={tableEl} enable-selection />`,
+};
 
 // ---------------------------------------------------------------------------
 // API Reference data
@@ -805,10 +2016,10 @@ export function DataTablePage() {
                   <DataTableDemo columns={basicColumns} data={sampleUsers} />
                 </div>
               }
-              html={basicCode}
-              react={basicCode}
-              vue={basicCode}
-              svelte={basicCode}
+              html={basicCode.html}
+              react={basicCode.react}
+              vue={basicCode.vue}
+              svelte={basicCode.svelte}
             />
           </section>
 
@@ -826,10 +2037,10 @@ export function DataTablePage() {
                   <DataTableDemo columns={sortableColumns} data={sampleUsers} />
                 </div>
               }
-              html={sortingCode}
-              react={sortingCode}
-              vue={sortingCode}
-              svelte={sortingCode}
+              html={sortingCode.html}
+              react={sortingCode.react}
+              vue={sortingCode.vue}
+              svelte={sortingCode.svelte}
             />
           </section>
 
@@ -852,10 +2063,10 @@ export function DataTablePage() {
                   />
                 </div>
               }
-              html={selectionCode}
-              react={selectionCode}
-              vue={selectionCode}
-              svelte={selectionCode}
+              html={selectionCode.html}
+              react={selectionCode.react}
+              vue={selectionCode.vue}
+              svelte={selectionCode.svelte}
             />
           </section>
 
@@ -876,10 +2087,10 @@ export function DataTablePage() {
                   <DataTableDemo columns={filterableColumns} data={sampleUsers} />
                 </div>
               }
-              html={filteringCode}
-              react={filteringCode}
-              vue={filteringCode}
-              svelte={filteringCode}
+              html={filteringCode.html}
+              react={filteringCode.react}
+              vue={filteringCode.vue}
+              svelte={filteringCode.svelte}
             />
           </section>
 
@@ -901,10 +2112,10 @@ export function DataTablePage() {
                   />
                 </div>
               }
-              html={paginationCode}
-              react={paginationCode}
-              vue={paginationCode}
-              svelte={paginationCode}
+              html={paginationCode.html}
+              react={paginationCode.react}
+              vue={paginationCode.vue}
+              svelte={paginationCode.svelte}
             />
           </section>
 
@@ -945,10 +2156,10 @@ export function DataTablePage() {
                   />
                 </div>
               }
-              html={columnCustomizationCode}
-              react={columnCustomizationCode}
-              vue={columnCustomizationCode}
-              svelte={columnCustomizationCode}
+              html={columnCustomizationCode.html}
+              react={columnCustomizationCode.react}
+              vue={columnCustomizationCode.vue}
+              svelte={columnCustomizationCode.svelte}
             />
           </section>
 
@@ -972,10 +2183,10 @@ export function DataTablePage() {
                   />
                 </div>
               }
-              html={inlineEditingCode}
-              react={inlineEditingCode}
-              vue={inlineEditingCode}
-              svelte={inlineEditingCode}
+              html={inlineEditingCode.html}
+              react={inlineEditingCode.react}
+              vue={inlineEditingCode.vue}
+              svelte={inlineEditingCode.svelte}
             />
           </section>
 
@@ -999,10 +2210,10 @@ export function DataTablePage() {
                   />
                 </div>
               }
-              html={rowActionsCode}
-              react={rowActionsCode}
-              vue={rowActionsCode}
-              svelte={rowActionsCode}
+              html={rowActionsCode.html}
+              react={rowActionsCode.react}
+              vue={rowActionsCode.vue}
+              svelte={rowActionsCode.svelte}
             />
           </section>
 
@@ -1026,10 +2237,10 @@ export function DataTablePage() {
                   />
                 </div>
               }
-              html={expandableRowsCode}
-              react={expandableRowsCode}
-              vue={expandableRowsCode}
-              svelte={expandableRowsCode}
+              html={expandableRowsCode.html}
+              react={expandableRowsCode.react}
+              vue={expandableRowsCode.vue}
+              svelte={expandableRowsCode.svelte}
             />
           </section>
 
@@ -1050,10 +2261,10 @@ export function DataTablePage() {
                   <ServerSideDemoWrapper />
                 </div>
               }
-              html={serverSideCode}
-              react={serverSideCode}
-              vue={serverSideCode}
-              svelte={serverSideCode}
+              html={serverSideCode.html}
+              react={serverSideCode.react}
+              vue={serverSideCode.vue}
+              svelte={serverSideCode.svelte}
             />
           </section>
 
@@ -1072,10 +2283,10 @@ export function DataTablePage() {
                   <ExportDemoWrapper />
                 </div>
               }
-              html={csvExportCode}
-              react={csvExportCode}
-              vue={csvExportCode}
-              svelte={csvExportCode}
+              html={csvExportCode.html}
+              react={csvExportCode.react}
+              vue={csvExportCode.vue}
+              svelte={csvExportCode.svelte}
             />
           </section>
         </div>

@@ -229,7 +229,9 @@ export function DateRangePickerPage() {
             </p>
             <ExampleBlock
               preview={
-                <lui-date-range-picker label="Date Range"></lui-date-range-picker>
+                <div className="w-full max-w-sm">
+                  <lui-date-range-picker label="Date Range"></lui-date-range-picker>
+                </div>
               }
               html={basicCode}
               react={basicCode}
@@ -246,7 +248,9 @@ export function DateRangePickerPage() {
             </p>
             <ExampleBlock
               preview={
-                <lui-date-range-picker label="Booking" start-date="2026-02-10" end-date="2026-02-17"></lui-date-range-picker>
+                <div className="w-full max-w-sm">
+                  <lui-date-range-picker label="Booking" start-date="2026-02-10" end-date="2026-02-17"></lui-date-range-picker>
+                </div>
               }
               html={preSelectedCode}
               react={preSelectedCode}
@@ -263,13 +267,15 @@ export function DateRangePickerPage() {
             </p>
             <ExampleBlock
               preview={
-                <lui-date-range-picker
-                  label="Trip"
-                  min-date="2026-01-01"
-                  max-date="2026-12-31"
-                  min-days={3}
-                  max-days={14}
-                ></lui-date-range-picker>
+                <div className="w-full max-w-sm">
+                  <lui-date-range-picker
+                    label="Trip"
+                    min-date="2026-01-01"
+                    max-date="2026-12-31"
+                    min-days={3}
+                    max-days={14}
+                  ></lui-date-range-picker>
+                </div>
               }
               html={constraintsCode}
               react={constraintsCode}
@@ -286,7 +292,9 @@ export function DateRangePickerPage() {
             </p>
             <ExampleBlock
               preview={
-                <lui-date-range-picker presets label="Report Period"></lui-date-range-picker>
+                <div className="w-full max-w-sm">
+                  <lui-date-range-picker presets label="Report Period"></lui-date-range-picker>
+                </div>
               }
               html={presetsCode}
               react={presetsCode}
@@ -303,7 +311,9 @@ export function DateRangePickerPage() {
             </p>
             <ExampleBlock
               preview={
-                <lui-date-range-picker label="Analytics" comparison></lui-date-range-picker>
+                <div className="w-full max-w-sm">
+                  <lui-date-range-picker label="Analytics" comparison></lui-date-range-picker>
+                </div>
               }
               html={comparisonCode}
               react={comparisonCode}

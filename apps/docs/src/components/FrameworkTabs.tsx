@@ -15,8 +15,8 @@ interface FrameworkTabsProps {
 const languageMap: Record<Framework, string> = {
   html: 'html',
   react: 'tsx',
-  vue: 'vue',
-  svelte: 'svelte',
+  vue: 'html',
+  svelte: 'html',
 };
 
 const labelMap: Record<Framework, string> = {
