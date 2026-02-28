@@ -227,12 +227,12 @@ Plans:
   1. Date Range Picker renders with correct monochrome default styles (range highlight, comparison overlay) matching the token spec
   2. The Date Range Picker docs page reflects the actual component API and examples without stale content
   3. `skill/skills/date-range-picker` accurately describes the component so Claude can implement it correctly
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 80-01: Polish Date Range Picker CSS defaults to match monochrome theme
-- [ ] 80-02: Update Date Range Picker docs page for accuracy
-- [ ] 80-03: Update `skill/skills/date-range-picker` skill file
+- [ ] 80-01-PLAN.md — Remove .dark date-range block (21 declarations, keep 2 compare-* oklch exceptions) from tailwind.css (DRP-01)
+- [ ] 80-02-PLAN.md — Replace stale dateRangePickerCSSVars (16 entries, wrong names) with 31 accurate --ui-date-range-* entries (DRP-02)
+- [ ] 80-03-PLAN.md — Rewrite skill/skills/date-range-picker/SKILL.md with 31 correct tokens and Behavior Notes (DRP-03)
 
 ### Phase 81: Time Picker
 **Goal**: Time Picker component looks polished and matches the monochrome theme, with accurate docs and skill file
