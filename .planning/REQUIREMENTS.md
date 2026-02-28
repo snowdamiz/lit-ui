@@ -12,8 +12,8 @@ Requirements for the v9.0 Charts System milestone. Each maps to a roadmap phase.
 - [x] **INFRA-01**: Developer can install `@lit-ui/charts` as an opt-in package separate from other LitUI packages
 - [ ] **INFRA-02**: Developer can use chart components in SSR frameworks (Next.js, Astro) without `window`/`document` crash
 - [ ] **INFRA-03**: Developer can enable WebGL rendering via `enable-gl` attribute with automatic Canvas fallback when WebGL is unavailable
-- [ ] **INFRA-04**: Developer can apply dark mode to charts via the `.dark` class (same pattern as all other LitUI components)
-- [ ] **INFRA-05**: Developer can customize chart appearance via `--ui-chart-*` CSS custom properties (series palette, grid, axis, tooltip, legend)
+- [x] **INFRA-04**: Developer can apply dark mode to charts via the `.dark` class (same pattern as all other LitUI components)
+- [x] **INFRA-05**: Developer can customize chart appearance via `--ui-chart-*` CSS custom properties (series palette, grid, axis, tooltip, legend)
 
 ### Shared Chart Behaviors
 
@@ -123,8 +123,8 @@ Which phases cover which requirements. Populated during roadmap creation.
 | INFRA-01 | Phase 88 | Complete |
 | INFRA-02 | Phase 88 | Pending |
 | INFRA-03 | Phase 88 | Pending |
-| INFRA-04 | Phase 88 | Pending |
-| INFRA-05 | Phase 88 | Pending |
+| INFRA-04 | Phase 88 | Complete |
+| INFRA-05 | Phase 88 | Complete |
 | CHART-01 | Phase 88 | Pending |
 | CHART-02 | Phase 88 | Pending |
 | CHART-03 | Phase 88 | Pending |

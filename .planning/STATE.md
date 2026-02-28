@@ -1,16 +1,14 @@
 ---
 gsd_state_version: 1.0
-milestone: v9.0
+milestone: v1.0
 milestone_name: Charts System
-status: in_progress
-last_updated: "2026-02-28T19:39:42Z"
-last_activity: 2026-02-28 — Completed 88-01 (@lit-ui/charts package scaffold)
+status: unknown
+last_updated: "2026-02-28T19:44:36.564Z"
 progress:
-  total_phases: 9
-  completed_phases: 0
-  total_plans: 0
-  completed_plans: 1
-  percent: 0
+  total_phases: 65
+  completed_phases: 64
+  total_plans: 236
+  completed_plans: 235
 ---
 
 # Project State: LitUI
@@ -25,9 +23,9 @@ See: .planning/PROJECT.md (updated 2026-02-28)
 ## Current Position
 
 Phase: 88 of 96 (Package Foundation + BaseChartElement)
-Plan: 1 of TBD in current phase (88-01 complete)
+Plan: 2 of TBD in current phase (88-02 complete)
 Status: In progress
-Last activity: 2026-02-28 — Completed 88-01: @lit-ui/charts package scaffolded with echarts 5.6.0 + vite build verified
+Last activity: 2026-02-28 — Completed 88-02: ThemeBridge CSS token resolver and canvas-core ECharts registration utility
 
 Progress: [░░░░░░░░░░] 0% (v9.0 milestone, 9 phases)
 
@@ -45,6 +43,9 @@ Progress: [░░░░░░░░░░] 0% (v9.0 milestone, 9 phases)
 - v9.0 research: ThemeBridge reads CSS tokens via getComputedStyle — ECharts canvas cannot resolve var() natively
 - 88-01: echarts/echarts-gl in dependencies (not peerDependencies) — bundled implementation details like @tanstack in data-table
 - 88-01: vite-plugin-dts rollupTypes requires at least one export — comment-only placeholder causes api-extractor failure
+- 88-02: buildThemeObject() called at init and on .dark toggle to avoid dispose+reinit flicker
+- 88-02: DataZoomComponent/MarkLine/MarkArea/Toolbox registered in shared canvas-core — avoids per-chart-type re-registration
+- 88-02: buildColorUpdate() provided as cheaper incremental dark mode update path vs full buildThemeObject()
 
 ### Architecture Notes
 
@@ -79,21 +80,22 @@ Progress: [░░░░░░░░░░] 0% (v9.0 milestone, 9 phases)
 | Phase | Plan | Duration | Tasks | Files |
 |-------|------|----------|-------|-------|
 | 88 | 01 | 2min | 2 | 6 |
+| 88 | 02 | 2min | 2 | 2 |
 
 ## Session Continuity
 
 ### Last Session
-- 2026-02-28: Completed 88-01 — @lit-ui/charts package scaffold with echarts ^5.6.0, build verified
+- 2026-02-28: Completed 88-02 — ThemeBridge CSS token resolver and canvas-core ECharts registration utility
 
 ### Stopped At
-Completed 88-01-PLAN.md
+Completed 88-02-PLAN.md
 
 ### Next Actions
-Continue Phase 88 — execute 88-02-PLAN.md (BaseChartElement)
+Continue Phase 88 — execute 88-03-PLAN.md (BaseChartElement)
 
 ### Open Questions
 *None.*
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-02-28 — 88-01 complete, @lit-ui/charts package scaffolded*
+*Last updated: 2026-02-28 — 88-02 complete, ThemeBridge + canvas-core utilities created*
