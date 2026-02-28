@@ -275,9 +275,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 83-01-PLAN.md — Remove hardcoded popover dark mode tokens from .dark block (POP-01)
-- [ ] 83-02-PLAN.md — Fix popoverCSSVars defaults (shadow, color double-fallback) to match tailwind.css :root (POP-02)
-- [ ] 83-03-PLAN.md — Fix SKILL.md CSS token defaults and add Behavior Notes (POP-03)
+- [x] 83-01-PLAN.md — Remove hardcoded popover dark mode tokens from .dark block (POP-01)
+- [x] 83-02-PLAN.md — Fix popoverCSSVars defaults (shadow, color double-fallback) to match tailwind.css :root (POP-02)
+- [x] 83-03-PLAN.md — Fix SKILL.md CSS token defaults and add Behavior Notes (POP-03)
 
 ### Phase 84: Toast
 **Goal**: Toast component looks and feels like shadcn Toast/Sonner out of the box, with accurate docs and skill file
@@ -287,12 +287,12 @@ Plans:
   1. Toast renders with correct monochrome default styles (card, variants, action button) matching the token spec
   2. The Toast docs page reflects the actual component API and examples without stale content
   3. `skill/skills/toast` accurately describes the component so Claude can implement it correctly
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 84-01: Polish Toast CSS defaults to match monochrome theme
-- [ ] 84-02: Update Toast docs page for accuracy
-- [ ] 84-03: Update `skill/skills/toast` skill file
+- [ ] 84-01-PLAN.md — Remove base toast dark mode declarations from .dark block; keep 12 variant oklch exceptions (TST-01)
+- [ ] 84-02-PLAN.md — Fix toastCSSVars defaults (double-fallback, shadow, z-index), add padding entry, update cssVarsCode (TST-02)
+- [ ] 84-03-PLAN.md — Fix SKILL.md CSS token defaults (21 entries) and add Behavior Notes (TST-03)
 
 ### Phase 85: Accordion
 **Goal**: Accordion component looks and feels like shadcn Accordion out of the box, with accurate docs and skill file
