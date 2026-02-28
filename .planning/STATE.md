@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Design System Polish
-status: completed
-last_updated: "2026-02-28T07:48:35.547Z"
+status: executing
+last_updated: "2026-02-28T07:51:18.506Z"
 last_activity: 2026-02-28 — Phase 83-01 complete (Popover dark mode hardcoded .dark --ui-popover-* declarations removed; semantic cascade via .dark --color-card now sufficient)
 progress:
   total_phases: 79
   completed_phases: 78
   total_plans: 276
-  completed_plans: 274
-  percent: 99
+  completed_plans: 275
+  percent: 100
 ---
 
 # Project State: LitUI
@@ -26,12 +26,12 @@ See: .planning/PROJECT.md (updated 2026-02-27)
 
 **Milestone:** v8.0 Design System Polish — IN PROGRESS
 **Phase:** 83 of 87 (Popover Polish) — IN PROGRESS
-**Plan:** 1 of 3 in Phase 83 — COMPLETE
+**Plan:** 2 of 3 in Phase 83 — COMPLETE
 **Status:** In progress
-**Last activity:** 2026-02-28 — Phase 83-01 complete (Popover dark mode hardcoded .dark --ui-popover-* declarations removed; semantic cascade via .dark --color-card now sufficient)
+**Last activity:** 2026-02-28 — Phase 83-02 complete (popoverCSSVars color token defaults corrected to double-fallback var() form; shadow corrected to two-layer 0.08 opacity; cssVarsCode replaced hex literals with semantic token references)
 
 **Progress:**
-[██████████] 99%
+[██████████] 100%
 Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 
 ## Performance Metrics
@@ -79,6 +79,7 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 | Phase 82-tooltip P02 | 1min | 1 tasks | 1 files |
 | Phase 82-tooltip P03 | 1min | 1 tasks | 1 files |
 | Phase 83-popover P01 | 1min | 1 tasks | 1 files |
+| Phase 83-popover P02 | 1min | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -129,6 +130,7 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 - Phase 82-02: tooltipCSSVars bg/text defaults corrected to double-fallback var() form (var(--color-foreground, var(--ui-color-foreground)) and var(--color-background, white)); shadow corrected from stale single-layer '0 4px 6px -1px' to two-layer '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)' matching tailwind.css :root; cssVarsCode example updated to semantic token references
 - Phase 82-03: Tooltip SKILL.md CSS token defaults corrected — --ui-tooltip-bg and --ui-tooltip-text updated to double-fallback var() form; --ui-tooltip-shadow corrected from stale single-layer to two-layer value matching tailwind.css :root; Behavior Notes section added with 12 entries
 - Phase 83-01: Popover dark mode governed by semantic .dark token cascade — 3 hardcoded .dark --ui-popover-* declarations removed; double-fallback cascade in :root is sufficient (same pattern as Phases 70-01 through 82-01)
+- Phase 83-02: popoverCSSVars color token defaults corrected to double-fallback var() form (bg, text, border); shadow corrected from stale single-layer 0.1 opacity to two-layer 0.08 opacity matching tailwind.css :root; cssVarsCode example replaced hex literals (white, #1e293b, #e2e8f0) with semantic token references
 
 ### Architecture Notes
 
@@ -159,14 +161,14 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 ## Session Continuity
 
 ### Last Session
-- Phase 83-01: Popover .dark block cleanup — 3 hardcoded --ui-popover-* gray literal declarations removed; dark mode now cascades via .dark --color-card semantic token
+- Phase 83-02: Popover docs CSS token defaults corrected — 4 stale entries (bg, text, border, shadow) updated in popoverCSSVars to match tailwind.css :root exactly; cssVarsCode hex literals replaced with semantic token references
 
 ### Next Actions
-Execute Phase 83-02 (popover docs CSS token table update).
+Execute Phase 83-03 (popover SKILL.md update).
 
 ### Open Questions
 *None.*
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-02-28 — Phase 83-01 complete (Popover dark mode hardcoded .dark --ui-popover-* declarations removed; semantic cascade now sufficient)*
+*Last updated: 2026-02-28 — Phase 83-02 complete (popoverCSSVars corrected to double-fallback var() form; cssVarsCode updated to semantic token references)*
