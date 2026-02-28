@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Design System Polish
 status: completed
-last_updated: "2026-02-28T02:53:37.451Z"
-last_activity: 2026-02-28 — Phase 71-03 complete (dialog SKILL.md CSS token prefix fixed --lui-dialog-* → --ui-dialog-*, expanded to 12 tokens, Behavior Notes added)
+last_updated: "2026-02-28T02:54:30.000Z"
+last_activity: 2026-02-28 — Phase 72-03 complete (input SKILL.md expanded CSS tokens from 7 to 16, Behavior Notes section added)
 progress:
   total_phases: 68
   completed_phases: 68
@@ -112,4 +112,4 @@ Execute Phase 72-03 (Input SKILL.md update).
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-02-27 — Phase 72-02 complete*
+*Last updated: 2026-02-28 — Phase 72-01 complete (input .dark block hardcoded token overrides removed)*

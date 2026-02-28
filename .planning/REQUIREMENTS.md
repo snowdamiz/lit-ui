@@ -27,7 +27,7 @@ Requirements for the Design System Polish milestone. Each component phase maps t
 
 ### Input
 
-- [ ] **INP-01**: Input default styles match the v8.0 monochrome theme
+- [x] **INP-01**: Input default styles match the v8.0 monochrome theme
 - [x] **INP-02**: Input docs page is accurate and up-to-date
 - [ ] **INP-03**: `skill/skills/input` skill file is accurate and up-to-date
 
@@ -147,7 +147,7 @@ Requirements for the Design System Polish milestone. Each component phase maps t
 | DLG-01 | Phase 71 | Complete |
 | DLG-02 | Phase 71 | Complete |
 | DLG-03 | Phase 71 | Complete |
-| INP-01 | Phase 72 | Pending |
+| INP-01 | Phase 72 | Complete |
 | INP-02 | Phase 72 | Complete |
 | INP-03 | Phase 72 | Pending |
 | TXT-01 | Phase 73 | Pending |
