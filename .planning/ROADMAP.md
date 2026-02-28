@@ -320,9 +320,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 86-01-PLAN.md — Remove 7 hardcoded tabs dark mode declarations from .dark block (TAB-01)
-- [ ] 86-02-PLAN.md — Fix tabsCSSVars color defaults to double-fallback form in TabsPage.tsx (TAB-02)
-- [ ] 86-03-PLAN.md — Fix skill/skills/tabs/SKILL.md CSS token defaults and add Behavior Notes (TAB-03)
+- [x] 86-01-PLAN.md — Remove 7 hardcoded tabs dark mode declarations from .dark block (TAB-01)
+- [x] 86-02-PLAN.md — Fix tabsCSSVars color defaults to double-fallback form in TabsPage.tsx (TAB-02)
+- [x] 86-03-PLAN.md — Fix skill/skills/tabs/SKILL.md CSS token defaults and add Behavior Notes (TAB-03)
 
 ### Phase 87: Data Table
 **Goal**: Data Table component looks polished and consistent with the monochrome theme, with accurate docs and skill file
@@ -332,12 +332,12 @@ Plans:
   1. Data Table renders with correct monochrome default styles (header, rows, toolbar, pagination) matching the token spec
   2. The Data Table docs page reflects the actual component API and examples without stale content
   3. `skill/skills/data-table` accurately describes the component so Claude can implement it correctly
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 87-01: Polish Data Table CSS defaults to match monochrome theme
-- [ ] 87-02: Update Data Table docs page for accuracy
-- [ ] 87-03: Update `skill/skills/data-table` skill file
+- [ ] 87-01-PLAN.md — Remove cascadeable data-table dark mode tokens from .dark block; keep oklch and value-inversion exceptions (DAT-01)
+- [ ] 87-02-PLAN.md — Replace dataTableCSSVars with 35-entry accurate array matching tailwind.css :root (DAT-02)
+- [ ] 87-03-PLAN.md — Update skill/skills/data-table/SKILL.md CSS tokens and add Behavior Notes (DAT-03)
 
 ## Progress
 
