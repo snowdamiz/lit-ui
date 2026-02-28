@@ -64,8 +64,8 @@ Requirements for the Design System Polish milestone. Each component phase maps t
 ### Calendar
 
 - [x] **CAL-01**: Calendar default styles match the v8.0 monochrome theme
-- [ ] **CAL-02**: Calendar docs page is accurate and up-to-date
-- [ ] **CAL-03**: `skill/skills/calendar` skill file is accurate and up-to-date
+- [x] **CAL-02**: Calendar docs page is accurate and up-to-date
+- [x] **CAL-03**: `skill/skills/calendar` skill file is accurate and up-to-date
 
 ### Date Picker
 
@@ -166,8 +166,8 @@ Requirements for the Design System Polish milestone. Each component phase maps t
 | SWT-02 | Phase 77 | Complete |
 | SWT-03 | Phase 77 | Complete |
 | CAL-01 | Phase 78 | Complete |
-| CAL-02 | Phase 78 | Pending |
-| CAL-03 | Phase 78 | Pending |
+| CAL-02 | Phase 78 | Complete |
+| CAL-03 | Phase 78 | Complete |
 | DTP-01 | Phase 79 | Pending |
 | DTP-02 | Phase 79 | Pending |
 | DTP-03 | Phase 79 | Pending |

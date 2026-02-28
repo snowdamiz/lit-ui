@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Design System Polish
 status: executing
-last_updated: "2026-02-28T05:27:50.759Z"
-last_activity: "2026-02-28 — Phase 78-02 complete (Calendar docs — calendarCSSVars expanded from 16 to 21 entries; all defaults updated to match tailwind.css :root)"
+last_updated: "2026-02-28T05:31:06.669Z"
+last_activity: "2026-02-28 — Phase 78-03 complete (Calendar SKILL.md — CSS tokens expanded 16→21; all defaults corrected to match tailwind.css :root; Events table 1→3 events; Behavior Notes added)"
 progress:
   total_phases: 74
-  completed_phases: 73
+  completed_phases: 74
   total_plans: 261
-  completed_plans: 260
+  completed_plans: 261
   percent: 100
 ---
 
@@ -26,9 +26,9 @@ See: .planning/PROJECT.md (updated 2026-02-27)
 
 **Milestone:** v8.0 Design System Polish — IN PROGRESS
 **Phase:** 78 of 87 (Calendar Polish) — IN PROGRESS
-**Plan:** 2 of 3 in Phase 78 — COMPLETE
+**Plan:** 3 of 3 in Phase 78 — COMPLETE
 **Status:** In progress
-**Last activity:** 2026-02-28 — Phase 78-02 complete (Calendar docs — calendarCSSVars expanded from 16 to 21 entries; all defaults updated to match tailwind.css :root)
+**Last activity:** 2026-02-28 — Phase 78-03 complete (Calendar SKILL.md — CSS tokens expanded 16→21; all defaults corrected to match tailwind.css :root; Events table 1→3 events; Behavior Notes added)
 
 **Progress:**
 [██████████] 100%
@@ -65,6 +65,7 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 | Phase 77-switch P02 | 1min | 1 tasks | 1 files |
 | Phase 78-calendar P01 | 1min | 1 tasks | 1 files |
 | Phase 78-calendar P02 | 1min | 1 tasks | 1 files |
+| Phase 78-calendar P03 | 1min | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -101,6 +102,7 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 - Phase 78-01: Calendar dark mode governed by semantic .dark overrides — all 10 hardcoded .dark --ui-calendar-* declarations removed; double-fallback cascade in :root is sufficient (same pattern as Phase 70-01, 71-01, 72-01, 73-01, 74-01, 75-01, 76-01, 77-01)
 - Phase 78-01: --ui-calendar-tooltip-bg and --ui-calendar-tooltip-text added to :root — used in calendar.ts but previously undeclared; now cascade through .dark --color-foreground and --color-background
 - Phase 78-02: Calendar docs CSS token table expanded from 16 to 21 entries — all defaults now match tailwind.css :root exactly (double-fallback var() form for color tokens; exact rem values for structural tokens)
+- Phase 78-03: Calendar SKILL.md CSS tokens expanded 16→21 to match tailwind.css :root; change event detail corrected to { date: Date, isoString: string } matching calendar.ts source; Events table expanded 1→3 (change, month-change, week-select); Behavior Notes section added with 12 entries
 
 ### Architecture Notes
 
@@ -131,14 +133,14 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 ## Session Continuity
 
 ### Last Session
-- Phase 78-02: Calendar docs CSS token expansion — calendarCSSVars expanded from 16 to 21 entries; 12 stale defaults corrected; 5 new tokens (cell-size, cell-radius, today-font-weight, tooltip-bg, tooltip-text) added; all defaults now match tailwind.css :root
+- Phase 78-03: Calendar SKILL.md expansion — CSS token table expanded 16→21 entries; all stale defaults corrected; Events table expanded 1→3 (change detail shape corrected, month-change and week-select added); Behavior Notes section added with 12 bullet points
 
 ### Next Actions
-Execute Phase 78 plan 78-03 (Calendar SKILL.md token expansion).
+Phase 78 complete. Execute Phase 79 (next calendar-related phase).
 
 ### Open Questions
 *None.*
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-02-28 — Phase 78-02 complete (Calendar docs — calendarCSSVars expanded 16→21 entries; all defaults synchronized to tailwind.css :root)*
+*Last updated: 2026-02-28 — Phase 78-03 complete (Calendar SKILL.md — CSS tokens expanded 16→21; Events 1→3; Behavior Notes added; Phase 78 fully complete)*
