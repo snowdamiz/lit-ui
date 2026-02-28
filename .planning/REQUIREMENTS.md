@@ -70,7 +70,7 @@ Requirements for the Design System Polish milestone. Each component phase maps t
 ### Date Picker
 
 - [x] **DTP-01**: Date Picker default styles match the v8.0 monochrome theme
-- [ ] **DTP-02**: Date Picker docs page is accurate and up-to-date
+- [x] **DTP-02**: Date Picker docs page is accurate and up-to-date
 - [ ] **DTP-03**: `skill/skills/date-picker` skill file is accurate and up-to-date
 
 ### Date Range Picker
@@ -169,7 +169,7 @@ Requirements for the Design System Polish milestone. Each component phase maps t
 | CAL-02 | Phase 78 | Complete |
 | CAL-03 | Phase 78 | Complete |
 | DTP-01 | Phase 79 | Complete |
-| DTP-02 | Phase 79 | Pending |
+| DTP-02 | Phase 79 | Complete |
 | DTP-03 | Phase 79 | Pending |
 | DRP-01 | Phase 80 | Pending |
 | DRP-02 | Phase 80 | Pending |

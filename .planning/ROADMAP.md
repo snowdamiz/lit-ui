@@ -357,7 +357,7 @@ Note: Phases 70-87 all depend on Phase 69. Phases 70-78 and 80-87 are independen
 | 76. Radio | 3/3 | Complete    | 2026-02-28 | - |
 | 77. Switch | 3/3 | Complete    | 2026-02-28 | - |
 | 78. Calendar | 3/3 | Complete    | 2026-02-28 | - |
-| 79. Date Picker | 1/3 | In Progress|  | - |
+| 79. Date Picker | 2/3 | In Progress|  | - |
 | 80. Date Range Picker | v8.0 | 0/3 | Not started | - |
 | 81. Time Picker | v8.0 | 0/3 | Not started | - |
 | 82. Tooltip | v8.0 | 0/3 | Not started | - |

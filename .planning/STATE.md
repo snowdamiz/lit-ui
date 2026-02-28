@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Design System Polish
-status: completed
-last_updated: "2026-02-28T09:07:30Z"
+status: executing
+last_updated: "2026-02-28T05:51:54.623Z"
 last_activity: "2026-02-28 — Phase 79-01 complete (Date Picker .dark block cleared — 17 hardcoded declarations removed; :root block 21 tokens unchanged)"
 progress:
   total_phases: 75
   completed_phases: 74
   total_plans: 264
-  completed_plans: 262
-  percent: 99
+  completed_plans: 263
+  percent: 100
 ---
 
 # Project State: LitUI
@@ -26,12 +26,12 @@ See: .planning/PROJECT.md (updated 2026-02-27)
 
 **Milestone:** v8.0 Design System Polish — IN PROGRESS
 **Phase:** 79 of 87 (Date Picker Polish) — IN PROGRESS
-**Plan:** 1 of 3 in Phase 79 — COMPLETE
+**Plan:** 2 of 3 in Phase 79 — COMPLETE
 **Status:** In progress
-**Last activity:** 2026-02-28 — Phase 79-01 complete (Date Picker .dark block cleared — 17 hardcoded declarations removed; :root block 21 tokens unchanged)
+**Last activity:** 2026-02-28 — Phase 79-02 complete (Date Picker docs CSS token table expanded from 12 to 21 entries matching tailwind.css :root)
 
 **Progress:**
-[██████████] 99%
+[██████████] 100%
 Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 
 ## Performance Metrics
@@ -67,6 +67,7 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 | Phase 78-calendar P02 | 1min | 1 tasks | 1 files |
 | Phase 78-calendar P03 | 1min | 1 tasks | 1 files |
 | Phase 79-date-picker P01 | 1min | 1 tasks | 1 files |
+| Phase 79-date-picker P02 | 1min | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -105,6 +106,7 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 - Phase 78-02: Calendar docs CSS token table expanded from 16 to 21 entries — all defaults now match tailwind.css :root exactly (double-fallback var() form for color tokens; exact rem values for structural tokens)
 - Phase 78-03: Calendar SKILL.md CSS tokens expanded 16→21 to match tailwind.css :root; change event detail corrected to { date: Date, isoString: string } matching calendar.ts source; Events table expanded 1→3 (change, month-change, week-select); Behavior Notes section added with 12 entries
 - Phase 79-01: Date Picker dark mode governed by semantic .dark token cascade — all 17 hardcoded .dark --ui-date-picker-* declarations removed; no exceptions required (unlike checkbox check-color: white or switch thumb-bg: white)
+- Phase 79-02: Date Picker docs CSS token table expanded from 12 to 21 entries matching tailwind.css :root; border-focus, radius, border-width excluded (not in :root; inherited via --ui-input-* fallbacks); color tokens use double-fallback var() form
 
 ### Architecture Notes
 
@@ -135,14 +137,14 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 ## Session Continuity
 
 ### Last Session
-- Phase 79-01: Date Picker dark mode cleanup — removed 17 hardcoded .dark --ui-date-picker-* declarations; :root block (21 tokens) unchanged; dark mode now governed entirely by semantic .dark cascade
+- Phase 79-02: Date Picker docs CSS token expansion — datePickerCSSVars expanded from 12 to 21 entries; all defaults match tailwind.css :root; double-fallback var() form for color tokens; border-focus/radius/border-width excluded (not in :root)
 
 ### Next Actions
-Execute Phase 79-02 (Date Picker docs CSS token expansion).
+Execute Phase 79-03 (Date Picker SKILL.md CSS token expansion).
 
 ### Open Questions
 *None.*
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-02-28 — Phase 79-01 complete (Date Picker .dark block cleared — 17 hardcoded declarations removed; :root block 21 tokens unchanged)*
+*Last updated: 2026-02-28 — Phase 79-02 complete (Date Picker docs CSS token table expanded from 12 to 21 entries matching tailwind.css :root)*
