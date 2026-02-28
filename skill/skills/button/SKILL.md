@@ -39,29 +39,46 @@ description: >-
 | variant | `"primary" \| "secondary" \| "outline" \| "ghost" \| "destructive"` | `"primary"` | The visual style of the button. |
 | size | `"sm" \| "md" \| "lg"` | `"md"` | The size affecting padding and font size. |
 | type | `"button" \| "submit" \| "reset"` | `"button"` | The button type for form behavior. |
-| disabled | `boolean` | `false` | Whether the button is disabled. Uses aria-disabled for accessibility. |
+| disabled | `boolean` | `false` | Whether the button is disabled. Uses aria-disabled — stays in tab order. |
 | loading | `boolean` | `false` | Shows a pulsing dots spinner and prevents interaction. |
-| btn-class | `string` | `""` | Additional Tailwind classes to customize the button. Appended to default classes. |
+| btn-class | `string` | `""` | Additional Tailwind classes applied to the inner button element. |
 
 ## Slots
 
 | Slot | Description |
 |------|-------------|
 | (default) | Button text content. |
-| icon-start | Icon placed before the text. Scales with button font-size. |
-| icon-end | Icon placed after the text. Scales with button font-size. |
+| icon-start | Icon placed before the text. Scales with button font-size via 1em. |
+| icon-end | Icon placed after the text. Scales with button font-size via 1em. |
 
 ## Events
 
 No custom events. Use standard DOM events (e.g. `click`).
 
+## Behavior Notes
+
+- **Form participation**: `type="submit"` and `type="reset"` work inside `<form>` elements via ElementInternals. This is client-side only.
+- **Disabled state**: Uses `aria-disabled` (not the HTML `disabled` attribute), so the element stays focusable for screen readers. Visually: opacity 0.5, cursor not-allowed.
+- **Loading state**: Replaces content with a 3-dot pulsing spinner. Sets `aria-busy` and `aria-label="Loading"`. Pointer-events disabled.
+- **Auto-contrast**: For `primary`, `secondary`, and `destructive` variants, text color is automatically calculated from the background color lightness using CSS relative color syntax (requires browser support; static fallback provided).
+- **Focus ring**: `outline: 2px solid var(--ui-focus-ring-color)` with `outline-offset: 2px` on `:focus-visible`.
+
 ## CSS Custom Properties
 
 | Property | Default | Description |
 |----------|---------|-------------|
-| `--lui-button-radius` | `var(--radius-md)` | Border radius of the button. |
-| `--lui-button-shadow` | `none` | Box shadow of the button. |
-| `--lui-button-font-weight` | `500` | Font weight of the button text. |
+| `--ui-button-radius` | `0.375rem` | Border radius of the button. |
+| `--ui-button-shadow` | `none` | Box shadow of the button. |
+| `--ui-button-border-width` | `1px` | Border width (used by outline variant). |
+| `--ui-button-font-weight` | `500` | Font weight of the button text. |
+| `--ui-button-font-size-sm` | `0.875rem` | Font size for size="sm". |
+| `--ui-button-font-size-md` | `1rem` | Font size for size="md". |
+| `--ui-button-font-size-lg` | `1.125rem` | Font size for size="lg". |
+| `--ui-button-padding-x-md` | `1rem` | Horizontal padding for size="md". |
+| `--ui-button-padding-y-md` | `0.5rem` | Vertical padding for size="md". |
+| `--ui-button-primary-bg` | `var(--color-primary, var(--ui-color-primary))` | Primary variant background. |
+| `--ui-button-secondary-bg` | `var(--color-secondary, var(--ui-color-secondary))` | Secondary variant background. |
+| `--ui-button-destructive-bg` | `var(--color-destructive, var(--ui-color-destructive))` | Destructive variant background. |
 
 ## CSS Parts
 
