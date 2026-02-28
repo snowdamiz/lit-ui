@@ -98,19 +98,20 @@ const accordionItemSlots: SlotDef[] = [
 // CSS Custom Properties data
 type CSSVarDef = { name: string; default: string; description: string };
 const accordionCSSVars: CSSVarDef[] = [
-  { name: '--ui-accordion-border', default: 'var(--color-border)', description: 'Border color between items and around the container.' },
+  { name: '--ui-accordion-border', default: 'var(--color-border, var(--ui-color-border))', description: 'Border color between items and around the container.' },
   { name: '--ui-accordion-border-width', default: '1px', description: 'Border width.' },
   { name: '--ui-accordion-radius', default: '0.375rem', description: 'Container border radius.' },
+  { name: '--ui-accordion-gap', default: '0', description: 'Gap between accordion items.' },
   { name: '--ui-accordion-header-padding', default: '1rem', description: 'Header button padding.' },
   { name: '--ui-accordion-header-font-weight', default: '500', description: 'Header font weight.' },
   { name: '--ui-accordion-header-font-size', default: '1rem', description: 'Header font size.' },
-  { name: '--ui-accordion-header-text', default: 'var(--color-foreground)', description: 'Header text color.' },
+  { name: '--ui-accordion-header-text', default: 'var(--color-foreground, var(--ui-color-foreground))', description: 'Header text color.' },
   { name: '--ui-accordion-header-bg', default: 'transparent', description: 'Header background color.' },
-  { name: '--ui-accordion-header-hover-bg', default: 'var(--color-muted)', description: 'Header background on hover.' },
+  { name: '--ui-accordion-header-hover-bg', default: 'var(--color-muted, var(--ui-color-muted))', description: 'Header background on hover.' },
   { name: '--ui-accordion-panel-padding', default: '0 1rem 1rem', description: 'Panel content padding.' },
-  { name: '--ui-accordion-panel-text', default: 'var(--color-muted-foreground)', description: 'Panel text color.' },
+  { name: '--ui-accordion-panel-text', default: 'var(--color-muted-foreground, var(--ui-color-muted-foreground))', description: 'Panel text color.' },
   { name: '--ui-accordion-transition', default: '200ms', description: 'Animation duration for expand/collapse.' },
-  { name: '--ui-accordion-ring', default: 'var(--color-ring)', description: 'Focus ring color.' },
+  { name: '--ui-accordion-ring', default: 'var(--color-ring, var(--ui-color-ring))', description: 'Focus ring color.' },
 ];
 
 // Code examples - web components use same syntax in all frameworks
@@ -207,7 +208,7 @@ const lazyCode = `<lui-accordion>
 const cssVarsCode = `/* Global override - all accordions */
 :root {
   --ui-accordion-radius: 0.5rem;
-  --ui-accordion-header-hover-bg: rgba(0, 0, 0, 0.05);
+  --ui-accordion-header-hover-bg: var(--color-accent, var(--ui-color-accent));
 }
 
 /* Scoped override - only in this container */
