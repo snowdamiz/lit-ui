@@ -173,7 +173,7 @@ Plans:
 | 89. Line Chart + Area Chart | 2/2 | Complete    | 2026-02-28 | - |
 | 90. Bar Chart | 2/2 | Complete    | 2026-02-28 | - |
 | 91. Pie + Donut Chart | 2/2 | Complete    | 2026-02-28 | - |
-| 92. Scatter + Bubble Chart with WebGL | v9.0 | 0/2 | Planned | - |
+| 92. Scatter + Bubble Chart with WebGL | 1/2 | In Progress|  | - |
 | 93. Heatmap Chart | v9.0 | 0/TBD | Not started | - |
 | 94. Candlestick Chart | v9.0 | 0/TBD | Not started | - |
 | 95. Treemap Chart | v9.0 | 0/TBD | Not started | - |

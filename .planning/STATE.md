@@ -18,14 +18,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-02-28)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** Phase 91 — Pie/Donut Chart (COMPLETE — 91-01 and 91-02 done)
+**Current focus:** Phase 92 — Scatter/Bubble Chart with WebGL (92-01 complete)
 
 ## Current Position
 
-Phase: 91 of 96 (Pie/Donut Chart — complete)
-Plan: 2 of 2 in current phase (91-01 complete, 91-02 complete)
-Status: Phase 91 complete — LuiPieChart + full public API (LuiPieChart, PieSlice, PieOptionProps)
-Last activity: 2026-02-28 — Completed 91-02: LuiPieChart component + index.ts Phase 91 exports
+Phase: 92 of 96 (Scatter/Bubble Chart with WebGL — in progress)
+Plan: 1 of 2 in current phase (92-01 complete)
+Status: Phase 92 Plan 01 complete — echarts-gl type shim + protected _webglUnavailable + scatter-option-builder + scatter-registry
+Last activity: 2026-02-28 — Completed 92-01: foundational contracts for scatter/bubble chart
 
 Progress: [███░░░░░░░] 27% (v9.0 milestone, 9 phases, 5 of 9 complete)
 
@@ -68,6 +68,10 @@ Progress: [███░░░░░░░] 27% (v9.0 milestone, 9 phases, 5 of 9
 - 91-02: No _streamingMode override in LuiPieChart — inherits 'buffer' default from BaseChartElement (STRM-04)
 - 91-02: centerLabel passed as undefined when empty string — prevents ECharts layout interference from empty title key
 - 91-02: innerRadius declared @property without type converter — HTML attribute arrives as string; buildPieOption handles string '0' as pie mode
+- 92-01: echarts-gl.d.ts is a separate file (not added to vite-env.d.ts) — per plan interface spec
+- 92-01: scatterGL bubble mode uses fixed symbolSize with console.warn — GPU-side rendering cannot support per-point callbacks
+- 92-01: ScatterGLChart always registered unconditionally in registerScatterModules() — use() must be called for tree-shaken build to include module
+- 92-01: GL series options: progressive=1e5, progressiveThreshold=1e5, blendMode='source-over' — standard echarts-gl high-perf pattern
 
 ### Architecture Notes
 
@@ -78,13 +82,14 @@ Progress: [███░░░░░░░] 27% (v9.0 milestone, 9 phases, 5 of 9
 - BaseChartElement (88-03) is complete — all 5 critical pitfalls and 11 requirements implemented; Phases 89-95 extend without re-solving cross-cutting concerns
 - Phase 90 complete: LuiBarChart, LuiLineChart, LuiAreaChart all exported from @lit-ui/charts public API
 - Phase 91 complete: LuiPieChart (lui-pie-chart) exported from @lit-ui/charts with PieSlice + PieOptionProps types
+- Phase 92 Plan 01 complete: echarts-gl.d.ts type shim, protected _webglUnavailable, scatter-option-builder.ts, scatter-registry.ts
 
 ### TODOs
 *None.*
 
 ### Blockers/Concerns
 
-- [Phase 92]: echarts-gl 2.0.9 does not ship type definitions as subpath exports — declaration shims needed (Phase 92 scope)
+*None.* (Phase 92 echarts-gl type shim blocker resolved in 92-01)
 
 ### Tech Debt (carried forward)
 - 30 CLI tests need update for CSS variable naming change (--lui-* -> --ui-*)
@@ -112,17 +117,18 @@ Progress: [███░░░░░░░] 27% (v9.0 milestone, 9 phases, 5 of 9
 | 90 | 02 | 1min | 2 | 2 |
 | 91 | 01 | 1min | 2 | 2 |
 | 91 | 02 | 2min | 2 | 2 |
+| 92 | 01 | 4min | 2 | 4 |
 
 ## Session Continuity
 
 ### Last Session
-- 2026-02-28: Completed 91-02 — LuiPieChart component (pie-chart.ts) + index.ts Phase 91 exports (LuiPieChart, PieSlice, PieOptionProps)
+- 2026-02-28: Completed 92-01 — echarts-gl type shim (echarts-gl.d.ts), protected _webglUnavailable in BaseChartElement, scatter-option-builder.ts, scatter-registry.ts
 
 ### Stopped At
-Completed 91-02-PLAN.md
+Completed 92-01-PLAN.md
 
 ### Next Actions
-Phase 91 complete. Continue to Phase 92.
+92-01 complete. Continue to 92-02 (LuiScatterChart component).
 
 ### Open Questions
 *None.*
