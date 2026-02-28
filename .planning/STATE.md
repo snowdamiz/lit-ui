@@ -2,9 +2,9 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Design System Polish
-status: executing
-last_updated: "2026-02-28T04:56:35.621Z"
-last_activity: "2026-02-27 — Phase 77-01 complete (Switch dark mode — 6 hardcoded oklch .dark overrides removed; --ui-switch-thumb-bg retained as exception since :root is hardcoded 'white')"
+status: completed
+last_updated: "2026-02-28T05:01:19.645Z"
+last_activity: "2026-02-28 — Phase 77-03 complete (Switch SKILL.md — CSS tokens expanded 12→26, event corrected to ui-change with value: string | null, Behavior Notes added with 10 entries)"
 progress:
   total_phases: 73
   completed_phases: 73
@@ -27,7 +27,7 @@ See: .planning/PROJECT.md (updated 2026-02-27)
 **Milestone:** v8.0 Design System Polish — IN PROGRESS
 **Phase:** 77 of 87 (Switch Polish) — IN PROGRESS
 **Plan:** 3 of 3 in Phase 77 — COMPLETE
-**Status:** Milestone in progress
+**Status:** Milestone complete
 **Last activity:** 2026-02-28 — Phase 77-03 complete (Switch SKILL.md — CSS tokens expanded 12→26, event corrected to ui-change with value: string | null, Behavior Notes added with 10 entries)
 
 **Progress:**
