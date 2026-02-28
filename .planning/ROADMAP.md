@@ -152,12 +152,12 @@ Plans:
   1. Checkbox and CheckboxGroup render with correct monochrome default styles matching the token spec
   2. The Checkbox docs page reflects the actual component API and examples without stale content
   3. `skill/skills/checkbox` accurately describes the component so Claude can implement it correctly
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 75-01: Polish Checkbox CSS defaults to match monochrome theme
-- [ ] 75-02: Update Checkbox docs page for accuracy
-- [ ] 75-03: Update `skill/skills/checkbox` skill file
+- [ ] 75-01-PLAN.md — Remove hardcoded checkbox dark mode tokens from .dark block (CHK-01)
+- [ ] 75-02-PLAN.md — Expand CheckboxPage.tsx CSS vars table to full token set (CHK-02)
+- [ ] 75-03-PLAN.md — Rewrite skill/skills/checkbox/SKILL.md with Behavior Notes and expanded tokens (CHK-03)
 
 ### Phase 76: Radio
 **Goal**: Radio component looks and feels like shadcn Radio out of the box, with accurate docs and skill file
