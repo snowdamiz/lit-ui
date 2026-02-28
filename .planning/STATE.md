@@ -25,10 +25,10 @@ See: .planning/PROJECT.md (updated 2026-02-27)
 ## Current Position
 
 **Milestone:** v8.0 Design System Polish — IN PROGRESS
-**Phase:** 74 of 87 (Select Polish) — IN PROGRESS
-**Plan:** 1 of 3 in Phase 74 — COMPLETE
+**Phase:** 74 of 87 (Select Polish) — COMPLETE
+**Plan:** 3 of 3 in Phase 74 — COMPLETE
 **Status:** In progress
-**Last activity:** 2026-02-28 — Phase 74-01 complete (select dark mode hardcoded .dark overrides removed, semantic cascade sufficient)
+**Last activity:** 2026-02-28 — Phase 74-03 complete (select SKILL.md expanded CSS tokens from 7 to 27, Behavior Notes section added, Events table expanded from 1 to 3)
 
 **Progress:**
 [██████████] 100%
@@ -79,6 +79,8 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 - Phase 73-02: Textarea docs CSS token table expanded from 7 to 16 entries — structural tokens use exact rem/px values, color tokens use var() references (same pattern as Phase 72-02)
 - Phase 73-03: Textarea SKILL.md CSS tokens expanded from 7 to 16 entries; Behavior Notes section added with 8 entries; focus ring noted as applied to textarea:focus directly (not container :focus-within)
 - Phase 74-01: Select dark mode governed by semantic .dark overrides — hardcoded .dark --ui-select-* declarations removed; double-fallback cascade in :root is sufficient (same pattern as Phase 70-01, 71-01, 72-01, 73-01)
+- Phase 74-02: Select docs CSS token table expanded from 7 to 27 entries — structural tokens use exact rem/px values, color tokens use double-fallback var() form matching tailwind.css :root; Phase 33/34/35/36 development badge spans removed from section headers
+- Phase 74-03: Select SKILL.md CSS token table expanded from 7 to 27 entries with exact tailwind.css :root values; Behavior Notes section added with 8 entries; Events table expanded from 1 to 3 (change, clear, create)
 
 ### Architecture Notes
 
@@ -110,13 +112,14 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 
 ### Last Session
 - Phase 74-01: Select dark mode polished — removed 20 hardcoded oklch overrides from .dark block (same pattern as Phase 73-01)
+- Phase 74-03: Select SKILL.md updated with expanded token set from 7 to 27 entries and Behavior Notes section (same pattern as Phase 73-03)
 
 ### Next Actions
-Execute Phase 74-02 (Select docs CSS token table expansion) and Phase 74-03 (Select SKILL.md update).
+Execute next phase after Phase 74-select (all 3 plans complete).
 
 ### Open Questions
 *None.*
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-02-28 — Phase 74-01 complete (Select dark mode hardcoded .dark overrides removed, semantic cascade sufficient)*
+*Last updated: 2026-02-28 — Phase 74-03 complete (Select SKILL.md expanded from 7 to 27 CSS tokens, Behavior Notes added, Events table expanded from 1 to 3)*
