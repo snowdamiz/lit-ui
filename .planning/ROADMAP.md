@@ -103,8 +103,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 91-01-PLAN.md — pie-option-builder.ts (buildPieOption + types + small-slice merging) + pie-registry.ts (registerPieModules)
-- [ ] 91-02-PLAN.md — LuiPieChart component + index.ts public API exports
+- [x] 91-01-PLAN.md — pie-option-builder.ts (buildPieOption + types + small-slice merging) + pie-registry.ts (registerPieModules)
+- [x] 91-02-PLAN.md — LuiPieChart component + index.ts public API exports
 
 ### Phase 92: Scatter + Bubble Chart with WebGL
 **Goal**: Developer can render scatter and bubble charts at Canvas performance for standard datasets and at WebGL performance for 500K+ point datasets, with the same pushData() API for both paths
@@ -115,7 +115,11 @@ Plans:
   2. Developer can add `enable-gl` attribute to a scatter chart with 500K+ points and see WebGL rendering engage with no visible change in the component API
   3. When WebGL is unavailable, the chart renders in 2D Canvas and dispatches a `webgl-unavailable` custom event the developer can listen to
   4. Developer can call `pushData(point)` on a scatter chart and the correct internal path (appendData for GL, circular buffer for Canvas) is used transparently
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 92-01-PLAN.md — echarts-gl type shim + _webglUnavailable protected + scatter-option-builder.ts + scatter-registry.ts
+- [ ] 92-02-PLAN.md — LuiScatterChart component + index.ts public API exports
 
 ### Phase 93: Heatmap Chart
 **Goal**: Developer can render a Cartesian heatmap with configurable category axes, VisualMap color scale, and streaming cell value updates
@@ -169,7 +173,7 @@ Plans:
 | 89. Line Chart + Area Chart | 2/2 | Complete    | 2026-02-28 | - |
 | 90. Bar Chart | 2/2 | Complete    | 2026-02-28 | - |
 | 91. Pie + Donut Chart | 2/2 | Complete    | 2026-02-28 | - |
-| 92. Scatter + Bubble Chart with WebGL | v9.0 | 0/TBD | Not started | - |
+| 92. Scatter + Bubble Chart with WebGL | v9.0 | 0/2 | Planned | - |
 | 93. Heatmap Chart | v9.0 | 0/TBD | Not started | - |
 | 94. Candlestick Chart | v9.0 | 0/TBD | Not started | - |
 | 95. Treemap Chart | v9.0 | 0/TBD | Not started | - |
