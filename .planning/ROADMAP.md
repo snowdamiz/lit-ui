@@ -163,7 +163,7 @@ Plans:
 |-------|-----------|----------------|--------|-----------|
 | 88. Package Foundation + BaseChartElement | 3/3 | Complete    | 2026-02-28 | - |
 | 89. Line Chart + Area Chart | 2/2 | Complete    | 2026-02-28 | - |
-| 90. Bar Chart | 2/2 | Complete   | 2026-02-28 | - |
+| 90. Bar Chart | 2/2 | Complete    | 2026-02-28 | - |
 | 91. Pie + Donut Chart | v9.0 | 0/TBD | Not started | - |
 | 92. Scatter + Bubble Chart with WebGL | v9.0 | 0/TBD | Not started | - |
 | 93. Heatmap Chart | v9.0 | 0/TBD | Not started | - |
