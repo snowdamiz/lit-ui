@@ -122,12 +122,12 @@ Plans:
   1. Textarea renders with correct monochrome default styles matching the token spec
   2. The Textarea docs page reflects the actual component API and examples without stale content
   3. `skill/skills/textarea` accurately describes the component so Claude can implement it correctly
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 73-01: Polish Textarea CSS defaults to match monochrome theme
-- [ ] 73-02: Update Textarea docs page for accuracy
-- [ ] 73-03: Update `skill/skills/textarea` skill file
+- [ ] 73-01-PLAN.md — Remove hardcoded textarea dark mode tokens from .dark block (TXT-01)
+- [ ] 73-02-PLAN.md — Expand TextareaPage.tsx CSS vars table to full token set (TXT-02)
+- [ ] 73-03-PLAN.md — Rewrite skill/skills/textarea/SKILL.md with Behavior Notes and expanded tokens (TXT-03)
 
 ### Phase 74: Select
 **Goal**: Select component looks and feels like shadcn Select out of the box, with accurate docs and skill file
