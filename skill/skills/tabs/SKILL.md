@@ -99,8 +99,8 @@ description: >-
 
 | Property | Default | Description |
 |----------|---------|-------------|
-| `--ui-tabs-border` | `var(--color-border)` | Border color. |
-| `--ui-tabs-list-bg` | `var(--color-muted)` | Tab list background. |
+| `--ui-tabs-border` | `var(--color-border, var(--ui-color-border))` | Border color. |
+| `--ui-tabs-list-bg` | `var(--color-muted, var(--ui-color-muted))` | Tab list background. |
 | `--ui-tabs-list-padding` | `0.25rem` | Tab list padding. |
 | `--ui-tabs-list-radius` | `0.375rem` | Tab list border radius. |
 | `--ui-tabs-list-gap` | `0.25rem` | Gap between tab buttons. |
@@ -108,19 +108,35 @@ description: >-
 | `--ui-tabs-tab-radius` | `0.25rem` | Tab button border radius. |
 | `--ui-tabs-tab-font-size` | `0.875rem` | Tab font size. |
 | `--ui-tabs-tab-font-weight` | `500` | Tab font weight. |
-| `--ui-tabs-tab-text` | `var(--color-muted-foreground)` | Inactive tab text color. |
+| `--ui-tabs-tab-text` | `var(--color-muted-foreground, var(--ui-color-muted-foreground))` | Inactive tab text color. |
 | `--ui-tabs-tab-bg` | `transparent` | Inactive tab background. |
-| `--ui-tabs-tab-hover-text` | `var(--color-foreground)` | Hover tab text color. |
+| `--ui-tabs-tab-hover-text` | `var(--color-foreground, var(--ui-color-foreground))` | Hover tab text color. |
 | `--ui-tabs-tab-hover-bg` | `transparent` | Hover tab background. |
-| `--ui-tabs-tab-active-text` | `var(--color-foreground)` | Active tab text color. |
-| `--ui-tabs-tab-active-bg` | `var(--color-background)` | Active tab background. |
+| `--ui-tabs-tab-active-text` | `var(--color-foreground, var(--ui-color-foreground))` | Active tab text color. |
+| `--ui-tabs-tab-active-bg` | `var(--color-background, white)` | Active tab background. |
 | `--ui-tabs-tab-active-shadow` | `0 1px 2px 0 rgb(0 0 0 / 0.05)` | Active tab box shadow. |
 | `--ui-tabs-panel-padding` | `1rem 0` | Panel content padding. |
-| `--ui-tabs-panel-text` | `var(--color-foreground)` | Panel text color. |
-| `--ui-tabs-ring` | `var(--color-ring)` | Focus ring color. |
+| `--ui-tabs-panel-text` | `var(--color-foreground, var(--ui-color-foreground))` | Panel text color. |
+| `--ui-tabs-ring` | `var(--color-ring, var(--ui-color-ring))` | Focus ring color. |
 | `--ui-tabs-transition` | `150ms` | Transition duration. |
-| `--ui-tabs-indicator-color` | `var(--color-primary)` | Sliding indicator color. |
+| `--ui-tabs-indicator-color` | `var(--color-primary, var(--ui-color-primary))` | Sliding indicator color. |
 | `--ui-tabs-indicator-height` | `2px` | Sliding indicator height. |
 | `--ui-tabs-indicator-radius` | `9999px` | Sliding indicator border radius. |
 | `--ui-tabs-indicator-transition` | `200ms` | Sliding indicator transition duration. |
 | `--ui-tabs-scroll-button-size` | `2rem` | Scroll button size for overflow navigation. |
+
+## Behavior Notes
+
+- **State management**: `lui-tabs` manages active tab state centrally. Tab buttons are rendered by the parent inside `role="tablist"` — `lui-tab-panel` provides label and value metadata, not the button itself.
+- **Controlled mode**: Set `value` on `lui-tabs` to control the active tab externally. React to the `ui-change` event (`{ value: string }`) to keep it in sync.
+- **Uncontrolled mode**: Use `default-value` for the initial active tab. Omit `value` entirely — once `value` is set it takes precedence over `default-value`.
+- **Orientation**: `orientation="horizontal"` (default) lays tabs in a row with Left/Right arrow navigation. `orientation="vertical"` stacks tabs with Up/Down arrow navigation and side-by-side layout.
+- **Activation mode**: `activation-mode="automatic"` (default) activates a tab when it receives focus via arrow keys. `activation-mode="manual"` separates focus from activation — arrows move focus, Enter/Space activates the focused tab. Use manual mode when switching tabs has side effects (e.g. network requests).
+- **Roving tabindex**: Only the active tab button has `tabindex="0"`. All others have `tabindex="-1"`. Tab key enters and exits the tablist as a single stop.
+- **Animated indicator**: A sliding underline indicator tracks the active tab using CSS `transform: translateX/translateY`. Indicator position is computed via JS from button bounding rects. Respects `prefers-reduced-motion` (transition-duration set to 0ms).
+- **Overflow scroll**: When the tablist overflows its container, left/right scroll buttons appear automatically. `--ui-tabs-scroll-button-size` controls button dimensions. Scrolls 75% of container width per click.
+- **Lazy panels**: `lazy` attribute on `lui-tab-panel` defers slot content rendering until the first time the tab is activated. Once rendered, content is preserved when the tab is deactivated (not destroyed).
+- **data-state attribute**: Each `lui-tab-panel` exposes `data-state="active"` or `data-state="inactive"` for CSS targeting or test queries.
+- **Keyboard navigation**: Arrow Left/Right (horizontal) or Arrow Up/Down (vertical) move between enabled tabs with wrapping. Home/End jump to first/last enabled tab. Disabled tabs are skipped.
+- **Panel tabindex**: Active panels receive `tabindex="0"` only when they contain no focusable children (W3C APG Tabs pattern). If a panel has focusable children, the panel itself is not focusable.
+- **SSR compatibility**: `isServer` guards skip DOM operations (ResizeObserver, indicator calculation, scroll detection) during server-side rendering.
