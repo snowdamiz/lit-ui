@@ -58,9 +58,9 @@ Phases 1-87 are archived. See:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 88-01-PLAN.md — Package scaffold: package.json, tsconfig.json, vite.config.ts, install deps
-- [ ] 88-02-PLAN.md — ThemeBridge (CSS token resolution) + canvas-core registry (ECharts module registration)
-- [ ] 88-03-PLAN.md — BaseChartElement (full lifecycle + streaming) + index.ts public API exports
+- [x] 88-01-PLAN.md — Package scaffold: package.json, tsconfig.json, vite.config.ts, install deps
+- [x] 88-02-PLAN.md — ThemeBridge (CSS token resolution) + canvas-core registry (ECharts module registration)
+- [x] 88-03-PLAN.md — BaseChartElement (full lifecycle + streaming) + index.ts public API exports
 
 ### Phase 89: Line Chart + Area Chart
 **Goal**: Developer can render production-quality line and area charts with multiple named series, smooth interpolation, zoom/pan, mark lines, and real-time streaming via pushData()
@@ -158,7 +158,7 @@ Plans:
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 88. Package Foundation + BaseChartElement | 3/3 | Complete    | 2026-02-28 | - |
-| 89. Line Chart + Area Chart | v9.0 | 0/2 | Not started | - |
+| 89. Line Chart + Area Chart | 1/2 | In Progress|  | - |
 | 90. Bar Chart | v9.0 | 0/TBD | Not started | - |
 | 91. Pie + Donut Chart | v9.0 | 0/TBD | Not started | - |
 | 92. Scatter + Bubble Chart with WebGL | v9.0 | 0/TBD | Not started | - |

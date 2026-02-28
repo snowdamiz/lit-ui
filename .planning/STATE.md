@@ -18,16 +18,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-02-28)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** Phase 88 — Package Foundation + BaseChartElement (COMPLETE)
+**Current focus:** Phase 89 — Line Chart + Area Chart
 
 ## Current Position
 
-Phase: 88 of 96 (Package Foundation + BaseChartElement)
-Plan: 3 of 3 in current phase (88-03 complete — phase done)
+Phase: 89 of 96 (Line Chart + Area Chart)
+Plan: 1 of 2 in current phase (89-01 complete)
 Status: In progress
-Last activity: 2026-02-28 — Completed 88-03: BaseChartElement abstract base class with full lifecycle, streaming, WebGL guard, and disposal chain
+Last activity: 2026-02-28 — Completed 89-01: line-option-builder, line-registry, LuiLineChart with smooth/zoom/markLines and appendData streaming
 
-Progress: [░░░░░░░░░░] 0% (v9.0 milestone, 9 phases)
+Progress: [█░░░░░░░░░] 11% (v9.0 milestone, 9 phases, 1 of 9 complete)
 
 ## Accumulated Context
 
@@ -49,6 +49,9 @@ Progress: [░░░░░░░░░░] 0% (v9.0 milestone, 9 phases)
 - 88-03: EChartsOption exported as type alias for EChartsCoreOption — EChartsOption not in echarts/core subpath
 - 88-03: echarts-gl @ts-ignore on dynamic import — type shims deferred to Phase 92
 - 88-03: _streamingMode defaults to 'buffer' in base; concrete appendData-mode charts override
+- 89-01: buildLineOption mode param ('line'|'area') — single function for both chart types
+- 89-01: markLine on index-0 series only — prevents N duplicate threshold lines with N series
+- 89-01: stack uses string 'total' not boolean — ECharts requires string group name to activate stacking
 
 ### Architecture Notes
 
@@ -85,21 +88,22 @@ Progress: [░░░░░░░░░░] 0% (v9.0 milestone, 9 phases)
 | 88 | 01 | 2min | 2 | 6 |
 | 88 | 02 | 2min | 2 | 2 |
 | 88 | 03 | 4min | 2 | 2 |
+| 89 | 01 | 2min | 2 | 3 |
 
 ## Session Continuity
 
 ### Last Session
-- 2026-02-28: Completed 88-03 — BaseChartElement abstract base class (Phase 88 complete)
+- 2026-02-28: Completed 89-01 — line-option-builder, line-registry, LuiLineChart (LINE-01/02/03 done)
 
 ### Stopped At
-Completed 88-03-PLAN.md
+Completed 89-01-PLAN.md
 
 ### Next Actions
-Phase 88 complete. Continue to Phase 89 — first concrete chart component extending BaseChartElement.
+Continue to 89-02 — LuiAreaChart (area-chart.ts, area-registry.ts) and index.ts export updates for both charts.
 
 ### Open Questions
 *None.*
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-02-28 — 88-03 complete, BaseChartElement implemented, Phase 88 done*
+*Last updated: 2026-02-28 — 89-01 complete, LuiLineChart implemented, LINE-01/02/03 requirements done*

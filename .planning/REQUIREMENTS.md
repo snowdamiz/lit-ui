@@ -32,9 +32,9 @@ Requirements for the v9.0 Charts System milestone. Each maps to a roadmap phase.
 
 ### Line Chart
 
-- [ ] **LINE-01**: Developer can render a line chart with one or more named data series
-- [ ] **LINE-02**: Developer can enable smooth curve interpolation, zoom/pan controls, and mark lines
-- [ ] **LINE-03**: Developer can stream real-time data points into a line chart via `pushData()`
+- [x] **LINE-01**: Developer can render a line chart with one or more named data series
+- [x] **LINE-02**: Developer can enable smooth curve interpolation, zoom/pan controls, and mark lines
+- [x] **LINE-03**: Developer can stream real-time data points into a line chart via `pushData()`
 
 ### Area Chart
 
@@ -134,9 +134,9 @@ Which phases cover which requirements. Populated during roadmap creation.
 | STRM-02 | Phase 88 | Complete |
 | STRM-03 | Phase 88 | Complete |
 | STRM-04 | Phase 88 | Complete |
-| LINE-01 | Phase 89 | Pending |
-| LINE-02 | Phase 89 | Pending |
-| LINE-03 | Phase 89 | Pending |
+| LINE-01 | Phase 89 | Complete |
+| LINE-02 | Phase 89 | Complete |
+| LINE-03 | Phase 89 | Complete |
 | AREA-01 | Phase 89 | Pending |
 | AREA-02 | Phase 89 | Pending |
 | BAR-01 | Phase 90 | Pending |
