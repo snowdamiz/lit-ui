@@ -82,12 +82,12 @@ const popoverParts: CSSPartDef[] = [
 // CSS Custom Properties data
 type CSSVarDef = { name: string; default: string; description: string };
 const popoverCSSVars: CSSVarDef[] = [
-  { name: '--ui-popover-bg', default: 'var(--color-card)', description: 'Background color of the popover.' },
-  { name: '--ui-popover-text', default: 'var(--color-card-foreground)', description: 'Text color of the popover.' },
-  { name: '--ui-popover-border', default: 'var(--color-border)', description: 'Border color of the popover.' },
+  { name: '--ui-popover-bg', default: 'var(--color-card, var(--ui-color-card))', description: 'Background color of the popover.' },
+  { name: '--ui-popover-text', default: 'var(--color-card-foreground, var(--ui-color-card-foreground))', description: 'Text color of the popover.' },
+  { name: '--ui-popover-border', default: 'var(--color-border, var(--ui-color-border))', description: 'Border color of the popover.' },
   { name: '--ui-popover-radius', default: '0.5rem', description: 'Border radius of the popover.' },
   { name: '--ui-popover-padding', default: '1rem', description: 'Inner padding of the popover content.' },
-  { name: '--ui-popover-shadow', default: '0 10px 15px -3px rgb(0 0 0 / 0.1)', description: 'Box shadow of the popover.' },
+  { name: '--ui-popover-shadow', default: '0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.08)', description: 'Box shadow of the popover.' },
   { name: '--ui-popover-arrow-size', default: '8px', description: 'Size of the arrow indicator.' },
   { name: '--ui-popover-max-width', default: '20rem', description: 'Maximum width of the popover.' },
   { name: '--ui-popover-z-index', default: '50', description: 'Z-index of the popover panel.' },
@@ -274,11 +274,10 @@ const matchWidthPopoverCode = {
 // CSS Custom Properties example code
 const cssVarsCode = `/* Global override - affects all popovers */
 :root {
-  --ui-popover-bg: white;
-  --ui-popover-text: #1e293b;
-  --ui-popover-border: #e2e8f0;
-  --ui-popover-radius: 0.75rem;
-  --ui-popover-padding: 1.25rem;
+  --ui-popover-bg: var(--color-card, var(--ui-color-card));
+  --ui-popover-text: var(--color-card-foreground, var(--ui-color-card-foreground));
+  --ui-popover-border: var(--color-border, var(--ui-color-border));
+  --ui-popover-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
 }
 
 /* Scoped override - only affects popovers in this container */
