@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Design System Polish
 status: completed
-last_updated: "2026-02-28T07:57:14.948Z"
-last_activity: 2026-02-28 — Phase 83-03 complete (Popover SKILL.md CSS token defaults corrected to double-fallback var() form; shadow two-layer 0.08 opacity; z-index corrected to 45; Behavior Notes section added with 13 entries)
+last_updated: "2026-02-28T08:08:42.221Z"
+last_activity: 2026-02-28 — Phase 84-01 complete (Toast base dark mode declarations removed from .dark block; semantic cascade via .dark --color-card sufficient; 12 variant oklch tokens retained)
 progress:
-  total_phases: 79
+  total_phases: 80
   completed_phases: 79
-  total_plans: 276
-  completed_plans: 276
-  percent: 100
+  total_plans: 279
+  completed_plans: 277
+  percent: 99
 ---
 
 # Project State: LitUI
@@ -20,18 +20,18 @@ progress:
 See: .planning/PROJECT.md (updated 2026-02-27)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** Phase 83 — Popover Polish
+**Current focus:** Phase 84 — Toast Polish
 
 ## Current Position
 
 **Milestone:** v8.0 Design System Polish — IN PROGRESS
-**Phase:** 83 of 87 (Popover Polish) — COMPLETE
-**Plan:** 3 of 3 in Phase 83 — COMPLETE
-**Status:** Milestone complete
-**Last activity:** 2026-02-28 — Phase 83-03 complete (Popover SKILL.md CSS token defaults corrected to double-fallback var() form; shadow two-layer 0.08 opacity; z-index corrected to 45; Behavior Notes section added with 13 entries)
+**Phase:** 84 of 87 (Toast Polish) — IN PROGRESS
+**Plan:** 1 of 3 in Phase 84 — COMPLETE
+**Status:** In progress
+**Last activity:** 2026-02-28 — Phase 84-01 complete (Toast base dark mode declarations removed from .dark; semantic cascade via .dark --color-card now sufficient; 12 variant oklch tokens retained)
 
 **Progress:**
-[██████████] 100%
+[██████████] 99%
 Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 
 ## Performance Metrics
@@ -81,6 +81,7 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 | Phase 83-popover P01 | 1min | 1 tasks | 1 files |
 | Phase 83-popover P02 | 1min | 1 tasks | 1 files |
 | Phase 83-popover P03 | 1min | 1 tasks | 1 files |
+| Phase 84-toast P01 | 1min | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -133,6 +134,7 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 - Phase 83-01: Popover dark mode governed by semantic .dark token cascade — 3 hardcoded .dark --ui-popover-* declarations removed; double-fallback cascade in :root is sufficient (same pattern as Phases 70-01 through 82-01)
 - Phase 83-02: popoverCSSVars color token defaults corrected to double-fallback var() form (bg, text, border); shadow corrected from stale single-layer 0.1 opacity to two-layer 0.08 opacity matching tailwind.css :root; cssVarsCode example replaced hex literals (white, #1e293b, #e2e8f0) with semantic token references
 - Phase 83-03: Popover SKILL.md CSS token defaults corrected — bg/text/border use double-fallback var() form; shadow corrected to two-layer 0.08 opacity value; z-index corrected from stale 50 to actual tailwind.css :root value of 45; Behavior Notes section added with 13 entries (trigger model, light dismiss, Escape, Floating UI, arrow, focus management, modal mode, controlled mode, nested popovers, match-trigger-width, dark mode, SSR safety, cleanup)
+- Phase 84-01: Toast base dark mode governed by semantic .dark cascade — 3 hardcoded .dark --ui-toast-bg/text/border declarations removed; double-fallback cascade in :root is sufficient (same pattern as Phases 70-01 through 83-01); 12 variant oklch dark mode tokens kept in .dark (lightness 0.25 cannot cascade from :root lightness 0.95)
 
 ### Architecture Notes
 
@@ -163,14 +165,14 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 ## Session Continuity
 
 ### Last Session
-- Phase 83-03: Popover SKILL.md CSS token defaults corrected — 4 stale entries (bg, text, border, shadow) updated; z-index corrected from 50 to 45; Behavior Notes section added with 13 entries
+- Phase 84-01: Toast base dark mode declarations (--ui-toast-bg/text/border + comment) removed from .dark block; semantic cascade via .dark --color-card now sufficient; 12 variant oklch tokens retained in .dark
 
 ### Next Actions
-Execute Phase 84 (next phase).
+Execute Phase 84-02 (Toast docs CSS token table update).
 
 ### Open Questions
 *None.*
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-02-28 — Phase 83-03 complete (Popover SKILL.md CSS token defaults corrected; z-index corrected to 45; Behavior Notes section added with 13 entries)*
+*Last updated: 2026-02-28 — Phase 84-01 complete (Toast base dark mode declarations removed from .dark block; semantic cascade sufficient; 12 variant oklch tokens retained)*

@@ -99,7 +99,7 @@ Requirements for the Design System Polish milestone. Each component phase maps t
 
 ### Toast
 
-- [ ] **TST-01**: Toast default styles match the v8.0 monochrome theme
+- [x] **TST-01**: Toast default styles match the v8.0 monochrome theme
 - [ ] **TST-02**: Toast docs page is accurate and up-to-date
 - [ ] **TST-03**: `skill/skills/toast` skill file is accurate and up-to-date
 
@@ -183,7 +183,7 @@ Requirements for the Design System Polish milestone. Each component phase maps t
 | POP-01 | Phase 83 | Complete |
 | POP-02 | Phase 83 | Complete |
 | POP-03 | Phase 83 | Complete |
-| TST-01 | Phase 84 | Pending |
+| TST-01 | Phase 84 | Complete |
 | TST-02 | Phase 84 | Pending |
 | TST-03 | Phase 84 | Pending |
 | ACC-01 | Phase 85 | Pending |

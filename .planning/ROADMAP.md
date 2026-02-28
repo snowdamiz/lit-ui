@@ -362,7 +362,7 @@ Note: Phases 70-87 all depend on Phase 69. Phases 70-78 and 80-87 are independen
 | 81. Time Picker | 3/3 | Complete    | 2026-02-28 | - |
 | 82. Tooltip | 3/3 | Complete    | 2026-02-28 | - |
 | 83. Popover | 3/3 | Complete    | 2026-02-28 | - |
-| 84. Toast | v8.0 | 0/3 | Not started | - |
+| 84. Toast | 1/3 | In Progress|  | - |
 | 85. Accordion | v8.0 | 0/3 | Not started | - |
 | 86. Tabs | v8.0 | 0/3 | Not started | - |
 | 87. Data Table | v8.0 | 0/3 | Not started | - |
