@@ -2,9 +2,9 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Design System Polish
-status: executing
-last_updated: "2026-02-28T07:01:03.136Z"
-last_activity: "2026-02-28 — Phase 81-02 complete (Time Picker docs CSS vars — 20 stale entries replaced with 67 accurate --ui-time-picker-* tokens matching tailwind.css :root)"
+status: completed
+last_updated: "2026-02-28T07:07:23.465Z"
+last_activity: 2026-02-28 — Phase 81-03 complete (Time Picker SKILL.md CSS tokens expanded 20->67 accurate --ui-time-picker-* tokens; stale names removed; Behavior Notes added with 12 entries)
 progress:
   total_phases: 77
   completed_phases: 77
@@ -27,7 +27,7 @@ See: .planning/PROJECT.md (updated 2026-02-27)
 **Milestone:** v8.0 Design System Polish — IN PROGRESS
 **Phase:** 81 of 87 (Time Picker Polish) — COMPLETE
 **Plan:** 3 of 3 in Phase 81 — COMPLETE
-**Status:** In progress
+**Status:** Milestone complete
 **Last activity:** 2026-02-28 — Phase 81-03 complete (Time Picker SKILL.md CSS tokens expanded 20->67 accurate --ui-time-picker-* tokens; stale names removed; Behavior Notes added with 12 entries)
 
 **Progress:**
