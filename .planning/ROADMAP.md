@@ -89,8 +89,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 90-01-PLAN.md — bar-option-builder.ts (buildBarOption + types) + bar-registry.ts (registerBarModules)
-- [ ] 90-02-PLAN.md — LuiBarChart component + index.ts public API exports
+- [x] 90-01-PLAN.md — bar-option-builder.ts (buildBarOption + types) + bar-registry.ts (registerBarModules)
+- [x] 90-02-PLAN.md — LuiBarChart component + index.ts public API exports
 
 ### Phase 91: Pie + Donut Chart
 **Goal**: Developer can render pie and donut charts with automatic small-slice merging, configurable donut hole and center label, and streaming data updates
@@ -100,7 +100,11 @@ Plans:
   1. Developer can render a pie chart and set a `min-percent` threshold below which small slices are automatically merged into an "Other" segment
   2. Developer can render a donut chart with a configurable `inner-radius` and a `center-label` string displayed in the hollow center
   3. Developer can call `pushData(point)` on pie or donut chart and see proportions update without re-initialization
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 91-01-PLAN.md — pie-option-builder.ts (buildPieOption + types + small-slice merging) + pie-registry.ts (registerPieModules)
+- [ ] 91-02-PLAN.md — LuiPieChart component + index.ts public API exports
 
 ### Phase 92: Scatter + Bubble Chart with WebGL
 **Goal**: Developer can render scatter and bubble charts at Canvas performance for standard datasets and at WebGL performance for 500K+ point datasets, with the same pushData() API for both paths
@@ -164,7 +168,7 @@ Plans:
 | 88. Package Foundation + BaseChartElement | 3/3 | Complete    | 2026-02-28 | - |
 | 89. Line Chart + Area Chart | 2/2 | Complete    | 2026-02-28 | - |
 | 90. Bar Chart | 2/2 | Complete    | 2026-02-28 | - |
-| 91. Pie + Donut Chart | v9.0 | 0/TBD | Not started | - |
+| 91. Pie + Donut Chart | v9.0 | 0/2 | Not started | - |
 | 92. Scatter + Bubble Chart with WebGL | v9.0 | 0/TBD | Not started | - |
 | 93. Heatmap Chart | v9.0 | 0/TBD | Not started | - |
 | 94. Candlestick Chart | v9.0 | 0/TBD | Not started | - |
