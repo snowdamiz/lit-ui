@@ -123,18 +123,35 @@ const checkboxParts: CSSPartDef[] = [
 // CSS Custom Properties data
 type CSSVarDef = { name: string; default: string; description: string };
 const checkboxCSSVars: CSSVarDef[] = [
-  { name: '--ui-checkbox-bg', default: 'var(--color-background)', description: 'Unchecked background color.' },
-  { name: '--ui-checkbox-bg-checked', default: 'var(--color-primary)', description: 'Checked/indeterminate background color.' },
-  { name: '--ui-checkbox-border', default: 'var(--color-border)', description: 'Border color.' },
-  { name: '--ui-checkbox-border-checked', default: 'var(--color-primary)', description: 'Border color when checked.' },
-  { name: '--ui-checkbox-border-error', default: 'var(--color-destructive)', description: 'Border color on validation error.' },
-  { name: '--ui-checkbox-check-color', default: 'var(--color-primary-foreground)', description: 'Checkmark/dash icon color.' },
-  { name: '--ui-checkbox-radius', default: 'var(--radius-sm)', description: 'Border radius of the checkbox box.' },
-  { name: '--ui-checkbox-ring', default: 'var(--color-ring)', description: 'Focus ring color.' },
-  { name: '--ui-checkbox-transition', default: '150ms', description: 'Transition duration for animations.' },
-  { name: '--ui-checkbox-label-gap', default: '0.5rem', description: 'Gap between checkbox and label.' },
+  // Size
+  { name: '--ui-checkbox-size-sm', default: '1rem', description: 'Checkbox box width and height at sm size.' },
+  { name: '--ui-checkbox-size-md', default: '1.25rem', description: 'Checkbox box width and height at md size (default).' },
+  { name: '--ui-checkbox-size-lg', default: '1.5rem', description: 'Checkbox box width and height at lg size.' },
+  // Layout
+  { name: '--ui-checkbox-radius', default: '0.25rem', description: 'Border radius of the checkbox box.' },
+  { name: '--ui-checkbox-border-width', default: '2px', description: 'Border width of the checkbox box.' },
+  { name: '--ui-checkbox-label-gap', default: '0.5rem', description: 'Gap between checkbox box and label text.' },
+  { name: '--ui-checkbox-transition', default: '150ms', description: 'Transition duration for check/uncheck animations.' },
   { name: '--ui-checkbox-group-gap', default: '0.5rem', description: 'Gap between items in a checkbox group.' },
-  { name: '--ui-checkbox-text-error', default: 'var(--color-destructive)', description: 'Error text color.' },
+  // Typography
+  { name: '--ui-checkbox-font-size-sm', default: '0.875rem', description: 'Label font size at sm size.' },
+  { name: '--ui-checkbox-font-size-md', default: '1rem', description: 'Label font size at md size (default).' },
+  { name: '--ui-checkbox-font-size-lg', default: '1.125rem', description: 'Label font size at lg size.' },
+  // Unchecked state
+  { name: '--ui-checkbox-bg', default: 'var(--color-background, white)', description: 'Background color when unchecked.' },
+  { name: '--ui-checkbox-border', default: 'var(--color-border, var(--ui-color-border))', description: 'Border color when unchecked.' },
+  // Checked state
+  { name: '--ui-checkbox-bg-checked', default: 'var(--color-primary, var(--ui-color-primary))', description: 'Background color when checked.' },
+  { name: '--ui-checkbox-border-checked', default: 'var(--color-primary, var(--ui-color-primary))', description: 'Border color when checked.' },
+  { name: '--ui-checkbox-check-color', default: 'white', description: 'Checkmark and dash icon color.' },
+  // Indeterminate state
+  { name: '--ui-checkbox-bg-indeterminate', default: 'var(--color-primary, var(--ui-color-primary))', description: 'Background color in indeterminate state.' },
+  { name: '--ui-checkbox-border-indeterminate', default: 'var(--color-primary, var(--ui-color-primary))', description: 'Border color in indeterminate state.' },
+  // Focus state
+  { name: '--ui-checkbox-ring', default: 'var(--color-ring, var(--ui-color-ring))', description: 'Focus ring color.' },
+  // Error state
+  { name: '--ui-checkbox-border-error', default: 'var(--color-destructive, var(--ui-color-destructive))', description: 'Border color on validation error.' },
+  { name: '--ui-checkbox-text-error', default: 'var(--color-destructive, var(--ui-color-destructive))', description: 'Error message text color.' },
 ];
 
 // Code examples - web components use same syntax in all frameworks
