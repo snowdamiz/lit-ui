@@ -290,9 +290,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 84-01-PLAN.md — Remove base toast dark mode declarations from .dark block; keep 12 variant oklch exceptions (TST-01)
-- [ ] 84-02-PLAN.md — Fix toastCSSVars defaults (double-fallback, shadow, z-index), add padding entry, update cssVarsCode (TST-02)
-- [ ] 84-03-PLAN.md — Fix SKILL.md CSS token defaults (21 entries) and add Behavior Notes (TST-03)
+- [x] 84-01-PLAN.md — Remove base toast dark mode declarations from .dark block; keep 12 variant oklch exceptions (TST-01)
+- [x] 84-02-PLAN.md — Fix toastCSSVars defaults (double-fallback, shadow, z-index), add padding entry, update cssVarsCode (TST-02)
+- [x] 84-03-PLAN.md — Fix SKILL.md CSS token defaults (21 entries) and add Behavior Notes (TST-03)
 
 ### Phase 85: Accordion
 **Goal**: Accordion component looks and feels like shadcn Accordion out of the box, with accurate docs and skill file
@@ -302,12 +302,12 @@ Plans:
   1. Accordion renders with correct monochrome default styles (trigger, border, chevron) matching the token spec
   2. The Accordion docs page reflects the actual component API and examples without stale content
   3. `skill/skills/accordion` accurately describes the component so Claude can implement it correctly
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 85-01: Polish Accordion CSS defaults to match monochrome theme
-- [ ] 85-02: Update Accordion docs page for accuracy
-- [ ] 85-03: Update `skill/skills/accordion` skill file
+- [ ] 85-01-PLAN.md — Remove 4 hardcoded accordion dark mode declarations from .dark block (ACC-01)
+- [ ] 85-02-PLAN.md — Update AccordionPage.tsx CSS vars to 14 accurate entries with double-fallback defaults (ACC-02)
+- [ ] 85-03-PLAN.md — Fix skill/skills/accordion/SKILL.md CSS token defaults and add Behavior Notes (ACC-03)
 
 ### Phase 86: Tabs
 **Goal**: Tabs component looks and feels like shadcn Tabs out of the box, with accurate docs and skill file
