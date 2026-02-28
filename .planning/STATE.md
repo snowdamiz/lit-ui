@@ -2,8 +2,8 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Design System Polish
-status: in-progress
-last_updated: "2026-02-28T02:00:30Z"
+status: completed
+last_updated: "2026-02-28T02:08:11.539Z"
 last_activity: 2026-02-28 — Phase 71-03 complete (dialog SKILL.md CSS token prefix fixed --lui-dialog-* → --ui-dialog-*, expanded to 12 tokens, Behavior Notes added)
 progress:
   total_phases: 67
@@ -27,7 +27,7 @@ See: .planning/PROJECT.md (updated 2026-02-27)
 **Milestone:** v8.0 Design System Polish — IN PROGRESS
 **Phase:** 71 of 87 (Dialog Polish) — COMPLETE
 **Plan:** 3 of 3 in Phase 71 — COMPLETE
-**Status:** In progress
+**Status:** Milestone complete
 **Last activity:** 2026-02-28 — Phase 71-03 complete (dialog SKILL.md CSS token prefix fixed --lui-dialog-* → --ui-dialog-*, expanded to 12 tokens, Behavior Notes added)
 
 **Progress:**
