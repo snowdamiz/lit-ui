@@ -389,28 +389,6 @@
   --ui-data-table-editing-bg: color-mix(in oklch, var(--color-primary, var(--ui-color-primary)) 8%, var(--color-gray-950));
   --ui-data-table-menu-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.2);
 
-  /* Select dark mode */
-  --ui-select-bg: oklch(0.10 0 0);
-  --ui-select-text: oklch(0.985 0 0);
-  --ui-select-border: oklch(0.37 0 0);
-  --ui-select-placeholder: oklch(0.55 0 0);
-  --ui-select-border-focus: oklch(0.71 0 0);
-  --ui-select-ring: oklch(0.55 0 0);
-  --ui-select-bg-disabled: oklch(0.18 0 0);
-  --ui-select-text-disabled: oklch(0.55 0 0);
-  --ui-select-border-disabled: oklch(0.37 0 0);
-  --ui-select-dropdown-bg: oklch(0.18 0 0);
-  --ui-select-dropdown-border: oklch(0.37 0 0);
-  --ui-select-option-bg-hover: oklch(0.27 0 0);
-  --ui-select-option-bg-active: oklch(0.27 0 0);
-  --ui-select-option-text: oklch(0.985 0 0);
-  --ui-select-option-text-disabled: oklch(0.55 0 0);
-  --ui-select-option-check: oklch(0.985 0 0);
-  --ui-select-tag-bg: oklch(0.27 0 0);
-  --ui-select-tag-text: oklch(0.96 0 0);
-  --ui-select-checkbox-border: oklch(0.45 0 0);
-  --ui-select-checkbox-bg-checked: oklch(0.985 0 0);
-
   /* Switch dark mode */
   --ui-switch-track-bg: oklch(0.37 0 0);
   --ui-switch-track-border: oklch(0.45 0 0);
