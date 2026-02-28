@@ -203,18 +203,6 @@
   --color-card: var(--color-gray-900);
   --color-card-foreground: var(--color-gray-50);
 
-  /* Calendar dark mode overrides */
-  --ui-calendar-bg: var(--color-gray-950);
-  --ui-calendar-text: var(--color-gray-50);
-  --ui-calendar-border: var(--color-gray-800);
-  --ui-calendar-hover-bg: var(--color-gray-800);
-  --ui-calendar-weekday-color: var(--color-gray-400);
-  --ui-calendar-nav-color: var(--color-gray-50);
-  --ui-calendar-today-border: 2px solid var(--color-brand-300);
-  --ui-calendar-selected-bg: var(--color-brand-50);
-  --ui-calendar-selected-text: var(--color-brand-900);
-  --ui-calendar-focus-ring: var(--color-brand-300);
-
   /* Tooltip dark mode - inverted stays inverted, just swap values */
   --ui-tooltip-bg: var(--color-gray-50);
   --ui-tooltip-text: var(--color-gray-950);
@@ -857,6 +845,10 @@
 
   /* Focus */
   --ui-calendar-focus-ring: var(--color-ring, var(--ui-color-ring));
+
+  /* Constraint tooltip (show-constraint-tooltips) */
+  --ui-calendar-tooltip-bg: var(--color-foreground, #111827);
+  --ui-calendar-tooltip-text: var(--color-background, #ffffff);
 
   /* -------------------------------------------------------------------------
    * Tooltip Component
