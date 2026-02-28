@@ -245,9 +245,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 81-01-PLAN.md — Remove .dark time-picker block (keep 6 oklch exceptions) (TMP-01)
-- [ ] 81-02-PLAN.md — Replace timePickerCSSVars with 67 accurate --ui-time-picker-* entries (TMP-02)
-- [ ] 81-03-PLAN.md — Rewrite skill/skills/time-picker/SKILL.md with 67 tokens and Behavior Notes (TMP-03)
+- [x] 81-01-PLAN.md — Remove .dark time-picker block (keep 6 oklch exceptions) (TMP-01)
+- [x] 81-02-PLAN.md — Replace timePickerCSSVars with 67 accurate --ui-time-picker-* entries (TMP-02)
+- [x] 81-03-PLAN.md — Rewrite skill/skills/time-picker/SKILL.md with 67 tokens and Behavior Notes (TMP-03)
 
 ### Phase 82: Tooltip
 **Goal**: Tooltip component looks and feels like shadcn Tooltip out of the box, with accurate docs and skill file
@@ -257,12 +257,12 @@ Plans:
   1. Tooltip renders with correct monochrome default styles (background, arrow, border) matching the token spec
   2. The Tooltip docs page reflects the actual component API and examples without stale content
   3. `skill/skills/tooltip` accurately describes the component so Claude can implement it correctly
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 82-01: Polish Tooltip CSS defaults to match monochrome theme
-- [ ] 82-02: Update Tooltip docs page for accuracy
-- [ ] 82-03: Update `skill/skills/tooltip` skill file
+- [ ] 82-01-PLAN.md — Remove .dark tooltip block (2 gray declarations cascade via semantic tokens) (TTP-01)
+- [ ] 82-02-PLAN.md — Fix tooltipCSSVars defaults (shadow, bg/text double-fallback) to match tailwind.css :root (TTP-02)
+- [ ] 82-03-PLAN.md — Fix SKILL.md CSS token defaults and add Behavior Notes (TTP-03)
 
 ### Phase 83: Popover
 **Goal**: Popover component looks and feels like shadcn Popover out of the box, with accurate docs and skill file
