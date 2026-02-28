@@ -55,9 +55,9 @@ Requirements for the v9.0 Charts System milestone. Each maps to a roadmap phase.
 
 ### Scatter / Bubble Chart
 
-- [ ] **SCAT-01**: Developer can render a scatter chart with optional bubble size dimension (`bubble` mode)
-- [ ] **SCAT-02**: Developer can enable WebGL rendering for 500K+ point datasets via `enable-gl` attribute (ScatterGL via echarts-gl)
-- [ ] **SCAT-03**: Developer can stream data points into a scatter chart via `pushData()` with circular buffer
+- [x] **SCAT-01**: Developer can render a scatter chart with optional bubble size dimension (`bubble` mode)
+- [x] **SCAT-02**: Developer can enable WebGL rendering for 500K+ point datasets via `enable-gl` attribute (ScatterGL via echarts-gl)
+- [x] **SCAT-03**: Developer can stream data points into a scatter chart via `pushData()` with circular buffer
 
 ### Heatmap Chart
 
@@ -145,9 +145,9 @@ Which phases cover which requirements. Populated during roadmap creation.
 | PIE-01 | Phase 91 | Complete |
 | PIE-02 | Phase 91 | Complete |
 | PIE-03 | Phase 91 | Complete |
-| SCAT-01 | Phase 92 | Pending |
-| SCAT-02 | Phase 92 | Pending |
-| SCAT-03 | Phase 92 | Pending |
+| SCAT-01 | Phase 92 | Complete |
+| SCAT-02 | Phase 92 | Complete |
+| SCAT-03 | Phase 92 | Complete |
 | HEAT-01 | Phase 93 | Pending |
 | HEAT-02 | Phase 93 | Pending |
 | CNDL-01 | Phase 94 | Pending |
