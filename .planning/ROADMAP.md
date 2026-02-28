@@ -153,7 +153,7 @@ Plans:
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
-| 88. Package Foundation + BaseChartElement | v9.0 | 0/3 | Not started | - |
+| 88. Package Foundation + BaseChartElement | 1/3 | In Progress|  | - |
 | 89. Line Chart + Area Chart | v9.0 | 0/TBD | Not started | - |
 | 90. Bar Chart | v9.0 | 0/TBD | Not started | - |
 | 91. Pie + Donut Chart | v9.0 | 0/TBD | Not started | - |

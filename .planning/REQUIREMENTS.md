@@ -9,7 +9,7 @@ Requirements for the v9.0 Charts System milestone. Each maps to a roadmap phase.
 
 ### Package Infrastructure
 
-- [ ] **INFRA-01**: Developer can install `@lit-ui/charts` as an opt-in package separate from other LitUI packages
+- [x] **INFRA-01**: Developer can install `@lit-ui/charts` as an opt-in package separate from other LitUI packages
 - [ ] **INFRA-02**: Developer can use chart components in SSR frameworks (Next.js, Astro) without `window`/`document` crash
 - [ ] **INFRA-03**: Developer can enable WebGL rendering via `enable-gl` attribute with automatic Canvas fallback when WebGL is unavailable
 - [ ] **INFRA-04**: Developer can apply dark mode to charts via the `.dark` class (same pattern as all other LitUI components)
@@ -120,7 +120,7 @@ Which phases cover which requirements. Populated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| INFRA-01 | Phase 88 | Pending |
+| INFRA-01 | Phase 88 | Complete |
 | INFRA-02 | Phase 88 | Pending |
 | INFRA-03 | Phase 88 | Pending |
 | INFRA-04 | Phase 88 | Pending |
