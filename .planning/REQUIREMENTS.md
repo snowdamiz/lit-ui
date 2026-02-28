@@ -9,9 +9,9 @@ Requirements for the Design System Polish milestone. Each component phase maps t
 
 ### Theme Foundation
 
-- [ ] **THEME-01**: All components share a unified monochrome design token baseline (spacing, radius, color scale, shadows, transitions) defined in `@lit-ui/core`
-- [ ] **THEME-02**: Default component styles match shadcn aesthetic — neutral grays, clean borders, subtle shadows — as concrete CSS custom property values
-- [ ] **THEME-03**: Theme token reference document written so all subsequent component phases have a concrete spec to match against
+- [x] **THEME-01**: All components share a unified monochrome design token baseline (spacing, radius, color scale, shadows, transitions) defined in `@lit-ui/core`
+- [x] **THEME-02**: Default component styles match shadcn aesthetic — neutral grays, clean borders, subtle shadows — as concrete CSS custom property values
+- [x] **THEME-03**: Theme token reference document written so all subsequent component phases have a concrete spec to match against
 
 ### Button
 
@@ -138,9 +138,9 @@ Requirements for the Design System Polish milestone. Each component phase maps t
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| THEME-01 | Phase 69 | Pending |
-| THEME-02 | Phase 69 | Pending |
-| THEME-03 | Phase 69 | Pending |
+| THEME-01 | Phase 69 | Complete |
+| THEME-02 | Phase 69 | Complete |
+| THEME-03 | Phase 69 | Complete |
 | BTN-01 | Phase 70 | Pending |
 | BTN-02 | Phase 70 | Pending |
 | BTN-03 | Phase 70 | Pending |
