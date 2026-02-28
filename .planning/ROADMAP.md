@@ -353,7 +353,7 @@ Note: Phases 70-87 all depend on Phase 69. Phases 70-78 and 80-87 are independen
 | 72. Input | 3/3 | Complete    | 2026-02-28 | - |
 | 73. Textarea | 3/3 | Complete    | 2026-02-28 | - |
 | 74. Select | 3/3 | Complete    | 2026-02-28 | - |
-| 75. Checkbox | 3/3 | Complete   | 2026-02-28 | - |
+| 75. Checkbox | 3/3 | Complete    | 2026-02-28 | - |
 | 76. Radio | v8.0 | 0/3 | Not started | - |
 | 77. Switch | v8.0 | 0/3 | Not started | - |
 | 78. Calendar | v8.0 | 0/3 | Not started | - |
