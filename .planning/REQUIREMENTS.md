@@ -61,8 +61,8 @@ Requirements for the v9.0 Charts System milestone. Each maps to a roadmap phase.
 
 ### Heatmap Chart
 
-- [ ] **HEAT-01**: Developer can render a Cartesian heatmap with configurable x/y categories and VisualMap color scale
-- [ ] **HEAT-02**: Developer can stream cell value updates into a heatmap via `pushData()`
+- [x] **HEAT-01**: Developer can render a Cartesian heatmap with configurable x/y categories and VisualMap color scale
+- [x] **HEAT-02**: Developer can stream cell value updates into a heatmap via `pushData()`
 
 ### Candlestick Chart
 
@@ -148,8 +148,8 @@ Which phases cover which requirements. Populated during roadmap creation.
 | SCAT-01 | Phase 92 | Complete |
 | SCAT-02 | Phase 92 | Complete |
 | SCAT-03 | Phase 92 | Complete |
-| HEAT-01 | Phase 93 | Pending |
-| HEAT-02 | Phase 93 | Pending |
+| HEAT-01 | Phase 93 | Complete |
+| HEAT-02 | Phase 93 | Complete |
 | CNDL-01 | Phase 94 | Pending |
 | CNDL-02 | Phase 94 | Pending |
 | CNDL-03 | Phase 94 | Pending |
