@@ -20,15 +20,15 @@ progress:
 See: .planning/PROJECT.md (updated 2026-02-27)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** Phase 72 — Input Polish
+**Current focus:** Phase 73 — Textarea Polish
 
 ## Current Position
 
 **Milestone:** v8.0 Design System Polish — IN PROGRESS
-**Phase:** 72 of 87 (Input Polish) — COMPLETE
-**Plan:** 3 of 3 in Phase 72 — COMPLETE
-**Status:** Milestone complete
-**Last activity:** 2026-02-28 — Phase 72-03 complete (input SKILL.md expanded CSS tokens from 7 to 16, Behavior Notes section added)
+**Phase:** 73 of 87 (Textarea Polish) — COMPLETE
+**Plan:** 3 of 3 in Phase 73 — COMPLETE
+**Status:** Milestone in progress
+**Last activity:** 2026-02-28 — Phase 73-03 complete (textarea SKILL.md expanded CSS tokens from 7 to 16, Behavior Notes section added)
 
 **Progress:**
 [██████████] 100%
@@ -73,7 +73,9 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 - Phase 72-01: Input dark mode governed by semantic .dark overrides — hardcoded .dark --ui-input-* declarations removed; double-fallback cascade in :root is sufficient (same pattern as Phase 70-01 and Phase 71-01)
 - Phase 72-02: Expanded inputCSSVars in InputPage.tsx from 7 to 16 entries — added layout, typography, spacing, disabled state tokens; updated default values to match tailwind.css :root
 - Phase 72-03: Input SKILL.md CSS tokens expanded from 7 to 16 entries (added layout, typography, spacing, disabled-state tokens); Behavior Notes section added with 8 entries
+- Phase 73-01: Textarea dark mode governed by semantic .dark overrides — hardcoded .dark --ui-textarea-* declarations removed; double-fallback cascade in :root is sufficient (same pattern as Phase 70-01, 71-01, 72-01)
 - Phase 73-02: Textarea docs CSS token table expanded from 7 to 16 entries — structural tokens use exact rem/px values, color tokens use var() references (same pattern as Phase 72-02)
+- Phase 73-03: Textarea SKILL.md CSS tokens expanded from 7 to 16 entries; Behavior Notes section added with 8 entries; focus ring noted as applied to textarea:focus directly (not container :focus-within)
 
 ### Architecture Notes
 
@@ -116,4 +118,4 @@ Execute next phase after Phase 73-textarea (all 3 plans complete).
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-02-28 — Phase 73-02 complete (Textarea CSS docs expanded from 7 to 16 token entries)*
+*Last updated: 2026-02-28 — Phase 73-03 complete (Textarea SKILL.md expanded from 7 to 16 CSS tokens, Behavior Notes added)*
