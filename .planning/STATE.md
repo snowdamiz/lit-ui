@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Design System Polish
 status: completed
-last_updated: "2026-02-28T04:01:19.345Z"
+last_updated: "2026-02-28T04:36:22.473Z"
 last_activity: 2026-02-28 — Phase 75-03 complete (checkbox SKILL.md CSS tokens expanded from 12 to 21 entries, event name fixed from change to ui-change, Behavior Notes section added with 9 entries)
 progress:
-  total_phases: 71
-  completed_phases: 71
-  total_plans: 252
-  completed_plans: 252
+  total_phases: 72
+  completed_phases: 72
+  total_plans: 255
+  completed_plans: 255
   percent: 100
 ---
 
@@ -20,15 +20,15 @@ progress:
 See: .planning/PROJECT.md (updated 2026-02-27)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** Phase 75 — Checkbox Polish
+**Current focus:** Phase 76 — Radio Polish
 
 ## Current Position
 
 **Milestone:** v8.0 Design System Polish — IN PROGRESS
-**Phase:** 75 of 87 (Checkbox Polish) — COMPLETE
-**Plan:** 3 of 3 in Phase 75 — COMPLETE
-**Status:** Milestone complete
-**Last activity:** 2026-02-28 — Phase 75-03 complete (checkbox SKILL.md CSS tokens expanded from 12 to 21 entries, event name fixed from change to ui-change, Behavior Notes section added with 9 entries)
+**Phase:** 76 of 87 (Radio Polish) — IN PROGRESS
+**Plan:** 2 of 3 in Phase 76 — COMPLETE
+**Status:** In progress
+**Last activity:** 2026-02-28 — Phase 76-02 complete (Radio docs CSS token table expanded from 10 to 20 entries, double-fallback var() form applied to all color tokens)
 
 **Progress:**
 [██████████] 100%
@@ -59,6 +59,9 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 | Phase 75-checkbox P01 | 1min | 1 tasks | 1 files |
 | Phase 75-checkbox P02 | 1min | 1 tasks | 1 files |
 | Phase 75-checkbox P03 | 1min | 1 tasks | 1 files |
+| Phase 76-radio P01 | 1min | 1 tasks | 1 files |
+| Phase 76-radio P02 | 1min | 1 tasks | 1 files |
+| Phase 76-radio P03 | 1min | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -87,6 +90,7 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 - Phase 75-01: Checkbox dark mode governed by semantic .dark overrides — 7 hardcoded .dark --ui-checkbox-* declarations removed; double-fallback cascade in :root is sufficient (same pattern as Phase 70-01, 71-01, 72-01, 73-01, 74-01); --ui-checkbox-check-color kept as dark mode exception (white :root value cannot cascade to dark)
 - Phase 75-02: Checkbox docs CSS token table expanded from 12 to 21 entries — added size (sm/md/lg), border-width, font-size (sm/md/lg), indeterminate state tokens; corrected check-color default to 'white' (not var(--color-primary-foreground)); corrected radius default to '0.25rem' (not var(--radius-sm)); updated all color token defaults to double-fallback var() form matching tailwind.css :root (same pattern as Phase 72-02, 73-02, 74-02)
 - Phase 75-03: Checkbox SKILL.md CSS tokens expanded from 12 to 21 entries; check-color default corrected to white (was var(--color-primary-foreground)); radius default corrected to 0.25rem (was var(--radius-sm)); Events table event name corrected from change to ui-change; lui-checkbox-group ui-change event added; Behavior Notes section added with 9 entries (same pattern as Phase 70-03, 71-03, 72-03, 73-03, 74-03)
+- Phase 76-02: Radio docs CSS token table expanded from 10 to 20 entries — added size (sm/md/lg), dot-size (sm/md/lg), font-size (sm/md/lg), border-error tokens; updated all color token defaults to double-fallback var() form matching tailwind.css :root (same pattern as Phase 72-02, 73-02, 74-02, 75-02)
 
 ### Architecture Notes
 
@@ -117,16 +121,14 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 ## Session Continuity
 
 ### Last Session
-- Phase 75-01: Checkbox dark mode polished — removed 7 hardcoded oklch overrides from .dark block; kept --ui-checkbox-check-color (same pattern as Phase 74-01)
-- Phase 75-02: Checkbox docs CSS token table expanded from 12 to 21 entries, corrected defaults to match tailwind.css :root exactly
-- Phase 75-03: Checkbox SKILL.md expanded from 12 to 21 CSS tokens, event name fixed (change -> ui-change), Behavior Notes section added with 9 entries
+- Phase 76-02: Radio docs CSS token table expanded from 10 to 20 entries, corrected all color defaults to double-fallback var() form matching tailwind.css :root exactly
 
 ### Next Actions
-Execute next phase after Phase 75-checkbox (all 3 plans complete). Phase 75 is fully complete.
+Execute Phase 76-03: Radio SKILL.md CSS token expansion.
 
 ### Open Questions
 *None.*
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-02-28 — Phase 75-03 complete (Checkbox SKILL.md expanded from 12 to 21 CSS tokens, event name fixed, Behavior Notes section added)*
+*Last updated: 2026-02-28 — Phase 76-02 complete (Radio docs CSS token table expanded from 10 to 20 entries, double-fallback var() form applied to all color tokens)*

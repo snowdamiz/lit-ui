@@ -52,7 +52,7 @@ Requirements for the Design System Polish milestone. Each component phase maps t
 ### Radio
 
 - [ ] **RAD-01**: Radio default styles match the v8.0 monochrome theme
-- [ ] **RAD-02**: Radio docs page is accurate and up-to-date
+- [x] **RAD-02**: Radio docs page is accurate and up-to-date
 - [ ] **RAD-03**: `skill/skills/radio` skill file is accurate and up-to-date
 
 ### Switch
@@ -160,7 +160,7 @@ Requirements for the Design System Polish milestone. Each component phase maps t
 | CHK-02 | Phase 75 | Complete |
 | CHK-03 | Phase 75 | Complete |
 | RAD-01 | Phase 76 | Pending |
-| RAD-02 | Phase 76 | Pending |
+| RAD-02 | Phase 76 | Complete |
 | RAD-03 | Phase 76 | Pending |
 | SWT-01 | Phase 77 | Pending |
 | SWT-02 | Phase 77 | Pending |
