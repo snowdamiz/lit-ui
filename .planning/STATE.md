@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Design System Polish
 status: completed
-last_updated: "2026-02-28T05:01:19.645Z"
+last_updated: "2026-02-28T05:25:03.411Z"
 last_activity: "2026-02-28 — Phase 77-03 complete (Switch SKILL.md — CSS tokens expanded 12→26, event corrected to ui-change with value: string | null, Behavior Notes added with 10 entries)"
 progress:
-  total_phases: 73
+  total_phases: 74
   completed_phases: 73
-  total_plans: 258
-  completed_plans: 258
-  percent: 100
+  total_plans: 261
+  completed_plans: 259
+  percent: 99
 ---
 
 # Project State: LitUI
@@ -20,18 +20,18 @@ progress:
 See: .planning/PROJECT.md (updated 2026-02-27)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** Phase 77 — Switch Polish
+**Current focus:** Phase 78 — Calendar Polish
 
 ## Current Position
 
 **Milestone:** v8.0 Design System Polish — IN PROGRESS
-**Phase:** 77 of 87 (Switch Polish) — IN PROGRESS
-**Plan:** 3 of 3 in Phase 77 — COMPLETE
-**Status:** Milestone complete
-**Last activity:** 2026-02-28 — Phase 77-03 complete (Switch SKILL.md — CSS tokens expanded 12→26, event corrected to ui-change with value: string | null, Behavior Notes added with 10 entries)
+**Phase:** 78 of 87 (Calendar Polish) — IN PROGRESS
+**Plan:** 1 of 3 in Phase 78 — COMPLETE
+**Status:** In progress
+**Last activity:** 2026-02-28 — Phase 78-01 complete (Calendar dark mode — 10 hardcoded .dark --ui-calendar-* declarations removed; 2 tooltip tokens added to :root)
 
 **Progress:**
-[██████████] 100%
+[██████████] 99%
 Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 
 ## Performance Metrics
@@ -63,6 +63,7 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 | Phase 77-switch P01 | 1min | 1 tasks | 1 files |
 | Phase 77-switch P03 | 1min | 1 tasks | 1 files |
 | Phase 77-switch P02 | 1min | 1 tasks | 1 files |
+| Phase 78-calendar P01 | 1min | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -96,6 +97,8 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 - Phase 77-01: Switch dark mode governed by semantic .dark overrides — 6 hardcoded .dark --ui-switch-* declarations removed; --ui-switch-thumb-bg kept as dark mode exception (white :root value cannot cascade to dark)
 - Phase 77-02: Switch docs CSS token table expanded from 12 to 26 entries — all tokens from tailwind.css :root switch block documented with double-fallback var() form for color defaults; thumb-bg remains 'white' (hardcoded in tailwind.css, same exception as dark mode)
 - Phase 77-03: Switch SKILL.md CSS tokens expanded from 12 to 26 entries (all 24 tailwind.css :root switch tokens); event name corrected to ui-change with value: string | null detail; Behavior Notes section added with 10 entries
+- Phase 78-01: Calendar dark mode governed by semantic .dark overrides — all 10 hardcoded .dark --ui-calendar-* declarations removed; double-fallback cascade in :root is sufficient (same pattern as Phase 70-01, 71-01, 72-01, 73-01, 74-01, 75-01, 76-01, 77-01)
+- Phase 78-01: --ui-calendar-tooltip-bg and --ui-calendar-tooltip-text added to :root — used in calendar.ts but previously undeclared; now cascade through .dark --color-foreground and --color-background
 
 ### Architecture Notes
 
@@ -126,14 +129,14 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 ## Session Continuity
 
 ### Last Session
-- Phase 77-03: Switch SKILL.md polished — CSS tokens expanded from 12 to 26 entries (all 24 tailwind.css :root tokens), event corrected to ui-change with value: string | null, Behavior Notes added with 10 entries
+- Phase 78-01: Calendar dark mode token cleanup — 10 hardcoded .dark --ui-calendar-* declarations removed; 2 tooltip tokens (--ui-calendar-tooltip-bg, --ui-calendar-tooltip-text) added to :root; total calendar tokens now 21 (all in :root)
 
 ### Next Actions
-Execute Phase 78 plans.
+Execute Phase 78 plans (78-02 docs, 78-03 skill).
 
 ### Open Questions
 *None.*
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-02-28 — Phase 77-03 complete (Switch SKILL.md — CSS tokens expanded 12→26, event corrected to ui-change, Behavior Notes added with 10 entries)*
+*Last updated: 2026-02-28 — Phase 78-01 complete (Calendar dark mode — 10 .dark --ui-calendar-* declarations removed; 2 tooltip tokens added to :root)*
