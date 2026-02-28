@@ -137,12 +137,12 @@ Plans:
   1. Select (single, multi, combobox) renders with correct monochrome default styles matching the token spec
   2. The Select docs page reflects the actual component API and examples without stale content
   3. `skill/skills/select` accurately describes the component so Claude can implement it correctly
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 74-01: Polish Select CSS defaults to match monochrome theme
-- [ ] 74-02: Update Select docs page for accuracy
-- [ ] 74-03: Update `skill/skills/select` skill file
+- [ ] 74-01-PLAN.md — Remove hardcoded select dark mode tokens from .dark block (SEL-01)
+- [ ] 74-02-PLAN.md — Expand SelectPage.tsx CSS vars table to full token set and remove phase badges (SEL-02)
+- [ ] 74-03-PLAN.md — Rewrite skill/skills/select/SKILL.md with Behavior Notes and expanded tokens (SEL-03)
 
 ### Phase 75: Checkbox
 **Goal**: Checkbox component looks and feels like shadcn Checkbox out of the box, with accurate docs and skill file
