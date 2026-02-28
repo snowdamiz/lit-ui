@@ -65,7 +65,7 @@ Each task was committed atomically:
 
 1. **Task 1: Remove hardcoded dialog tokens from .dark block** - `0278291` (fix)
 
-**Plan metadata:** (docs commit — recorded after summary)
+**Plan metadata:** `901e8c3` (docs: complete plan)
 
 ## Files Created/Modified
 
@@ -92,6 +92,12 @@ None — no external service configuration required.
 - Dialog CSS token inheritance is clean and correct for all sizes
 - Ready for Phase 71-02 (dialog docs) and Phase 71-03 (dialog skill)
 - The pre-existing `DialogPage.tsx` changes (prefix fix + expanded vars table) may need to be committed as part of Phase 71-02
+
+## Self-Check: PASSED
+
+- FOUND: `packages/core/src/styles/tailwind.css`
+- FOUND: commit `0278291` (task commit)
+- FOUND: commit `901e8c3` (docs commit)
 
 ---
 *Phase: 71-dialog*
