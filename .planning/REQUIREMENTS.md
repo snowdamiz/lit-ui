@@ -43,9 +43,9 @@ Requirements for the v9.0 Charts System milestone. Each maps to a roadmap phase.
 
 ### Bar Chart
 
-- [ ] **BAR-01**: Developer can render grouped, stacked, and horizontal bar charts
-- [ ] **BAR-02**: Developer can display value labels on bars and enable per-bar color mode
-- [ ] **BAR-03**: Developer can stream data updates into a bar chart via `pushData()` with circular buffer
+- [x] **BAR-01**: Developer can render grouped, stacked, and horizontal bar charts
+- [x] **BAR-02**: Developer can display value labels on bars and enable per-bar color mode
+- [x] **BAR-03**: Developer can stream data updates into a bar chart via `pushData()` with circular buffer
 
 ### Pie / Donut Chart
 
@@ -139,9 +139,9 @@ Which phases cover which requirements. Populated during roadmap creation.
 | LINE-03 | Phase 89 | Complete |
 | AREA-01 | Phase 89 | Complete |
 | AREA-02 | Phase 89 | Complete |
-| BAR-01 | Phase 90 | Pending |
-| BAR-02 | Phase 90 | Pending |
-| BAR-03 | Phase 90 | Pending |
+| BAR-01 | Phase 90 | Complete |
+| BAR-02 | Phase 90 | Complete |
+| BAR-03 | Phase 90 | Complete |
 | PIE-01 | Phase 91 | Pending |
 | PIE-02 | Phase 91 | Pending |
 | PIE-03 | Phase 91 | Pending |

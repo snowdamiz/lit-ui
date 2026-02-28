@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Charts System
 status: unknown
-last_updated: "2026-02-28T20:49:07.485Z"
+last_updated: "2026-02-28T21:11:46.530Z"
 progress:
-  total_phases: 66
+  total_phases: 67
   completed_phases: 66
-  total_plans: 238
-  completed_plans: 238
+  total_plans: 240
+  completed_plans: 239
 ---
 
 # Project State: LitUI
@@ -22,12 +22,12 @@ See: .planning/PROJECT.md (updated 2026-02-28)
 
 ## Current Position
 
-Phase: 89 of 96 (Line Chart + Area Chart — COMPLETE)
-Plan: 2 of 2 in current phase (89-02 complete)
-Status: Phase 89 complete
-Last activity: 2026-02-28 — Completed 89-02: LuiAreaChart with smooth/stacked/zoom props and full @lit-ui/charts public API exports
+Phase: 90 of 96 (Bar Chart — IN PROGRESS)
+Plan: 1 of 2 in current phase (90-01 complete)
+Status: Phase 90 in progress — 90-01 complete, 90-02 remaining
+Last activity: 2026-02-28 — Completed 90-01: bar-option-builder.ts + bar-registry.ts (BAR-01/02/03 foundation)
 
-Progress: [██░░░░░░░░] 22% (v9.0 milestone, 9 phases, 2 of 9 complete)
+Progress: [██░░░░░░░░] 22% (v9.0 milestone, 9 phases, 3 of 9 complete)
 
 ## Accumulated Context
 
@@ -54,6 +54,10 @@ Progress: [██░░░░░░░░] 22% (v9.0 milestone, 9 phases, 2 of 9
 - 89-01: stack uses string 'total' not boolean — ECharts requires string group name to activate stacking
 - 89-02: LuiAreaChart reuses registerLineModules() — ECharts has no separate AreaChart module; areaStyle is a line series property
 - 89-02: stacked prop Boolean on component but translates to string 'total' in buildLineOption() — consistent with Plan 01 decision
+- 90-01: bar-option-builder stack uses string 'total' not boolean — consistent with Phase 89 pattern
+- 90-01: label position adapts to orientation: 'top' vertical, 'right' horizontal — avoids clipping at bar boundaries
+- 90-01: colorBy: 'data' uses ThemeBridge palette automatically; no manual color lookup needed in bar charts
+- 90-01: categories field optional in BarOptionProps — omit for ECharts integer index defaults
 
 ### Architecture Notes
 
@@ -92,21 +96,22 @@ Progress: [██░░░░░░░░] 22% (v9.0 milestone, 9 phases, 2 of 9
 | 88 | 03 | 4min | 2 | 2 |
 | 89 | 01 | 2min | 2 | 3 |
 | 89 | 02 | 1min | 2 | 2 |
+| 90 | 01 | 1min | 2 | 2 |
 
 ## Session Continuity
 
 ### Last Session
-- 2026-02-28: Completed 89-02 — LuiAreaChart, updated index.ts with full Phase 89 API exports (AREA-01/02 done)
+- 2026-02-28: Completed 90-01 — bar-option-builder.ts (buildBarOption, BarChartSeries, BarOptionProps) + bar-registry.ts (registerBarModules)
 
 ### Stopped At
-Completed 89-02-PLAN.md
+Completed 90-01-PLAN.md
 
 ### Next Actions
-Phase 89 complete. Continue to Phase 90 — next chart type following the per-chart registry + option-builder pattern.
+Continue Phase 90 — Plan 02: LuiBarChart Lit component using bar-option-builder.ts and bar-registry.ts.
 
 ### Open Questions
 *None.*
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-02-28 — 89-02 complete, LuiAreaChart + index.ts exports, Phase 89 done (LINE-01/02/03 + AREA-01/02)*
+*Last updated: 2026-02-28 — 90-01 complete, bar-option-builder.ts + bar-registry.ts, Phase 90 in progress (BAR-01/02/03 foundation)*
