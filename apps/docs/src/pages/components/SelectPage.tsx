@@ -194,13 +194,41 @@ const optionSlots: SlotDef[] = [
 // CSS Custom Properties data
 type CSSVarDef = { name: string; default: string; description: string };
 const selectCSSVars: CSSVarDef[] = [
-  { name: '--ui-select-radius', default: 'var(--radius-md)', description: 'Border radius of the select trigger.' },
-  { name: '--ui-select-border', default: 'var(--color-border)', description: 'Border color.' },
-  { name: '--ui-select-border-focus', default: 'var(--color-ring)', description: 'Border color on focus.' },
-  { name: '--ui-select-bg', default: 'var(--color-background)', description: 'Background color.' },
-  { name: '--ui-select-text', default: 'var(--color-foreground)', description: 'Text color.' },
-  { name: '--ui-select-placeholder', default: 'var(--color-muted-foreground)', description: 'Placeholder text color.' },
-  { name: '--ui-select-dropdown-shadow', default: 'var(--shadow-md)', description: 'Dropdown shadow.' },
+  // Layout
+  { name: '--ui-select-radius', default: '0.375rem', description: 'Border radius of the trigger and dropdown.' },
+  { name: '--ui-select-border-width', default: '1px', description: 'Border width of the trigger.' },
+  { name: '--ui-select-transition', default: '150ms', description: 'Transition duration for border color changes.' },
+  { name: '--ui-select-dropdown-shadow', default: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)', description: 'Box shadow for the dropdown.' },
+  { name: '--ui-select-dropdown-max-height', default: '15rem', description: 'Maximum height of the dropdown before scroll.' },
+  // Typography
+  { name: '--ui-select-font-size-sm', default: '0.875rem', description: 'Font size for the sm size variant.' },
+  { name: '--ui-select-font-size-md', default: '1rem', description: 'Font size for the md size variant.' },
+  { name: '--ui-select-font-size-lg', default: '1.125rem', description: 'Font size for the lg size variant.' },
+  // Spacing (md size)
+  { name: '--ui-select-padding-x-md', default: '1rem', description: 'Horizontal padding for the md size variant.' },
+  { name: '--ui-select-padding-y-md', default: '0.5rem', description: 'Vertical padding for the md size variant.' },
+  // Trigger colors
+  { name: '--ui-select-bg', default: 'var(--color-background, white)', description: 'Trigger background color.' },
+  { name: '--ui-select-text', default: 'var(--color-foreground, var(--ui-color-foreground))', description: 'Trigger text color.' },
+  { name: '--ui-select-border', default: 'var(--color-border, var(--ui-color-border))', description: 'Trigger border color.' },
+  { name: '--ui-select-placeholder', default: 'var(--color-muted-foreground, var(--ui-color-muted-foreground))', description: 'Placeholder text color.' },
+  { name: '--ui-select-border-focus', default: 'var(--color-ring, var(--ui-color-ring))', description: 'Trigger border color on focus.' },
+  { name: '--ui-select-ring', default: 'var(--color-ring, var(--ui-color-ring))', description: 'Focus ring outline color.' },
+  { name: '--ui-select-bg-disabled', default: 'var(--color-muted, var(--ui-color-muted))', description: 'Trigger background when disabled.' },
+  { name: '--ui-select-text-disabled', default: 'var(--color-muted-foreground, var(--ui-color-muted-foreground))', description: 'Trigger text color when disabled.' },
+  { name: '--ui-select-border-error', default: 'var(--color-destructive, var(--ui-color-destructive))', description: 'Trigger border color in error/validation state.' },
+  // Dropdown colors
+  { name: '--ui-select-dropdown-bg', default: 'var(--color-card, var(--ui-color-card))', description: 'Dropdown background color.' },
+  { name: '--ui-select-dropdown-border', default: 'var(--color-border, var(--ui-color-border))', description: 'Dropdown border color.' },
+  // Option colors
+  { name: '--ui-select-option-bg-hover', default: 'var(--color-accent, var(--ui-color-accent))', description: 'Option background on hover.' },
+  { name: '--ui-select-option-text', default: 'var(--color-foreground, var(--ui-color-foreground))', description: 'Option text color.' },
+  { name: '--ui-select-option-check', default: 'var(--color-primary, var(--ui-color-primary))', description: 'Checkmark icon color on selected option.' },
+  // Multi-select tag tokens
+  { name: '--ui-select-tag-bg', default: 'var(--color-secondary, var(--ui-color-secondary))', description: 'Tag/chip background in multi-select mode.' },
+  { name: '--ui-select-tag-text', default: 'var(--color-secondary-foreground, var(--ui-color-secondary-foreground))', description: 'Tag/chip text color in multi-select mode.' },
+  // Checkbox indicator (multi-select)
+  { name: '--ui-select-checkbox-bg-checked', default: 'var(--color-primary, var(--ui-color-primary))', description: 'Checkbox background when checked in multi-select mode.' },
 ];
 
 // Code examples
@@ -324,7 +352,7 @@ const multiSelectMaxCode = `<lui-select label="Top 3 Colors" multiple maxSelecti
   <lui-option value="purple">Purple</lui-option>
 </lui-select>`;
 
-// Combobox examples (Phase 35)
+// Combobox examples
 const searchableCode = `<lui-select label="Country" searchable placeholder="Search countries...">
   <lui-option value="us">United States</lui-option>
   <lui-option value="ca">Canada</lui-option>
@@ -362,7 +390,7 @@ const searchableMultiCode = `<lui-select label="Skills" searchable multiple plac
   <lui-option value="ruby">Ruby</lui-option>
 </lui-select>`;
 
-// Async examples (Phase 36)
+// Async examples
 const asyncOptionsCode = `// Options can be a Promise - shows loading skeleton while pending
 const options = new Promise(resolve =>
   setTimeout(() => resolve([
@@ -501,7 +529,6 @@ export function SelectPage() {
           <section>
             <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-2">
               Option Groups
-              <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded">Phase 33</span>
             </h3>
             <p className="text-gray-500 dark:text-gray-400 mb-4 text-sm">
               Group related options using <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">lui-option-group</code>. Groups are visually separated and announced by screen readers.
@@ -530,7 +557,6 @@ export function SelectPage() {
           <section>
             <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-2">
               Custom Content with Icons
-              <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded">Phase 33</span>
             </h3>
             <p className="text-gray-500 dark:text-gray-400 mb-4 text-sm">
               Use <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">slot="start"</code> for icons and <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">slot="description"</code> for helper text below the label.
@@ -570,7 +596,6 @@ export function SelectPage() {
           <section>
             <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-2">
               Clearable Select
-              <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded">Phase 33</span>
             </h3>
             <p className="text-gray-500 dark:text-gray-400 mb-4 text-sm">
               Enable the clear button with <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">clearable</code>. Click the X or press Delete/Backspace to clear the selection.
@@ -674,7 +699,6 @@ export function SelectPage() {
               <div>
                 <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
                   Multi-Select
-                  <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded">Phase 34</span>
                 </h2>
                 <p className="text-sm text-gray-500 dark:text-gray-400">Select multiple values with tags, overflow handling, and bulk actions</p>
               </div>
@@ -794,7 +818,6 @@ export function SelectPage() {
               <div>
                 <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
                   Combobox / Searchable
-                  <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 rounded">Phase 35</span>
                 </h2>
                 <p className="text-sm text-gray-500 dark:text-gray-400">Type to filter options with match highlighting and creatable mode</p>
               </div>
@@ -920,7 +943,6 @@ export function SelectPage() {
               <div>
                 <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
                   Async & Performance
-                  <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded">Phase 36</span>
                 </h2>
                 <p className="text-sm text-gray-500 dark:text-gray-400">Promise-based options, async search, and infinite scroll for large datasets</p>
               </div>
