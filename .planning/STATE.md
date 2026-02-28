@@ -2,8 +2,8 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Design System Polish
-status: executing
-last_updated: "2026-02-28T08:15:20.524Z"
+status: completed
+last_updated: "2026-02-28T08:19:08.170Z"
 last_activity: 2026-02-28 — Phase 84-03 complete (Toast SKILL.md CSS token defaults corrected to 21 entries with double-fallback var() colors, two-layer shadow, z-index 55; --ui-toast-padding added; all 12 variant oklch tokens filled; Behavior Notes section with 13 entries added)
 progress:
   total_phases: 80
@@ -27,7 +27,7 @@ See: .planning/PROJECT.md (updated 2026-02-27)
 **Milestone:** v8.0 Design System Polish — IN PROGRESS
 **Phase:** 84 of 87 (Toast Polish) — IN PROGRESS
 **Plan:** 3 of 3 in Phase 84 — COMPLETE
-**Status:** In progress
+**Status:** Milestone complete
 **Last activity:** 2026-02-28 — Phase 84-03 complete (Toast SKILL.md CSS token defaults corrected to 21 entries with double-fallback var() colors, two-layer shadow, z-index 55; --ui-toast-padding added; all 12 variant oklch tokens filled; Behavior Notes section with 13 entries added)
 
 **Progress:**
