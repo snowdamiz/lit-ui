@@ -95,7 +95,7 @@ Requirements for the Design System Polish milestone. Each component phase maps t
 
 - [x] **POP-01**: Popover default styles match the v8.0 monochrome theme
 - [x] **POP-02**: Popover docs page is accurate and up-to-date
-- [ ] **POP-03**: `skill/skills/popover` skill file is accurate and up-to-date
+- [x] **POP-03**: `skill/skills/popover` skill file is accurate and up-to-date
 
 ### Toast
 
@@ -182,7 +182,7 @@ Requirements for the Design System Polish milestone. Each component phase maps t
 | TTP-03 | Phase 82 | Complete |
 | POP-01 | Phase 83 | Complete |
 | POP-02 | Phase 83 | Complete |
-| POP-03 | Phase 83 | Pending |
+| POP-03 | Phase 83 | Complete |
 | TST-01 | Phase 84 | Pending |
 | TST-02 | Phase 84 | Pending |
 | TST-03 | Phase 84 | Pending |

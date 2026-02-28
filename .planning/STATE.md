@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Design System Polish
 status: executing
-last_updated: "2026-02-28T07:51:18.506Z"
-last_activity: 2026-02-28 — Phase 83-01 complete (Popover dark mode hardcoded .dark --ui-popover-* declarations removed; semantic cascade via .dark --color-card now sufficient)
+last_updated: "2026-02-28T07:54:06.959Z"
+last_activity: 2026-02-28 — Phase 83-02 complete (popoverCSSVars color token defaults corrected to double-fallback var() form; shadow corrected to two-layer 0.08 opacity; cssVarsCode replaced hex literals with semantic token references)
 progress:
   total_phases: 79
-  completed_phases: 78
+  completed_phases: 79
   total_plans: 276
-  completed_plans: 275
+  completed_plans: 276
   percent: 100
 ---
 
@@ -25,10 +25,10 @@ See: .planning/PROJECT.md (updated 2026-02-27)
 ## Current Position
 
 **Milestone:** v8.0 Design System Polish — IN PROGRESS
-**Phase:** 83 of 87 (Popover Polish) — IN PROGRESS
-**Plan:** 2 of 3 in Phase 83 — COMPLETE
+**Phase:** 83 of 87 (Popover Polish) — COMPLETE
+**Plan:** 3 of 3 in Phase 83 — COMPLETE
 **Status:** In progress
-**Last activity:** 2026-02-28 — Phase 83-02 complete (popoverCSSVars color token defaults corrected to double-fallback var() form; shadow corrected to two-layer 0.08 opacity; cssVarsCode replaced hex literals with semantic token references)
+**Last activity:** 2026-02-28 — Phase 83-03 complete (Popover SKILL.md CSS token defaults corrected to double-fallback var() form; shadow two-layer 0.08 opacity; z-index corrected to 45; Behavior Notes section added with 13 entries)
 
 **Progress:**
 [██████████] 100%
@@ -80,6 +80,7 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 | Phase 82-tooltip P03 | 1min | 1 tasks | 1 files |
 | Phase 83-popover P01 | 1min | 1 tasks | 1 files |
 | Phase 83-popover P02 | 1min | 1 tasks | 1 files |
+| Phase 83-popover P03 | 1min | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -131,6 +132,7 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 - Phase 82-03: Tooltip SKILL.md CSS token defaults corrected — --ui-tooltip-bg and --ui-tooltip-text updated to double-fallback var() form; --ui-tooltip-shadow corrected from stale single-layer to two-layer value matching tailwind.css :root; Behavior Notes section added with 12 entries
 - Phase 83-01: Popover dark mode governed by semantic .dark token cascade — 3 hardcoded .dark --ui-popover-* declarations removed; double-fallback cascade in :root is sufficient (same pattern as Phases 70-01 through 82-01)
 - Phase 83-02: popoverCSSVars color token defaults corrected to double-fallback var() form (bg, text, border); shadow corrected from stale single-layer 0.1 opacity to two-layer 0.08 opacity matching tailwind.css :root; cssVarsCode example replaced hex literals (white, #1e293b, #e2e8f0) with semantic token references
+- Phase 83-03: Popover SKILL.md CSS token defaults corrected — bg/text/border use double-fallback var() form; shadow corrected to two-layer 0.08 opacity value; z-index corrected from stale 50 to actual tailwind.css :root value of 45; Behavior Notes section added with 13 entries (trigger model, light dismiss, Escape, Floating UI, arrow, focus management, modal mode, controlled mode, nested popovers, match-trigger-width, dark mode, SSR safety, cleanup)
 
 ### Architecture Notes
 
@@ -161,14 +163,14 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 ## Session Continuity
 
 ### Last Session
-- Phase 83-02: Popover docs CSS token defaults corrected — 4 stale entries (bg, text, border, shadow) updated in popoverCSSVars to match tailwind.css :root exactly; cssVarsCode hex literals replaced with semantic token references
+- Phase 83-03: Popover SKILL.md CSS token defaults corrected — 4 stale entries (bg, text, border, shadow) updated; z-index corrected from 50 to 45; Behavior Notes section added with 13 entries
 
 ### Next Actions
-Execute Phase 83-03 (popover SKILL.md update).
+Execute Phase 84 (next phase).
 
 ### Open Questions
 *None.*
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-02-28 — Phase 83-02 complete (popoverCSSVars corrected to double-fallback var() form; cssVarsCode updated to semantic token references)*
+*Last updated: 2026-02-28 — Phase 83-03 complete (Popover SKILL.md CSS token defaults corrected; z-index corrected to 45; Behavior Notes section added with 13 entries)*
