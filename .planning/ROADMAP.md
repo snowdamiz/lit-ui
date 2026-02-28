@@ -75,8 +75,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 89-01-PLAN.md — Shared option builder + line-registry + LuiLineChart component
-- [ ] 89-02-PLAN.md — LuiAreaChart component + index.ts public API exports
+- [x] 89-01-PLAN.md — Shared option builder + line-registry + LuiLineChart component
+- [x] 89-02-PLAN.md — LuiAreaChart component + index.ts public API exports
 
 ### Phase 90: Bar Chart
 **Goal**: Developer can render grouped, stacked, and horizontal bar charts with value labels and streaming data updates via pushData()
@@ -86,7 +86,11 @@ Plans:
   1. Developer can set `stacked` prop and see series bars stacked on a shared axis; set `horizontal` prop and see the axis orientation flip
   2. Developer can set `show-labels` and see value labels rendered on each bar; set `color-by-data` and see each bar receive a distinct palette color
   3. Developer can call `pushData(point)` on a bar chart and see the chart update via the circular buffer without full re-initialization
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 90-01-PLAN.md — bar-option-builder.ts (buildBarOption + types) + bar-registry.ts (registerBarModules)
+- [ ] 90-02-PLAN.md — LuiBarChart component + index.ts public API exports
 
 ### Phase 91: Pie + Donut Chart
 **Goal**: Developer can render pie and donut charts with automatic small-slice merging, configurable donut hole and center label, and streaming data updates
@@ -159,7 +163,7 @@ Plans:
 |-------|-----------|----------------|--------|-----------|
 | 88. Package Foundation + BaseChartElement | 3/3 | Complete    | 2026-02-28 | - |
 | 89. Line Chart + Area Chart | 2/2 | Complete    | 2026-02-28 | - |
-| 90. Bar Chart | v9.0 | 0/TBD | Not started | - |
+| 90. Bar Chart | v9.0 | 0/2 | Not started | - |
 | 91. Pie + Donut Chart | v9.0 | 0/TBD | Not started | - |
 | 92. Scatter + Bubble Chart with WebGL | v9.0 | 0/TBD | Not started | - |
 | 93. Heatmap Chart | v9.0 | 0/TBD | Not started | - |
