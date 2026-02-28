@@ -85,13 +85,13 @@ const tooltipParts: CSSPartDef[] = [
 // CSS Custom Properties data
 type CSSVarDef = { name: string; default: string; description: string };
 const tooltipCSSVars: CSSVarDef[] = [
-  { name: '--ui-tooltip-bg', default: 'var(--color-foreground)', description: 'Background color of the tooltip.' },
-  { name: '--ui-tooltip-text', default: 'var(--color-background)', description: 'Text color of the tooltip.' },
+  { name: '--ui-tooltip-bg', default: 'var(--color-foreground, var(--ui-color-foreground))', description: 'Background color of the tooltip.' },
+  { name: '--ui-tooltip-text', default: 'var(--color-background, white)', description: 'Text color of the tooltip.' },
   { name: '--ui-tooltip-radius', default: '0.375rem', description: 'Border radius of the tooltip.' },
   { name: '--ui-tooltip-padding-x', default: '0.75rem', description: 'Horizontal padding of the tooltip.' },
   { name: '--ui-tooltip-padding-y', default: '0.375rem', description: 'Vertical padding of the tooltip.' },
   { name: '--ui-tooltip-font-size', default: '0.875rem', description: 'Font size of the tooltip text.' },
-  { name: '--ui-tooltip-shadow', default: '0 4px 6px -1px rgb(0 0 0 / 0.1)', description: 'Box shadow of the tooltip.' },
+  { name: '--ui-tooltip-shadow', default: '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)', description: 'Box shadow of the tooltip.' },
   { name: '--ui-tooltip-arrow-size', default: '8px', description: 'Size of the arrow indicator.' },
   { name: '--ui-tooltip-max-width', default: '20rem', description: 'Maximum width of the tooltip.' },
   { name: '--ui-tooltip-z-index', default: '50', description: 'Z-index of the tooltip panel.' },
@@ -218,8 +218,8 @@ const noArrowTooltipCode = {
 // CSS Custom Properties example code
 const cssVarsCode = `/* Global override - affects all tooltips */
 :root {
-  --ui-tooltip-bg: #1e293b;
-  --ui-tooltip-text: #f8fafc;
+  --ui-tooltip-bg: var(--color-foreground, var(--ui-color-foreground));
+  --ui-tooltip-text: var(--color-background, white);
   --ui-tooltip-radius: 0.5rem;
   --ui-tooltip-padding-x: 1rem;
   --ui-tooltip-padding-y: 0.5rem;
