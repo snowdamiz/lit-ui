@@ -107,7 +107,7 @@ Requirements for the Design System Polish milestone. Each component phase maps t
 
 - [x] **ACC-01**: Accordion default styles match the v8.0 monochrome theme
 - [x] **ACC-02**: Accordion docs page is accurate and up-to-date
-- [ ] **ACC-03**: `skill/skills/accordion` skill file is accurate and up-to-date
+- [x] **ACC-03**: `skill/skills/accordion` skill file is accurate and up-to-date
 
 ### Tabs
 
@@ -188,7 +188,7 @@ Requirements for the Design System Polish milestone. Each component phase maps t
 | TST-03 | Phase 84 | Complete |
 | ACC-01 | Phase 85 | Complete |
 | ACC-02 | Phase 85 | Complete |
-| ACC-03 | Phase 85 | Pending |
+| ACC-03 | Phase 85 | Complete |
 | TAB-01 | Phase 86 | Pending |
 | TAB-02 | Phase 86 | Pending |
 | TAB-03 | Phase 86 | Pending |
