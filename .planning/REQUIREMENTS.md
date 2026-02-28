@@ -10,25 +10,25 @@ Requirements for the v9.0 Charts System milestone. Each maps to a roadmap phase.
 ### Package Infrastructure
 
 - [x] **INFRA-01**: Developer can install `@lit-ui/charts` as an opt-in package separate from other LitUI packages
-- [ ] **INFRA-02**: Developer can use chart components in SSR frameworks (Next.js, Astro) without `window`/`document` crash
-- [ ] **INFRA-03**: Developer can enable WebGL rendering via `enable-gl` attribute with automatic Canvas fallback when WebGL is unavailable
+- [x] **INFRA-02**: Developer can use chart components in SSR frameworks (Next.js, Astro) without `window`/`document` crash
+- [x] **INFRA-03**: Developer can enable WebGL rendering via `enable-gl` attribute with automatic Canvas fallback when WebGL is unavailable
 - [x] **INFRA-04**: Developer can apply dark mode to charts via the `.dark` class (same pattern as all other LitUI components)
 - [x] **INFRA-05**: Developer can customize chart appearance via `--ui-chart-*` CSS custom properties (series palette, grid, axis, tooltip, legend)
 
 ### Shared Chart Behaviors
 
-- [ ] **CHART-01**: Developer can pass chart data via a `data` property on every chart component
-- [ ] **CHART-02**: Developer can pass a raw ECharts `option` object to override or extend any chart behavior
-- [ ] **CHART-03**: Developer can access the underlying ECharts instance via a `getChart()` method for event binding and advanced customization
-- [ ] **CHART-04**: Developer can toggle a loading skeleton state on any chart via a `loading` property
-- [ ] **CHART-05**: Charts automatically resize when their container dimensions change (ResizeObserver, not `window.resize`)
+- [x] **CHART-01**: Developer can pass chart data via a `data` property on every chart component
+- [x] **CHART-02**: Developer can pass a raw ECharts `option` object to override or extend any chart behavior
+- [x] **CHART-03**: Developer can access the underlying ECharts instance via a `getChart()` method for event binding and advanced customization
+- [x] **CHART-04**: Developer can toggle a loading skeleton state on any chart via a `loading` property
+- [x] **CHART-05**: Charts automatically resize when their container dimensions change (ResizeObserver, not `window.resize`)
 
 ### Streaming Infrastructure
 
-- [ ] **STRM-01**: Developer can stream data into any chart via a `pushData(point)` method
-- [ ] **STRM-02**: Developer can configure the circular buffer size via a `maxPoints` property (default 1000)
-- [ ] **STRM-03**: Multiple `pushData()` calls within a single animation frame are batched into one render via `requestAnimationFrame`
-- [ ] **STRM-04**: Line and Area charts use ECharts native `appendData` path for streaming; all other chart types use circular buffer + `setOption({ lazyUpdate: true })`
+- [x] **STRM-01**: Developer can stream data into any chart via a `pushData(point)` method
+- [x] **STRM-02**: Developer can configure the circular buffer size via a `maxPoints` property (default 1000)
+- [x] **STRM-03**: Multiple `pushData()` calls within a single animation frame are batched into one render via `requestAnimationFrame`
+- [x] **STRM-04**: Line and Area charts use ECharts native `appendData` path for streaming; all other chart types use circular buffer + `setOption({ lazyUpdate: true })`
 
 ### Line Chart
 
@@ -121,19 +121,19 @@ Which phases cover which requirements. Populated during roadmap creation.
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | INFRA-01 | Phase 88 | Complete |
-| INFRA-02 | Phase 88 | Pending |
-| INFRA-03 | Phase 88 | Pending |
+| INFRA-02 | Phase 88 | Complete |
+| INFRA-03 | Phase 88 | Complete |
 | INFRA-04 | Phase 88 | Complete |
 | INFRA-05 | Phase 88 | Complete |
-| CHART-01 | Phase 88 | Pending |
-| CHART-02 | Phase 88 | Pending |
-| CHART-03 | Phase 88 | Pending |
-| CHART-04 | Phase 88 | Pending |
-| CHART-05 | Phase 88 | Pending |
-| STRM-01 | Phase 88 | Pending |
-| STRM-02 | Phase 88 | Pending |
-| STRM-03 | Phase 88 | Pending |
-| STRM-04 | Phase 88 | Pending |
+| CHART-01 | Phase 88 | Complete |
+| CHART-02 | Phase 88 | Complete |
+| CHART-03 | Phase 88 | Complete |
+| CHART-04 | Phase 88 | Complete |
+| CHART-05 | Phase 88 | Complete |
+| STRM-01 | Phase 88 | Complete |
+| STRM-02 | Phase 88 | Complete |
+| STRM-03 | Phase 88 | Complete |
+| STRM-04 | Phase 88 | Complete |
 | LINE-01 | Phase 89 | Pending |
 | LINE-02 | Phase 89 | Pending |
 | LINE-03 | Phase 89 | Pending |

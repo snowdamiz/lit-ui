@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Charts System
 status: unknown
-last_updated: "2026-02-28T19:44:36.564Z"
+last_updated: "2026-02-28T19:53:10.933Z"
 progress:
   total_phases: 65
-  completed_phases: 64
+  completed_phases: 65
   total_plans: 236
-  completed_plans: 235
+  completed_plans: 236
 ---
 
 # Project State: LitUI
@@ -18,14 +18,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-02-28)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** Phase 88 — Package Foundation + BaseChartElement
+**Current focus:** Phase 88 — Package Foundation + BaseChartElement (COMPLETE)
 
 ## Current Position
 
 Phase: 88 of 96 (Package Foundation + BaseChartElement)
-Plan: 2 of TBD in current phase (88-02 complete)
+Plan: 3 of 3 in current phase (88-03 complete — phase done)
 Status: In progress
-Last activity: 2026-02-28 — Completed 88-02: ThemeBridge CSS token resolver and canvas-core ECharts registration utility
+Last activity: 2026-02-28 — Completed 88-03: BaseChartElement abstract base class with full lifecycle, streaming, WebGL guard, and disposal chain
 
 Progress: [░░░░░░░░░░] 0% (v9.0 milestone, 9 phases)
 
@@ -46,6 +46,9 @@ Progress: [░░░░░░░░░░] 0% (v9.0 milestone, 9 phases)
 - 88-02: buildThemeObject() called at init and on .dark toggle to avoid dispose+reinit flicker
 - 88-02: DataZoomComponent/MarkLine/MarkArea/Toolbox registered in shared canvas-core — avoids per-chart-type re-registration
 - 88-02: buildColorUpdate() provided as cheaper incremental dark mode update path vs full buildThemeObject()
+- 88-03: EChartsOption exported as type alias for EChartsCoreOption — EChartsOption not in echarts/core subpath
+- 88-03: echarts-gl @ts-ignore on dynamic import — type shims deferred to Phase 92
+- 88-03: _streamingMode defaults to 'buffer' in base; concrete appendData-mode charts override
 
 ### Architecture Notes
 
@@ -53,14 +56,14 @@ Progress: [░░░░░░░░░░] 0% (v9.0 milestone, 9 phases)
 - BaseChartElement is highest-leverage Phase 88 deliverable — all 5 critical pitfalls addressed here before any chart is built
 - Per-chart registry files (e.g., line-registry.ts) tree-shake ECharts to ~135KB gzipped vs 400KB for full import
 - packages/charts/ is now a fully compilable workspace package ready for BaseChartElement implementation
+- BaseChartElement (88-03) is complete — all 5 critical pitfalls and 11 requirements implemented; Phases 89-95 extend without re-solving cross-cutting concerns
 
 ### TODOs
 *None.*
 
 ### Blockers/Concerns
 
-- [Phase 88]: Validate static type-only import + dynamic value import interaction with project tsconfig before implementing SSR guard
-- [Phase 92]: echarts-gl 2.0.9 may not ship type definitions as subpath exports — may require declaration shims
+- [Phase 92]: echarts-gl 2.0.9 does not ship type definitions as subpath exports — declaration shims needed (Phase 92 scope)
 
 ### Tech Debt (carried forward)
 - 30 CLI tests need update for CSS variable naming change (--lui-* -> --ui-*)
@@ -81,21 +84,22 @@ Progress: [░░░░░░░░░░] 0% (v9.0 milestone, 9 phases)
 |-------|------|----------|-------|-------|
 | 88 | 01 | 2min | 2 | 6 |
 | 88 | 02 | 2min | 2 | 2 |
+| 88 | 03 | 4min | 2 | 2 |
 
 ## Session Continuity
 
 ### Last Session
-- 2026-02-28: Completed 88-02 — ThemeBridge CSS token resolver and canvas-core ECharts registration utility
+- 2026-02-28: Completed 88-03 — BaseChartElement abstract base class (Phase 88 complete)
 
 ### Stopped At
-Completed 88-02-PLAN.md
+Completed 88-03-PLAN.md
 
 ### Next Actions
-Continue Phase 88 — execute 88-03-PLAN.md (BaseChartElement)
+Phase 88 complete. Continue to Phase 89 — first concrete chart component extending BaseChartElement.
 
 ### Open Questions
 *None.*
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-02-28 — 88-02 complete, ThemeBridge + canvas-core utilities created*
+*Last updated: 2026-02-28 — 88-03 complete, BaseChartElement implemented, Phase 88 done*
