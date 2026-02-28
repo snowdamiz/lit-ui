@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Design System Polish
 status: completed
-last_updated: "2026-02-28T02:58:05.905Z"
-last_activity: 2026-02-28 — Phase 72-03 complete (input SKILL.md expanded CSS tokens from 7 to 16, Behavior Notes section added)
+last_updated: "2026-02-28T03:14:25Z"
+last_activity: 2026-02-28 — Phase 73-03 complete (textarea SKILL.md expanded CSS tokens from 7 to 16, Behavior Notes section added)
 progress:
-  total_phases: 68
-  completed_phases: 68
-  total_plans: 243
-  completed_plans: 243
+  total_phases: 69
+  completed_phases: 69
+  total_plans: 246
+  completed_plans: 246
   percent: 100
 ---
 
@@ -51,6 +51,9 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 | Phase 72-input P02 | 1min | 1 tasks | 1 files |
 | Phase 72-input P03 | 1min | 1 tasks | 1 files |
 | Phase 72-input P01 | 1min | 1 tasks | 1 files |
+| Phase 73-textarea P01 | 1min | 1 tasks | 1 files |
+| Phase 73-textarea P02 | 1min | 1 tasks | 1 files |
+| Phase 73-textarea P03 | 1min | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -70,6 +73,7 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 - Phase 72-01: Input dark mode governed by semantic .dark overrides — hardcoded .dark --ui-input-* declarations removed; double-fallback cascade in :root is sufficient (same pattern as Phase 70-01 and Phase 71-01)
 - Phase 72-02: Expanded inputCSSVars in InputPage.tsx from 7 to 16 entries — added layout, typography, spacing, disabled state tokens; updated default values to match tailwind.css :root
 - Phase 72-03: Input SKILL.md CSS tokens expanded from 7 to 16 entries (added layout, typography, spacing, disabled-state tokens); Behavior Notes section added with 8 entries
+- Phase 73-02: Textarea docs CSS token table expanded from 7 to 16 entries — structural tokens use exact rem/px values, color tokens use var() references (same pattern as Phase 72-02)
 
 ### Architecture Notes
 
@@ -100,16 +104,16 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 ## Session Continuity
 
 ### Last Session
-- Phase 72-01: Input style/dark mode polished (same pattern as Phase 70-01 and 71-01)
-- Phase 72-02: Input CSS docs updated with full token table (same pattern as Phase 71-02)
-- Phase 72-03: Rewrote input SKILL.md with correct --ui-input-* tokens (16 entries) and Behavior Notes section
+- Phase 73-01: Textarea dark mode polished (same pattern as Phase 72-01)
+- Phase 73-02: Textarea CSS docs expanded from 7 to 16 entries (same pattern as Phase 72-02)
+- Phase 73-03: Textarea SKILL.md updated with expanded token set (same pattern as Phase 72-03)
 
 ### Next Actions
-Execute next phase after Phase 72-input (all 3 plans complete).
+Execute next phase after Phase 73-textarea (all 3 plans complete).
 
 ### Open Questions
 *None.*
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-02-28 — Phase 72-03 complete*
+*Last updated: 2026-02-28 — Phase 73-02 complete (Textarea CSS docs expanded from 7 to 16 token entries)*
