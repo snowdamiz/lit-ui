@@ -132,22 +132,37 @@ const dateRangePickerEvents: EventDef[] = [
 // CSS Custom Properties data
 type CSSVarDef = { name: string; default: string; description: string };
 const dateRangePickerCSSVars: CSSVarDef[] = [
-  { name: '--ui-range-selected-bg', default: 'var(--color-primary, #3b82f6)', description: 'Background color for start and end date endpoints.' },
-  { name: '--ui-range-selected-text', default: 'white', description: 'Text color for start and end date endpoints.' },
-  { name: '--ui-range-highlight-bg', default: '#dbeafe', description: 'Background color for dates within the selected range.' },
-  { name: '--ui-range-highlight-text', default: 'inherit', description: 'Text color for dates within the selected range.' },
-  { name: '--ui-range-preview-bg', default: '#eff6ff', description: 'Background color for hover preview between start date and cursor.' },
-  { name: '--ui-range-compare-bg', default: '#f59e0b', description: 'Background color for comparison range endpoints (amber).' },
-  { name: '--ui-range-compare-text', default: 'white', description: 'Text color for comparison range endpoints.' },
-  { name: '--ui-range-compare-highlight-bg', default: '#fef3c7', description: 'Background color for dates within the comparison range.' },
-  { name: '--ui-range-compare-preview-bg', default: '#fffbeb', description: 'Background color for comparison hover preview.' },
-  { name: '--ui-date-picker-radius', default: 'var(--ui-input-radius, 0.375rem)', description: 'Border radius for the input container.' },
-  { name: '--ui-date-picker-border', default: 'var(--ui-input-border, #d1d5db)', description: 'Border color for the input container.' },
-  { name: '--ui-date-picker-bg', default: 'var(--ui-input-bg, white)', description: 'Background color for the input.' },
-  { name: '--ui-date-picker-text', default: 'var(--ui-input-text, inherit)', description: 'Text color for the input.' },
-  { name: '--ui-date-picker-popup-bg', default: 'white', description: 'Background color for the calendar popup.' },
-  { name: '--ui-date-picker-popup-border', default: '#e5e7eb', description: 'Border color for the calendar popup.' },
-  { name: '--ui-date-picker-error', default: 'var(--ui-input-text-error, #ef4444)', description: 'Color for error state and messages.' },
+  { name: '--ui-date-range-bg', default: 'var(--color-background, white)', description: 'Input background color.' },
+  { name: '--ui-date-range-text', default: 'var(--color-foreground, var(--ui-color-foreground))', description: 'Input text color.' },
+  { name: '--ui-date-range-border', default: 'var(--color-border, var(--ui-color-border))', description: 'Input border color.' },
+  { name: '--ui-date-range-placeholder', default: 'var(--color-muted-foreground, var(--ui-color-muted-foreground))', description: 'Placeholder text color.' },
+  { name: '--ui-date-range-label-text', default: 'var(--color-foreground, var(--ui-color-foreground))', description: 'Label text color.' },
+  { name: '--ui-date-range-error', default: 'var(--color-destructive, var(--ui-color-destructive))', description: 'Error state text and border color.' },
+  { name: '--ui-date-range-ring', default: 'var(--color-ring, var(--ui-color-ring))', description: 'Focus ring color.' },
+  { name: '--ui-date-range-popup-bg', default: 'var(--color-card, var(--ui-color-card))', description: 'Calendar popup background color.' },
+  { name: '--ui-date-range-popup-border', default: 'var(--color-border, var(--ui-color-border))', description: 'Calendar popup border color.' },
+  { name: '--ui-date-range-popup-shadow', default: '0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.08)', description: 'Calendar popup box shadow.' },
+  { name: '--ui-date-range-hover-bg', default: 'var(--color-muted, var(--ui-color-muted))', description: 'Input hover background color.' },
+  { name: '--ui-date-range-disabled-bg', default: 'var(--color-muted, var(--ui-color-muted))', description: 'Disabled state background color.' },
+  { name: '--ui-date-range-disabled-border', default: 'var(--color-border, var(--ui-color-border))', description: 'Disabled state border color.' },
+  { name: '--ui-date-range-helper-text', default: 'var(--color-muted-foreground, var(--ui-color-muted-foreground))', description: 'Helper text color.' },
+  { name: '--ui-date-range-action-text', default: 'var(--color-muted-foreground, var(--ui-color-muted-foreground))', description: 'Action button text color.' },
+  { name: '--ui-date-range-preset-bg', default: 'var(--color-background, white)', description: 'Preset sidebar background color.' },
+  { name: '--ui-date-range-preset-text', default: 'var(--color-foreground, var(--ui-color-foreground))', description: 'Preset button text color.' },
+  { name: '--ui-date-range-preset-border', default: 'var(--color-border, var(--ui-color-border))', description: 'Preset button border color.' },
+  { name: '--ui-date-range-preset-hover-bg', default: 'var(--color-muted, var(--ui-color-muted))', description: 'Preset button hover background.' },
+  { name: '--ui-date-range-sidebar-border', default: 'var(--color-border, var(--ui-color-border))', description: 'Preset sidebar border color.' },
+  { name: '--ui-date-range-footer-border', default: 'var(--color-border, var(--ui-color-border))', description: 'Popup footer border color.' },
+  { name: '--ui-date-range-clear-border', default: 'var(--color-border, var(--ui-color-border))', description: 'Clear button border color.' },
+  { name: '--ui-date-range-clear-text', default: 'var(--color-foreground, var(--ui-color-foreground))', description: 'Clear button text color.' },
+  { name: '--ui-date-range-clear-hover-bg', default: 'var(--color-muted, var(--ui-color-muted))', description: 'Clear button hover background.' },
+  { name: '--ui-date-range-toggle-border', default: 'var(--color-border, var(--ui-color-border))', description: 'Comparison toggle button border.' },
+  { name: '--ui-date-range-toggle-hover-bg', default: 'var(--color-muted, var(--ui-color-muted))', description: 'Comparison toggle button hover background.' },
+  { name: '--ui-date-range-toggle-active-bg', default: 'var(--color-primary, var(--ui-color-primary))', description: 'Active comparison toggle background.' },
+  { name: '--ui-date-range-toggle-active-text', default: 'var(--color-primary-foreground, var(--ui-color-primary-foreground))', description: 'Active comparison toggle text color.' },
+  { name: '--ui-date-range-compare-highlight-bg', default: 'oklch(0.93 0.06 85)', description: 'Background for dates within the comparison range (amber tint).' },
+  { name: '--ui-date-range-compare-preview-bg', default: 'oklch(0.97 0.03 85)', description: 'Background for comparison range hover preview (light amber tint).' },
+  { name: '--ui-date-range-z-index', default: '40', description: 'z-index for the calendar popup.' },
 ];
 
 // Code examples
@@ -174,18 +189,12 @@ const comparisonCode = `<lui-date-range-picker
   comparison
 ></lui-date-range-picker>`;
 
-const cssVarsCode = `/* Primary range theming */
+const cssVarsCode = `/* Date range picker theming */
 :root {
-  --ui-range-selected-bg: var(--color-accent);
-  --ui-range-highlight-bg: rgba(var(--color-accent-rgb), 0.15);
-  --ui-range-preview-bg: rgba(var(--color-accent-rgb), 0.08);
-}
-
-/* Comparison range theming */
-:root {
-  --ui-range-compare-bg: #8b5cf6;
-  --ui-range-compare-highlight-bg: #ede9fe;
-  --ui-range-compare-preview-bg: #f5f3ff;
+  --ui-date-range-bg: white;
+  --ui-date-range-popup-bg: var(--color-card);
+  --ui-date-range-compare-highlight-bg: oklch(0.85 0.08 280); /* purple tint */
+  --ui-date-range-compare-preview-bg: oklch(0.95 0.04 280);
 }`;
 
 export function DateRangePickerPage() {
