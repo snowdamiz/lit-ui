@@ -300,30 +300,7 @@
   --ui-time-picker-timezone-text: var(--color-gray-400);
   --ui-time-picker-timezone-separator: var(--color-gray-600);
 
-  /* Date Range Picker dark mode */
-  --ui-date-range-bg: var(--color-gray-950);
-  --ui-date-range-text: var(--color-gray-50);
-  --ui-date-range-border: var(--color-gray-700);
-  --ui-date-range-placeholder: var(--color-gray-500);
-  --ui-date-range-label-text: var(--color-gray-50);
-  --ui-date-range-popup-bg: var(--color-gray-900);
-  --ui-date-range-popup-border: var(--color-gray-700);
-  --ui-date-range-hover-bg: var(--color-gray-800);
-  --ui-date-range-disabled-bg: var(--color-gray-900);
-  --ui-date-range-disabled-border: var(--color-gray-700);
-  --ui-date-range-helper-text: var(--color-gray-400);
-  --ui-date-range-action-text: var(--color-gray-400);
-  --ui-date-range-preset-bg: var(--color-gray-900);
-  --ui-date-range-preset-text: var(--color-gray-50);
-  --ui-date-range-preset-border: var(--color-gray-600);
-  --ui-date-range-preset-hover-bg: var(--color-gray-700);
-  --ui-date-range-sidebar-border: var(--color-gray-700);
-  --ui-date-range-footer-border: var(--color-gray-700);
-  --ui-date-range-clear-border: var(--color-gray-600);
-  --ui-date-range-clear-text: var(--color-gray-50);
-  --ui-date-range-clear-hover-bg: var(--color-gray-700);
-  --ui-date-range-toggle-border: var(--color-gray-600);
-  --ui-date-range-toggle-hover-bg: var(--color-gray-800);
+  /* Date Range Picker compare overlays (oklch literals, no cascade) */
   --ui-date-range-compare-highlight-bg: oklch(0.30 0.06 85);
   --ui-date-range-compare-preview-bg: oklch(0.22 0.04 85);
 
