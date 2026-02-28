@@ -77,12 +77,12 @@ Plans:
   1. Button renders with correct monochrome default styles matching the Phase 69 token spec
   2. The Button docs page reflects the actual component API and examples without stale content
   3. `skill/skills/button` accurately describes the component so Claude can implement it correctly
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 70-01: Polish Button CSS defaults to match monochrome theme
-- [ ] 70-02: Update Button docs page for accuracy
-- [ ] 70-03: Update `skill/skills/button` skill file
+- [ ] 70-01-PLAN.md — Remove hardcoded button dark mode tokens from .dark block (BTN-01)
+- [ ] 70-02-PLAN.md — Update ButtonPage.tsx CSS vars to --ui-button-* names (BTN-02)
+- [ ] 70-03-PLAN.md — Rewrite skill/skills/button/SKILL.md with accurate v8.0 content (BTN-03)
 
 ### Phase 71: Dialog
 **Goal**: Dialog component looks and feels like shadcn Dialog out of the box, with accurate docs and skill file
