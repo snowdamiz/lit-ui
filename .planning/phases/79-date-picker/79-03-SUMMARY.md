@@ -62,7 +62,7 @@ Each task was committed atomically:
 
 1. **Task 1: Expand CSS tokens, verify Events table, and add Behavior Notes to SKILL.md** - `bde6d81` (feat)
 
-**Plan metadata:** (docs commit follows)
+**Plan metadata:** `52a6782` (docs: complete date-picker SKILL.md expansion plan)
 
 ## Files Created/Modified
 - `skill/skills/date-picker/SKILL.md` - CSS token table expanded 12→21 with double-fallback var() defaults; Behavior Notes section added with 12 entries
@@ -83,6 +83,13 @@ None - no external service configuration required.
 ## Next Phase Readiness
 - Phase 79 complete — all 3 plans done (79-01: dark mode, 79-02: docs, 79-03: skill)
 - Phase 80 (next component polish) can proceed
+
+## Self-Check: PASSED
+
+- FOUND: skill/skills/date-picker/SKILL.md
+- FOUND: .planning/phases/79-date-picker/79-03-SUMMARY.md
+- FOUND: commit bde6d81 (task commit)
+- FOUND: commit 52a6782 (metadata commit)
 
 ---
 *Phase: 79-date-picker*
