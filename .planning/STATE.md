@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Design System Polish
-status: completed
-last_updated: "2026-02-28T07:21:20.258Z"
-last_activity: 2026-02-28 — Phase 81-03 complete (Time Picker SKILL.md CSS tokens expanded 20->67 accurate --ui-time-picker-* tokens; stale names removed; Behavior Notes added with 12 entries)
+status: executing
+last_updated: "2026-02-28T07:24:00.487Z"
+last_activity: 2026-02-28 — Phase 82-02 complete (tooltipCSSVars bg/text corrected to double-fallback var() form; shadow corrected from stale single-layer to two-layer value matching tailwind.css :root; cssVarsCode example updated)
 progress:
   total_phases: 78
   completed_phases: 77
   total_plans: 273
-  completed_plans: 271
-  percent: 99
+  completed_plans: 272
+  percent: 100
 ---
 
 # Project State: LitUI
@@ -26,12 +26,12 @@ See: .planning/PROJECT.md (updated 2026-02-27)
 
 **Milestone:** v8.0 Design System Polish — IN PROGRESS
 **Phase:** 82 of 87 (Tooltip Polish) — IN PROGRESS
-**Plan:** 1 of 3 in Phase 82 — COMPLETE
+**Plan:** 2 of 3 in Phase 82 — COMPLETE
 **Status:** In progress
-**Last activity:** 2026-02-28 — Phase 82-01 complete (Tooltip .dark block removed — 2 hardcoded var(--color-gray-*) declarations eliminated; semantic .dark cascade now governs tooltip dark mode)
+**Last activity:** 2026-02-28 — Phase 82-02 complete (tooltipCSSVars bg/text corrected to double-fallback var() form; shadow corrected from stale single-layer to two-layer value matching tailwind.css :root; cssVarsCode example updated)
 
 **Progress:**
-[██████████] 99%
+[██████████] 100%
 Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 
 ## Performance Metrics
@@ -76,6 +76,7 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 | Phase 81-time-picker P02 | 2min | 1 tasks | 1 files |
 | Phase 81-time-picker P03 | 2min | 1 tasks | 1 files |
 | Phase 82-tooltip P01 | 1min | 1 tasks | 1 files |
+| Phase 82-tooltip P02 | 1min | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -123,6 +124,7 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 - Phase 81-02: timePickerCSSVars expanded from 20 stale entries (--ui-time-picker-primary, --ui-time-picker-radius, --ui-time-picker-border-focus, --ui-time-picker-bg-disabled, --ui-time-picker-border-width, --ui-time-picker-tab-bg-hover) to 67 accurate --ui-time-picker-* tokens matching tailwind.css :root; cssVarsCode example updated to reference correct token names
 - Phase 81-03: Time Picker SKILL.md CSS tokens expanded from 20 stale entries to 67 accurate --ui-time-picker-* tokens; stale names (--ui-time-picker-primary, --ui-time-picker-radius, --ui-time-picker-border-focus, --ui-time-picker-bg-disabled, --ui-time-picker-border-width, --ui-time-picker-tab-bg-hover) removed; event name confirmed as 'change' with detail { value: string, timeValue: TimeValue | null }; Behavior Notes section added with 12 entries
 - Phase 82-01: Tooltip dark mode governed by semantic .dark token cascade — 2 hardcoded .dark --ui-tooltip-* declarations (var(--color-gray-50) and var(--color-gray-950)) removed; double-fallback cascade in :root is sufficient (same pattern as Phases 70-01 through 81-01)
+- Phase 82-02: tooltipCSSVars bg/text defaults corrected to double-fallback var() form (var(--color-foreground, var(--ui-color-foreground)) and var(--color-background, white)); shadow corrected from stale single-layer '0 4px 6px -1px' to two-layer '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)' matching tailwind.css :root; cssVarsCode example updated to semantic token references
 
 ### Architecture Notes
 
@@ -153,14 +155,14 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 ## Session Continuity
 
 ### Last Session
-- Phase 82-01: Tooltip .dark block removed — 2 hardcoded var(--color-gray-*) declarations eliminated; semantic .dark cascade now governs tooltip dark mode
+- Phase 82-02: tooltipCSSVars bg/text corrected to double-fallback var() form; shadow corrected from stale single-layer to two-layer value matching tailwind.css :root; cssVarsCode example updated to semantic token references
 
 ### Next Actions
-Execute Phase 82-02 (tooltip docs update) and 82-03 (tooltip SKILL.md update).
+Execute Phase 82-03 (tooltip SKILL.md update).
 
 ### Open Questions
 *None.*
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-02-28 — Phase 82-01 complete (Tooltip .dark block removed — 2 hardcoded var(--color-gray-*) declarations eliminated; semantic .dark cascade now governs tooltip dark mode)*
+*Last updated: 2026-02-28 — Phase 82-02 complete (tooltipCSSVars bg/text corrected to double-fallback var() form; shadow corrected from stale single-layer to two-layer value matching tailwind.css :root; cssVarsCode example updated)*
