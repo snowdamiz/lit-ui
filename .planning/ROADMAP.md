@@ -351,7 +351,7 @@ Note: Phases 70-87 all depend on Phase 69. Phases 70-78 and 80-87 are independen
 | 70. Button | 3/3 | Complete    | 2026-02-28 | - |
 | 71. Dialog | 3/3 | Complete    | 2026-02-28 | - |
 | 72. Input | 3/3 | Complete    | 2026-02-28 | - |
-| 73. Textarea | 3/3 | Complete   | 2026-02-28 | - |
+| 73. Textarea | 3/3 | Complete    | 2026-02-28 | - |
 | 74. Select | v8.0 | 0/3 | Not started | - |
 | 75. Checkbox | v8.0 | 0/3 | Not started | - |
 | 76. Radio | v8.0 | 0/3 | Not started | - |
