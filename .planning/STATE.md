@@ -86,6 +86,7 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 - Phase 74-03: Select SKILL.md CSS token table expanded from 7 to 27 entries with exact tailwind.css :root values; Behavior Notes section added with 8 entries; Events table expanded from 1 to 3 (change, clear, create)
 - Phase 75-01: Checkbox dark mode governed by semantic .dark overrides — 7 hardcoded .dark --ui-checkbox-* declarations removed; double-fallback cascade in :root is sufficient (same pattern as Phase 70-01, 71-01, 72-01, 73-01, 74-01); --ui-checkbox-check-color kept as dark mode exception (white :root value cannot cascade to dark)
 - Phase 75-02: Checkbox docs CSS token table expanded from 12 to 21 entries — added size (sm/md/lg), border-width, font-size (sm/md/lg), indeterminate state tokens; corrected check-color default to 'white' (not var(--color-primary-foreground)); corrected radius default to '0.25rem' (not var(--radius-sm)); updated all color token defaults to double-fallback var() form matching tailwind.css :root (same pattern as Phase 72-02, 73-02, 74-02)
+- Phase 75-03: Checkbox SKILL.md CSS tokens expanded from 12 to 21 entries; check-color default corrected to white (was var(--color-primary-foreground)); radius default corrected to 0.25rem (was var(--radius-sm)); Events table event name corrected from change to ui-change; lui-checkbox-group ui-change event added; Behavior Notes section added with 9 entries (same pattern as Phase 70-03, 71-03, 72-03, 73-03, 74-03)
 
 ### Architecture Notes
 
@@ -118,14 +119,14 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 ### Last Session
 - Phase 75-01: Checkbox dark mode polished — removed 7 hardcoded oklch overrides from .dark block; kept --ui-checkbox-check-color (same pattern as Phase 74-01)
 - Phase 75-02: Checkbox docs CSS token table expanded from 12 to 21 entries, corrected defaults to match tailwind.css :root exactly
-- Phase 75-03: Checkbox SKILL.md updated (concurrent execution)
+- Phase 75-03: Checkbox SKILL.md expanded from 12 to 21 CSS tokens, event name fixed (change -> ui-change), Behavior Notes section added with 9 entries
 
 ### Next Actions
-Execute next phase after Phase 75-checkbox (all 3 plans complete).
+Execute next phase after Phase 75-checkbox (all 3 plans complete). Phase 75 is fully complete.
 
 ### Open Questions
 *None.*
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-02-27 — Phase 75-02 complete (Checkbox docs CSS token table expanded from 12 to 21 entries, corrected defaults to match tailwind.css :root exactly)*
+*Last updated: 2026-02-28 — Phase 75-03 complete (Checkbox SKILL.md expanded from 12 to 21 CSS tokens, event name fixed, Behavior Notes section added)*
