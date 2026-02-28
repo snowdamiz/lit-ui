@@ -15,3 +15,7 @@ export type { LineChartSeries, MarkLineSpec, LineOptionProps } from './shared/li
 // Phase 90: Bar Chart
 export { LuiBarChart } from './bar/bar-chart.js';
 export type { BarChartSeries, BarOptionProps } from './shared/bar-option-builder.js';
+
+// Phase 91: Pie + Donut Chart
+export { LuiPieChart } from './pie/pie-chart.js';
+export type { PieSlice, PieOptionProps } from './shared/pie-option-builder.js';
