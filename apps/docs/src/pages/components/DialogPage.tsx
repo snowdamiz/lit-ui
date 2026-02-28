@@ -92,9 +92,18 @@ const dialogParts: CSSPartDef[] = [
 // CSS Custom Properties data
 type CSSVarDef = { name: string; default: string; description: string };
 const dialogCSSVars: CSSVarDef[] = [
-  { name: '--lui-dialog-radius', default: 'var(--radius-lg)', description: 'Border radius of the dialog content.' },
-  { name: '--lui-dialog-shadow', default: 'var(--shadow-lg)', description: 'Box shadow of the dialog content.' },
-  { name: '--lui-dialog-padding', default: 'var(--spacing-6)', description: 'Inner padding of the dialog content.' },
+  { name: '--ui-dialog-radius', default: '0.5rem', description: 'Border radius of the dialog content panel.' },
+  { name: '--ui-dialog-shadow', default: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)', description: 'Box shadow of the dialog content panel.' },
+  { name: '--ui-dialog-padding', default: '1.5rem', description: 'Inner padding of the dialog content panel.' },
+  { name: '--ui-dialog-max-width-sm', default: '24rem', description: 'Max-width for size="sm".' },
+  { name: '--ui-dialog-max-width-md', default: '28rem', description: 'Max-width for size="md".' },
+  { name: '--ui-dialog-max-width-lg', default: '32rem', description: 'Max-width for size="lg".' },
+  { name: '--ui-dialog-bg', default: 'var(--color-card, var(--ui-color-card))', description: 'Background color of the dialog content panel.' },
+  { name: '--ui-dialog-text', default: 'var(--color-card-foreground, var(--ui-color-card-foreground))', description: 'Text color of the dialog content panel.' },
+  { name: '--ui-dialog-backdrop', default: 'rgba(0, 0, 0, 0.5)', description: 'Color of the backdrop overlay behind the dialog.' },
+  { name: '--ui-dialog-title-size', default: '1.125rem', description: 'Font size of the dialog title.' },
+  { name: '--ui-dialog-title-weight', default: '600', description: 'Font weight of the dialog title.' },
+  { name: '--ui-dialog-body-color', default: 'var(--color-muted-foreground, var(--ui-color-muted-foreground))', description: 'Text color of the dialog body content.' },
 ];
 
 // Code examples for frameworks
@@ -230,15 +239,15 @@ const classPassthroughCode = {
 // CSS Custom Properties example code
 const cssVarsCode = `/* Global override - affects all dialogs */
 :root {
-  --lui-dialog-radius: 1rem;
-  --lui-dialog-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
-  --lui-dialog-padding: 2rem;
+  --ui-dialog-radius: 1rem;
+  --ui-dialog-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+  --ui-dialog-padding: 2rem;
 }
 
 /* Scoped override - only affects dialogs in this container */
 .compact-dialogs {
-  --lui-dialog-padding: 1rem;
-  --lui-dialog-radius: 0.5rem;
+  --ui-dialog-padding: 1rem;
+  --ui-dialog-radius: 0.5rem;
 }`;
 
 // CSS Parts example code
