@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Design System Polish
-status: in_progress
-last_updated: "2026-02-27T00:01:00Z"
+status: completed
+last_updated: "2026-02-28T04:41:49.540Z"
 last_activity: 2026-02-27 — Phase 76-01 complete (Radio dark mode — 5 hardcoded oklch .dark overrides removed; semantic .dark cascade now governs radio dark mode)
 progress:
   total_phases: 72
-  completed_phases: 71
+  completed_phases: 72
   total_plans: 255
-  completed_plans: 253
+  completed_plans: 255
   percent: 99
 ---
 
@@ -27,7 +27,7 @@ See: .planning/PROJECT.md (updated 2026-02-27)
 **Milestone:** v8.0 Design System Polish — IN PROGRESS
 **Phase:** 76 of 87 (Radio Polish) — IN PROGRESS
 **Plan:** 1 of 3 in Phase 76 — COMPLETE
-**Status:** In progress
+**Status:** Milestone complete
 **Last activity:** 2026-02-27 — Phase 76-01 complete (Radio dark mode — 5 hardcoded oklch .dark overrides removed; semantic .dark cascade now governs radio dark mode)
 
 **Progress:**
