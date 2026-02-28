@@ -203,10 +203,6 @@
   --color-card: var(--color-gray-900);
   --color-card-foreground: var(--color-gray-50);
 
-  /* Tooltip dark mode - inverted stays inverted, just swap values */
-  --ui-tooltip-bg: var(--color-gray-50);
-  --ui-tooltip-text: var(--color-gray-950);
-
   /* Popover dark mode */
   --ui-popover-bg: var(--color-gray-900);
   --ui-popover-text: var(--color-gray-50);
