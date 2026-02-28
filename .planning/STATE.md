@@ -18,16 +18,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-02-28)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** Phase 90 — Bar Chart (COMPLETE)
+**Current focus:** Phase 91 — Pie/Donut Chart (IN PROGRESS — 91-01 complete)
 
 ## Current Position
 
-Phase: 90 of 96 (Bar Chart — COMPLETE)
-Plan: 2 of 2 in current phase (90-01 complete, 90-02 complete)
-Status: Phase 90 complete — all requirements BAR-01, BAR-02, BAR-03 satisfied
-Last activity: 2026-02-28 — Completed 90-02: LuiBarChart component + index.ts exports
+Phase: 91 of 96 (Pie/Donut Chart — Plan 01 complete)
+Plan: 1 of 2 in current phase (91-01 complete, 91-02 pending)
+Status: 91-01 complete — PIE-01 and PIE-02 foundational layer established
+Last activity: 2026-02-28 — Completed 91-01: pie-option-builder.ts + pie-registry.ts
 
-Progress: [██░░░░░░░░] 22% (v9.0 milestone, 9 phases, 4 of 9 complete)
+Progress: [███░░░░░░░] 27% (v9.0 milestone, 9 phases, 4.5 of 9 complete)
 
 ## Accumulated Context
 
@@ -61,6 +61,10 @@ Progress: [██░░░░░░░░] 22% (v9.0 milestone, 9 phases, 4 of 9
 - 90-02: No _streamingMode override in LuiBarChart — inherits 'buffer' default from BaseChartElement (STRM-04)
 - 90-02: categories not a reactive property on LuiBarChart — passed via option prop (BaseChartElement passthrough)
 - 90-02: show-labels and color-by-data use kebab-case attribute names; JS properties are camelCase (showLabels, colorByData)
+- 91-01: _mergeSmallSlices pre-processes data before ECharts — minAngle only affects rendering, not legend/tooltip data
+- 91-01: isDonut guard handles four falsy cases: 0, '0', '0%', '' — '0' is truthy in JS but semantically means no inner radius
+- 91-01: centerLabel title injected only when isDonut && centerLabel truthy — empty title key causes ECharts layout interference
+- 91-01: PieChart module covers both pie and donut — donut is pie with innerRadius, no separate DonutChart ECharts module
 
 ### Architecture Notes
 
@@ -102,21 +106,22 @@ Progress: [██░░░░░░░░] 22% (v9.0 milestone, 9 phases, 4 of 9
 | 89 | 02 | 1min | 2 | 2 |
 | 90 | 01 | 1min | 2 | 2 |
 | 90 | 02 | 1min | 2 | 2 |
+| 91 | 01 | 1min | 2 | 2 |
 
 ## Session Continuity
 
 ### Last Session
-- 2026-02-28: Completed 90-02 — LuiBarChart component (bar-chart.ts) + index.ts Phase 90 exports (LuiBarChart, BarChartSeries, BarOptionProps)
+- 2026-02-28: Completed 91-01 — pie-option-builder.ts (PieSlice, PieOptionProps, buildPieOption, _mergeSmallSlices) + pie-registry.ts (registerPieModules)
 
 ### Stopped At
-Completed 90-02-PLAN.md
+Completed 91-01-PLAN.md
 
 ### Next Actions
-Phase 90 complete. Continue to Phase 91 (next chart type).
+Continue Phase 91: Plan 02 — LuiPieChart component + index.ts exports (PIE-01, PIE-02, PIE-03).
 
 ### Open Questions
 *None.*
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-02-28 — 90-02 complete, LuiBarChart + index.ts exports, Phase 90 fully done (BAR-01/02/03 all satisfied)*
+*Last updated: 2026-02-28 — 91-01 complete, pie-option-builder.ts + pie-registry.ts, PIE-01 and PIE-02 foundational layer done*

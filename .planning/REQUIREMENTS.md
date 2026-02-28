@@ -49,8 +49,8 @@ Requirements for the v9.0 Charts System milestone. Each maps to a roadmap phase.
 
 ### Pie / Donut Chart
 
-- [ ] **PIE-01**: Developer can render a pie chart with automatic small-slice merging below a configurable threshold
-- [ ] **PIE-02**: Developer can render a donut chart with configurable inner radius and center label text
+- [x] **PIE-01**: Developer can render a pie chart with automatic small-slice merging below a configurable threshold
+- [x] **PIE-02**: Developer can render a donut chart with configurable inner radius and center label text
 - [ ] **PIE-03**: Developer can stream data updates into pie/donut charts via `pushData()`
 
 ### Scatter / Bubble Chart
@@ -142,8 +142,8 @@ Which phases cover which requirements. Populated during roadmap creation.
 | BAR-01 | Phase 90 | Complete |
 | BAR-02 | Phase 90 | Complete |
 | BAR-03 | Phase 90 | Complete |
-| PIE-01 | Phase 91 | Pending |
-| PIE-02 | Phase 91 | Pending |
+| PIE-01 | Phase 91 | Complete |
+| PIE-02 | Phase 91 | Complete |
 | PIE-03 | Phase 91 | Pending |
 | SCAT-01 | Phase 92 | Pending |
 | SCAT-02 | Phase 92 | Pending |
