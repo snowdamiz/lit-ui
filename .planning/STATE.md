@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Charts System
 status: unknown
-last_updated: "2026-02-28T23:31:46.833Z"
+last_updated: "2026-02-28T23:36:19.272Z"
 progress:
   total_phases: 70
-  completed_phases: 69
+  completed_phases: 70
   total_plans: 246
-  completed_plans: 245
+  completed_plans: 246
 ---
 
 # Project State: LitUI
@@ -18,14 +18,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-02-28)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** Phase 93 — Heatmap Chart (plan 01 complete — foundations done)
+**Current focus:** Phase 93 — Heatmap Chart (complete — all plans done)
 
 ## Current Position
 
-Phase: 93 of 96 (Heatmap Chart — plan 01 complete)
-Plan: 1 of 2 in current phase (93-01 complete)
-Status: Phase 93 plan 01 complete — heatmap-option-builder.ts + heatmap-registry.ts foundations (HEAT-01, HEAT-02)
-Last activity: 2026-02-28 — Completed 93-01: heatmap-option-builder.ts and heatmap-registry.ts
+Phase: 93 of 96 (Heatmap Chart — complete)
+Plan: 2 of 2 in current phase (93-02 complete)
+Status: Phase 93 complete — LuiHeatmapChart (lui-heatmap-chart) with pushData cell-update streaming; HEAT-01 and HEAT-02 delivered
+Last activity: 2026-02-28 — Completed 93-02: heatmap-chart.ts (LuiHeatmapChart) + index.ts Phase 93 exports
 
 Progress: [███░░░░░░░] 27% (v9.0 milestone, 9 phases, 6 of 9 complete)
 
@@ -80,6 +80,9 @@ Progress: [███░░░░░░░] 27% (v9.0 milestone, 9 phases, 6 of 9
 - 93-01: splitArea: { show: true } on both heatmap axes — required for visible cell grid borders; omitting causes cells to blend
 - 93-01: coordinateSystem: 'cartesian2d' explicitly set on heatmap series — heatmap supports geo/calendar/cartesian2d modes
 - 93-01: type: 'category' on both heatmap axes — heatmap indices are integer positions into category arrays, not raw values
+- 93-02: pushData() overrides base entirely — NEVER calls super.pushData(); base _circularBuffer path bypassed for cell-update semantics
+- 93-02: disconnectedCallback() cancels _cellRafId BEFORE super.disconnectedCallback() — base disposes chart, component must cancel its own RAF first
+- 93-02: _applyData() uses notMerge:false — notMerge:true would wipe VisualMap component on each data update
 
 ### Architecture Notes
 
@@ -92,6 +95,7 @@ Progress: [███░░░░░░░] 27% (v9.0 milestone, 9 phases, 6 of 9
 - Phase 91 complete: LuiPieChart (lui-pie-chart) exported from @lit-ui/charts with PieSlice + PieOptionProps types
 - Phase 92 complete: LuiScatterChart (lui-scatter-chart) exported from @lit-ui/charts with ScatterPoint + ScatterOptionProps types; all SCAT requirements delivered
 - Phase 93 plan 01 complete: heatmap-option-builder.ts (HeatmapCell, HeatmapOptionProps, buildHeatmapOption) + heatmap-registry.ts (registerHeatmapModules with HeatmapChart + VisualMapContinuousComponent)
+- Phase 93 complete: LuiHeatmapChart (lui-heatmap-chart) exported from @lit-ui/charts with HeatmapCell + HeatmapOptionProps types; HEAT-01/HEAT-02 delivered
 
 ### TODOs
 *None.*
@@ -129,21 +133,22 @@ Progress: [███░░░░░░░] 27% (v9.0 milestone, 9 phases, 6 of 9
 | 92 | 01 | 4min | 2 | 4 |
 | 92 | 02 | 1min | 2 | 2 |
 | 93 | 01 | 1min | 2 | 2 |
+| 93 | 02 | 1min | 2 | 2 |
 
 ## Session Continuity
 
 ### Last Session
-- 2026-02-28: Completed 93-01 — heatmap-option-builder.ts (HeatmapCell, HeatmapOptionProps, buildHeatmapOption) + heatmap-registry.ts (registerHeatmapModules)
+- 2026-02-28: Completed 93-02 — heatmap-chart.ts (LuiHeatmapChart with pushData cell-update override) + index.ts Phase 93 exports
 
 ### Stopped At
-Completed 93-01-PLAN.md
+Completed 93-02-PLAN.md
 
 ### Next Actions
-Phase 93 plan 01 complete. Continue to Plan 02: LuiHeatmapChart component.
+Phase 93 complete. Continue to Phase 94.
 
 ### Open Questions
 *None.*
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-02-28 — 93-01 complete, heatmap foundations (heatmap-option-builder.ts + heatmap-registry.ts), HEAT-01/02 delivered*
+*Last updated: 2026-02-28 — 93-02 complete, LuiHeatmapChart component (heatmap-chart.ts + index.ts exports), Phase 93 complete*
