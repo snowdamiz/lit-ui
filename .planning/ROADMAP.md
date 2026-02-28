@@ -1,0 +1,368 @@
+# Roadmap: LitUI
+
+## Milestones
+
+- ✅ **v1.0 MVP** - Phases 1-5 (shipped 2026-01-24)
+- ✅ **v2.0 NPM + SSR** - Phases 6-20 (shipped 2026-01-25)
+- ✅ **v3.0 Theme Customization** - Phases 21-24 (shipped 2026-01-25)
+- ✅ **v3.1 Docs Dark Mode** - Phases 25-27 (shipped 2026-01-25)
+- ✅ **v4.0 Form Inputs** - Phases 28-30 (shipped 2026-01-26)
+- ✅ **v4.1 Select Component** - Phases 31-37 (shipped 2026-01-27)
+- ✅ **v4.2 Form Controls** - Phases 38-41 (shipped 2026-01-27)
+- ✅ **v4.3 Date/Time Components** - Phases 42-50 (shipped 2026-02-02)
+- ✅ **v5.0 Overlay & Feedback** - Phases 51-55 (shipped 2026-02-02)
+- ✅ **v6.0 Layout Components** - Phases 56-60 (shipped 2026-02-02)
+- ✅ **v7.0 Data Table** - Phases 61-68 (shipped 2026-02-05)
+- 🚧 **v8.0 Design System Polish** - Phases 69-87 (in progress)
+
+## Phases
+
+<details>
+<summary>✅ v1.0 through v7.0 (Phases 1-68) - SHIPPED 2026-02-05</summary>
+
+Phases 1-68 are archived. See:
+- `.planning/milestones/v7.0-ROADMAP.md`
+
+</details>
+
+### 🚧 v8.0 Design System Polish (In Progress)
+
+**Milestone Goal:** Polish all 18 component default styles to a unified monochrome shadcn-quality theme, and ensure all docs pages and skill files are accurate.
+
+**Wave structure per phase:**
+- Wave 1 (01): Style polish — CSS default values match monochrome shadcn theme
+- Wave 2 (02): Docs update — docs page accurate and up-to-date
+- Wave 3 (03): Skill update — `skill/skills/<component>` accurate and up-to-date
+
+- [ ] **Phase 69: Theme Foundation** - Define unified monochrome design token baseline in `@lit-ui/core`
+- [ ] **Phase 70: Button** - Polish Button styles, docs, and skill file
+- [ ] **Phase 71: Dialog** - Polish Dialog styles, docs, and skill file
+- [ ] **Phase 72: Input** - Polish Input styles, docs, and skill file
+- [ ] **Phase 73: Textarea** - Polish Textarea styles, docs, and skill file
+- [ ] **Phase 74: Select** - Polish Select styles, docs, and skill file
+- [ ] **Phase 75: Checkbox** - Polish Checkbox styles, docs, and skill file
+- [ ] **Phase 76: Radio** - Polish Radio styles, docs, and skill file
+- [ ] **Phase 77: Switch** - Polish Switch styles, docs, and skill file
+- [ ] **Phase 78: Calendar** - Polish Calendar styles, docs, and skill file
+- [ ] **Phase 79: Date Picker** - Polish Date Picker styles, docs, and skill file
+- [ ] **Phase 80: Date Range Picker** - Polish Date Range Picker styles, docs, and skill file
+- [ ] **Phase 81: Time Picker** - Polish Time Picker styles, docs, and skill file
+- [ ] **Phase 82: Tooltip** - Polish Tooltip styles, docs, and skill file
+- [ ] **Phase 83: Popover** - Polish Popover styles, docs, and skill file
+- [ ] **Phase 84: Toast** - Polish Toast styles, docs, and skill file
+- [ ] **Phase 85: Accordion** - Polish Accordion styles, docs, and skill file
+- [ ] **Phase 86: Tabs** - Polish Tabs styles, docs, and skill file
+- [ ] **Phase 87: Data Table** - Polish Data Table styles, docs, and skill file
+
+## Phase Details
+
+### Phase 69: Theme Foundation
+**Goal**: A single authoritative token spec exists that all 18 components can reference during their polish pass
+**Depends on**: Phase 68 (v7.0 complete)
+**Requirements**: THEME-01, THEME-02, THEME-03
+**Success Criteria** (what must be TRUE):
+  1. A token reference doc exists listing every `--ui-*` default value for the monochrome shadcn theme (spacing, radius, color scale, shadows, transitions)
+  2. The default values are concrete CSS custom property values (not abstract descriptions) matching neutral-gray shadcn aesthetics
+  3. Any component phase can be executed against this spec without ambiguity about what "matching the theme" means
+**Plans**: TBD
+
+Plans:
+- [ ] 69-01: Define unified monochrome design token baseline and write token reference document
+
+### Phase 70: Button
+**Goal**: Button component looks and feels like shadcn Button out of the box, with accurate docs and skill file
+**Depends on**: Phase 69
+**Requirements**: BTN-01, BTN-02, BTN-03
+**Success Criteria** (what must be TRUE):
+  1. Button renders with correct monochrome default styles matching the Phase 69 token spec
+  2. The Button docs page reflects the actual component API and examples without stale content
+  3. `skill/skills/button` accurately describes the component so Claude can implement it correctly
+**Plans**: TBD
+
+Plans:
+- [ ] 70-01: Polish Button CSS defaults to match monochrome theme
+- [ ] 70-02: Update Button docs page for accuracy
+- [ ] 70-03: Update `skill/skills/button` skill file
+
+### Phase 71: Dialog
+**Goal**: Dialog component looks and feels like shadcn Dialog out of the box, with accurate docs and skill file
+**Depends on**: Phase 69
+**Requirements**: DLG-01, DLG-02, DLG-03
+**Success Criteria** (what must be TRUE):
+  1. Dialog renders with correct monochrome default styles (backdrop, panel, borders) matching the token spec
+  2. The Dialog docs page reflects the actual component API and examples without stale content
+  3. `skill/skills/dialog` accurately describes the component so Claude can implement it correctly
+**Plans**: TBD
+
+Plans:
+- [ ] 71-01: Polish Dialog CSS defaults to match monochrome theme
+- [ ] 71-02: Update Dialog docs page for accuracy
+- [ ] 71-03: Update `skill/skills/dialog` skill file
+
+### Phase 72: Input
+**Goal**: Input component looks and feels like shadcn Input out of the box, with accurate docs and skill file
+**Depends on**: Phase 69
+**Requirements**: INP-01, INP-02, INP-03
+**Success Criteria** (what must be TRUE):
+  1. Input renders with correct monochrome default styles (border, focus ring, placeholder) matching the token spec
+  2. The Input docs page reflects the actual component API and examples without stale content
+  3. `skill/skills/input` accurately describes the component so Claude can implement it correctly
+**Plans**: TBD
+
+Plans:
+- [ ] 72-01: Polish Input CSS defaults to match monochrome theme
+- [ ] 72-02: Update Input docs page for accuracy
+- [ ] 72-03: Update `skill/skills/input` skill file
+
+### Phase 73: Textarea
+**Goal**: Textarea component looks and feels like shadcn Textarea out of the box, with accurate docs and skill file
+**Depends on**: Phase 69
+**Requirements**: TXT-01, TXT-02, TXT-03
+**Success Criteria** (what must be TRUE):
+  1. Textarea renders with correct monochrome default styles matching the token spec
+  2. The Textarea docs page reflects the actual component API and examples without stale content
+  3. `skill/skills/textarea` accurately describes the component so Claude can implement it correctly
+**Plans**: TBD
+
+Plans:
+- [ ] 73-01: Polish Textarea CSS defaults to match monochrome theme
+- [ ] 73-02: Update Textarea docs page for accuracy
+- [ ] 73-03: Update `skill/skills/textarea` skill file
+
+### Phase 74: Select
+**Goal**: Select component looks and feels like shadcn Select out of the box, with accurate docs and skill file
+**Depends on**: Phase 69
+**Requirements**: SEL-01, SEL-02, SEL-03
+**Success Criteria** (what must be TRUE):
+  1. Select (single, multi, combobox) renders with correct monochrome default styles matching the token spec
+  2. The Select docs page reflects the actual component API and examples without stale content
+  3. `skill/skills/select` accurately describes the component so Claude can implement it correctly
+**Plans**: TBD
+
+Plans:
+- [ ] 74-01: Polish Select CSS defaults to match monochrome theme
+- [ ] 74-02: Update Select docs page for accuracy
+- [ ] 74-03: Update `skill/skills/select` skill file
+
+### Phase 75: Checkbox
+**Goal**: Checkbox component looks and feels like shadcn Checkbox out of the box, with accurate docs and skill file
+**Depends on**: Phase 69
+**Requirements**: CHK-01, CHK-02, CHK-03
+**Success Criteria** (what must be TRUE):
+  1. Checkbox and CheckboxGroup render with correct monochrome default styles matching the token spec
+  2. The Checkbox docs page reflects the actual component API and examples without stale content
+  3. `skill/skills/checkbox` accurately describes the component so Claude can implement it correctly
+**Plans**: TBD
+
+Plans:
+- [ ] 75-01: Polish Checkbox CSS defaults to match monochrome theme
+- [ ] 75-02: Update Checkbox docs page for accuracy
+- [ ] 75-03: Update `skill/skills/checkbox` skill file
+
+### Phase 76: Radio
+**Goal**: Radio component looks and feels like shadcn Radio out of the box, with accurate docs and skill file
+**Depends on**: Phase 69
+**Requirements**: RAD-01, RAD-02, RAD-03
+**Success Criteria** (what must be TRUE):
+  1. Radio and RadioGroup render with correct monochrome default styles matching the token spec
+  2. The Radio docs page reflects the actual component API and examples without stale content
+  3. `skill/skills/radio` accurately describes the component so Claude can implement it correctly
+**Plans**: TBD
+
+Plans:
+- [ ] 76-01: Polish Radio CSS defaults to match monochrome theme
+- [ ] 76-02: Update Radio docs page for accuracy
+- [ ] 76-03: Update `skill/skills/radio` skill file
+
+### Phase 77: Switch
+**Goal**: Switch component looks and feels like shadcn Switch out of the box, with accurate docs and skill file
+**Depends on**: Phase 69
+**Requirements**: SWT-01, SWT-02, SWT-03
+**Success Criteria** (what must be TRUE):
+  1. Switch renders with correct monochrome default styles (track, thumb, checked state) matching the token spec
+  2. The Switch docs page reflects the actual component API and examples without stale content
+  3. `skill/skills/switch` accurately describes the component so Claude can implement it correctly
+**Plans**: TBD
+
+Plans:
+- [ ] 77-01: Polish Switch CSS defaults to match monochrome theme
+- [ ] 77-02: Update Switch docs page for accuracy
+- [ ] 77-03: Update `skill/skills/switch` skill file
+
+### Phase 78: Calendar
+**Goal**: Calendar component looks and feels like shadcn Calendar out of the box, with accurate docs and skill file
+**Depends on**: Phase 69
+**Requirements**: CAL-01, CAL-02, CAL-03
+**Success Criteria** (what must be TRUE):
+  1. Calendar renders with correct monochrome default styles (day cells, selected state, navigation) matching the token spec
+  2. The Calendar docs page reflects the actual component API and examples without stale content
+  3. `skill/skills/calendar` accurately describes the component so Claude can implement it correctly
+**Plans**: TBD
+
+Plans:
+- [ ] 78-01: Polish Calendar CSS defaults to match monochrome theme
+- [ ] 78-02: Update Calendar docs page for accuracy
+- [ ] 78-03: Update `skill/skills/calendar` skill file
+
+### Phase 79: Date Picker
+**Goal**: Date Picker component looks and feels like shadcn DatePicker out of the box, with accurate docs and skill file
+**Depends on**: Phase 78
+**Requirements**: DTP-01, DTP-02, DTP-03
+**Success Criteria** (what must be TRUE):
+  1. Date Picker renders with correct monochrome default styles (trigger, popup, input) matching the token spec
+  2. The Date Picker docs page reflects the actual component API and examples without stale content
+  3. `skill/skills/date-picker` accurately describes the component so Claude can implement it correctly
+**Plans**: TBD
+
+Plans:
+- [ ] 79-01: Polish Date Picker CSS defaults to match monochrome theme
+- [ ] 79-02: Update Date Picker docs page for accuracy
+- [ ] 79-03: Update `skill/skills/date-picker` skill file
+
+### Phase 80: Date Range Picker
+**Goal**: Date Range Picker component looks polished and matches the monochrome theme, with accurate docs and skill file
+**Depends on**: Phase 79
+**Requirements**: DRP-01, DRP-02, DRP-03
+**Success Criteria** (what must be TRUE):
+  1. Date Range Picker renders with correct monochrome default styles (range highlight, comparison overlay) matching the token spec
+  2. The Date Range Picker docs page reflects the actual component API and examples without stale content
+  3. `skill/skills/date-range-picker` accurately describes the component so Claude can implement it correctly
+**Plans**: TBD
+
+Plans:
+- [ ] 80-01: Polish Date Range Picker CSS defaults to match monochrome theme
+- [ ] 80-02: Update Date Range Picker docs page for accuracy
+- [ ] 80-03: Update `skill/skills/date-range-picker` skill file
+
+### Phase 81: Time Picker
+**Goal**: Time Picker component looks polished and matches the monochrome theme, with accurate docs and skill file
+**Depends on**: Phase 69
+**Requirements**: TMP-01, TMP-02, TMP-03
+**Success Criteria** (what must be TRUE):
+  1. Time Picker renders with correct monochrome default styles (clock face, scroll wheels, spinbuttons) matching the token spec
+  2. The Time Picker docs page reflects the actual component API and examples without stale content
+  3. `skill/skills/time-picker` accurately describes the component so Claude can implement it correctly
+**Plans**: TBD
+
+Plans:
+- [ ] 81-01: Polish Time Picker CSS defaults to match monochrome theme
+- [ ] 81-02: Update Time Picker docs page for accuracy
+- [ ] 81-03: Update `skill/skills/time-picker` skill file
+
+### Phase 82: Tooltip
+**Goal**: Tooltip component looks and feels like shadcn Tooltip out of the box, with accurate docs and skill file
+**Depends on**: Phase 69
+**Requirements**: TTP-01, TTP-02, TTP-03
+**Success Criteria** (what must be TRUE):
+  1. Tooltip renders with correct monochrome default styles (background, arrow, border) matching the token spec
+  2. The Tooltip docs page reflects the actual component API and examples without stale content
+  3. `skill/skills/tooltip` accurately describes the component so Claude can implement it correctly
+**Plans**: TBD
+
+Plans:
+- [ ] 82-01: Polish Tooltip CSS defaults to match monochrome theme
+- [ ] 82-02: Update Tooltip docs page for accuracy
+- [ ] 82-03: Update `skill/skills/tooltip` skill file
+
+### Phase 83: Popover
+**Goal**: Popover component looks and feels like shadcn Popover out of the box, with accurate docs and skill file
+**Depends on**: Phase 69
+**Requirements**: POP-01, POP-02, POP-03
+**Success Criteria** (what must be TRUE):
+  1. Popover renders with correct monochrome default styles (panel, shadow, border) matching the token spec
+  2. The Popover docs page reflects the actual component API and examples without stale content
+  3. `skill/skills/popover` accurately describes the component so Claude can implement it correctly
+**Plans**: TBD
+
+Plans:
+- [ ] 83-01: Polish Popover CSS defaults to match monochrome theme
+- [ ] 83-02: Update Popover docs page for accuracy
+- [ ] 83-03: Update `skill/skills/popover` skill file
+
+### Phase 84: Toast
+**Goal**: Toast component looks and feels like shadcn Toast/Sonner out of the box, with accurate docs and skill file
+**Depends on**: Phase 69
+**Requirements**: TST-01, TST-02, TST-03
+**Success Criteria** (what must be TRUE):
+  1. Toast renders with correct monochrome default styles (card, variants, action button) matching the token spec
+  2. The Toast docs page reflects the actual component API and examples without stale content
+  3. `skill/skills/toast` accurately describes the component so Claude can implement it correctly
+**Plans**: TBD
+
+Plans:
+- [ ] 84-01: Polish Toast CSS defaults to match monochrome theme
+- [ ] 84-02: Update Toast docs page for accuracy
+- [ ] 84-03: Update `skill/skills/toast` skill file
+
+### Phase 85: Accordion
+**Goal**: Accordion component looks and feels like shadcn Accordion out of the box, with accurate docs and skill file
+**Depends on**: Phase 69
+**Requirements**: ACC-01, ACC-02, ACC-03
+**Success Criteria** (what must be TRUE):
+  1. Accordion renders with correct monochrome default styles (trigger, border, chevron) matching the token spec
+  2. The Accordion docs page reflects the actual component API and examples without stale content
+  3. `skill/skills/accordion` accurately describes the component so Claude can implement it correctly
+**Plans**: TBD
+
+Plans:
+- [ ] 85-01: Polish Accordion CSS defaults to match monochrome theme
+- [ ] 85-02: Update Accordion docs page for accuracy
+- [ ] 85-03: Update `skill/skills/accordion` skill file
+
+### Phase 86: Tabs
+**Goal**: Tabs component looks and feels like shadcn Tabs out of the box, with accurate docs and skill file
+**Depends on**: Phase 69
+**Requirements**: TAB-01, TAB-02, TAB-03
+**Success Criteria** (what must be TRUE):
+  1. Tabs renders with correct monochrome default styles (tablist, active indicator, panel) matching the token spec
+  2. The Tabs docs page reflects the actual component API and examples without stale content
+  3. `skill/skills/tabs` accurately describes the component so Claude can implement it correctly
+**Plans**: TBD
+
+Plans:
+- [ ] 86-01: Polish Tabs CSS defaults to match monochrome theme
+- [ ] 86-02: Update Tabs docs page for accuracy
+- [ ] 86-03: Update `skill/skills/tabs` skill file
+
+### Phase 87: Data Table
+**Goal**: Data Table component looks polished and consistent with the monochrome theme, with accurate docs and skill file
+**Depends on**: Phase 69
+**Requirements**: DAT-01, DAT-02, DAT-03
+**Success Criteria** (what must be TRUE):
+  1. Data Table renders with correct monochrome default styles (header, rows, toolbar, pagination) matching the token spec
+  2. The Data Table docs page reflects the actual component API and examples without stale content
+  3. `skill/skills/data-table` accurately describes the component so Claude can implement it correctly
+**Plans**: TBD
+
+Plans:
+- [ ] 87-01: Polish Data Table CSS defaults to match monochrome theme
+- [ ] 87-02: Update Data Table docs page for accuracy
+- [ ] 87-03: Update `skill/skills/data-table` skill file
+
+## Progress
+
+**Execution Order:**
+Phases execute in order: 69 → 70 → 71 → ... → 87
+Note: Phases 70-87 all depend on Phase 69. Phases 70-78 and 80-87 are independent of each other (except 79 depends on 78, 80 depends on 79).
+
+| Phase | Milestone | Plans Complete | Status | Completed |
+|-------|-----------|----------------|--------|-----------|
+| 69. Theme Foundation | v8.0 | 0/1 | Not started | - |
+| 70. Button | v8.0 | 0/3 | Not started | - |
+| 71. Dialog | v8.0 | 0/3 | Not started | - |
+| 72. Input | v8.0 | 0/3 | Not started | - |
+| 73. Textarea | v8.0 | 0/3 | Not started | - |
+| 74. Select | v8.0 | 0/3 | Not started | - |
+| 75. Checkbox | v8.0 | 0/3 | Not started | - |
+| 76. Radio | v8.0 | 0/3 | Not started | - |
+| 77. Switch | v8.0 | 0/3 | Not started | - |
+| 78. Calendar | v8.0 | 0/3 | Not started | - |
+| 79. Date Picker | v8.0 | 0/3 | Not started | - |
+| 80. Date Range Picker | v8.0 | 0/3 | Not started | - |
+| 81. Time Picker | v8.0 | 0/3 | Not started | - |
+| 82. Tooltip | v8.0 | 0/3 | Not started | - |
+| 83. Popover | v8.0 | 0/3 | Not started | - |
+| 84. Toast | v8.0 | 0/3 | Not started | - |
+| 85. Accordion | v8.0 | 0/3 | Not started | - |
+| 86. Tabs | v8.0 | 0/3 | Not started | - |
+| 87. Data Table | v8.0 | 0/3 | Not started | - |
