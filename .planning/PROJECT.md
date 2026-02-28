@@ -100,7 +100,19 @@ Developers can use polished, accessible UI components in any framework without l
 
 ### Active
 
-*(None — all planned requirements shipped through v8.0. Next milestone to define new active requirements.)*
+<!-- v9.0 Charts System — building toward these -->
+
+- [ ] @lit-ui/charts package with ECharts + ECharts GL integration
+- [ ] Line chart component with real-time streaming and WebGL rendering
+- [ ] Bar/Column chart component with grouped and stacked variants
+- [ ] Scatter/Bubble chart with WebGL for 1M+ point datasets
+- [ ] Area chart with fill and multiple series support
+- [ ] Heatmap chart component
+- [ ] Candlestick/OHLC chart for financial data
+- [ ] Pie and Donut chart components
+- [ ] Treemap chart component
+- [ ] CLI integration: `npx lit-ui add line-chart` for all chart types
+- [ ] CSS token theming system for charts (colors, grid, tooltip, legend)
 
 ### Deferred
 
@@ -245,9 +257,16 @@ Developers can use polished, accessible UI components in any framework without l
 - **v7.0 Data Table** (2026-02-05): Full-featured data table with virtual scrolling, sorting, filtering, inline editing, selection, bulk actions, column customization, CSV export, expandable rows
 - **v8.0 Design System Polish** (2026-02-28): Unified monochrome design system — removed hardcoded dark mode overrides from all 18 components, expanded CSS token docs (avg 3x more tokens per component), rewrote all 18 skill files with Behavior Notes sections
 
-## Current Milestone
+## Current Milestone: v9.0 Charts System
 
-No active milestone. Run `/gsd:new-milestone` to start the next.
+**Goal:** Add a complete high-performance chart suite to LitUI — all major chart types powered by ECharts + ECharts GL with WebGL rendering for millions of data points and real-time streaming.
+
+**Target features:**
+- `@lit-ui/charts` package (separate opt-in, heavy WebGL deps isolated)
+- Chart types: Line, Bar, Scatter/Bubble, Area, Heatmap, Candlestick/OHLC, Pie/Donut, Treemap
+- WebGL rendering via ECharts GL for large datasets (1M+ points) and high-frequency real-time updates
+- Same CLI install UX: `npx lit-ui add line-chart` — each chart as a standalone web component
+- CSS token theming system (chart palette, grid, tooltip, legend) consistent with existing design tokens
 
 ---
-*Last updated: 2026-02-28 after v8.0 milestone*
+*Last updated: 2026-02-28 — Milestone v9.0 started*

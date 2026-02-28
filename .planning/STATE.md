@@ -1,16 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.0
-milestone_name: Design System Polish
-status: completed
-last_updated: "2026-02-28T17:48:07.230Z"
-last_activity: 2026-02-28 — Phase 87-03 complete (Data-table SKILL.md CSS tokens expanded from 18 stale entries to 35 accurate entries; selected-bg corrected to oklch(0.97 0.01 250); 12-entry Behavior Notes section added)
+milestone: v9.0
+milestone_name: Charts System
+status: defining_requirements
+last_updated: "2026-02-28T00:00:00.000Z"
+last_activity: 2026-02-28 — Milestone v9.0 started
 progress:
-  total_phases: 83
-  completed_phases: 83
-  total_plans: 288
-  completed_plans: 288
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State: LitUI
@@ -24,23 +24,10 @@ See: .planning/PROJECT.md (updated 2026-02-28)
 
 ## Current Position
 
-**Milestone:** v8.0 Design System Polish — COMPLETE (shipped 2026-02-28)
-**Status:** Milestone archived. Run `/gsd:new-milestone` to start next.
-**Last activity:** 2026-02-28 — v8.0 milestone archived
-
-**Progress:**
-[██████████] 100% — 19 phases, 55 plans, 57/57 requirements
-
-## Performance Metrics
-
-| Metric | Value |
-|--------|-------|
-| Plans completed | 55/55 (v8.0) |
-| Requirements satisfied | 57/57 |
-| Phases completed | 19/19 |
-| Commits | 179 |
-| Files modified | 509 |
-| Lines | +36,559 / -16,857 |
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-02-28 — Milestone v9.0 started
 
 ## Accumulated Context
 
@@ -111,14 +98,14 @@ See: .planning/PROJECT.md (updated 2026-02-28)
 ## Session Continuity
 
 ### Last Session
-- v8.0 milestone complete: 19 phases (69-87), 55 plans, 57 requirements — all archived
+- v9.0 Charts System milestone started — defining requirements
 
 ### Next Actions
-Run `/gsd:new-milestone` to start the next milestone.
+`/gsd:plan-phase 88` after roadmap is created.
 
 ### Open Questions
 *None.*
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-02-28 — Phase 87-03 complete (Data-table SKILL.md CSS tokens expanded from 18 stale to 35 accurate entries; selected-bg corrected to oklch; Behavior Notes with 12 entries)*
+*Last updated: 2026-02-28 — Milestone v9.0 started*
