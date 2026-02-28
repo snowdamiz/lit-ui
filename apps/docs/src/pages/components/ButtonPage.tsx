@@ -78,9 +78,18 @@ const buttonParts: CSSPartDef[] = [
 // CSS Custom Properties data
 type CSSVarDef = { name: string; default: string; description: string };
 const buttonCSSVars: CSSVarDef[] = [
-  { name: '--lui-button-radius', default: 'var(--radius-md)', description: 'Border radius of the button.' },
-  { name: '--lui-button-shadow', default: 'none', description: 'Box shadow of the button.' },
-  { name: '--lui-button-font-weight', default: '500', description: 'Font weight of the button text.' },
+  { name: '--ui-button-radius', default: '0.375rem', description: 'Border radius of the button.' },
+  { name: '--ui-button-shadow', default: 'none', description: 'Box shadow of the button.' },
+  { name: '--ui-button-border-width', default: '1px', description: 'Border width (used by outline variant).' },
+  { name: '--ui-button-font-weight', default: '500', description: 'Font weight of the button text.' },
+  { name: '--ui-button-font-size-sm', default: '0.875rem', description: 'Font size for size="sm".' },
+  { name: '--ui-button-font-size-md', default: '1rem', description: 'Font size for size="md".' },
+  { name: '--ui-button-font-size-lg', default: '1.125rem', description: 'Font size for size="lg".' },
+  { name: '--ui-button-padding-x-md', default: '1rem', description: 'Horizontal padding for size="md".' },
+  { name: '--ui-button-padding-y-md', default: '0.5rem', description: 'Vertical padding for size="md".' },
+  { name: '--ui-button-primary-bg', default: 'var(--color-primary, var(--ui-color-primary))', description: 'Primary variant background color.' },
+  { name: '--ui-button-secondary-bg', default: 'var(--color-secondary, var(--ui-color-secondary))', description: 'Secondary variant background color.' },
+  { name: '--ui-button-destructive-bg', default: 'var(--color-destructive, var(--ui-color-destructive))', description: 'Destructive variant background color.' },
 ];
 
 // Code examples - web components use same syntax in all frameworks
@@ -116,14 +125,14 @@ const customStyleCode = `<lui-button btn-class="rounded-full">Pill Button</lui-b
 // CSS Custom Properties example code
 const cssVarsCode = `/* Global override - all buttons become pill-shaped */
 :root {
-  --lui-button-radius: 9999px;
-  --lui-button-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --ui-button-radius: 9999px;
+  --ui-button-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 /* Scoped override - only affects buttons in this container */
 .card-actions {
-  --lui-button-radius: 0.25rem;
-  --lui-button-shadow: none;
+  --ui-button-radius: 0.25rem;
+  --ui-button-shadow: none;
 }`;
 
 // CSS Parts example code
@@ -304,7 +313,7 @@ export function ButtonPage() {
             </p>
             <div className="mb-4">
               <style>{`
-                .demo-pill-buttons { --lui-button-radius: 9999px; --lui-button-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+                .demo-pill-buttons { --ui-button-radius: 9999px; --ui-button-shadow: 0 4px 6px rgba(0,0,0,0.1); }
               `}</style>
               <div className="demo-pill-buttons flex flex-wrap gap-3 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
                 <lui-button>Pill Button</lui-button>
