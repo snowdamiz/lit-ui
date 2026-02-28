@@ -389,11 +389,6 @@
   --ui-data-table-editing-bg: color-mix(in oklch, var(--color-primary, var(--ui-color-primary)) 8%, var(--color-gray-950));
   --ui-data-table-menu-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.2);
 
-  /* Dialog dark mode */
-  --ui-dialog-bg: oklch(0.18 0 0);
-  --ui-dialog-text: oklch(0.985 0 0);
-  --ui-dialog-body-color: oklch(0.71 0 0);
-
   /* Input dark mode */
   --ui-input-bg: oklch(0.10 0 0);
   --ui-input-text: oklch(0.985 0 0);
