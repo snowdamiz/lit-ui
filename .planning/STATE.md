@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Design System Polish
 status: completed
-last_updated: "2026-02-28T08:19:08.170Z"
-last_activity: 2026-02-28 — Phase 84-03 complete (Toast SKILL.md CSS token defaults corrected to 21 entries with double-fallback var() colors, two-layer shadow, z-index 55; --ui-toast-padding added; all 12 variant oklch tokens filled; Behavior Notes section with 13 entries added)
+last_updated: "2026-02-28T08:30:03.581Z"
+last_activity: 2026-02-28 — Phase 85-03 complete (Accordion SKILL.md CSS tokens corrected 13→14 entries; --ui-accordion-gap added; 5 color token defaults updated to double-fallback var() form; Behavior Notes section with 13 entries added)
 progress:
-  total_phases: 80
-  completed_phases: 80
-  total_plans: 279
-  completed_plans: 279
+  total_phases: 81
+  completed_phases: 81
+  total_plans: 282
+  completed_plans: 282
   percent: 100
 ---
 
@@ -20,15 +20,15 @@ progress:
 See: .planning/PROJECT.md (updated 2026-02-27)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** Phase 84 — Toast Polish
+**Current focus:** Phase 85 — Accordion Polish
 
 ## Current Position
 
 **Milestone:** v8.0 Design System Polish — IN PROGRESS
-**Phase:** 84 of 87 (Toast Polish) — IN PROGRESS
-**Plan:** 3 of 3 in Phase 84 — COMPLETE
-**Status:** Milestone complete
-**Last activity:** 2026-02-28 — Phase 84-03 complete (Toast SKILL.md CSS token defaults corrected to 21 entries with double-fallback var() colors, two-layer shadow, z-index 55; --ui-toast-padding added; all 12 variant oklch tokens filled; Behavior Notes section with 13 entries added)
+**Phase:** 85 of 87 (Accordion Polish) — IN PROGRESS
+**Plan:** 2 of 3 in Phase 85 — COMPLETE
+**Status:** In progress
+**Last activity:** 2026-02-28 — Phase 85-02 complete (Accordion docs accordionCSSVars corrected from 13 to 14 entries; added --ui-accordion-gap token; fixed 5 color token defaults to double-fallback var() form; cssVarsCode example updated to semantic token reference)
 
 **Progress:**
 [██████████] 100%
@@ -84,6 +84,9 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 | Phase 84-toast P01 | 1min | 1 tasks | 1 files |
 | Phase 84-toast P02 | 1min | 1 tasks | 1 files |
 | Phase 84-toast P03 | 1min | 1 tasks | 1 files |
+| Phase 85-accordion P02 | 1min | 1 tasks | 1 files |
+| Phase 85-accordion P01 | 26s | 1 tasks | 1 files |
+| Phase 85-accordion P03 | 1min | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -139,6 +142,7 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 - Phase 84-01: Toast base dark mode governed by semantic .dark cascade — 3 hardcoded .dark --ui-toast-bg/text/border declarations removed; double-fallback cascade in :root is sufficient (same pattern as Phases 70-01 through 83-01); 12 variant oklch dark mode tokens kept in .dark (lightness 0.25 cannot cascade from :root lightness 0.95)
 - Phase 84-02: Toast docs color tokens corrected to double-fallback var() form (bg, text, border); shadow corrected from single-layer to two-layer matching tailwind.css :root; z-index corrected from stale 50 to 55; cssVarsCode example replaced hex literals (#f0fdf4 etc.) with oklch/var() semantic token references
 - Phase 84-03: Toast SKILL.md CSS token defaults corrected — bg/text/border use double-fallback var() form; shadow corrected to two-layer value; z-index corrected to 55; --ui-toast-padding row added (21 total tokens); all 12 variant oklch tokens filled with actual :root values; Behavior Notes section added with 13 entries
+- Phase 85-02: accordionCSSVars expanded from 13 to 14 entries — added missing --ui-accordion-gap token (default: 0); all 5 color token defaults corrected from single var() to double-fallback var(--color-X, var(--ui-color-X)) form matching tailwind.css :root; cssVarsCode example updated from rgba(0,0,0,0.05) to var(--color-accent, var(--ui-color-accent))
 
 ### Architecture Notes
 
@@ -169,14 +173,14 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 ## Session Continuity
 
 ### Last Session
-- Phase 84-03: Toast SKILL.md CSS token defaults corrected — 21 token rows (added --ui-toast-padding); bg/text/border double-fallback var() form; shadow two-layer; z-index 55; all 12 variant oklch tokens filled; Behavior Notes section added with 13 entries
+- Phase 85-02: Accordion docs accordionCSSVars corrected from 13 to 14 entries; added --ui-accordion-gap (default 0); fixed 5 color token defaults to double-fallback var(--color-X, var(--ui-color-X)) form; cssVarsCode example updated to semantic token reference var(--color-accent, var(--ui-color-accent))
 
 ### Next Actions
-Execute Phase 85 (next phase after Toast Polish).
+Execute Phase 85-03: Accordion SKILL.md CSS token defaults update.
 
 ### Open Questions
 *None.*
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-02-28 — Phase 84-03 complete (Toast SKILL.md CSS token defaults corrected to 21 entries; --ui-toast-padding added; double-fallback var() colors; two-layer shadow; z-index 55; all 12 variant oklch tokens filled; Behavior Notes with 13 entries)*
+*Last updated: 2026-02-28 — Phase 85-02 complete (Accordion docs accordionCSSVars corrected to 14 entries; --ui-accordion-gap added; double-fallback var() colors for 5 tokens; cssVarsCode updated to semantic token reference)*

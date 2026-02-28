@@ -101,12 +101,12 @@ Requirements for the Design System Polish milestone. Each component phase maps t
 
 - [x] **TST-01**: Toast default styles match the v8.0 monochrome theme
 - [x] **TST-02**: Toast docs page is accurate and up-to-date
-- [ ] **TST-03**: `skill/skills/toast` skill file is accurate and up-to-date
+- [x] **TST-03**: `skill/skills/toast` skill file is accurate and up-to-date
 
 ### Accordion
 
 - [ ] **ACC-01**: Accordion default styles match the v8.0 monochrome theme
-- [ ] **ACC-02**: Accordion docs page is accurate and up-to-date
+- [x] **ACC-02**: Accordion docs page is accurate and up-to-date
 - [ ] **ACC-03**: `skill/skills/accordion` skill file is accurate and up-to-date
 
 ### Tabs
@@ -185,9 +185,9 @@ Requirements for the Design System Polish milestone. Each component phase maps t
 | POP-03 | Phase 83 | Complete |
 | TST-01 | Phase 84 | Complete |
 | TST-02 | Phase 84 | Complete |
-| TST-03 | Phase 84 | Pending |
+| TST-03 | Phase 84 | Complete |
 | ACC-01 | Phase 85 | Pending |
-| ACC-02 | Phase 85 | Pending |
+| ACC-02 | Phase 85 | Complete |
 | ACC-03 | Phase 85 | Pending |
 | TAB-01 | Phase 86 | Pending |
 | TAB-02 | Phase 86 | Pending |
