@@ -300,25 +300,6 @@
   --ui-time-picker-timezone-text: var(--color-gray-400);
   --ui-time-picker-timezone-separator: var(--color-gray-600);
 
-  /* Date Picker dark mode */
-  --ui-date-picker-bg: var(--color-gray-950);
-  --ui-date-picker-text: var(--color-gray-50);
-  --ui-date-picker-border: var(--color-gray-700);
-  --ui-date-picker-placeholder: var(--color-gray-500);
-  --ui-date-picker-label-text: var(--color-gray-50);
-  --ui-date-picker-popup-bg: var(--color-gray-900);
-  --ui-date-picker-popup-border: var(--color-gray-700);
-  --ui-date-picker-hover-bg: var(--color-gray-800);
-  --ui-date-picker-disabled-bg: var(--color-gray-900);
-  --ui-date-picker-disabled-border: var(--color-gray-700);
-  --ui-date-picker-helper-text: var(--color-gray-400);
-  --ui-date-picker-action-text: var(--color-gray-400);
-  --ui-date-picker-preset-bg: var(--color-gray-900);
-  --ui-date-picker-preset-text: var(--color-gray-50);
-  --ui-date-picker-preset-border: var(--color-gray-600);
-  --ui-date-picker-preset-hover-bg: var(--color-gray-700);
-  --ui-date-picker-preset-hover-border: var(--color-gray-500);
-
   /* Date Range Picker dark mode */
   --ui-date-range-bg: var(--color-gray-950);
   --ui-date-range-text: var(--color-gray-50);
