@@ -151,13 +151,22 @@ const inputParts: CSSPartDef[] = [
 // CSS Custom Properties data
 type CSSVarDef = { name: string; default: string; description: string };
 const inputCSSVars: CSSVarDef[] = [
-  { name: '--ui-input-radius', default: 'var(--radius-md)', description: 'Border radius of the input.' },
-  { name: '--ui-input-border', default: 'var(--color-border)', description: 'Border color.' },
-  { name: '--ui-input-border-focus', default: 'var(--color-ring)', description: 'Border color on focus.' },
-  { name: '--ui-input-border-error', default: 'var(--color-destructive)', description: 'Border color on error.' },
-  { name: '--ui-input-bg', default: 'var(--color-background)', description: 'Background color.' },
-  { name: '--ui-input-text', default: 'var(--color-foreground)', description: 'Text color.' },
-  { name: '--ui-input-placeholder', default: 'var(--color-muted-foreground)', description: 'Placeholder text color.' },
+  { name: '--ui-input-radius', default: '0.375rem', description: 'Border radius of the input container.' },
+  { name: '--ui-input-border-width', default: '1px', description: 'Border width of the input container.' },
+  { name: '--ui-input-transition', default: '150ms', description: 'Transition duration for border-color and box-shadow.' },
+  { name: '--ui-input-font-size-sm', default: '0.875rem', description: 'Font size for size="sm".' },
+  { name: '--ui-input-font-size-md', default: '1rem', description: 'Font size for size="md".' },
+  { name: '--ui-input-font-size-lg', default: '1.125rem', description: 'Font size for size="lg".' },
+  { name: '--ui-input-padding-x-md', default: '1rem', description: 'Horizontal padding for size="md".' },
+  { name: '--ui-input-padding-y-md', default: '0.5rem', description: 'Vertical padding for size="md".' },
+  { name: '--ui-input-bg', default: 'var(--color-background, white)', description: 'Background color of the input.' },
+  { name: '--ui-input-text', default: 'var(--color-foreground, ...)', description: 'Text color of the input.' },
+  { name: '--ui-input-border', default: 'var(--color-border, ...)', description: 'Border color (default state).' },
+  { name: '--ui-input-placeholder', default: 'var(--color-muted-foreground, ...)', description: 'Placeholder text color.' },
+  { name: '--ui-input-border-focus', default: 'var(--color-ring, ...)', description: 'Border color on focus.' },
+  { name: '--ui-input-border-error', default: 'var(--color-destructive, ...)', description: 'Border color on validation error.' },
+  { name: '--ui-input-bg-disabled', default: 'var(--color-muted, ...)', description: 'Background color when disabled.' },
+  { name: '--ui-input-text-disabled', default: 'var(--color-muted-foreground, ...)', description: 'Text color when disabled.' },
 ];
 
 // Code examples - web components use same syntax in all frameworks
