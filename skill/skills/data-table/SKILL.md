@@ -186,21 +186,53 @@ type ColumnDef = {
 
 | Property | Default | Description |
 |----------|---------|-------------|
-| `--ui-data-table-header-bg` | `var(--color-muted, #f4f4f5)` | Header row background color. |
-| `--ui-data-table-row-bg` | `var(--color-background, #ffffff)` | Data row background color. |
-| `--ui-data-table-row-hover-bg` | `var(--color-muted, #f4f4f5)` | Data row background on hover. |
-| `--ui-data-table-border-color` | `var(--color-border, #e4e4e7)` | Border color for table, rows, and cells. |
-| `--ui-data-table-text-color` | `var(--color-foreground, #09090b)` | Primary text color. |
-| `--ui-data-table-header-text` | `var(--color-muted-foreground, #71717a)` | Header cell text color. |
-| `--ui-data-table-row-height` | `48px` | Minimum row height. |
+| `--ui-data-table-header-bg` | `var(--color-muted, var(--ui-color-muted))` | Header row background color. |
+| `--ui-data-table-row-bg` | `var(--color-background, white)` | Data row background color. |
+| `--ui-data-table-row-hover-bg` | `var(--color-muted, var(--ui-color-muted))` | Data row background on hover. |
+| `--ui-data-table-border-color` | `var(--color-border, var(--ui-color-border))` | Border color for table, rows, and cells. |
+| `--ui-data-table-text-color` | `var(--color-foreground, var(--ui-color-foreground))` | Primary text color for cell content. |
+| `--ui-data-table-header-text` | `var(--color-muted-foreground, var(--ui-color-muted-foreground))` | Header cell text color. |
+| `--ui-data-table-selected-bg` | `oklch(0.97 0.01 250)` | Background color for selected rows. |
+| `--ui-data-table-selected-hover-bg` | `oklch(0.94 0.02 250)` | Selected row background on hover. |
+| `--ui-data-table-skeleton-base` | `var(--color-border, var(--ui-color-border))` | Skeleton loading animation base color. |
+| `--ui-data-table-skeleton-highlight` | `var(--color-muted, var(--ui-color-muted))` | Skeleton loading animation highlight color. |
+| `--ui-data-table-header-hover-bg` | `rgba(0, 0, 0, 0.05)` | Sortable header background on hover. |
+| `--ui-data-table-sticky-shadow` | `rgba(0, 0, 0, 0.06)` | Box shadow for sticky first column during horizontal scroll. |
+| `--ui-data-table-menu-bg` | `var(--color-card, var(--ui-color-card))` | Background color for dropdown menus (column picker, row actions). |
+| `--ui-data-table-menu-shadow` | `0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.07)` | Box shadow for dropdown menus. |
+| `--ui-data-table-overlay-bg` | `rgba(255, 255, 255, 0.6)` | Background overlay during "updating" loading state. |
+| `--ui-data-table-editable-hover-bg` | `rgba(0, 0, 0, 0.03)` | Background on hover for editable cells. |
+| `--ui-data-table-editing-bg` | `color-mix(in oklch, var(--color-primary, var(--ui-color-primary)) 5%, var(--color-background, white))` | Background for a cell currently being edited. |
+| `--ui-data-table-banner-bg` | `color-mix(in oklch, var(--color-primary, var(--ui-color-primary)) 8%, var(--color-background, white))` | Selection banner / bulk actions toolbar background. |
+| `--ui-data-table-row-height` | `48px` | Minimum row height for data rows. |
 | `--ui-data-table-header-height` | `48px` | Header row height. |
-| `--ui-data-table-cell-padding` | `0.75rem 1rem` | Padding inside cells. |
+| `--ui-data-table-cell-padding` | `0.75rem 1rem` | Padding inside data and header cells. |
 | `--ui-data-table-font-size` | `0.875rem` | Font size for cell content. |
 | `--ui-data-table-header-font-weight` | `500` | Font weight for header cells. |
-| `--ui-data-table-header-hover-bg` | `rgba(0, 0, 0, 0.05)` | Sortable header background on hover. |
-| `--ui-data-table-selected-bg` | `rgba(59, 130, 246, 0.1)` | Background for selected rows. |
-| `--ui-data-table-selected-hover-bg` | `rgba(59, 130, 246, 0.15)` | Selected row background on hover. |
-| `--ui-data-table-banner-bg` | `#eff6ff` | Selection banner / bulk actions toolbar background. |
-| `--ui-data-table-overlay-bg` | `rgba(255, 255, 255, 0.7)` | Overlay during "updating" loading state. |
-| `--ui-data-table-skeleton-base` | `#e4e4e7` | Skeleton animation base color. |
-| `--ui-data-table-skeleton-highlight` | `#f4f4f5` | Skeleton animation highlight color. |
+| `--ui-data-table-badge-default-bg` | `var(--color-muted, var(--ui-color-muted))` | Background for default/neutral badge cells. |
+| `--ui-data-table-badge-default-text` | `var(--color-foreground, var(--ui-color-foreground))` | Text color for default/neutral badge cells. |
+| `--ui-data-table-badge-green-bg` | `oklch(0.93 0.06 150)` | Background for green badge cells. |
+| `--ui-data-table-badge-green-text` | `oklch(0.35 0.10 150)` | Text color for green badge cells. |
+| `--ui-data-table-badge-blue-bg` | `oklch(0.93 0.06 250)` | Background for blue badge cells. |
+| `--ui-data-table-badge-blue-text` | `oklch(0.35 0.10 250)` | Text color for blue badge cells. |
+| `--ui-data-table-badge-red-bg` | `oklch(0.93 0.06 25)` | Background for red/danger badge cells. |
+| `--ui-data-table-badge-red-text` | `oklch(0.35 0.10 25)` | Text color for red/danger badge cells. |
+| `--ui-data-table-badge-yellow-bg` | `oklch(0.93 0.06 85)` | Background for yellow/warning badge cells. |
+| `--ui-data-table-badge-yellow-text` | `oklch(0.40 0.12 85)` | Text color for yellow/warning badge cells. |
+| `--ui-data-table-badge-purple-bg` | `oklch(0.93 0.06 310)` | Background for purple badge cells. |
+| `--ui-data-table-badge-purple-text` | `oklch(0.35 0.10 310)` | Text color for purple badge cells. |
+
+## Behavior Notes
+
+- **JS properties required**: `columns` and `data` must be set as JS properties (not HTML attributes). Use `element.columns = [...]` and `element.data = [...]` after element is connected. In React, use a ref + useEffect.
+- **Virtual scrolling**: Activates automatically when content height exceeds `max-height` (default: 400px). Virtualizer requires fixed `row-height` for accurate scroll calculations. Changing row heights dynamically is not supported.
+- **Server-side mode**: Set `dataCallback` async function for server-driven data. The callback receives `{ pageIndex, pageSize, sorting, columnFilters, globalFilter }` and must return `{ data, totalRowCount }`. Use `manual-sorting`, `manual-filtering`, `manual-pagination` attributes to disable client-side logic.
+- **Selection**: `enable-selection` adds a checkbox column. Access current selection via `rowSelection` JS property or `ui-selection-change` event. `row-id-key` (default: `"id"`) determines the unique row identifier used as selection key.
+- **Row actions**: 1–2 actions render as inline buttons; 3+ actions collapse into a kebab menu. Use `hover-reveal-actions` to show action buttons only on row hover.
+- **Column preferences persistence**: Set `persistence-key` to a unique string to save column sizing, order, and visibility to localStorage. Use `resetColumnPreferences()` method to clear. Use `onColumnPreferencesChange` callback for server-side persistence.
+- **Inline editing**: Set `meta: { editable: true, editType: 'text' | 'select' | 'date' }` on column definitions. Add `enable-row-editing` attribute to show row-level save/cancel controls. Listen to `ui-cell-edit` or `ui-row-edit` events.
+- **CSV export**: Call `table.exportCsv({ filename: 'file.csv' })` imperatively. Pass `selectedOnly: true` to export only selected rows. Use `onExport` callback for server-side export.
+- **Badge cells**: Columns that return badge-shaped cells use `--ui-data-table-badge-*` tokens. Badge colors (green/blue/red/yellow/purple) map to semantic statuses. `badge-default-*` handles unlisted values.
+- **Dark mode**: Semantic tokens (`header-bg`, `row-bg`, `border-color`, etc.) cascade automatically via `.dark --color-*` overrides. Dark-specific exceptions are set explicitly in tailwind.css `.dark` block: `selected-bg`/`selected-hover-bg` (different oklch lightness), `overlay-bg`/`editable-hover-bg`/`header-hover-bg` (color inversions), all badge oklch colors, `editing-bg`, shadow tokens.
+- **Expandable rows**: Set `renderDetailContent` function returning a Lit `TemplateResult`. Use `single-expand` for accordion-style (one row at a time). Listen to `ui-expanded-change` event. Access expanded state via `expanded` JS property.
+- **Column reorder / resize**: `enable-column-resizing` (default: true) allows drag-to-resize on header borders. `enable-column-reorder` enables drag-and-drop column reordering. `sticky-first-column` pins column 0 during horizontal scroll, casting a `--ui-data-table-sticky-shadow`.
