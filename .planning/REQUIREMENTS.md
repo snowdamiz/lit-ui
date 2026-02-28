@@ -76,7 +76,7 @@ Requirements for the Design System Polish milestone. Each component phase maps t
 ### Date Range Picker
 
 - [x] **DRP-01**: Date Range Picker default styles match the v8.0 monochrome theme
-- [ ] **DRP-02**: Date Range Picker docs page is accurate and up-to-date
+- [x] **DRP-02**: Date Range Picker docs page is accurate and up-to-date
 - [ ] **DRP-03**: `skill/skills/date-range-picker` skill file is accurate and up-to-date
 
 ### Time Picker
@@ -172,7 +172,7 @@ Requirements for the Design System Polish milestone. Each component phase maps t
 | DTP-02 | Phase 79 | Complete |
 | DTP-03 | Phase 79 | Complete |
 | DRP-01 | Phase 80 | Complete |
-| DRP-02 | Phase 80 | Pending |
+| DRP-02 | Phase 80 | Complete |
 | DRP-03 | Phase 80 | Pending |
 | TMP-01 | Phase 81 | Pending |
 | TMP-02 | Phase 81 | Pending |

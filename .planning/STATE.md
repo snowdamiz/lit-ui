@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Design System Polish
-status: completed
-last_updated: "2026-02-28T06:22:40.978Z"
-last_activity: 2026-02-28 — Phase 79-03 complete (Date Picker SKILL.md CSS tokens expanded 12→21; Behavior Notes section added with 12 entries)
+status: executing
+last_updated: "2026-02-28T06:26:06.625Z"
+last_activity: 2026-02-28 — Phase 80-01 complete (Date Range Picker dark mode — 23 hardcoded .dark declarations removed; 2 compare-* oklch exceptions kept)
 progress:
   total_phases: 76
   completed_phases: 75
   total_plans: 267
-  completed_plans: 265
-  percent: 99
+  completed_plans: 266
+  percent: 100
 ---
 
 # Project State: LitUI
@@ -26,12 +26,12 @@ See: .planning/PROJECT.md (updated 2026-02-27)
 
 **Milestone:** v8.0 Design System Polish — IN PROGRESS
 **Phase:** 80 of 87 (Date Range Picker Polish) — IN PROGRESS
-**Plan:** 1 of 3 in Phase 80 — COMPLETE
+**Plan:** 2 of 3 in Phase 80 — COMPLETE
 **Status:** In progress
-**Last activity:** 2026-02-28 — Phase 80-01 complete (Date Range Picker dark mode — 23 hardcoded .dark declarations removed; 2 compare-* oklch exceptions kept)
+**Last activity:** 2026-02-28 — Phase 80-02 complete (Date Range Picker docs — dateRangePickerCSSVars expanded from 16 stale entries to 31 accurate --ui-date-range-* tokens)
 
 **Progress:**
-[██████████] 99%
+[██████████] 100%
 Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 
 ## Performance Metrics
@@ -70,6 +70,7 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 | Phase 79-date-picker P02 | 1min | 1 tasks | 1 files |
 | Phase 79-date-picker P03 | 1min | 1 tasks | 1 files |
 | Phase 80-date-range-picker P01 | 1min | 1 tasks | 1 files |
+| Phase 80-date-range-picker P02 | 1min | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -111,6 +112,7 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 - Phase 79-02: Date Picker docs CSS token table expanded from 12 to 21 entries matching tailwind.css :root; border-focus, radius, border-width excluded (not in :root; inherited via --ui-input-* fallbacks); color tokens use double-fallback var() form
 - Phase 79-03: Date Picker SKILL.md CSS tokens expanded 12→21 to match tailwind.css :root; border-focus/radius/border-width excluded (not in :root; inherited via --ui-input-* fallbacks); Behavior Notes section added with 12 entries
 - Phase 80-01: Date Range Picker dark mode governed by semantic .dark cascade — 23 hardcoded .dark --ui-date-range-* declarations removed; 2 compare-* oklch literal exceptions (highlight-bg oklch(0.30) and preview-bg oklch(0.22)) kept in .dark
+- Phase 80-02: dateRangePickerCSSVars expanded from 16 stale entries (--ui-range-*, --ui-date-picker-*) to 31 accurate --ui-date-range-* tokens matching tailwind.css :root; cssVarsCode example updated to reference correct token names
 
 ### Architecture Notes
 
@@ -141,14 +143,14 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 ## Session Continuity
 
 ### Last Session
-- Phase 80-01: Date Range Picker dark mode — 23 hardcoded .dark declarations removed; 2 compare-* oklch exceptions kept; tailwind.css updated; Phase 80 plan 1 of 3 complete
+- Phase 80-02: Date Range Picker docs — dateRangePickerCSSVars expanded from 16 stale entries to 31 accurate --ui-date-range-* tokens; cssVarsCode updated; DateRangePickerPage.tsx updated; Phase 80 plan 2 of 3 complete
 
 ### Next Actions
-Execute Phase 80-02 (Date Range Picker docs update).
+Execute Phase 80-03 (Date Range Picker SKILL.md expansion).
 
 ### Open Questions
 *None.*
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-02-28 — Phase 80-01 complete (Date Range Picker dark mode — 23 hardcoded .dark declarations removed; 2 compare-* oklch exceptions kept)*
+*Last updated: 2026-02-28 — Phase 80-02 complete (Date Range Picker docs — dateRangePickerCSSVars expanded 16→31 accurate --ui-date-range-* tokens)*
