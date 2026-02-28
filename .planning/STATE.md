@@ -25,10 +25,10 @@ See: .planning/PROJECT.md (updated 2026-02-27)
 ## Current Position
 
 **Milestone:** v8.0 Design System Polish — IN PROGRESS
-**Phase:** 72 of 87 (Input Polish) — IN PROGRESS
-**Plan:** 2 of 3 in Phase 72 — COMPLETE
-**Status:** In progress
-**Last activity:** 2026-02-27 — Phase 72-02 complete (Input docs CSS token table expanded from 7 to 16 tokens with accurate default values)
+**Phase:** 72 of 87 (Input Polish) — COMPLETE
+**Plan:** 3 of 3 in Phase 72 — COMPLETE
+**Status:** Milestone complete
+**Last activity:** 2026-02-28 — Phase 72-03 complete (input SKILL.md expanded CSS tokens from 7 to 16, Behavior Notes section added)
 
 **Progress:**
 [██████████] 100%
@@ -69,6 +69,7 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 - Phase 71-03: Dialog SKILL.md CSS token prefix fixed --lui-dialog-* → --ui-dialog-*; expanded from 3 to 12 tokens; Behavior Notes section added (same pattern as Phase 70-03)
 - Phase 72-01: Input dark mode governed by semantic .dark overrides — hardcoded .dark --ui-input-* declarations removed; double-fallback cascade in :root is sufficient (same pattern as Phase 70-01 and Phase 71-01)
 - Phase 72-02: Expanded inputCSSVars in InputPage.tsx from 7 to 16 entries — added layout, typography, spacing, disabled state tokens; updated default values to match tailwind.css :root
+- Phase 72-03: Input SKILL.md CSS tokens expanded from 7 to 16 entries (added layout, typography, spacing, disabled-state tokens); Behavior Notes section added with 8 entries
 
 ### Architecture Notes
 
@@ -99,17 +100,16 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 ## Session Continuity
 
 ### Last Session
-- Phase 71-01: Removed 3 hardcoded --ui-dialog-* oklch overrides from .dark block in tailwind.css
-- Phase 71-01: Dialog dark mode now inherits correctly via semantic .dark → --color-card → var(--color-card, var(--ui-color-card)) cascade
-- Phase 71-02: Updated DialogPage.tsx CSS vars from --lui-dialog-* to --ui-dialog-*, expanded from 3 to 12 tokens
-- Phase 71-03: Rewrote dialog SKILL.md with correct --ui-dialog-* tokens (12 entries) and Behavior Notes section
+- Phase 72-01: Input style/dark mode polished (same pattern as Phase 70-01 and 71-01)
+- Phase 72-02: Input CSS docs updated with full token table (same pattern as Phase 71-02)
+- Phase 72-03: Rewrote input SKILL.md with correct --ui-input-* tokens (16 entries) and Behavior Notes section
 
 ### Next Actions
-Execute Phase 72-03 (Input SKILL.md update).
+Execute next phase after Phase 72-input (all 3 plans complete).
 
 ### Open Questions
 *None.*
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-02-28 — Phase 72-01 complete (input .dark block hardcoded token overrides removed)*
+*Last updated: 2026-02-28 — Phase 72-03 complete*
