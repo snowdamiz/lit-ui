@@ -399,14 +399,7 @@
   --ui-switch-ring: oklch(0.55 0 0);
 
   /* Checkbox dark mode */
-  --ui-checkbox-bg: oklch(0.10 0 0);
-  --ui-checkbox-border: oklch(0.45 0 0);
-  --ui-checkbox-bg-checked: oklch(0.985 0 0);
-  --ui-checkbox-border-checked: oklch(0.985 0 0);
-  --ui-checkbox-check-color: oklch(0.18 0 0);
-  --ui-checkbox-bg-indeterminate: oklch(0.985 0 0);
-  --ui-checkbox-border-indeterminate: oklch(0.985 0 0);
-  --ui-checkbox-ring: oklch(0.55 0 0);
+  --ui-checkbox-check-color: oklch(0.18 0 0); /* near-black checkmark on near-white bg-checked (--color-primary) */
 
   /* Radio dark mode */
   --ui-radio-bg: oklch(0.10 0 0);
