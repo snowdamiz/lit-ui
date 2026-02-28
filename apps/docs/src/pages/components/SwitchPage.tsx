@@ -66,18 +66,42 @@ const switchParts: CSSPartDef[] = [
 // CSS Custom Properties data
 type CSSVarDef = { name: string; default: string; description: string };
 const switchCSSVars: CSSVarDef[] = [
-  { name: '--ui-switch-radius', default: '9999px', description: 'Border radius of the track.' },
-  { name: '--ui-switch-thumb-radius', default: '9999px', description: 'Border radius of the thumb.' },
-  { name: '--ui-switch-thumb-offset', default: '2px', description: 'Inset offset for thumb positioning.' },
+  // Size — track dimensions (sm)
+  { name: '--ui-switch-track-width-sm', default: '2rem', description: 'Track width at sm size.' },
+  { name: '--ui-switch-track-height-sm', default: '1.125rem', description: 'Track height at sm size.' },
+  { name: '--ui-switch-thumb-size-sm', default: '0.875rem', description: 'Thumb diameter at sm size.' },
+  // Size — track dimensions (md)
+  { name: '--ui-switch-track-width-md', default: '2.5rem', description: 'Track width at md size (default).' },
+  { name: '--ui-switch-track-height-md', default: '1.375rem', description: 'Track height at md size (default).' },
+  { name: '--ui-switch-thumb-size-md', default: '1.125rem', description: 'Thumb diameter at md size (default).' },
+  // Size — track dimensions (lg)
+  { name: '--ui-switch-track-width-lg', default: '3rem', description: 'Track width at lg size.' },
+  { name: '--ui-switch-track-height-lg', default: '1.625rem', description: 'Track height at lg size.' },
+  { name: '--ui-switch-thumb-size-lg', default: '1.375rem', description: 'Thumb diameter at lg size.' },
+  // Layout
+  { name: '--ui-switch-radius', default: '9999px', description: 'Border radius of the track (pill shape).' },
+  { name: '--ui-switch-thumb-radius', default: '9999px', description: 'Border radius of the thumb (circle).' },
+  { name: '--ui-switch-thumb-offset', default: '2px', description: 'Inset offset for thumb from track edge.' },
   { name: '--ui-switch-label-gap', default: '0.5rem', description: 'Gap between label and track.' },
   { name: '--ui-switch-transition', default: '150ms', description: 'Transition duration for slide animation.' },
-  { name: '--ui-switch-track-bg', default: 'var(--color-muted)', description: 'Track background when unchecked.' },
-  { name: '--ui-switch-track-bg-checked', default: 'var(--color-primary)', description: 'Track background when checked.' },
-  { name: '--ui-switch-track-border', default: 'var(--color-border)', description: 'Track border color.' },
+  // Typography
+  { name: '--ui-switch-font-size-sm', default: '0.875rem', description: 'Label font size at sm size.' },
+  { name: '--ui-switch-font-size-md', default: '1rem', description: 'Label font size at md size (default).' },
+  { name: '--ui-switch-font-size-lg', default: '1.125rem', description: 'Label font size at lg size.' },
+  // Unchecked state
+  { name: '--ui-switch-track-bg', default: 'var(--color-muted, var(--ui-color-muted))', description: 'Track background when unchecked.' },
+  { name: '--ui-switch-track-border', default: 'var(--color-border, var(--ui-color-border))', description: 'Track border color.' },
   { name: '--ui-switch-thumb-bg', default: 'white', description: 'Thumb background color.' },
-  { name: '--ui-switch-ring', default: 'var(--color-ring)', description: 'Focus ring color.' },
-  { name: '--ui-switch-border-error', default: 'var(--color-destructive)', description: 'Track border color on error.' },
-  { name: '--ui-switch-text-error', default: 'var(--color-destructive)', description: 'Error text color.' },
+  // Checked state
+  { name: '--ui-switch-track-bg-checked', default: 'var(--color-primary, var(--ui-color-primary))', description: 'Track background when checked.' },
+  // Disabled state
+  { name: '--ui-switch-track-bg-disabled', default: 'var(--color-muted, var(--ui-color-muted))', description: 'Track background when disabled.' },
+  { name: '--ui-switch-thumb-bg-disabled', default: 'var(--color-muted-foreground, var(--ui-color-muted-foreground))', description: 'Thumb color when disabled.' },
+  // Focus state
+  { name: '--ui-switch-ring', default: 'var(--color-ring, var(--ui-color-ring))', description: 'Focus ring color.' },
+  // Error state
+  { name: '--ui-switch-border-error', default: 'var(--color-destructive, var(--ui-color-destructive))', description: 'Track border color on error.' },
+  { name: '--ui-switch-text-error', default: 'var(--color-destructive, var(--ui-color-destructive))', description: 'Error text color.' },
 ];
 
 // Code examples - web components use same syntax in all frameworks
