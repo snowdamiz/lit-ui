@@ -74,22 +74,34 @@ const calendarProps: PropDef[] = [
 // CSS Custom Properties data
 type CSSVarDef = { name: string; default: string; description: string };
 const calendarCSSVars: CSSVarDef[] = [
+  // Layout
   { name: '--ui-calendar-width', default: '320px', description: 'Width of the calendar container.' },
-  { name: '--ui-calendar-day-size', default: '2.5rem', description: 'Width and height of date buttons.' },
-  { name: '--ui-calendar-gap', default: '0.125rem', description: 'Gap between grid items.' },
-  { name: '--ui-calendar-radius', default: '0.375rem', description: 'Border radius for buttons and dropdowns.' },
-  { name: '--ui-calendar-border', default: '#e5e7eb', description: 'Border color for selects and dialogs.' },
-  { name: '--ui-calendar-bg', default: 'white', description: 'Background color for the calendar.' },
-  { name: '--ui-calendar-text', default: 'inherit', description: 'Text color (used in dark mode).' },
-  { name: '--ui-calendar-hover-bg', default: '#f3f4f6', description: 'Background color on hover for date and nav buttons.' },
-  { name: '--ui-calendar-focus-ring', default: 'var(--color-ring, #3b82f6)', description: 'Focus outline color.' },
-  { name: '--ui-calendar-nav-color', default: 'currentColor', description: 'Navigation arrow button color.' },
-  { name: '--ui-calendar-weekday-color', default: '#6b7280', description: 'Weekday header text color.' },
-  { name: '--ui-calendar-today-border', default: 'var(--color-primary, #3b82f6)', description: 'Border color for today indicator.' },
-  { name: '--ui-calendar-selected-bg', default: 'var(--color-primary, #3b82f6)', description: 'Background color for selected date.' },
-  { name: '--ui-calendar-selected-text', default: 'white', description: 'Text color for selected date.' },
-  { name: '--ui-calendar-outside-opacity', default: '0.4', description: 'Opacity for adjacent month dates.' },
-  { name: '--ui-calendar-disabled-opacity', default: '0.5', description: 'Opacity for disabled dates.' },
+  { name: '--ui-calendar-day-size', default: '2.5rem', description: 'Width and height of date cell buttons.' },
+  { name: '--ui-calendar-cell-size', default: '2.5rem', description: 'Alias for day-size used in some layout contexts.' },
+  { name: '--ui-calendar-cell-radius', default: '0.375rem', description: 'Border radius for individual day cells.' },
+  { name: '--ui-calendar-gap', default: '0.25rem', description: 'Gap between calendar grid items.' },
+  { name: '--ui-calendar-radius', default: '0.375rem', description: 'Border radius for nav buttons and dropdowns.' },
+  // Colors
+  { name: '--ui-calendar-bg', default: 'var(--color-background, #ffffff)', description: 'Background color for the calendar.' },
+  { name: '--ui-calendar-text', default: 'var(--color-foreground, currentColor)', description: 'Text color for the calendar.' },
+  { name: '--ui-calendar-border', default: 'var(--color-border, #e5e7eb)', description: 'Border color for the help dialog and date cells.' },
+  { name: '--ui-calendar-hover-bg', default: 'var(--color-muted, #f3f4f6)', description: 'Background color on hover for date and nav buttons.' },
+  { name: '--ui-calendar-weekday-color', default: 'var(--color-muted-foreground, #6b7280)', description: 'Weekday header text color.' },
+  { name: '--ui-calendar-nav-color', default: 'var(--color-foreground, currentColor)', description: 'Navigation arrow button color.' },
+  // Today indicator
+  { name: '--ui-calendar-today-font-weight', default: '600', description: "Font weight for today's date cell." },
+  { name: '--ui-calendar-today-border', default: '2px solid var(--color-primary, var(--ui-color-primary))', description: "Border applied to today's date cell." },
+  // Selected state
+  { name: '--ui-calendar-selected-bg', default: 'var(--color-primary, var(--ui-color-primary))', description: 'Background color for the selected date.' },
+  { name: '--ui-calendar-selected-text', default: 'var(--color-primary-foreground, white)', description: 'Text color for the selected date.' },
+  // Opacity states
+  { name: '--ui-calendar-outside-opacity', default: '0.4', description: 'Opacity for dates from adjacent months.' },
+  { name: '--ui-calendar-disabled-opacity', default: '0.4', description: 'Opacity for disabled dates.' },
+  // Focus
+  { name: '--ui-calendar-focus-ring', default: 'var(--color-ring, var(--ui-color-ring))', description: 'Focus outline color for interactive elements.' },
+  // Constraint tooltip (show-constraint-tooltips prop)
+  { name: '--ui-calendar-tooltip-bg', default: 'var(--color-foreground, #111827)', description: 'Background color for constraint tooltips shown on disabled dates.' },
+  { name: '--ui-calendar-tooltip-text', default: 'var(--color-background, #ffffff)', description: 'Text color for constraint tooltips shown on disabled dates.' },
 ];
 
 // Code examples
