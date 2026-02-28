@@ -389,17 +389,6 @@
   --ui-data-table-editing-bg: color-mix(in oklch, var(--color-primary, var(--ui-color-primary)) 8%, var(--color-gray-950));
   --ui-data-table-menu-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.2);
 
-  /* Textarea dark mode */
-  --ui-textarea-bg: oklch(0.10 0 0);
-  --ui-textarea-text: oklch(0.985 0 0);
-  --ui-textarea-border: oklch(0.37 0 0);
-  --ui-textarea-placeholder: oklch(0.55 0 0);
-  --ui-textarea-border-focus: oklch(0.71 0 0);
-  --ui-textarea-ring: oklch(0.55 0 0);
-  --ui-textarea-bg-disabled: oklch(0.18 0 0);
-  --ui-textarea-text-disabled: oklch(0.55 0 0);
-  --ui-textarea-border-disabled: oklch(0.37 0 0);
-
   /* Select dark mode */
   --ui-select-bg: oklch(0.10 0 0);
   --ui-select-text: oklch(0.985 0 0);
