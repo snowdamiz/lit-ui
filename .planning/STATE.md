@@ -2,8 +2,8 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Charts System
-status: unknown
-last_updated: "2026-02-28T21:54:08.083Z"
+status: in-progress
+last_updated: "2026-02-28T22:51:33.000Z"
 progress:
   total_phases: 68
   completed_phases: 68
@@ -18,16 +18,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-02-28)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** Phase 92 — Scatter/Bubble Chart with WebGL (92-01 complete)
+**Current focus:** Phase 92 — Scatter/Bubble Chart with WebGL (complete — both plans done)
 
 ## Current Position
 
-Phase: 92 of 96 (Scatter/Bubble Chart with WebGL — in progress)
-Plan: 1 of 2 in current phase (92-01 complete)
-Status: Phase 92 Plan 01 complete — echarts-gl type shim + protected _webglUnavailable + scatter-option-builder + scatter-registry
-Last activity: 2026-02-28 — Completed 92-01: foundational contracts for scatter/bubble chart
+Phase: 92 of 96 (Scatter/Bubble Chart with WebGL — complete)
+Plan: 2 of 2 in current phase (92-02 complete)
+Status: Phase 92 fully complete — LuiScatterChart component + Phase 92 public API exports (SCAT-01, SCAT-02, SCAT-03)
+Last activity: 2026-02-28 — Completed 92-02: LuiScatterChart + index.ts Phase 92 exports
 
-Progress: [███░░░░░░░] 27% (v9.0 milestone, 9 phases, 5 of 9 complete)
+Progress: [███░░░░░░░] 27% (v9.0 milestone, 9 phases, 6 of 9 complete)
 
 ## Accumulated Context
 
@@ -72,6 +72,9 @@ Progress: [███░░░░░░░] 27% (v9.0 milestone, 9 phases, 5 of 9
 - 92-01: scatterGL bubble mode uses fixed symbolSize with console.warn — GPU-side rendering cannot support per-point callbacks
 - 92-01: ScatterGLChart always registered unconditionally in registerScatterModules() — use() must be called for tree-shaken build to include module
 - 92-01: GL series options: progressive=1e5, progressiveThreshold=1e5, blendMode='source-over' — standard echarts-gl high-perf pattern
+- 92-02: No _streamingMode override in LuiScatterChart — base 'buffer' is correct; scatterGL does not support appendData (STRM-04)
+- 92-02: enableGl is a reactive property inherited from BaseChartElement — changed.has('enableGl') correctly tracks runtime toggles using camelCase key
+- 92-02: bubble @property declared with { type: Boolean } — consistent with other boolean chart props (showLabels, colorByData)
 
 ### Architecture Notes
 
@@ -82,14 +85,14 @@ Progress: [███░░░░░░░] 27% (v9.0 milestone, 9 phases, 5 of 9
 - BaseChartElement (88-03) is complete — all 5 critical pitfalls and 11 requirements implemented; Phases 89-95 extend without re-solving cross-cutting concerns
 - Phase 90 complete: LuiBarChart, LuiLineChart, LuiAreaChart all exported from @lit-ui/charts public API
 - Phase 91 complete: LuiPieChart (lui-pie-chart) exported from @lit-ui/charts with PieSlice + PieOptionProps types
-- Phase 92 Plan 01 complete: echarts-gl.d.ts type shim, protected _webglUnavailable, scatter-option-builder.ts, scatter-registry.ts
+- Phase 92 complete: LuiScatterChart (lui-scatter-chart) exported from @lit-ui/charts with ScatterPoint + ScatterOptionProps types; all SCAT requirements delivered
 
 ### TODOs
 *None.*
 
 ### Blockers/Concerns
 
-*None.* (Phase 92 echarts-gl type shim blocker resolved in 92-01)
+*None.*
 
 ### Tech Debt (carried forward)
 - 30 CLI tests need update for CSS variable naming change (--lui-* -> --ui-*)
@@ -118,21 +121,22 @@ Progress: [███░░░░░░░] 27% (v9.0 milestone, 9 phases, 5 of 9
 | 91 | 01 | 1min | 2 | 2 |
 | 91 | 02 | 2min | 2 | 2 |
 | 92 | 01 | 4min | 2 | 4 |
+| 92 | 02 | 1min | 2 | 2 |
 
 ## Session Continuity
 
 ### Last Session
-- 2026-02-28: Completed 92-01 — echarts-gl type shim (echarts-gl.d.ts), protected _webglUnavailable in BaseChartElement, scatter-option-builder.ts, scatter-registry.ts
+- 2026-02-28: Completed 92-02 — LuiScatterChart component (scatter-chart.ts), Phase 92 public API exports in index.ts (LuiScatterChart, ScatterPoint, ScatterOptionProps)
 
 ### Stopped At
-Completed 92-01-PLAN.md
+Completed 92-02-PLAN.md
 
 ### Next Actions
-92-01 complete. Continue to 92-02 (LuiScatterChart component).
+Phase 92 complete. Continue to Phase 93.
 
 ### Open Questions
 *None.*
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-02-28 — 91-02 complete, LuiPieChart component + Phase 91 public API exports, PIE-03 delivered*
+*Last updated: 2026-02-28 — 92-02 complete, LuiScatterChart component + Phase 92 public API exports, SCAT-01/02/03 delivered*
