@@ -51,7 +51,7 @@ Phases 1-68 are archived. See:
 - [x] **Phase 83: Popover** - Polish Popover styles, docs, and skill file (completed 2026-02-28)
 - [x] **Phase 84: Toast** - Polish Toast styles, docs, and skill file (completed 2026-02-28)
 - [x] **Phase 85: Accordion** - Polish Accordion styles, docs, and skill file (completed 2026-02-28)
-- [ ] **Phase 86: Tabs** - Polish Tabs styles, docs, and skill file
+- [x] **Phase 86: Tabs** - Polish Tabs styles, docs, and skill file (completed 2026-02-28)
 - [ ] **Phase 87: Data Table** - Polish Data Table styles, docs, and skill file
 
 ## Phase Details
@@ -364,5 +364,5 @@ Note: Phases 70-87 all depend on Phase 69. Phases 70-78 and 80-87 are independen
 | 83. Popover | 3/3 | Complete    | 2026-02-28 | - |
 | 84. Toast | 3/3 | Complete    | 2026-02-28 | - |
 | 85. Accordion | 3/3 | Complete    | 2026-02-28 | - |
-| 86. Tabs | v8.0 | 0/3 | Not started | - |
+| 86. Tabs | 3/3 | Complete   | 2026-02-28 | - |
 | 87. Data Table | v8.0 | 0/3 | Not started | - |

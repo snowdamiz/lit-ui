@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Design System Polish
 status: completed
-last_updated: "2026-02-28T08:34:00.778Z"
-last_activity: 2026-02-28 — Phase 85-03 complete (Accordion SKILL.md CSS tokens corrected 13→14 entries; --ui-accordion-gap added; 5 color token defaults updated to double-fallback var() form; Behavior Notes section with 13 entries added)
+last_updated: "2026-02-28T17:01:39Z"
+last_activity: 2026-02-28 — Phase 86-03 complete (Tabs SKILL.md CSS token color defaults corrected to double-fallback var() form; --ui-tabs-tab-active-bg uses literal white fallback; Behavior Notes section with 13 entries added)
 progress:
-  total_phases: 81
-  completed_phases: 81
-  total_plans: 282
-  completed_plans: 282
+  total_phases: 82
+  completed_phases: 82
+  total_plans: 285
+  completed_plans: 285
   percent: 100
 ---
 
@@ -20,15 +20,15 @@ progress:
 See: .planning/PROJECT.md (updated 2026-02-27)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** Phase 85 — Accordion Polish
+**Current focus:** Phase 86 — Tabs Polish
 
 ## Current Position
 
 **Milestone:** v8.0 Design System Polish — IN PROGRESS
-**Phase:** 85 of 87 (Accordion Polish) — IN PROGRESS
-**Plan:** 3 of 3 in Phase 85 — COMPLETE
-**Status:** Milestone complete
-**Last activity:** 2026-02-28 — Phase 85-03 complete (Accordion SKILL.md CSS tokens corrected 13→14 entries; --ui-accordion-gap added; 5 color token defaults updated to double-fallback var() form; Behavior Notes section with 13 entries added)
+**Phase:** 86 of 87 (Tabs Polish) — COMPLETE
+**Plan:** 3 of 3 in Phase 86 — COMPLETE
+**Status:** In progress
+**Last activity:** 2026-02-28 — Phase 86-03 complete (Tabs SKILL.md CSS token color defaults corrected to double-fallback var() form; --ui-tabs-tab-active-bg uses literal white fallback; Behavior Notes section with 13 entries added)
 
 **Progress:**
 [██████████] 100%
@@ -87,6 +87,9 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 | Phase 85-accordion P02 | 1min | 1 tasks | 1 files |
 | Phase 85-accordion P01 | 26s | 1 tasks | 1 files |
 | Phase 85-accordion P03 | 1min | 1 tasks | 1 files |
+| Phase 86-tabs P01 | 1min | 1 tasks | 1 files |
+| Phase 86-tabs P02 | 1min | 1 tasks | 1 files |
+| Phase 86-tabs P03 | 1min | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -145,6 +148,7 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 - Phase 84-03: Toast SKILL.md CSS token defaults corrected — bg/text/border use double-fallback var() form; shadow corrected to two-layer value; z-index corrected to 55; --ui-toast-padding row added (21 total tokens); all 12 variant oklch tokens filled with actual :root values; Behavior Notes section added with 13 entries
 - Phase 85-02: accordionCSSVars expanded from 13 to 14 entries — added missing --ui-accordion-gap token (default: 0); all 5 color token defaults corrected from single var() to double-fallback var(--color-X, var(--ui-color-X)) form matching tailwind.css :root; cssVarsCode example updated from rgba(0,0,0,0.05) to var(--color-accent, var(--ui-color-accent))
 - Phase 85-03: Accordion SKILL.md CSS token defaults corrected — 13→14 entries; --ui-accordion-gap added with default 0; 5 color token defaults updated to double-fallback var() form; Behavior Notes section with 13 entries (state management, controlled/uncontrolled, single/multi-expand, collapsible, lazy rendering, CSS Grid animation, reduced motion, keyboard nav, data-state, heading level, disabled propagation)
+- Phase 86-03: Tabs SKILL.md CSS token color defaults corrected to double-fallback var() form; --ui-tabs-tab-active-bg uses literal white fallback (matching tailwind.css :root); Behavior Notes section added with 13 entries (state management, controlled/uncontrolled mode, orientation, activation mode, roving tabindex, animated indicator, overflow scroll, lazy panels, data-state, keyboard nav, panel tabindex, SSR compatibility)
 
 ### Architecture Notes
 
@@ -175,14 +179,14 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 ## Session Continuity
 
 ### Last Session
-- Phase 85-03: Accordion SKILL.md CSS tokens corrected 13→14 entries; --ui-accordion-gap added; 5 color token defaults updated to double-fallback var() form; Behavior Notes section with 13 entries added
+- Phase 86-03: Tabs SKILL.md CSS tokens corrected to double-fallback var() form; --ui-tabs-tab-active-bg uses literal white fallback; Behavior Notes section with 13 entries added
 
 ### Next Actions
-Execute Phase 86 (next phase after Accordion Polish).
+Execute Phase 87 (next phase after Tabs Polish).
 
 ### Open Questions
 *None.*
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-02-28 — Phase 85-03 complete (Accordion SKILL.md CSS tokens corrected 13→14 entries; --ui-accordion-gap added; double-fallback var() colors; Behavior Notes with 13 entries)*
+*Last updated: 2026-02-28 — Phase 86-03 complete (Tabs SKILL.md CSS tokens corrected to double-fallback var() form; --ui-tabs-tab-active-bg literal white fallback; Behavior Notes with 13 entries)*
