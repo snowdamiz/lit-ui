@@ -1,508 +1,593 @@
-# Architecture Patterns: LitUI Data Table
+# Architecture Research: v9.0 Charts System (ECharts + Lit)
 
-**Domain:** Data Table Component for Admin Dashboards
-**Researched:** 2026-02-02
-**Focus:** Integration with existing LitUI architecture for 100K+ rows
+**Domain:** ECharts integration into Lit.js web components for @lit-ui/charts
+**Researched:** 2026-02-28
+**Confidence:** HIGH (lifecycle, Shadow DOM, SSR, option API) / MEDIUM (GL strategy)
 
-## Recommended Architecture
+---
 
-### Component Structure Overview
+## Critical Pre-Decision: ECharts Version
 
-```
-lui-data-table (Container/Controller)
-    |
-    +-- <lui-column> (Declarative column definitions - OPTIONAL slotted)
-    |
-    +-- Internal Components (Shadow DOM)
-        +-- HeaderRow (column headers, sort indicators, resize handles)
-        +-- VirtualizedBody (virtualized row container)
-        |       +-- Row[] (only visible rows rendered)
-        |               +-- Cell[] (using existing LitUI components for editing)
-        +-- FooterRow (pagination, bulk actions)
-```
+**Use ECharts 5.6.0, not 6.0.0.**
 
-**Hybrid API approach:** Support both programmatic `columns` property AND declarative `<lui-column>` children (like Select supports both `options` property and slotted `<lui-option>`).
+ECharts 6.0.0 is the npm `latest` tag, but `echarts-gl@2.x` (the WebGL extension) has a peer dependency of `echarts: "^5.1.2"` and was last released August 2024 (v2.0.9). Two PRs are open as of February 2026 to fix GL compatibility with ECharts 6, but neither is merged yet.
 
-### Integration Points with Existing LitUI
+| Package | Version to use | Reason |
+|---------|----------------|--------|
+| `echarts` | `^5.6.0` | Last stable 5.x; GL-compatible |
+| `echarts-gl` | `^2.0.9` | Requires echarts ^5.1.2 |
 
-| LitUI Component | Integration Point | Usage in Data Table |
-|-----------------|-------------------|---------------------|
-| `TailwindElement` | Base class | All table components extend this for dual-mode styling |
-| `@tanstack/lit-virtual` | Row virtualization | Reuse pattern from Select for virtualized row rendering |
-| `VirtualizerController` | Controller pattern | Same approach as Select, manages visible row window |
-| `Floating UI` | Column menus/filters | Dropdown filters, column visibility picker |
-| `lui-checkbox` | Row selection | Bulk selection checkboxes in each row |
-| `lui-input` | Inline cell editing | Text/number cell editors |
-| `lui-select` | Inline cell editing | Dropdown cell editors |
-| `lui-popover` | Filter dropdowns | Column filter UI |
-| `dispatchCustomEvent` | Event pattern | `ui-sort`, `ui-filter`, `ui-select`, `ui-edit` events |
-| `ElementInternals` | Form participation | Table value as JSON/FormData for form submission |
+Pin ECharts 5 explicitly in the package. When echarts-gl releases a 6.x-compatible version, upgrade both together. ECharts 5's core API (`init`, `setOption`, `dispose`, `getInstanceByDom`) is unchanged in 6.x, so the upgrade path is low-risk.
 
-### Data Flow Architecture
+---
+
+## System Overview
 
 ```
-                    +-------------------+
-                    |   External Data   |
-                    |   (rows[], page)  |
-                    +---------+---------+
-                              |
-                              v
-+--------------------+   +----------+   +--------------------+
-| Server-Side Mode   |<--|  Table   |-->| Client-Side Mode   |
-| (manual=true)      |   | State    |   | (manual=false)     |
-| - API pagination   |   |          |   | - In-memory sort   |
-| - API sorting      |   |          |   | - In-memory filter |
-| - API filtering    |   |          |   | - In-memory page   |
-+--------------------+   +----------+   +--------------------+
-                              |
-                              v
-                    +---------+---------+
-                    |  VirtualizerCtrl  |
-                    |  (visible rows)   |
-                    +---------+---------+
-                              |
-                              v
-                    +-------------------+
-                    |   Rendered DOM    |
-                    | (20-50 rows only) |
-                    +-------------------+
+┌─────────────────────────────────────────────────────────────────────┐
+│                     Consumer Application                             │
+│  <lui-line-chart .option=${...} />                                   │
+│  <lui-scatter-chart .option=${...} enable-gl />                      │
+└───────────────────────────────┬─────────────────────────────────────┘
+                                │
+┌───────────────────────────────▼─────────────────────────────────────┐
+│                    @lit-ui/charts Package                            │
+│                                                                      │
+│  ┌──────────────┐  ┌──────────┐  ┌──────────┐  ┌──────────────┐    │
+│  │ lui-line     │  │ lui-bar  │  │lui-scatter│  │  lui-pie     │    │
+│  │ lui-area     │  │          │  │lui-bubble │  │  lui-donut   │    │
+│  └──────┬───────┘  └────┬─────┘  └─────┬────┘  └──────┬───────┘    │
+│         │               │              │              │             │
+│  ┌──────┴───────────────┴──────────────┴──────────────┴───────┐    │
+│  │                  BaseChartElement (LitElement)               │    │
+│  │  - ECharts init/dispose lifecycle                           │    │
+│  │  - ResizeObserver management                                │    │
+│  │  - Theme bridge (CSS vars → registerTheme)                  │    │
+│  │  - isServer guard (SSR no-op)                               │    │
+│  │  - option passthrough + setOption update management         │    │
+│  └─────────────────────────┬───────────────────────────────────┘    │
+│                             │                                        │
+│  ┌──────────────────────────▼─────────────────────────────────┐     │
+│  │                    echarts-registry.ts                       │     │
+│  │  - Central echarts.use([...]) registrations per chart type  │     │
+│  │  - CanvasRenderer + LabelLayout + UniversalTransition        │     │
+│  │  - Chart-specific: LineChart, BarChart, etc.                 │     │
+│  └──────────────────────────┬─────────────────────────────────┘     │
+└─────────────────────────────┼───────────────────────────────────────┘
+                              │
+         ┌────────────────────┴──────────────────┐
+         │                                        │
+┌────────▼──────────┐               ┌─────────────▼──────────┐
+│   echarts@5.6.0   │               │  echarts-gl@2.0.9       │
+│   (always loaded) │               │  (dynamic import,       │
+│                   │               │   opt-in per chart)     │
+└───────────────────┘               └────────────────────────┘
 ```
 
-### State Management Pattern
+---
 
-Follow existing LitUI controlled/uncontrolled pattern:
+## Question 1: Lifecycle — init / dispose in Lit
+
+**Recommendation: init in `firstUpdated`, dispose in `disconnectedCallback`, guard with `isServer`.**
+
+Lit's `firstUpdated()` is called once, after the component's initial render, when the shadow DOM is attached and the container `<div>` is in the real DOM. This is the correct place to call `echarts.init()`. Using `connectedCallback` directly risks firing before shadow DOM children exist; using `updated()` for init risks re-initializing on every property change.
 
 ```typescript
-// Controlled mode (external state management)
-<lui-data-table
-  .rows=${serverData}
-  .sortState=${sortState}
-  .filterState=${filterState}
-  .pagination=${pagination}
-  manual
-  @ui-sort-change=${handleSort}
-  @ui-filter-change=${handleFilter}
-  @ui-page-change=${handlePage}
->
+import { LitElement, html, PropertyValues } from 'lit';
+import { isServer } from 'lit';
+import * as echarts from 'echarts/core';
+import type { ECharts } from 'echarts/core';
 
-// Uncontrolled mode (internal state management)
-<lui-data-table
-  .rows=${allData}
-  default-sort="name:asc"
-  default-page-size="25"
->
-```
+export abstract class BaseChartElement extends LitElement {
+  private _chart?: ECharts;
+  private _resizeObserver?: ResizeObserver;
 
-## Component Boundaries
+  protected firstUpdated(_changedProps: PropertyValues): void {
+    // isServer guard: firstUpdated does not fire during SSR, but
+    // belt-and-suspenders guard prevents issues with future Lit changes.
+    if (isServer) return;
+    this._initChart();
+  }
 
-### lui-data-table (Main Component)
+  private _initChart(): void {
+    const container = this.shadowRoot?.querySelector<HTMLDivElement>('#chart');
+    if (!container) return;
 
-**Responsibilities:**
-- Column configuration management (from props or slotted children)
-- Virtualization orchestration via VirtualizerController
-- State management (sort, filter, selection, pagination)
-- Event dispatch to consumers
-- Form participation via ElementInternals
-- Keyboard navigation coordination
+    // Guard: dispose stale instance if DOM was reused (e.g. moved via moveBefore())
+    const existing = echarts.getInstanceByDom(container);
+    if (existing) existing.dispose();
 
-**Properties:**
-```typescript
-// Data
-rows: T[] | Promise<T[]>           // Data source
-columns: ColumnDef<T>[]            // Column definitions (alt to slotted)
-rowKey: keyof T | ((row: T) => string)  // Row identity
+    this._chart = echarts.init(container, this._resolvedTheme, {
+      renderer: 'canvas',
+    });
 
-// State (controlled)
-sortState?: SortState[]
-filterState?: FilterState[]
-selectedRows?: Set<string>
-pagination?: PaginationState
+    this._resizeObserver = new ResizeObserver(() => {
+      this._chart?.resize();
+    });
+    this._resizeObserver.observe(container);
 
-// State (uncontrolled defaults)
-defaultSort?: string               // "field:asc,field2:desc"
-defaultPageSize?: number
-defaultPage?: number
+    // Apply initial option
+    if (this.option) {
+      this._chart.setOption(this.option);
+    }
+  }
 
-// Modes
-manual?: boolean                   // Server-side mode
-selectable?: boolean | 'single' | 'multiple'
-editable?: boolean | 'cell' | 'row'
-
-// Virtual scrolling
-rowHeight?: number                 // Default: 48
-overscan?: number                  // Default: 10
-```
-
-### lui-column (Optional Declarative Definition)
-
-**Responsibilities:**
-- Declare column configuration as markup
-- Support slotted header/cell templates
-
-**Properties:**
-```typescript
-field: string                      // Data field path
-header?: string                    // Header text
-width?: string | number            // Column width
-minWidth?: number
-maxWidth?: number
-sortable?: boolean
-filterable?: boolean | 'text' | 'select' | 'date' | 'number'
-editable?: boolean
-resizable?: boolean
-hidden?: boolean
-pinned?: 'left' | 'right'
-```
-
-**Slots:**
-- `header` - Custom header content
-- `cell` - Custom cell template (receives row data)
-- `editor` - Custom editor component
-- `filter` - Custom filter UI
-
-### Internal: HeaderRow
-
-**Responsibilities:**
-- Render column headers with sort indicators
-- Handle click-to-sort
-- Resize handles via drag events
-- Column reorder via drag-and-drop (using native drag events)
-
-### Internal: VirtualizedBody
-
-**Responsibilities:**
-- Use VirtualizerController (same as Select)
-- Calculate visible row range
-- Render only visible rows with transform positioning
-- Handle scroll events
-
-### Internal: Cell
-
-**Responsibilities:**
-- Display mode: Render cell value
-- Edit mode: Switch to appropriate editor component
-- Handle edit lifecycle (enter/exit edit mode, save/cancel)
-
-## Virtualization Strategy
-
-### Row-Only Virtualization (Recommended for v1)
-
-**Rationale:**
-- Matches existing Select implementation pattern
-- Sufficient for 100K+ rows with < 50 columns
-- Column virtualization adds significant complexity
-- Most admin dashboards have 10-30 columns
-
-**Implementation:**
-```typescript
-private _virtualizer?: VirtualizerController<HTMLDivElement, Element>;
-
-private updateVirtualizer(): void {
-  const scrollElement = this._bodyRef.value;
-  if (!scrollElement) return;
-
-  this._virtualizer = new VirtualizerController(this, {
-    getScrollElement: () => this._bodyRef.value ?? null,
-    count: this.filteredRows.length,
-    estimateSize: () => this.rowHeight,
-    overscan: this.overscan,
-  });
-}
-
-private renderVirtualizedRows(): TemplateResult {
-  const virtualizer = this._virtualizer.getVirtualizer();
-  const virtualItems = virtualizer.getVirtualItems();
-  const totalSize = virtualizer.getTotalSize();
-
-  return html`
-    <div class="virtual-rows" style="height: ${totalSize}px; position: relative;">
-      ${virtualItems.map((item) => html`
-        <div
-          class="table-row"
-          style="transform: translateY(${item.start}px); height: ${item.size}px; position: absolute; width: 100%;"
-        >
-          ${this.renderRow(this.filteredRows[item.index], item.index)}
-        </div>
-      `)}
-    </div>
-  `;
+  disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this._resizeObserver?.disconnect();
+    this._resizeObserver = undefined;
+    this._chart?.dispose();
+    this._chart = undefined;
+  }
 }
 ```
 
-### Column Virtualization (Future Enhancement)
+**Why `firstUpdated` over `connectedCallback`:**
+- `connectedCallback` fires before shadow DOM is rendered — `this.shadowRoot.querySelector('#chart')` returns null.
+- `firstUpdated` is Lit-specific and fires after the first `render()` call completes.
+- `updated()` is correct for re-applying options on property changes, not for init.
 
-For tables with 50+ columns, add horizontal virtualization:
+**connectedCallback move-gotcha:** If a DOM node is moved via `moveBefore()` (Chrome 133+), `disconnectedCallback` + `connectedCallback` fire but `firstUpdated` does not fire again. Guard re-init with `echarts.getInstanceByDom()` check.
 
-```typescript
-// Future: 2D virtualization
-private _rowVirtualizer: VirtualizerController;
-private _colVirtualizer: VirtualizerController;
+---
 
-// Only render visible columns
-const visibleColumns = this._colVirtualizer
-  .getVirtualizer()
-  .getVirtualItems()
-  .map(item => this.columns[item.index]);
-```
+## Question 2: Shadow DOM — Does ECharts Need a Node Outside Shadow Root?
 
-## Event Patterns
+**No. ECharts works inside Shadow DOM when given the container div directly.**
 
-Following existing LitUI event naming convention (`ui-*`):
+ECharts `init()` accepts any `HTMLElement` — it does not use `document.getElementById` internally. Passing `this.shadowRoot.querySelector('#chart')` works correctly.
 
-| Event | Payload | When |
-|-------|---------|------|
-| `ui-sort-change` | `{ field, direction, multiSort[] }` | User clicks sortable header |
-| `ui-filter-change` | `{ field, operator, value, filters[] }` | Filter value changes |
-| `ui-page-change` | `{ page, pageSize, offset }` | Pagination change |
-| `ui-selection-change` | `{ selected: Set<string>, row?, all? }` | Row selection change |
-| `ui-row-click` | `{ row, index }` | Row clicked |
-| `ui-cell-edit-start` | `{ row, field, value }` | Cell enters edit mode |
-| `ui-cell-edit-end` | `{ row, field, oldValue, newValue, cancelled }` | Cell exits edit mode |
-| `ui-row-edit-start` | `{ row }` | Row enters edit mode |
-| `ui-row-edit-end` | `{ row, changes, cancelled }` | Row exits edit mode |
-| `ui-column-resize` | `{ field, width }` | Column resized |
-| `ui-column-reorder` | `{ columns[] }` | Columns reordered |
+The only real issue is **width/height = 0** at init time. If the chart container has no explicit dimensions when `firstUpdated` fires, ECharts logs a warning and renders blank. Two mitigations:
 
-## Keyboard Navigation
-
-Following W3C APG Grid pattern:
-
-| Key | Action |
-|-----|--------|
-| Arrow Keys | Move cell focus |
-| Page Up/Down | Jump 10 rows |
-| Home/End | First/last column in row |
-| Ctrl+Home/End | First/last cell in table |
-| Enter | Enter edit mode / confirm edit |
-| Escape | Cancel edit / exit cell focus |
-| Tab | Move to next focusable (exit grid or next editable) |
-| Space | Toggle row selection |
-| Ctrl+A | Select all rows |
-
-## Styling Architecture
-
-Use CSS Grid for column layout (matches existing Tabs pattern):
+1. Give the host element `display: block` and `min-height` via `:host` CSS — this ensures the container has non-zero dimensions before ECharts measures it.
+2. Use `ResizeObserver` — even if the initial size is 0, the observer fires as soon as the layout is complete, triggering `resize()`.
 
 ```css
-.table-grid {
-  display: grid;
-  grid-template-columns: var(--lui-table-columns);
-  /* Dynamic: repeat(6, minmax(100px, 1fr)) */
+/* In BaseChartElement styles */
+:host {
+  display: block;   /* custom elements are inline by default */
+  min-height: 300px;
 }
-
-.table-row {
-  display: contents; /* Children participate in parent grid */
-}
-
-.table-cell {
-  /* Inherits grid positioning from parent */
-  padding: var(--ui-table-cell-padding);
-  border-bottom: 1px solid var(--ui-table-border);
-}
-
-/* Pinned columns use sticky positioning */
-.cell-pinned-left {
-  position: sticky;
-  left: 0;
-  z-index: 1;
-  background: var(--ui-table-bg);
+#chart {
+  width: 100%;
+  height: 100%;
 }
 ```
 
-## Anti-Patterns to Avoid
+**Shadow DOM does NOT require a node outside the shadow root.** The canvas element is rendered inside the shadow root's `#chart` div. ECharts manages its own internal canvas creation from the provided container.
 
-### Anti-Pattern 1: Rendering All Rows
+**Shadow DOM CSS isolation note:** ECharts injects its own `<canvas>` and tooltip DOM. The tooltip DOM is injected as a sibling `<div>` inside the container — it stays inside the shadow root, which means global CSS cannot accidentally style it. ECharts tooltip styling must be done via the `option.tooltip.extraCssText` property or ECharts' own theme object, not via external stylesheets.
 
-**What:** Rendering full DOM for all 100K rows
-**Why bad:** Browser crashes, multi-second render times
-**Instead:** Use VirtualizerController (already proven in Select)
+---
 
-### Anti-Pattern 2: Deep Component Nesting for Cells
+## Question 3: Option API — Full Passthrough, Declarative Props, or Hybrid
 
-**What:** `<lui-table-row><lui-table-cell>` for every cell
-**Why bad:** Thousands of custom element upgrades, memory explosion
-**Instead:** Rows are templates, not components. Only the table container is a custom element.
+**Recommendation: Hybrid — full option passthrough as primary API, declarative props for cross-cutting concerns.**
 
-### Anti-Pattern 3: Two-Way Binding for Server Data
+This is the pattern used by every mature ECharts wrapper (vue-echarts, echarts-for-react). ECharts' option object is intentionally the complete API surface; building declarative props for every series type would replicate ECharts' entire documentation.
 
-**What:** Modifying row data directly in the table
-**Why bad:** Server data should be immutable; edits should go through API
-**Instead:** Dispatch edit events, let consumer update data and re-pass to table
+### Core API Shape
 
-### Anti-Pattern 4: Global Event Listeners for Resize
+```typescript
+export abstract class BaseChartElement extends LitElement {
+  // PRIMARY: Full ECharts option passthrough
+  @property({ attribute: false })
+  option?: ECOption;
 
-**What:** Attaching global mouse listeners for column resize
-**Why bad:** Memory leaks, conflicts with other components
-**Instead:** Use pointer capture API on resize handles
+  // CROSS-CUTTING: Declarative props for wrapper concerns
+  @property({ type: String })
+  theme?: string;               // Named theme: 'dark' or custom registered name
 
-## Suggested Build Order
+  @property({ type: Boolean })
+  loading = false;              // Show ECharts loading animation
 
-Based on dependency analysis and existing component patterns:
+  @property({ attribute: false })
+  loadingOption?: object;       // Custom loading animation options
 
-### Phase 1: Core Table Shell (Foundation)
-**Build:**
-- `lui-data-table` base class extending TailwindElement
-- Column configuration via `columns` property
-- Static row rendering (no virtualization)
-- Basic CSS Grid layout
+  @property({ type: Boolean, attribute: 'enable-gl' })
+  enableGl = false;             // Opt-in WebGL via echarts-gl (see Q4)
 
-**Dependencies:** TailwindElement, CSS tokens
-**Reuse:** Pattern from Accordion container
+  @property({ type: Boolean, attribute: 'auto-resize' })
+  autoResize = true;            // Default on; disable for fixed-size charts
 
-### Phase 2: Row Virtualization (Critical Path)
-**Build:**
-- VirtualizerController integration
-- Virtualized body rendering
-- Scroll handling
+  // ADVANCED: setOption update control
+  @property({ attribute: false })
+  updateOptions?: { notMerge?: boolean; replaceMerge?: string | string[]; silent?: boolean };
 
-**Dependencies:** Phase 1
-**Reuse:** VirtualizerController pattern from Select
+  // ESCAPE HATCH: Direct ECharts instance access
+  getChart(): ECharts | undefined {
+    return this._chart;
+  }
+}
+```
 
-### Phase 3: Sorting (User Interaction)
-**Build:**
-- Click-to-sort on headers
-- Multi-column sort (shift+click)
-- Sort indicators
-- Client-side sort implementation
-- `manual` mode for server-side sort
+### Option Change Handling
 
-**Dependencies:** Phase 2
-**Reuse:** Icon patterns from existing components
+When `option` changes, call `setOption` with merge semantics (ECharts default). Do NOT reinitialize — `setOption` is incremental and preserves animation state.
 
-### Phase 4: Row Selection (User Interaction)
-**Build:**
-- Checkbox column
-- Single/multiple selection modes
-- Bulk selection (header checkbox)
-- Keyboard selection (Space)
-- Selection state management
+```typescript
+protected updated(changedProps: PropertyValues): void {
+  if (!this._chart) return;
+  if (changedProps.has('option') && this.option) {
+    this._chart.setOption(this.option, this.updateOptions ?? {});
+  }
+  if (changedProps.has('loading')) {
+    this.loading
+      ? this._chart.showLoading('default', this.loadingOption)
+      : this._chart.hideLoading();
+  }
+}
+```
 
-**Dependencies:** Phase 2
-**Reuse:** lui-checkbox component
+**Why not full declarative props:** ECharts has ~400 configurable option fields. A declarative component API covering line series `areaStyle`, `markLine`, `markPoint`, `encode`, `dataset`, `transform` etc. would need to duplicate the entire ECharts option schema. No production wrapper does this. vue-echarts explicitly documents that the `option` prop is the primary API.
 
-### Phase 5: Pagination (Navigation)
-**Build:**
-- Pagination controls (footer)
-- Page size selector
-- Page navigation
-- Client-side pagination
-- `manual` mode for server-side pagination
+**Why not pure passthrough:** Without `loading`, `theme`, `enableGl`, and `autoResize` as props, consumers need to understand ECharts internals for tasks that the wrapper should handle. The hybrid is the right balance.
 
-**Dependencies:** Phase 3 (sorting affects page content)
-**Reuse:** lui-select for page size dropdown
+---
 
-### Phase 6: Column Filtering (Search)
-**Build:**
-- Filter UI per column (in header or dropdown)
-- Text, select, number, date filter types
-- Client-side filtering
-- `manual` mode for server-side filtering
-- Filter state management
+## Question 4: echarts-gl WebGL — Loading Strategy
 
-**Dependencies:** Phase 5
-**Reuse:** lui-input, lui-select, lui-popover, Floating UI
+**Recommendation: Opt-in per chart instance via `enable-gl` attribute + dynamic import.**
 
-### Phase 7: Column Customization (Advanced)
-**Build:**
-- Column resize (drag handles)
-- Column reorder (drag-and-drop)
-- Column visibility toggle
-- Column pinning (left/right sticky)
-- State persistence (localStorage)
+echarts-gl's unpackaged size is ~7MB. Importing it unconditionally would add significant weight to every page that uses any chart. The correct strategy is a prop-gated dynamic import.
 
-**Dependencies:** Phase 3 (headers must be built)
-**Reuse:** Native drag events pattern
+### Strategy
 
-### Phase 8: Inline Editing (Advanced)
-**Build:**
-- Cell edit mode
-- Row edit mode
-- Edit lifecycle events
-- Form validation integration
-- Editor component integration
+```typescript
+// In BaseChartElement, before echarts.init():
+private async _maybeLoadGl(): Promise<void> {
+  if (!this.enableGl) return;
+  // Dynamic import — bundler creates a separate chunk
+  await import('echarts-gl');
+  // echarts-gl registers itself with echarts via side-effects on import
+}
 
-**Dependencies:** Phase 4 (selection often related to editing)
-**Reuse:** lui-input, lui-select, lui-checkbox for editors
+protected async firstUpdated(_changedProps: PropertyValues): Promise<void> {
+  if (isServer) return;
+  await this._maybeLoadGl();
+  this._initChart();
+}
+```
 
-### Phase 9: Declarative API (DX)
-**Build:**
-- `<lui-column>` element
-- Slotchange discovery (same as Accordion)
-- Template slots for custom cells
-- Merge with programmatic columns
+The `import('echarts-gl')` is a side-effect import — echarts-gl registers its chart types and components with the global ECharts instance automatically on load. No explicit `echarts.use([...])` call is needed for GL components.
 
-**Dependencies:** Phase 1-6 complete
-**Reuse:** Slot pattern from Accordion, Tabs, Select
+### Which Charts Need GL
 
-### Phase 10: Server-Side Integration (Production)
-**Build:**
-- Async data loading (`rows` as Promise)
-- Loading states and skeletons
-- Error handling and retry
-- Infinite scroll (optional)
+| Chart Type | `enable-gl` Required? | Reason |
+|------------|----------------------|--------|
+| `lui-line` | No | 2D canvas is sufficient |
+| `lui-bar` | No | 2D canvas is sufficient |
+| `lui-area` | No | 2D canvas is sufficient |
+| `lui-pie` / `lui-donut` | No | 2D canvas is sufficient |
+| `lui-heatmap` | No | 2D heatmap works without GL |
+| `lui-candlestick` | No | Standard 2D chart |
+| `lui-treemap` | No | Standard 2D chart |
+| `lui-scatter` / `lui-bubble` | Optional | Enable for 1M+ points (`scatter3D`) |
 
-**Dependencies:** All previous phases
-**Reuse:** @lit/task pattern from Select
+For `lui-scatter`, `enable-gl` activates the `scatter3D` series type instead of `scatter`. The component should fall back to 2D `scatter` when GL is not loaded, or throw a clear error if the consumer passes a `scatter3D` option without `enable-gl`.
+
+**Bundle size guidance for consumers:**
+```
+echarts (5.x, tree-shaken):    ~200–400KB gzip (varies by chart types registered)
+echarts-gl (2.0.9, full):      ~7MB unpacked / ~2MB gzip (loaded only on demand)
+```
+
+---
+
+## Question 5: SSR — Pattern for Charts That Cannot Render Server-Side
+
+**Recommendation: Render a sized placeholder div server-side; initialize ECharts only on the client in `firstUpdated`.**
+
+ECharts requires real DOM, `canvas`, and `ResizeObserver` — none exist in the `@lit-labs/ssr` Node.js environment. Charts must not attempt any ECharts API during SSR.
+
+### Why This Works Without Hydration Mismatch
+
+Lit's `firstUpdated()` lifecycle hook **does not fire during SSR**. It is a client-only hook that runs after the component's first browser render. This means no explicit `isServer` guard is needed inside `firstUpdated` — however, one should be added defensively for future Lit version changes.
+
+The server renders the same static HTML the client would render for the container — an empty `<div id="chart">`. ECharts then imperatively fills that div with a canvas on the client. Since ECharts' canvas is not part of Lit's declarative template, there is no Lit hydration mismatch.
+
+### SSR Implementation Pattern
+
+```typescript
+render() {
+  // Both server and client render identical markup.
+  // ECharts content is imperatively added inside #chart after firstUpdated.
+  return html`
+    <div id="chart" part="chart"></div>
+  `;
+}
+
+protected firstUpdated(_changedProps: PropertyValues): void {
+  // This hook never fires on the server.
+  // isServer guard is belt-and-suspenders.
+  if (isServer) return;
+  this._initChart();
+}
+```
+
+### Declarative Shadow DOM Compatibility
+
+This approach is compatible with `@lit-labs/ssr` Declarative Shadow DOM output. The server outputs:
+
+```html
+<lui-line-chart>
+  <template shadowrootmode="open">
+    <div id="chart" part="chart"></div>
+    <!-- Constructable stylesheets injected inline for SSR mode -->
+  </template>
+</lui-line-chart>
+```
+
+When the browser parses this, the shadow root is pre-attached. Lit's hydration (`@lit-labs/ssr-client/lit-element-hydrate-support.js`) recognizes the pre-existing shadow root. `firstUpdated` fires, and ECharts init proceeds normally.
+
+### SSR ECharts Option (Advanced — Not Recommended for v9.0)
+
+ECharts 5.3+ supports `{ ssr: true, renderer: 'svg' }` init for generating static SVG strings server-side. This is a valid pattern for above-the-fold charts requiring fast first-contentful-paint (FCP). It is complex to implement (requires a Node.js build step, SVG serialization, and client re-hydration). Skip for v9.0 — the placeholder pattern is sufficient and matches how every other LitUI component handles SSR (form components skip DOM work, calendar skips interaction setup, etc.).
+
+---
+
+## Question 6: Build Order for 8 Chart Types
+
+Build shared infrastructure first, then chart types ordered by simplicity and re-use of shared patterns.
+
+### Build Order
+
+```
+Phase 1: BaseChartElement + Package Scaffolding  ← blocks everything
+    |
+Phase 2: ThemeBridge (CSS vars → ECharts theme)  ← needed before visual polish
+    |
+Phase 3: lui-line + lui-area (simplest, highest demand)
+    |
+Phase 4: lui-bar (grouped/stacked variants)
+    |
+Phase 5: lui-pie + lui-donut (polar/arc, different option shape)
+    |
+Phase 6: lui-scatter + lui-bubble (GL opt-in path proven here)
+    |
+Phase 7: lui-heatmap (coordinate system differs from previous)
+    |
+Phase 8: lui-candlestick (financial, specialized axis)
+    |
+Phase 9: lui-treemap (hierarchical data, no axes)
+    |
+Phase 10: CLI integration + docs
+```
+
+### Rationale Per Phase
+
+**Phase 1 — BaseChartElement + Package Scaffolding (Foundation)**
+All chart components extend this. Build first. Includes:
+- `BaseChartElement` extending `TailwindElement` (same as all other @lit-ui/x packages)
+- `echarts/core` + `CanvasRenderer` import, `echarts.use()` pattern
+- `firstUpdated` init, `disconnectedCallback` dispose, `ResizeObserver` management
+- `option` prop, `loading` prop, `theme` prop, `enableGl` prop
+- `getChart()` escape hatch
+- `@lit-ui/charts` package.json with `echarts ^5.6.0` and `echarts-gl ^2.0.9` as peer/optional deps
+- Shared CSS: `:host { display: block; min-height: 300px; }` pattern
+
+**Phase 2 — ThemeBridge (CSS vars → ECharts registerTheme)**
+Before any chart looks correct. The ThemeBridge reads `getComputedStyle()` on the host element for `--ui-chart-*` tokens and calls `echarts.registerTheme('lit-ui', ...)`. This runs in `firstUpdated` before `echarts.init()`. The theme name `'lit-ui'` is passed as the second argument to `echarts.init(container, 'lit-ui')`.
+
+**Phase 3 — lui-line, lui-area (simplest 2D)**
+- Use `echarts/core` + `LineChart` + `GridComponent` + `TooltipComponent` + `LegendComponent`
+- `lui-area` is a line chart with `option.series[].areaStyle` — share the same component class with an `area` boolean attribute, or make it a subclass. Separate components (`<lui-line-chart>`, `<lui-area-chart>`) is cleaner for consumers.
+- Establishes the full component pattern all subsequent charts follow.
+
+**Phase 4 — lui-bar**
+- Register `BarChart`
+- Add `stacked` and `horizontal` boolean attributes (map to `option.series[].stack` and `option.yAxis/xAxis` swap)
+- Grouped bars need no extra API — consumers control series configuration.
+
+**Phase 5 — lui-pie, lui-donut**
+- Register `PieChart`
+- No Cartesian grid — different coordinate system from previous charts
+- `lui-donut` = `lui-pie` with `option.series[].radius: ['40%', '70%']` — expose as `inner-radius` attribute
+- Validate this works correctly with ThemeBridge (polar vs. Cartesian color application differs).
+
+**Phase 6 — lui-scatter, lui-bubble (GL path)**
+- Register `ScatterChart`
+- This is where `enableGl` + dynamic `import('echarts-gl')` is implemented and tested.
+- `lui-bubble` = scatter with `symbolSize` mapped from data dimension.
+- Proves the GL lazy-load path before proceeding.
+
+**Phase 7 — lui-heatmap**
+- Register `HeatmapChart` + `VisualMapComponent`
+- Cartesian heatmap (x/y axis + value) differs from calendar heatmap — implement Cartesian first.
+- New VisualMap component registration not previously needed.
+
+**Phase 8 — lui-candlestick**
+- Register `CandlestickChart` + `DataZoomComponent`
+- Most specialized data format (OHLC array per item).
+- DataZoom component for pan/zoom is specific to financial charts.
+
+**Phase 9 — lui-treemap**
+- Register `TreemapChart`
+- Hierarchical/nested data shape unlike all previous charts.
+- No axes — pure space-filling layout.
+
+**Phase 10 — CLI + Docs**
+- CLI registry entries for all 8 chart types (`npx lit-ui add line-chart`)
+- Copy-source templates (charts are complex enough that starter shells are valuable)
+- Documentation pages with interactive demos
+- CSS token reference (`--ui-chart-*` complete table)
+
+---
+
+## Package Structure
+
+```
+packages/charts/
+├── src/
+│   ├── base/
+│   │   ├── base-chart-element.ts      # BaseChartElement (LitElement subclass)
+│   │   └── theme-bridge.ts            # CSS vars → echarts registerTheme
+│   ├── registry/
+│   │   ├── canvas-core.ts             # echarts.use([CanvasRenderer, ...shared...])
+│   │   ├── line-registry.ts           # echarts.use([LineChart, GridComponent, ...])
+│   │   ├── bar-registry.ts            # echarts.use([BarChart, ...])
+│   │   └── ... (one per chart type)
+│   ├── line/
+│   │   └── lui-line-chart.ts
+│   ├── area/
+│   │   └── lui-area-chart.ts
+│   ├── bar/
+│   │   └── lui-bar-chart.ts
+│   ├── pie/
+│   │   └── lui-pie-chart.ts
+│   ├── donut/
+│   │   └── lui-donut-chart.ts
+│   ├── scatter/
+│   │   └── lui-scatter-chart.ts       # enableGl → dynamic import('echarts-gl')
+│   ├── heatmap/
+│   │   └── lui-heatmap-chart.ts
+│   ├── candlestick/
+│   │   └── lui-candlestick-chart.ts
+│   ├── treemap/
+│   │   └── lui-treemap-chart.ts
+│   └── index.ts                       # Re-exports all components
+├── package.json                       # peerDeps: lit, @lit-ui/core, echarts@^5.6.0
+└── tsconfig.json
+```
+
+### Structure Rationale
+
+- **`base/`**: Shared lifecycle and theme logic — every chart extends `BaseChartElement`.
+- **`registry/`**: Centralized `echarts.use()` calls. Each chart type imports its own registry file which registers only the ECharts components it needs (tree-shaking). All share `canvas-core.ts` (CanvasRenderer + universal features).
+- **`src/[type]/`**: One folder per chart component, matching the pattern of other @lit-ui packages.
+- **`echarts-gl` is not registered in any registry file** — it is always loaded via dynamic `import('echarts-gl')` gated on `enableGl`.
+
+---
+
+## Data Flow: option Property → ECharts Instance
+
+```
+Consumer sets .option = { series: [...], xAxis: {...}, ... }
+    │
+    ▼
+Lit reactive property setter fires
+    │
+    ▼ (next microtask)
+Lit calls updated(changedProps)
+    │
+    ├─ changedProps.has('option')? → this._chart.setOption(this.option, this.updateOptions)
+    │     ECharts merges new option with existing state (incremental update)
+    │     Animations play for changed data points
+    │
+    └─ changedProps.has('loading')? → showLoading() / hideLoading()
+```
+
+**Key behavior**: `setOption` is incremental by default. Passing a new series array updates the series without removing unchanged axes, grid, or legend. To do a full replace, consumer passes `updateOptions: { notMerge: true }` or the component detects structural changes and applies `notMerge` automatically (not recommended — keep it simple, let consumer control).
+
+---
+
+## Integration Points with Existing LitUI
+
+| Existing Infrastructure | How Charts Use It |
+|-------------------------|-------------------|
+| `TailwindElement` | `BaseChartElement extends TailwindElement` — dual-mode styling (SSR inline CSS, client constructable stylesheets) |
+| `isServer` guard | `firstUpdated` guard prevents any ECharts API on server |
+| `--ui-[component]-*` CSS token pattern | `--ui-chart-*` tokens read by ThemeBridge and passed to `echarts.registerTheme()` |
+| `:host-context(.dark)` pattern | ThemeBridge re-reads CSS vars and calls `echarts.registerTheme()` + re-initializes chart when `prefers-color-scheme` or `.dark` class changes |
+| pnpm workspaces + lockstep versioning | `@lit-ui/charts` follows same versioning as all other packages |
+| `dispatchCustomEvent` | Chart events (`ui-chart-click`, `ui-chart-ready`, `ui-chart-datazoom`) follow `ui-*` naming |
+| CLI registry pattern | Each chart type gets an entry in CLI registry; copy-source templates are chart-specific |
+
+---
 
 ## New vs Modified Components
 
-### New Components (to be created)
+### New Components (to be created in @lit-ui/charts)
 
-| Component | Status | Notes |
-|-----------|--------|-------|
-| `lui-data-table` | NEW | Main table container |
-| `lui-column` | NEW | Optional declarative column definition |
+| Component | Tag | Notes |
+|-----------|-----|-------|
+| `BaseChartElement` | (abstract, not a custom element) | Shared lifecycle base |
+| ThemeBridge | (utility class) | CSS vars → ECharts theme |
+| `LuiLineChart` | `<lui-line-chart>` | Line series |
+| `LuiAreaChart` | `<lui-area-chart>` | Line + areaStyle |
+| `LuiBarChart` | `<lui-bar-chart>` | Bar, stacked, horizontal |
+| `LuiPieChart` | `<lui-pie-chart>` | Pie |
+| `LuiDonutChart` | `<lui-donut-chart>` | Pie with inner-radius |
+| `LuiScatterChart` | `<lui-scatter-chart>` | Scatter; enableGl → Scatter3D |
+| `LuiHeatmapChart` | `<lui-heatmap-chart>` | Cartesian heatmap |
+| `LuiCandlestickChart` | `<lui-candlestick-chart>` | OHLC financial |
+| `LuiTreemapChart` | `<lui-treemap-chart>` | Hierarchical treemap |
 
-### Existing Components (reuse unchanged)
+### Existing Components (not modified)
 
-| Component | Usage |
-|-----------|-------|
-| `lui-checkbox` | Row selection |
-| `lui-input` | Text cell editing, text filter |
-| `lui-select` | Dropdown cell editing, enum filter, page size |
-| `lui-popover` | Filter dropdowns, column menu |
-| `lui-tooltip` | Truncated cell content |
+No existing @lit-ui components require modification. Charts are fully isolated in a new package.
 
-### Shared Infrastructure (reuse)
+### New Package
 
-| Infrastructure | Source | Usage |
-|----------------|--------|-------|
-| `TailwindElement` | @lit-ui/core | Base class |
-| `VirtualizerController` | @tanstack/lit-virtual | Row virtualization |
-| `computePosition` | @lit-ui/core/floating | Dropdown positioning |
-| `@lit/task` | @lit/task | Async data loading |
-| `dispatchCustomEvent` | @lit-ui/core | Event dispatch |
+`@lit-ui/charts` is a new package alongside existing `@lit-ui/button`, `@lit-ui/data-table`, etc. It is opt-in heavy (ECharts + optional echarts-gl) and should never be included in a meta-package that auto-imports all components.
 
-## Performance Architecture for 100K+ Rows
+---
 
-### Memory Budget
+## Anti-Patterns to Avoid
 
-| Item | Target | Strategy |
-|------|--------|----------|
-| DOM nodes | < 2,000 | Virtualize rows (overscan: 10) |
-| Event listeners | < 100 | Delegate to container |
-| Re-renders | Partial | Use `requestUpdate()` only for changed state |
+### Anti-Pattern 1: Calling echarts.init() in connectedCallback
 
-### Rendering Optimization
+**What:** `connectedCallback() { this._chart = echarts.init(this.querySelector('#chart')); }`
+**Why bad:** Shadow DOM children do not exist yet when `connectedCallback` fires. `querySelector` returns null, ECharts init fails silently or throws.
+**Instead:** Init in `firstUpdated()` — shadow DOM is guaranteed to be rendered.
 
-1. **Row recycling:** Virtualized rows reuse DOM via transforms
-2. **Memoized templates:** Cache cell templates by column type
-3. **Deferred sort/filter:** Debounce operations, show loading
-4. **Pagination fallback:** Offer pagination for lower-end devices
+### Anti-Pattern 2: Reinitializing on Every option Change
 
-### Scroll Performance
+**What:** `updated(props) { if (props.has('option')) { this._chart.dispose(); this._chart = echarts.init(...); } }`
+**Why bad:** Destroys animation state, causes flicker, expensive DOM operation on every data update.
+**Instead:** Use `this._chart.setOption(newOption)` — ECharts merges incrementally and animates the diff.
 
-- Use CSS `will-change: transform` on virtual container
-- Use `contain: strict` on rows
-- Passive scroll listeners
-- `requestAnimationFrame` for scroll-linked updates
+### Anti-Pattern 3: Importing All of echarts + echarts-gl Unconditionally
+
+**What:** `import * as echarts from 'echarts'; import 'echarts-gl';` at the top of base-chart-element.ts
+**Why bad:** Every page using any chart downloads the full ~7MB GL bundle, even pages with only a pie chart.
+**Instead:** Tree-shake ECharts with `echarts/core` + per-chart `echarts.use([...])`. Dynamic `import('echarts-gl')` gated on `enableGl`.
+
+### Anti-Pattern 4: Global CSS for ECharts Tooltip
+
+**What:** Adding `.echarts-tooltip { ... }` to the host app's global stylesheet.
+**Why bad:** ECharts tooltip is injected inside the shadow root. Global CSS cannot pierce shadow DOM. The styles are silently ignored.
+**Instead:** Use `option.tooltip.extraCssText` for inline styles, or the ECharts theme object's `tooltip` key for structured styling. Expose `--ui-chart-tooltip-*` tokens and map them in ThemeBridge.
+
+### Anti-Pattern 5: Not Disposing on disconnectedCallback
+
+**What:** Forgetting to call `this._chart.dispose()` when the component is removed.
+**Why bad:** ECharts instances maintain internal timers, event listeners, and WebGL contexts. Accumulated leaks cause page slowdown and crashes on long-running dashboards. Chrome heap snapshots show instances surviving after DOM removal if only `dispose()` is called without nulling the reference.
+**Instead:** `this._chart.dispose(); this._chart = undefined;` + `this._resizeObserver.disconnect(); this._resizeObserver = undefined;`
+
+### Anti-Pattern 6: Skipping the isServer Guard
+
+**What:** Allowing `echarts.init()` to run during SSR.
+**Why bad:** `@lit-labs/ssr` runs in Node.js. `canvas`, `ResizeObserver`, and `HTMLElement.getBoundingClientRect` do not exist. The import itself may fail depending on the ECharts build.
+**Instead:** The `firstUpdated` hook never fires during SSR, so the guard is implicit. Add an explicit `if (isServer) return;` check as safety net.
+
+---
+
+## Scaling Considerations
+
+| Concern | Approach |
+|---------|----------|
+| Many charts on one page | Each chart is an independent ECharts instance. Memory grows linearly. For dashboards with 10+ charts, consider lazy rendering (IntersectionObserver to defer init until chart enters viewport). |
+| Real-time streaming (1K updates/sec) | Use `setOption` with `lazyUpdate: true` to batch redraws. ECharts defers rendering until the next frame. Do not recreate the option object on each update — mutate the data array and call `setOption({ series: [{ data: newData }] })`. |
+| 1M+ data points | Use `enableGl` to activate echarts-gl's WebGL renderer (scatter3D). For 2D charts at 1M points, use `echarts/features` `LargeScaleFeature` and `series.large: true` (Canvas boost mode). |
+| SSR with fast FCP needed | Not in scope for v9.0. ECharts 5 SSR mode (`ssr: true`, `renderer: 'svg'`, `renderToSVGString()`) is available if future requirements demand it. |
+
+---
 
 ## Sources
 
-- [TanStack Virtual - Lit Support](https://tanstack.com/virtual/latest)
-- [TanStack Table Virtualization Guide](https://tanstack.com/table/latest/docs/guide/virtualization)
-- [AG Grid DOM Virtualization](https://www.ag-grid.com/javascript-data-grid/dom-virtualisation/)
-- [Scaling Data Grid Rows with Cell-Based Virtualization](https://www.coditation.com/blog/scaling-thousands-of-concurrent-data-grid-rows-with-cell-based-virtualization-in-react)
-- [TanStack Table Server-Side Pagination](https://tanstack.com/table/latest/docs/guide/pagination)
-- [Inline Editing Best Practices](https://uxdworld.com/inline-editing-in-tables-design/)
-- [Column Ordering DnD Guide](https://www.material-react-table.com/docs/guides/column-ordering-dnd)
+- [Using Apache ECharts with Lit and TypeScript (DEV Community)](https://dev.to/manufac/using-apache-echarts-with-lit-and-typescript-1597) — HIGH confidence, direct Lit+ECharts implementation pattern
+- [GitHub: cherie-xf/lit-echarts](https://github.com/cherie-xf/lit-echarts) — MEDIUM confidence, existing Lit ECharts wrapper
+- [Apache ECharts SSR Handbook](https://apache.github.io/echarts-handbook/en/how-to/cross-platform/server/) — HIGH confidence, official docs
+- [Apache ECharts Import Handbook](https://apache.github.io/echarts-handbook/en/basics/import/) — HIGH confidence, official tree-shaking docs
+- [Apache ECharts v6 Migration Guide](https://echarts.apache.org/handbook/en/basics/release-note/v6-upgrade-guide/) — HIGH confidence, official docs
+- [GitHub: ecomfe/echarts-gl](https://github.com/ecomfe/echarts-gl) — HIGH confidence, official repo — confirmed v2.x only supports ECharts 5.x
+- [GitHub: ecomfe/vue-echarts](https://github.com/ecomfe/vue-echarts) — HIGH confidence, reference implementation for option API design
+- [ECharts Memory Leak from Dispose (Medium)](https://medium.com/@kelvinausoftware/memory-leak-from-echarts-occurs-if-not-properly-disposed-7050c5d93028) — MEDIUM confidence, documents dispose + null pattern
+- [Lit SSR Client Usage](https://lit.dev/docs/ssr/client-usage/) — HIGH confidence, official Lit SSR docs
+- [echarts-gl npm metadata](https://www.npmjs.com/package/echarts-gl) — HIGH confidence, confirmed v2.0.9, peerDep echarts ^5.1.2
+
+---
+
+*Architecture research for: @lit-ui/charts — ECharts + Lit.js web components*
+*Researched: 2026-02-28*

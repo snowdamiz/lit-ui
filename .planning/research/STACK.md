@@ -1,493 +1,415 @@
-# Technology Stack: Data Table Component (v7.0)
+# Technology Stack: Charts System (@lit-ui/charts v9.0)
 
-**Project:** LitUI Data Table
-**Researched:** 2026-02-02
-**Mode:** Ecosystem (Stack dimension)
-
-## Executive Summary
-
-The Data Table for LitUI can be built primarily by extending existing stack dependencies. The key addition is **@tanstack/lit-table** (v8.21.3) which provides headless table logic that integrates seamlessly with the already-used **@tanstack/lit-virtual** (v3.13.x). No additional major dependencies are required -- column resizing, column ordering, and drag interactions can be implemented with native browser APIs following patterns already established in the time-picker component.
-
-**Key Recommendation:** Do NOT add TanStack Table as a peer dependency for end users. Instead, use it as an internal implementation detail (bundled). This keeps the component framework-agnostic and avoids version conflicts for users who may already use TanStack Table in their applications.
+**Domain:** WebGL-accelerated chart web component library
+**Researched:** 2026-02-28
+**Confidence:** HIGH (core stack), MEDIUM (echarts-gl/ECharts 6 interop)
 
 ---
 
-## Recommended Stack Additions
+## Critical Version Decision: ECharts 5.6.0 + echarts-gl 2.0.9
 
-### Core Table Logic
+**Use ECharts 5.6.0, NOT ECharts 6.0.0.**
 
-| Technology | Version | Purpose | Why This Choice |
+ECharts 6.0.0 was released on 2024-07-30 and is the latest version on npm. However, **echarts-gl 2.0.9 only supports ECharts ^5.1.2** (peerDependencies: `"echarts": "^5.1.2"`). No echarts-gl 3.x for ECharts 6 exists as of 2026-02-28. The `ecomfe/echarts-gl` GitHub issues tracker shows community requests for ECharts 6 support, but the official repo has no announced roadmap for it. The last echarts-gl release was v2.0.8 on 2024-08-06.
+
+**Consequence:** The @lit-ui/charts package must pin ECharts 5.6.0 and echarts-gl 2.0.9 until an official echarts-gl 3.x release targets ECharts 6. This is documented as a known technical constraint so that a future upgrade path is clear.
+
+---
+
+## Recommended Stack
+
+### Core Technologies
+
+| Technology | Version | Purpose | Why Recommended |
 |------------|---------|---------|-----------------|
-| @tanstack/lit-table | ^8.21.3 | Headless table state management | Official Lit adapter for TanStack Table. Provides sorting, filtering, pagination, column visibility, column ordering, column pinning, row selection, and column sizing out of the box. Requires Lit 3.1.3+ (project uses 3.3.2). [npm](https://www.npmjs.com/package/@tanstack/lit-table) |
+| echarts | ^5.6.0 | Chart engine — Canvas/SVG rendering, 40+ chart types, theming, streaming | Latest stable version compatible with echarts-gl 2.x. ECharts 5 provides full tree-shaking support via `echarts/core`, TypeScript built-ins, ESM, and Vite-safe bundling. 63k+ GitHub stars, Apache TLP, actively maintained. Built-in TypeScript types — no @types/echarts needed. |
+| echarts-gl | ^2.0.9 | WebGL acceleration — scatterGL, linesGL, bars3D, globeGL, surface3D | Required for 1M+ point scatter plots and real-time streaming at high frequency. peerDep: `echarts ^5.1.2`. Last published: 2024-08-06. Provides `Scatter3DChart`, `ScatterGLChart`, `LinesGLChart` via tree-shaking. Internally uses `zrender ^5.1.1` and `claygl ^1.2.1`. |
 
-**Integration with existing stack:**
-- Works with existing `@tanstack/lit-virtual` for row virtualization
-- Shares the same reactive controller pattern (`TableController` mirrors `VirtualizerController`)
-- Can use existing `@floating-ui/dom` for column menus and filter dropdowns
-- Can use existing form components (Input, Select, Checkbox) for inline editing
+### Supporting Libraries
 
-### Already Available (No New Dependencies)
+| Library | Version | Purpose | When to Use |
+|---------|---------|---------|-------------|
+| zrender | (bundled with echarts) | 2D canvas/SVG rendering engine underneath ECharts | Included as transitive dep; do NOT import directly |
+| claygl | (bundled with echarts-gl) | WebGL 3D rendering engine underneath echarts-gl | Included as transitive dep; do NOT import directly |
 
-| Technology | Current Version | Already Used In | Use for Data Table |
-|------------|-----------------|-----------------|-------------------|
-| @tanstack/lit-virtual | ^3.13.2 (upgrade to ^3.13.19) | Select component | 2D grid virtualization (rows + columns) |
-| @floating-ui/dom | ^1.7.4 | Core, Select | Column header menus, filter dropdowns |
-| @lit/task | ^1.0.3 | Select | Async data fetching, server-side operations |
-| Pointer Events API | Native | Time-picker | Column resize drag handles |
-| ResizeObserver | Native | Select | Auto-column sizing on container resize |
-| IntersectionObserver | Native | Select | Infinite scroll / load more |
+### Development Tools
 
----
-
-## 2D Grid Virtualization Strategy
-
-### How It Works
-
-TanStack Virtual supports 2D virtualization by creating two separate virtualizer instances:
-
-```typescript
-// Row virtualizer (vertical)
-private _rowVirtualizer = new VirtualizerController(this, {
-  getScrollElement: () => this._scrollContainer,
-  count: this._data.length,
-  estimateSize: () => ROW_HEIGHT,
-  overscan: 5,
-});
-
-// Column virtualizer (horizontal)
-private _columnVirtualizer = new VirtualizerController(this, {
-  getScrollElement: () => this._scrollContainer,
-  count: this._visibleColumns.length,
-  estimateSize: (index) => this._columnWidths[index] ?? DEFAULT_COLUMN_WIDTH,
-  horizontal: true,
-  overscan: 2,
-});
-```
-
-The rendering pattern nests column virtualization inside row virtualization:
-
-```typescript
-render() {
-  const virtualRows = this._rowVirtualizer.getVirtualizer().getVirtualItems();
-  const virtualCols = this._columnVirtualizer.getVirtualizer().getVirtualItems();
-
-  return html`
-    <div style="height: ${this._rowVirtualizer.getVirtualizer().getTotalSize()}px;
-                width: ${this._columnVirtualizer.getVirtualizer().getTotalSize()}px;">
-      ${virtualRows.map(row => html`
-        <div style="position: absolute; top: ${row.start}px; height: ${row.size}px;">
-          ${virtualCols.map(col => html`
-            <div style="position: absolute; left: ${col.start}px; width: ${col.size}px;">
-              ${this._renderCell(row.index, col.index)}
-            </div>
-          `)}
-        </div>
-      `)}
-    </div>
-  `;
-}
-```
-
-**Performance at 100K+ rows:**
-- With 2D virtualization, only visible cells render (~50 rows x ~10 cols = 500 DOM nodes max)
-- TanStack Virtual benchmarks show 60fps scrolling with 1M cells
-- Memory stays constant regardless of data size (O(viewport) not O(data))
-
-**Confidence:** HIGH - Verified via [TanStack Virtual docs](https://tanstack.com/virtual/latest) and [virtualization guide](https://tanstack.com/table/v8/docs/guide/virtualization)
+| Tool | Purpose | Notes |
+|------|---------|-------|
+| vite | Build + dev server | Use existing `@lit-ui/vite-config` workspace package. Same Vite 7.x config used by all other packages. |
+| vite-plugin-dts | TypeScript declarations | Already used across all packages. |
+| typescript | Type checking | Project uses ^5.9.3. ECharts 5 provides built-in types — no @types/echarts. |
+| @tailwindcss/vite | Tailwind v4 Vite plugin | For theming tokens if needed; follow existing package pattern. |
 
 ---
 
-## TanStack Table Integration
+## Package Configuration
 
-### TableController Pattern
+### package.json for @lit-ui/charts
 
-The @tanstack/lit-table package provides a `TableController` reactive controller:
-
-```typescript
-import { TableController, createColumnHelper } from '@tanstack/lit-table';
-
-const columnHelper = createColumnHelper<Person>();
-
-const columns = [
-  columnHelper.accessor('name', { header: 'Name' }),
-  columnHelper.accessor('age', { header: 'Age' }),
-];
-
-class DataTable extends TailwindElement {
-  private _table = new TableController(this);
-
-  render() {
-    const table = this._table.table({
-      data: this._data,
-      columns,
-      getCoreRowModel: getCoreRowModel(),
-      // Enable features as needed:
-      getSortedRowModel: getSortedRowModel(),
-      getFilteredRowModel: getFilteredRowModel(),
-      getPaginationRowModel: getPaginationRowModel(),
-    });
-
-    // Use table.getHeaderGroups(), table.getRowModel(), etc.
+```json
+{
+  "name": "@lit-ui/charts",
+  "type": "module",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "sideEffects": true,
+  "dependencies": {
+    "echarts": "^5.6.0",
+    "echarts-gl": "^2.0.9"
+  },
+  "peerDependencies": {
+    "lit": "^3.0.0",
+    "@lit-ui/core": "^1.0.0"
+  },
+  "devDependencies": {
+    "@lit-ui/core": "workspace:*",
+    "@lit-ui/typescript-config": "workspace:*",
+    "@lit-ui/vite-config": "workspace:*",
+    "@tailwindcss/vite": "^4.1.18",
+    "lit": "^3.3.2",
+    "tailwindcss": "^4.1.18",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1",
+    "vite-plugin-dts": "^4.5.4"
   }
 }
 ```
 
-### Server-Side Operations (Manual Mode)
+**Rationale for bundling echarts instead of peer dep:** ECharts is an internal implementation detail of the chart components, not a framework the user is expected to interact with directly. Users call `<lui-line-chart .data=${...}>`, not `echarts.init()`. Bundling avoids version conflicts and enables tree-shaking to happen at the @lit-ui/charts build level. This matches how TanStack Table is handled in @lit-ui/data-table.
 
-For server-side sorting, filtering, and pagination, TanStack Table provides manual mode flags:
-
-```typescript
-const table = this._table.table({
-  data: this._data, // Current page only
-  columns,
-  manualPagination: true,
-  manualSorting: true,
-  manualFiltering: true,
-  pageCount: this._totalPages,  // From server
-  rowCount: this._totalRows,    // From server
-  state: {
-    pagination: this._paginationState,
-    sorting: this._sortingState,
-    columnFilters: this._filterState,
-  },
-  onPaginationChange: this._handlePaginationChange,
-  onSortingChange: this._handleSortingChange,
-  onColumnFiltersChange: this._handleFilterChange,
-});
-```
-
-When manual mode is enabled, state changes trigger events but don't process data -- the consumer fetches new data from their server.
-
-**Confidence:** HIGH - Verified via [TanStack Table pagination guide](https://tanstack.com/table/v8/docs/guide/pagination) and [sorting guide](https://tanstack.com/table/v8/docs/guide/sorting)
-
----
-
-## Column Resizing
-
-### Native Implementation (Recommended)
-
-Column resizing should use native pointer events, matching existing patterns in time-picker/time-range-slider.ts:
-
-```typescript
-private _handleResizePointerDown(e: PointerEvent, columnId: string): void {
-  this._resizingColumn = columnId;
-  this._resizeStartX = e.clientX;
-  this._resizeStartWidth = this._columnWidths.get(columnId) ?? DEFAULT_WIDTH;
-
-  (e.target as HTMLElement).setPointerCapture(e.pointerId);
-}
-
-private _handleResizePointerMove(e: PointerEvent): void {
-  if (!this._resizingColumn) return;
-
-  const delta = e.clientX - this._resizeStartX;
-  const newWidth = Math.max(MIN_COLUMN_WIDTH, this._resizeStartWidth + delta);
-
-  // Update column width
-  this._table.setColumnSizing({
-    ...this._table.getState().columnSizing,
-    [this._resizingColumn]: newWidth,
-  });
-}
-```
-
-### TanStack Table Integration
-
-TanStack Table provides `header.getResizeHandler()` as a convenience, but it's designed for React event handlers. For Lit, directly managing pointer events gives more control and matches the project's existing patterns.
-
-Use TanStack Table's column sizing state management:
-
-```typescript
-state: {
-  columnSizing: this._columnSizingState,
-},
-onColumnSizingChange: (updater) => {
-  this._columnSizingState = typeof updater === 'function'
-    ? updater(this._columnSizingState)
-    : updater;
-  this.requestUpdate();
-},
-```
-
-**Resize modes:**
-- `columnResizeMode: 'onChange'` - Live resize (60fps target)
-- `columnResizeMode: 'onEnd'` - Update only when drag ends (simpler, more performant for complex cells)
-
-**Confidence:** HIGH - Verified via [TanStack Table column sizing guide](https://tanstack.com/table/v8/docs/guide/column-sizing)
-
----
-
-## Column Ordering / Reordering
-
-### Native Drag and Drop (Recommended)
-
-Use native HTML5 Drag and Drop API for column reordering. This is the approach recommended by TanStack Table docs and used by Material React Table.
-
-```typescript
-// On header cell
-<th
-  draggable="true"
-  @dragstart=${(e) => this._handleColumnDragStart(e, column.id)}
-  @dragover=${(e) => this._handleColumnDragOver(e, column.id)}
-  @drop=${(e) => this._handleColumnDrop(e, column.id)}
->
-```
-
-### TanStack Table Integration
-
-Column order is managed via `columnOrder` state:
-
-```typescript
-state: {
-  columnOrder: this._columnOrderState, // string[] of column IDs
-},
-onColumnOrderChange: (updater) => {
-  this._columnOrderState = typeof updater === 'function'
-    ? updater(this._columnOrderState)
-    : updater;
-  this.requestUpdate();
-},
-```
-
-**Note:** Column pinning takes precedence over column ordering. Pinned columns are always positioned at their pinned location (left/right).
-
-**Confidence:** HIGH - Verified via [TanStack Table column ordering guide](https://tanstack.com/table/v8/docs/guide/column-ordering)
-
----
-
-## Row Selection and Bulk Actions
-
-TanStack Table provides comprehensive row selection:
-
-```typescript
-const table = this._table.table({
-  // ...
-  enableRowSelection: true,
-  // Or conditional selection:
-  enableRowSelection: (row) => !row.original.isLocked,
-
-  state: {
-    rowSelection: this._rowSelectionState,
-  },
-  onRowSelectionChange: (updater) => {
-    this._rowSelectionState = typeof updater === 'function'
-      ? updater(this._rowSelectionState)
-      : updater;
-    this.requestUpdate();
-    this._dispatchSelectionChange();
-  },
-});
-```
-
-**Selection APIs:**
-- `table.getSelectedRowModel().rows` - All selected rows
-- `table.toggleAllRowsSelected()` - Select/deselect all
-- `table.toggleAllPageRowsSelected()` - Select/deselect current page
-- `row.getIsSelected()` - Check if row is selected
-- `row.toggleSelected()` - Toggle row selection
-
-**Server-side pagination caveat:** `getSelectedRowModel()` only returns rows from current page data. For cross-page selection with server-side pagination, maintain selection state separately using row IDs.
-
-**Confidence:** HIGH - Verified via [TanStack Table row selection guide](https://tanstack.com/table/v8/docs/guide/row-selection)
-
----
-
-## State Persistence
-
-### localStorage Pattern
-
-Persist user preferences (column visibility, order, sizes) to localStorage:
-
-```typescript
-private static STORAGE_KEY = 'lui-data-table-prefs';
-
-private _loadPreferences(): TablePreferences {
-  try {
-    const stored = localStorage.getItem(DataTable.STORAGE_KEY);
-    return stored ? JSON.parse(stored) : {};
-  } catch {
-    return {};
-  }
-}
-
-private _savePreferences(prefs: TablePreferences): void {
-  try {
-    localStorage.setItem(DataTable.STORAGE_KEY, JSON.stringify(prefs));
-  } catch {
-    // localStorage unavailable or full, fail silently
-  }
-}
-
-interface TablePreferences {
-  columnVisibility?: Record<string, boolean>;
-  columnOrder?: string[];
-  columnSizing?: Record<string, number>;
-}
-```
-
-**Best practice:** Use a table-specific key (e.g., `lui-data-table-${tableId}-prefs`) when multiple tables exist on one page.
-
-**Confidence:** HIGH - Standard pattern, verified via [DataTables state saving](https://datatables.net/examples/basic_init/state_save.html)
-
----
-
-## Accessibility: ARIA Grid vs Table Role
-
-### Recommendation: Use role="grid" for Interactive Data Tables
-
-For a full-featured data table with inline editing, cell navigation, and keyboard interactions, use `role="grid"` instead of a native `<table>` or `role="table"`.
-
-**When to use role="grid":**
-- Interactive widgets where cells can be focused
-- Arrow key navigation between cells
-- Inline editing within cells
-- Drag-to-reorder columns
-- Cell-level selection
-
-**Keyboard Navigation Requirements:**
-| Key | Action |
-|-----|--------|
-| Arrow keys | Move focus between cells |
-| Home/End | Move to first/last cell in row |
-| Ctrl+Home/End | Move to first/last cell in grid |
-| Enter/Space | Activate cell (enter edit mode, toggle selection) |
-| Tab | Move to next interactive element (exit grid, or within cell) |
-| Escape | Exit edit mode, deselect |
-
-**Implementation Pattern:**
-```typescript
-<div role="grid" aria-rowcount="${this._totalRows}" aria-colcount="${this._columns.length}">
-  <div role="rowgroup">
-    <div role="row">
-      ${headers.map(h => html`
-        <div role="columnheader" aria-sort="${h.sortDirection ?? 'none'}">
-          ${h.label}
-        </div>
-      `)}
-    </div>
-  </div>
-  <div role="rowgroup">
-    ${rows.map((row, i) => html`
-      <div role="row" aria-rowindex="${i + 1}">
-        ${cells.map((cell, j) => html`
-          <div role="gridcell" aria-colindex="${j + 1}" tabindex="-1">
-            ${cell.value}
-          </div>
-        `)}
-      </div>
-    `)}
-  </div>
-</div>
-```
-
-**Caution:** ARIA grids are complex. Follow the [W3C Grid Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/grid/) carefully. Many libraries get this wrong.
-
-**Confidence:** HIGH - Verified via [MDN ARIA grid role](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/grid_role) and [W3C ARIA APG](https://www.w3.org/WAI/ARIA/apg/patterns/grid/)
-
----
-
-## What NOT to Add
-
-### Do NOT add these libraries:
-
-| Library | Why Not |
-|---------|---------|
-| ag-Grid | Heavyweight, commercial license for features, not web-component native |
-| @dnd-kit | Unnecessary - native DnD API sufficient for column reordering |
-| immer | Over-engineering - direct state updates with requestUpdate() work fine |
-| zustand/jotai | Not needed - Lit's reactive properties + TanStack Table state management sufficient |
-| react-window/react-virtuoso | Wrong framework - we have @tanstack/lit-virtual |
-
-### Feature-specific decisions:
-
-| Feature | Approach | Rationale |
-|---------|----------|-----------|
-| Column resize | Pointer events | Already proven in time-picker component |
-| Column reorder | Native DnD | Simpler, no dependency, recommended by TanStack |
-| Inline editing | Existing components | Use lui-input, lui-select, lui-checkbox |
-| Filter dropdowns | @floating-ui/dom | Already used throughout the library |
-| Async data | @lit/task | Already used in Select component |
+**pnpm peerDependencyRules note:** echarts-gl 2.0.9 was published before echarts 5.6.0, so its peerDep range (`^5.1.2`) will satisfy 5.6.0 — no override needed. pnpm strict mode will not flag this as unmet.
 
 ---
 
 ## Installation
 
-### For the @lit-ui/data-table package:
+```bash
+# In packages/charts directory
+pnpm add echarts@^5.6.0 echarts-gl@^2.0.9
 
-```json
-{
-  "dependencies": {
-    "@tanstack/lit-table": "^8.21.3",
-    "@tanstack/lit-virtual": "^3.13.19"
-  },
-  "peerDependencies": {
-    "lit": "^3.0.0",
-    "@lit-ui/core": "^1.0.0"
+# Dev dependencies (follow existing package pattern)
+pnpm add -D lit@^3.3.2 vite@^7.3.1 typescript@^5.9.3 vite-plugin-dts@^4.5.4 @tailwindcss/vite@^4.1.18 tailwindcss@^4.1.18
+```
+
+---
+
+## Tree-Shaking Import Patterns
+
+ECharts 5 requires explicit tree-shaking imports via `echarts/core`. Do NOT use `import * as echarts from 'echarts'` in production code — this imports the full ~1MB minified bundle (~300-400KB gzip). Tree-shaken per-chart builds reduce this to ~135KB gzip for typical chart sets.
+
+### Base pattern (all chart components use this)
+
+```typescript
+import * as echarts from 'echarts/core';
+import { CanvasRenderer } from 'echarts/renderers';
+import {
+  TitleComponent,
+  TooltipComponent,
+  GridComponent,
+  LegendComponent,
+  DatasetComponent,
+  TransformComponent,
+} from 'echarts/components';
+import { LabelLayout, UniversalTransition } from 'echarts/features';
+
+echarts.use([
+  CanvasRenderer,
+  TitleComponent,
+  TooltipComponent,
+  GridComponent,
+  LegendComponent,
+  DatasetComponent,
+  TransformComponent,
+  LabelLayout,
+  UniversalTransition,
+]);
+```
+
+### Per chart-type imports
+
+```typescript
+// Line / Area charts
+import { LineChart } from 'echarts/charts';
+
+// Bar / Column charts
+import { BarChart } from 'echarts/charts';
+
+// Scatter / Bubble charts (Canvas fallback)
+import { ScatterChart } from 'echarts/charts';
+
+// Pie / Donut charts
+import { PieChart } from 'echarts/charts';
+
+// Heatmap charts
+import { HeatmapChart } from 'echarts/charts';
+
+// Candlestick / OHLC charts
+import { CandlestickChart } from 'echarts/charts';
+
+// Treemap charts
+import { TreemapChart } from 'echarts/charts';
+```
+
+### WebGL chart-type imports (echarts-gl)
+
+```typescript
+// WebGL scatter for 1M+ points
+import { ScatterGLChart } from 'echarts-gl/charts';
+
+// WebGL lines for large line datasets
+import { LinesGLChart } from 'echarts-gl/charts';
+
+// Required 3D/GL grid component
+import { Grid3DComponent } from 'echarts-gl/components';
+
+echarts.use([ScatterGLChart, LinesGLChart, Grid3DComponent]);
+```
+
+### TypeScript option typing pattern
+
+```typescript
+import type {
+  LineSeriesOption,
+  BarSeriesOption,
+  ScatterSeriesOption,
+} from 'echarts/charts';
+import type {
+  TitleComponentOption,
+  TooltipComponentOption,
+  GridComponentOption,
+  LegendComponentOption,
+} from 'echarts/components';
+import type { ComposeOption } from 'echarts/core';
+
+// Compose a narrow type for each chart component
+type LineChartOption = ComposeOption<
+  | LineSeriesOption
+  | TitleComponentOption
+  | TooltipComponentOption
+  | GridComponentOption
+  | LegendComponentOption
+>;
+```
+
+---
+
+## Lit.js Integration Pattern
+
+### Lifecycle mapping for Shadow DOM
+
+```typescript
+import { LitElement, html } from 'lit';
+import { customElement, property, query } from 'lit/decorators.js';
+import * as echarts from 'echarts/core';
+
+@customElement('lui-line-chart')
+export class LuiLineChart extends TailwindElement {
+  @property({ type: Array }) data: DataPoint[] = [];
+  @query('.chart-container') private _container!: HTMLDivElement;
+
+  private _chart: echarts.ECharts | null = null;
+  private _resizeObserver: ResizeObserver | null = null;
+
+  override firstUpdated(): void {
+    // echarts.init must receive a DOM element — only available after firstUpdated
+    // Shadow DOM note: pass the element directly, not document.getElementById
+    this._chart = echarts.init(this._container);
+    this._chart.setOption(this._buildOption());
+
+    // ResizeObserver on the host element — works correctly inside Shadow DOM
+    // Native ResizeObserver is sufficient; no polyfill needed for modern browsers
+    this._resizeObserver = new ResizeObserver(() => {
+      this._chart?.resize();
+    });
+    this._resizeObserver.observe(this._container);
+  }
+
+  override updated(changed: Map<string, unknown>): void {
+    if (this._chart && changed.has('data')) {
+      this._chart.setOption(this._buildOption());
+    }
+  }
+
+  override disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this._resizeObserver?.disconnect();
+    this._chart?.dispose();
+    this._chart = null;
+  }
+
+  private _buildOption(): echarts.EChartsOption {
+    // build option from this.data and this properties
+    return { /* ... */ };
+  }
+
+  override render() {
+    return html`<div class="chart-container" style="width:100%;height:100%"></div>`;
   }
 }
 ```
 
-### npm/pnpm command:
-
-```bash
-pnpm add @tanstack/lit-table @tanstack/lit-virtual
-```
-
----
-
-## Architecture Recommendation
-
-```
-packages/data-table/
-├── src/
-│   ├── data-table.ts           # Main component with TableController
-│   ├── data-table-header.ts    # Header row with sorting, resize handles
-│   ├── data-table-row.ts       # Individual row rendering (optional, for complex cells)
-│   ├── data-table-cell.ts      # Cell rendering with editing support
-│   ├── data-table-toolbar.ts   # Search, filters, bulk actions
-│   ├── data-table-pagination.ts # Page controls
-│   ├── column-menu.ts          # Column visibility/pinning menu
-│   └── types.ts                # Shared interfaces
-└── package.json
-```
-
-**Component responsibility:**
-- `lui-data-table` - Main orchestrator, holds TableController and VirtualizerControllers
-- Child components are internal implementation details, not exported
+**Key Shadow DOM notes:**
+- Pass the container div reference directly to `echarts.init()` — do not use `document.getElementById()` which cannot see into Shadow DOM.
+- Observe `this._container` (the inner div), not `this` (the host element), so resize events trigger on the actual chart canvas.
+- Call `this._chart.dispose()` in `disconnectedCallback` — ECharts holds a WebGL context per instance. Without disposal, WebGL contexts accumulate (browser limit: 16 concurrent).
+- `isServer` guard from TailwindElement base class: call `echarts.init` only after `firstUpdated` runs on the client. ECharts has no SSR mode — chart components should render a placeholder server-side.
 
 ---
 
-## Version Summary
+## WebGL Rendering Strategy
 
-| Package | Version | Verified Date | Source |
-|---------|---------|---------------|--------|
-| @tanstack/lit-table | 8.21.3 | 2026-02-02 | [GitHub Releases](https://github.com/TanStack/table/releases) |
-| @tanstack/lit-virtual | 3.13.19 | 2026-02-02 | [GitHub Releases](https://github.com/TanStack/virtual/releases) |
-| lit (peer) | 3.x (requires 3.1.3+) | - | Project already uses 3.3.2 |
+### Tiered rendering approach
+
+| Dataset Size | Chart Type | Renderer | Rationale |
+|---|---|---|---|
+| < 10K points | All 2D charts | Canvas (CanvasRenderer) | Default ECharts renderer, best DX |
+| 10K–500K points | Scatter, Lines | Canvas + `large: true` | ECharts progressive rendering handles this range |
+| 500K–1M+ points | Scatter, Bubble | ScatterGLChart (echarts-gl) | WebGL required; Canvas cannot sustain 60fps |
+| Real-time streaming | Line, Area | Canvas + `appendData` API | ECharts streaming API works well with Canvas |
+| 3D datasets | Globe, Surface | echarts-gl 3D components | Only use case that truly needs 3D |
+
+**Important:** ECharts Canvas renderer with `large: true` and `progressive` options handles up to ~500K points smoothly before WebGL becomes necessary. Do not force WebGL for all charts — each WebGL context consumes GPU resources and the browser limits contexts to ~16 per page.
+
+### WebGL context budget
+
+Each chart instance using echarts-gl consumes one WebGL context. With a 16-context browser limit:
+- Allow max ~8 simultaneous WebGL charts (leaving headroom for other page uses)
+- Canvas-rendered charts consume zero WebGL contexts — prefer Canvas when dataset size allows
+- Call `chart.dispose()` promptly when chart components are removed from DOM
+
+---
+
+## Bundle Size Guidance
+
+| Import Strategy | Approx. Size (gzip) | Use When |
+|---|---|---|
+| `import * as echarts from 'echarts'` | ~300–400 KB | Never in production |
+| Tree-shaken single chart type (e.g., line + grid + tooltip) | ~135 KB | Standard usage |
+| Tree-shaken full LitUI chart suite (all 8 chart types) | ~250–320 KB est. | Full @lit-ui/charts install |
+| echarts-gl added to above | +~200 KB est. | When WebGL scatter/lines needed |
+
+**Recommendation:** The @lit-ui/charts package is an opt-in heavy dep. Document the bundle size in the README so users know what they are importing. The package pattern (separate `@lit-ui/charts`, not bundled into `@lit-ui/core`) already isolates these heavy deps.
+
+Users who only need pie and bar charts can import just those chart components — Vite will tree-shake the rest at their app build time if the @lit-ui/charts package is built with `preserveModules: true` (or each chart type is a separate entry point).
+
+**Architecture recommendation:** Consider per-chart entry points in the package exports:
+
+```json
+{
+  "exports": {
+    ".": "./dist/index.js",
+    "./line-chart": "./dist/line-chart.js",
+    "./bar-chart": "./dist/bar-chart.js",
+    "./scatter-chart": "./dist/scatter-chart.js",
+    "./pie-chart": "./dist/pie-chart.js"
+  }
+}
+```
+
+This lets users import `import '@lit-ui/charts/line-chart'` and get only that chart's deps tree-shaken in their final bundle.
+
+---
+
+## Alternatives Considered
+
+| Recommended | Alternative | When to Use Alternative |
+|-------------|-------------|-------------------------|
+| ECharts 5.6.0 | ECharts 6.0.0 | Use ECharts 6 when echarts-gl 3.x is released with ECharts 6 support. Monitor [ecomfe/echarts-gl releases](https://github.com/ecomfe/echarts-gl/releases). |
+| ECharts 5.6.0 | Plotly.js + regl | Plotly is better for scientific/statistical charts (histograms, violin plots, contours). However, Plotly hits a hard 8-chart WebGL context limit and has larger full bundle (~3MB). Not web-component native. |
+| ECharts 5.6.0 | deck.gl | Use deck.gl only for geospatial (map-based) visualizations. deck.gl is not designed for standard business charts (line, bar, pie). |
+| ECharts 5.6.0 | Observable Plot | Observable Plot is SVG/Canvas only — no WebGL path. Excellent for exploratory/statistical work but not suited for 1M-point performance requirements. |
+| ECharts 5.6.0 | D3.js | D3 is a primitive — not a chart library. Building chart components on D3 requires implementing every chart type from scratch. ECharts provides chart types ready-made with theming, tooltips, and legends. |
+| ECharts 5.6.0 | Highcharts | Highcharts is commercial (requires license for non-personal use). ECharts is Apache 2.0. |
+| echarts-gl 2.0.9 | regl directly | regl is what echarts-gl uses internally. Using it directly means reimplementing all the chart-to-WebGL mapping logic. Not worth it when echarts-gl wraps it correctly. |
+| Canvas CanvasRenderer | SVGRenderer | Use SVGRenderer only when SVG export is a hard requirement (accessibility/print). Canvas is ~2-5x faster for large datasets. SVG creates one DOM element per data point — unusable at 10K+ points. |
+
+---
+
+## What NOT to Use
+
+| Avoid | Why | Use Instead |
+|-------|-----|-------------|
+| `import * as echarts from 'echarts'` (full import) | Imports entire ~1MB bundle including chart types you don't use | Tree-shaking via `import * as echarts from 'echarts/core'` + per-chart imports |
+| `@types/echarts` | Now a stub — ECharts 5 ships its own TypeScript types | Built-in types from `echarts` package |
+| `window.resize` event for chart resize | Doesn't fire when container resizes without window resizing (e.g., flexbox layout changes, sidebar toggle) | `ResizeObserver` on the chart container element |
+| ECharts 6.0.0 | No echarts-gl equivalent for WebGL acceleration | ECharts 5.6.0 until echarts-gl 3.x is available |
+| Multiple echarts instances with WebGL per page without disposal | Browser WebGL context limit is ~16 — contexts accumulate without `chart.dispose()` | Dispose on `disconnectedCallback`, prefer Canvas renderer for non-WebGL chart types |
+| echarts-gl for ALL chart types | WebGL context budget is finite; Canvas handles most 2D charts well | Reserve echarts-gl for scatter/lines with 500K+ points only |
+| plotly.js | 8 WebGL context hard limit, ~3MB bundle, not web-component native | ECharts for business charts |
+| chart.js | No WebGL path, weak TypeScript types, limited chart types vs ECharts | ECharts for this use case |
+| LightningChart JS / SciChart.js | Commercial licenses, high per-developer cost | ECharts (Apache 2.0) is sufficient for stated requirements |
+
+---
+
+## Stack Patterns by Variant
+
+**If chart needs Canvas rendering only (line, bar, area, pie, heatmap, candlestick, treemap):**
+- Import `CanvasRenderer` from `echarts/renderers`
+- Import only the specific chart type from `echarts/charts`
+- Do NOT import echarts-gl
+- Zero WebGL context usage
+
+**If chart needs WebGL (scatter/bubble with 500K+ points, real-time lines):**
+- Import `CanvasRenderer` from `echarts/renderers` (still needed as base renderer)
+- Import `ScatterGLChart` or `LinesGLChart` from `echarts-gl/charts`
+- Call `echarts.use([ScatterGLChart, Grid3DComponent])` at module level
+- Track WebGL context usage — warn if page has >8 active WebGL charts
+
+**If user's project uses ECharts directly:**
+- Advise against sharing the ECharts instance between @lit-ui/charts internals and user code
+- @lit-ui/charts bundles echarts as a dependency — two ECharts instances on one page is fine but wastes ~135KB
+- Future: expose `echarts` instance via a property for advanced users who need direct access
+
+**If SSR is required:**
+- Return a placeholder `<div class="chart-placeholder">` server-side using `isServer` guard
+- ECharts cannot render in Node.js without a DOM (no SSR mode for canvas)
+- ECharts 5.3+ offers SVG string rendering for Node.js, but this is complex to integrate with the Lit SSR pipeline — out of scope for v9.0
+
+---
+
+## Version Compatibility
+
+| Package | Compatible With | Notes |
+|---------|-----------------|-------|
+| echarts@^5.6.0 | echarts-gl@^2.0.9 | echarts-gl peerDep is `^5.1.2` — satisfied by 5.6.0 |
+| echarts@^5.6.0 | lit@^3.3.2 | No direct dependency; echarts is DOM-agnostic |
+| echarts@^5.6.0 | vite@^7.3.1 | ECharts 5.5+ explicitly tested against Vite |
+| echarts@^5.6.0 | typescript@^5.9.3 | Built-in types; `ComposeOption` utility works with TS 5.x |
+| echarts@6.0.0 | echarts-gl@^2.0.9 | NOT compatible — do not use ECharts 6 until echarts-gl 3.x exists |
+| echarts-gl@^2.0.9 | claygl@^1.2.1 | Bundled transitive dep — do not import separately |
+| echarts-gl@^2.0.9 | zrender@^5.1.1 | Bundled transitive dep — do not import separately |
 
 ---
 
 ## Sources
 
-### Primary (HIGH confidence)
-- [TanStack Table Docs](https://tanstack.com/table/latest)
-- [TanStack Virtual Docs](https://tanstack.com/virtual/latest)
-- [TanStack Table GitHub Releases](https://github.com/TanStack/table/releases) - v8.21.3 (April 14, 2025)
-- [TanStack Virtual GitHub Releases](https://github.com/TanStack/virtual/releases) - v3.13.19 (January 7, 2026)
-- [TanStack Table Column Sizing Guide](https://tanstack.com/table/v8/docs/guide/column-sizing)
-- [TanStack Table Row Selection Guide](https://tanstack.com/table/v8/docs/guide/row-selection)
-- [TanStack Table Pagination Guide](https://tanstack.com/table/v8/docs/guide/pagination)
-- [TanStack Table Virtualization Guide](https://tanstack.com/table/v8/docs/guide/virtualization)
-- [TanStack Table Column Ordering Guide](https://tanstack.com/table/v8/docs/guide/column-ordering)
-- [W3C ARIA Grid Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/grid/)
-- [MDN ARIA grid role](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/grid_role)
+### HIGH Confidence (official sources, verified)
 
-### Secondary (MEDIUM confidence)
-- [Build tables with Lit, TanStack Table and Twind](https://medium.com/@morkadosh/build-beautiful-accessible-tables-that-work-everywhere-with-lit-tanstack-table-and-twind-1275049d53a1)
-- [IBM Carbon Design System TanStack Table exploration](https://github.com/carbon-design-system/ibm-products/issues/6069)
-- [Adrian Roselli: ARIA Grid as an Anti-Pattern](https://adrianroselli.com/2020/07/aria-grid-as-an-anti-pattern.html)
+- [Apache ECharts GitHub Releases](https://github.com/apache/echarts/releases) — v6.0.0 released 2024-07-30; v5.6.0 released 2023-12-28
+- [ecomfe/echarts-gl GitHub](https://github.com/ecomfe/echarts-gl) — v2.0.9 latest; peerDep `"echarts": "^5.1.2"` confirmed from raw package.json
+- [ecomfe/echarts-gl Releases](https://github.com/ecomfe/echarts-gl/releases) — v2.0.8 released 2024-08-06; no v3.x announced
+- [ECharts Import Handbook](https://apache.github.io/echarts-handbook/en/basics/import/) — tree-shaking patterns, CanvasRenderer vs SVGRenderer, TypeScript ComposeOption
+- [ECharts 6 Upgrade Guide](https://echarts.apache.org/handbook/en/basics/release-note/v6-upgrade-guide/) — breaking changes from v5 to v6
+- [ECharts Changelog](https://echarts.apache.org/en/changelog.html) — v6 features and v5.6 features
 
-### Existing Project Patterns (HIGH confidence)
-- `/packages/select/src/select.ts` - VirtualizerController usage
-- `/packages/time-picker/src/time-range-slider.ts` - Pointer event drag handling
-- `/packages/core/src/floating/index.ts` - Shadow DOM-safe Floating UI wrapper
+### MEDIUM Confidence (WebSearch, multiple corroborating sources)
+
+- [DEV Community: ECharts + Lit TypeScript](https://dev.to/manufac/using-apache-echarts-with-lit-and-typescript-1597) — lifecycle pattern: `firstUpdated` init, `updated` setOption, `disconnectedCallback` dispose + ResizeObserver disconnect
+- [DEV Community: ECharts bundle size optimization](https://dev.to/manufac/using-apache-echarts-with-react-and-typescript-optimizing-bundle-size-29l8) — tree-shaking reduces bundle significantly
+- [WebSearch: echarts-gl ECharts 6 support](https://github.com/ecomfe/echarts-gl/issues) — confirmed no ECharts 6 support in echarts-gl as of 2025
+- [WebSearch: ECharts bundle size](https://bundlephobia.com/package/echarts) — ~300-400KB gzip full; ~135KB gzip tree-shaken pie+title example (from official docs)
+- [@types/echarts npm stub confirmation](https://www.npmjs.com/package/@types/echarts) — stub only since ECharts 5 ships built-in types
+- [7 WebGL data viz tools 2025](https://cybergarden.au/blog/7-powerful-open-source-webgl-data-visualization-tools-2025) — competitive landscape verified
+
+---
+
+*Stack research for: @lit-ui/charts — ECharts + ECharts GL web component chart library*
+*Researched: 2026-02-28*

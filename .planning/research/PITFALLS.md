@@ -1,748 +1,723 @@
-# Domain Pitfalls: Data Table Component
+# Pitfalls Research: v9.0 Charts System
 
-**Domain:** Full-featured data table for admin dashboards (100K+ rows)
-**Researched:** 2026-02-02
-**Confidence:** HIGH (verified against TanStack Virtual issues, W3C APG, Shadow DOM accessibility specs)
+**Domain:** ECharts + ECharts GL chart components in Lit.js 3 Shadow DOM web component library
+**Researched:** 2026-02-28
+**Confidence:** HIGH (verified against Apache ECharts GitHub issues, Lit docs, ECharts handbook, MDN WebGL specs, and multiple community reports)
 
 ---
 
 ## Critical Pitfalls
 
-Mistakes that cause rewrites, major accessibility failures, or unusable performance.
+Mistakes that cause broken rendering, complete rewrites, or production crashes.
 
 ---
 
-### CRITICAL-01: Virtual Scrolling with Variable Row Heights
+### CRITICAL-01: Initializing ECharts Before the Shadow DOM Container Has Layout Dimensions
 
-**What goes wrong:** Using `@tanstack/lit-virtual` with rows that have variable content heights (e.g., wrapped text, expandable rows, inline editors) causes severe scroll stuttering, content jumping, and inaccurate scroll position when scrolling upward.
+**What goes wrong:**
+`echarts.init()` is called in `connectedCallback()` or the body of `firstUpdated()` before the container div in the shadow root has received browser layout. ECharts reads `container.clientWidth` and `container.clientHeight` at init time — if both are 0, ECharts logs `"Can't get DOM width or height"` and silently renders an empty chart. The chart never draws even after data is set via `setOption`.
 
-**Why it happens:** The virtualizer estimates row heights before measurement. When actual measured heights differ significantly from estimates, the virtualizer must adjust positions, causing visible jumps. This is especially bad when scrolling backwards because items above the viewport push content down.
+**Why it happens:**
+Lit's `firstUpdated()` fires after the initial render microtask resolves, but microtasks resolve before the browser performs layout and paint. The shadow root's container element exists in the DOM but has no measured dimensions yet. Developers assume `firstUpdated` means "the DOM is ready" — it means the shadow DOM is rendered into the document, not that layout has completed.
 
-**Consequences:**
-- Scrollbar thumb constantly resizes as content is measured
-- Scrolling up causes content to "jump" unpredictably
-- `scrollToIndex()` navigates to wrong position
-- Users lose their place in data
-- 60fps performance degrades to <30fps
+**How to avoid:**
+Wrap the `echarts.init()` call inside `requestAnimationFrame` after awaiting `updateComplete`. This defers until after the browser's next layout/paint cycle, guaranteeing real dimensions:
+
+```typescript
+async firstUpdated() {
+  await this.updateComplete;
+  requestAnimationFrame(() => {
+    const container = this.shadowRoot!.querySelector<HTMLDivElement>('#chart')!;
+    this._chart = echarts.init(container, null, { renderer: 'canvas' });
+    this._chart.setOption(this._buildOption());
+  });
+}
+```
+
+Also ensure the container has explicit CSS dimensions before init. Use a CSS custom property with a fallback:
+
+```css
+:host {
+  display: block;
+  width: 100%;
+  height: var(--ui-chart-height, 300px);
+}
+#chart {
+  width: 100%;
+  height: 100%;
+}
+```
 
 **Warning signs:**
-- Inline editing adds content (textarea grows)
-- Cell content wraps across multiple lines
-- Expandable row details
-- Dynamic column widths affecting text wrap
+- Empty chart on first render but data is present
+- Chart renders correctly after browser resize
+- Console shows `"Can't get dom width or height"`
+- Chart works in Storybook but not in production (different layout timing)
 
-**Prevention:**
-1. **Use fixed row heights as default.** Set `estimateSize: () => 48` and enforce height via CSS `height: 48px; overflow: hidden`
-2. **If variable heights required:** Set `estimateSize` to the LARGEST expected height, not average
-3. **Disable smooth scrolling** when using `measureElement` - TanStack docs explicitly state "Attempting to use smoothScroll with dynamically measured elements will not work"
-4. **Set `overflow-anchor: none`** on scroll container to disable browser scroll anchoring (virtualizer manages this internally)
-5. **Firefox workaround required:** Disable `measureElement` for Firefox due to incorrect table border height measurement
-
-**Phase impact:** Phase 1 (Core Virtual Scroll) - establish fixed-height row constraint early
-
-**Sources:**
-- [TanStack Virtual Issue #659](https://github.com/TanStack/virtual/issues/659) - Scrolling up stutters/jumps
-- [TanStack Virtual Issue #832](https://github.com/TanStack/virtual/issues/832) - Dynamic height lag
-- [TanStack Virtual Docs](https://tanstack.com/virtual/latest/docs/api/virtualizer) - `shouldAdjustScrollPositionOnItemSizeChange`
+**Phase to address:** Phase 1 (Chart base component / `@lit-ui/charts` package setup)
 
 ---
 
-### CRITICAL-02: ARIA Grid vs Table Role Selection
+### CRITICAL-02: ECharts GL Context Exhaustion — "Too Many Active WebGL Contexts"
 
-**What goes wrong:** Using `role="table"` for an interactive data table, or using `role="grid"` for a read-only data display. Screen readers provide completely different navigation and announcement patterns for each.
+**What goes wrong:**
+Browsers enforce a hard limit of approximately 16 simultaneous WebGL contexts per page (exact limit varies by browser/driver). Each ECharts GL chart (`scatterGL`, `linesGL`, WebGL renderer) allocates at least one WebGL context per `zlevel`. When the page has more than ~12–16 GL charts simultaneously, or when charts are repeatedly created and destroyed without proper cleanup, the browser starts dropping the oldest contexts with `"WARNING: Too many active WebGL contexts. Oldest context will be lost."` — affected charts show a blank canvas or a frown icon.
 
-**Why it happens:** Tables and grids look identical visually. Developers choose based on appearance, not interaction model. ARIA grid requires specific keyboard interaction contract.
+**Why it happens:**
+`chart.dispose()` alone does NOT fully release the WebGL context. The GPU memory and the WebGL context object itself can remain referenced until the garbage collector runs, which the browser may not do promptly. Each new chart created after hitting the limit causes the browser to forcibly destroy the oldest context on the page, corrupting any chart that was still using it.
 
-**Consequences:**
-- `role="table"` with interactive cells: Screen reader users cannot navigate to/interact with cell contents
-- `role="grid"` without full keyboard implementation: Violates ARIA contract, screen readers expect arrow key navigation
-- Partial implementations break assistive technology entirely
-- WCAG 2.1 AA compliance failure
+**How to avoid:**
+Before calling `chart.dispose()` in `disconnectedCallback()`, explicitly release the WebGL context using the `WEBGL_lose_context` extension:
+
+```typescript
+disconnectedCallback() {
+  super.disconnectedCallback();
+  if (this._chart) {
+    // Release WebGL context before dispose — dispose() alone is insufficient
+    const canvases = this._chart.getDom().getElementsByTagName('canvas');
+    for (const canvas of Array.from(canvases)) {
+      const gl = canvas.getContext('webgl') || canvas.getContext('webgl2');
+      gl?.getExtension('WEBGL_lose_context')?.loseContext();
+    }
+    this._chart.dispose();
+    this._chart = null;
+  }
+  this._resizeObserver?.disconnect();
+}
+```
+
+Additionally, in dashboards with many GL charts, limit simultaneous GL charts to 8–10 and document this as a constraint in the component API.
 
 **Warning signs:**
-- Interactive elements in cells (buttons, links, inputs)
-- Cell-level selection or editing
-- Keyboard navigation requirements beyond Tab
+- Multiple chart components on the same page (dashboards)
+- SPA navigation that mounts/unmounts chart pages
+- `echarts-gl` `scatterGL` or `linesGL` series in use
+- Console shows "Too many active WebGL contexts" warning
 
-**Prevention:**
-1. **Use `role="grid"` ONLY if:**
-   - Users need to navigate individual cells (not just rows)
-   - Cells contain interactive content
-   - Arrow key navigation is implemented
-   - Full ARIA grid contract is satisfied
-
-2. **Use `role="table"` when:**
-   - Data is read-only presentation
-   - Interaction is row-level only (click row to select)
-   - No cell-level keyboard navigation needed
-
-3. **For LitUI Data Table (interactive):** Use `role="grid"` with:
-   - `role="row"` on each row
-   - `role="gridcell"` on each cell
-   - `role="columnheader"` on header cells
-   - `aria-rowindex` and `aria-colindex` (1-based)
-   - `aria-rowcount` and `aria-colcount` on grid element
-   - Full arrow key navigation (up/down/left/right between cells)
-   - `aria-activedescendant` for roving focus (recommended for Shadow DOM)
-
-**Phase impact:** Phase 1 (Core) - ARIA structure must be correct from start; cannot retrofit
-
-**Sources:**
-- [Sarah Higley - Grids Part 1](https://sarahmhigley.com/writing/grids-part1/) - When to use grid vs table
-- [W3C APG Grid Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/grid/) - Full ARIA grid contract
-- [MDN ARIA table role](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/table_role) - Table semantics
+**Phase to address:** Phase 1 (base component) — disposal pattern must be established before any GL chart is built. Phase 2 or 3 (first GL chart) — verify with explicit context release.
 
 ---
 
-### CRITICAL-03: Shadow DOM ARIA ID References
+### CRITICAL-03: `appendData` + `setOption` Data Wipeout
 
-**What goes wrong:** Using `aria-labelledby`, `aria-describedby`, or `aria-controls` to reference elements across Shadow DOM boundaries. The reference silently fails because IDs are scoped to their shadow root.
+**What goes wrong:**
+A streaming chart uses `appendData()` to incrementally add data points. At some point, any call to `setOption()` — even to update a title, legend, color, or a completely unrelated option — silently clears all data previously loaded via `appendData`. The chart goes blank. This is a confirmed ECharts bug reported since v4.6.0 (GitHub Issue #12327) that has not been resolved as of ECharts 5.x.
 
-**Why it happens:** ARIA ID references (IDRef) work only within the same DOM tree. Shadow DOM creates separate trees. A header cell ID in the shadow DOM cannot be referenced by a body cell's `aria-labelledby`.
+**Why it happens:**
+`setOption` performs a full diff-and-replace of the series data by design. When it detects that the new option has no explicit `data` field on a series that previously used `appendData`, it treats this as "remove all data." The two data-loading APIs (`appendData` and `setOption`) are architecturally incompatible for concurrent use on the same series.
 
-**Consequences:**
-- Screen readers don't announce column headers when navigating cells
-- `aria-describedby` for error messages doesn't work
-- `aria-labelledby` for accessible names fails silently
-- No browser errors - silent accessibility failure
-- WCAG failure difficult to detect in testing
+**How to avoid:**
+Choose one data loading strategy per chart component and never mix them:
+
+- **For real-time streaming charts (line, scatter GL):** Use `appendData()` exclusively. Never call `setOption()` after the initial configuration. Store the full option at init time and do not update it during streaming. If chart options need to change during streaming (e.g., axis range, colors), `dispose()` and reinitialize the chart from scratch.
+
+- **For charts with periodic full data replacement (bar, heatmap, pie):** Use `setOption({ notMerge: false })` exclusively. Never use `appendData`.
+
+- **Architectural pattern:** Set the initial ECharts option once at component creation with all structural options (axes, grid, series config). After that, if streaming, use only `appendData`. Separate "structural update" from "data update."
 
 **Warning signs:**
-- Column headers in different shadow root than body cells
-- Error messages rendered outside cell's shadow root
-- Tooltip/popover content referenced via ARIA
+- Line/scatter chart clears during updates
+- Streaming data disappears after style changes
+- `setOption` called anywhere after `appendData` has run
 
-**Prevention:**
-1. **Keep ARIA relationships within same shadow root:**
-   - Render column headers AND body cells in same shadow root
-   - Container component pattern (like RadioGroup) where parent owns entire structure
-
-2. **Use `aria-label` instead of `aria-labelledby`:**
-   - Set `aria-label` directly on each cell with column name
-   - More verbose but works across shadow boundaries
-
-3. **Wait for Reference Target spec (experimental):**
-   - Chrome/Safari have origin trial for `shadowRootReferenceTarget`
-   - Not production-ready as of 2026-02
-
-4. **For LitUI Data Table:** Use container-rendered pattern:
-   - `<lui-data-table>` renders entire grid structure in its shadow DOM
-   - Row/cell data passed as properties, not slotted elements
-   - All ARIA IDs stay within single shadow root
-
-**Phase impact:** Phase 1 (Core) - architectural decision that affects all subsequent features
-
-**Sources:**
-- [Nolan Lawson - Shadow DOM ARIA trouble](https://nolanlawson.com/2022/11/28/shadow-dom-and-accessibility-the-trouble-with-aria/)
-- [Alice Boxhall - Shadow DOM/Accessibility conflict](https://alice.pages.igalia.com/blog/how-shadow-dom-and-accessibility-are-in-conflict/)
-- [Cory Rylan - ID Referencing in Shadow DOM](https://coryrylan.com/blog/accessibility-with-id-referencing-and-shadow-dom)
+**Phase to address:** Phase 2 (Line Chart with real-time streaming) — establish the boundary before building any streaming chart.
 
 ---
 
-### CRITICAL-04: Race Conditions in Server-Side Operations
+### CRITICAL-04: ECharts Crashes During SSR with `@lit-labs/ssr`
 
-**What goes wrong:** User sorts column A, then quickly sorts column B. Request for A returns after request for B. Table displays stale data from request A, but UI shows sort indicator on column B.
+**What goes wrong:**
+The existing LitUI library uses `@lit-labs/ssr` for server-side rendering. When a chart component is imported and rendered on the server, ECharts immediately throws `ReferenceError: window is not defined` during module evaluation — not during `echarts.init()`, but at import time, because ECharts probes `window` for environment detection when the module is first loaded. This crashes the entire SSR render pipeline for Next.js App Router and Astro users.
 
-**Why it happens:** Network requests complete in unpredictable order. Without cancellation, the most recent response wins regardless of which request started first.
+**Why it happens:**
+ECharts accesses `window` and `document` at module evaluation time (confirmed in GitHub Issue #20475). Unlike most browser libraries that gate browser API access behind function calls, ECharts runs detection code at the module level. Node.js has no `window` object, so importing echarts in a Node.js process throws immediately.
 
-**Consequences:**
-- Displayed data doesn't match UI sort/filter indicators
-- Users make decisions based on wrong data
-- Bulk actions operate on wrong selection
-- Data corruption in edit scenarios
+**How to avoid:**
+Apply a three-layer defense:
+
+1. **Dynamic import in Lit lifecycle:** Never statically import `echarts` or `echarts-gl` at the top of a chart component module. Use dynamic `import()` inside `firstUpdated()` or a client-only lifecycle method:
+
+```typescript
+// WRONG — crashes SSR at module evaluation
+import * as echarts from 'echarts/core';
+
+// CORRECT — deferred to browser
+async firstUpdated() {
+  await this.updateComplete;
+  const { init } = await import('echarts/core');
+  // ... rest of init
+}
+```
+
+2. **`isServer` guard from LitUI core:** Wrap any ECharts-related logic (consistent with the project's existing `isServer` guard pattern):
+
+```typescript
+import { isServer } from '@lit-labs/ssr/lib/is-server.js';
+
+connectedCallback() {
+  super.connectedCallback();
+  if (isServer) return; // Skip all chart init on server
+}
+```
+
+3. **Render a static placeholder during SSR:** In `render()`, detect server-side context and return a sized `<div>` placeholder with a `<slot>` for a static image fallback. This gives SSR something to render without importing ECharts.
 
 **Warning signs:**
-- Server-side sorting enabled
-- Server-side filtering/search
-- Server-side pagination
-- Any async data operation
+- Next.js App Router build fails with `window is not defined`
+- Astro build crashes on chart component import
+- Works in client-only apps but fails in SSR builds
 
-**Prevention:**
-1. **Use AbortController for all server requests:**
-   ```typescript
-   private _abortController?: AbortController;
+**Phase to address:** Phase 1 (package setup) — the dynamic import pattern must be the foundation before any chart is built. Add SSR test in the existing Express/Node.js SSR example.
 
-   async fetchData(params: DataParams) {
-     // Cancel any pending request
-     this._abortController?.abort();
-     this._abortController = new AbortController();
+---
 
-     try {
-       const response = await fetch(url, {
-         signal: this._abortController.signal
-       });
-       // Process response
-     } catch (e) {
-       if (e.name === 'AbortError') return; // Ignored - superseded
-       throw e;
-     }
-   }
-   ```
+### CRITICAL-05: Shadow DOM Event Retargeting Breaks ECharts Pointer Hit Detection
 
-2. **Track request sequence numbers:**
-   ```typescript
-   private _requestId = 0;
+**What goes wrong:**
+ECharts' internal rendering engine (ZRender) calculates which chart element the user clicked on using `event.target` and the canvas's bounding rect. Inside a Shadow DOM, browser event retargeting changes `event.target` from the canvas element to the shadow host custom element. ZRender then calculates pointer coordinates relative to the wrong element, causing tooltip, click, and brush interactions to fire on wrong data points or not fire at all.
 
-   async fetchData(params: DataParams) {
-     const myRequestId = ++this._requestId;
-     const data = await this.dataSource(params);
+**Why it happens:**
+When a composed event (click, mousemove, pointerdown) crosses a shadow boundary, the browser retargets `event.target` to the shadow host (`<lui-line-chart>`) to preserve encapsulation. ZRender uses `event.target.getBoundingClientRect()` internally for coordinate calculation. The shadow host and the canvas are the same size, but the canvas may have a different offsetParent, causing subtly wrong coordinates in certain layout contexts.
 
-     // Only apply if still the latest request
-     if (myRequestId !== this._requestId) return;
-     this.data = data;
-   }
-   ```
+**How to avoid:**
+This is primarily a ZRender/ECharts issue, but it manifests specifically in Shadow DOM contexts. The mitigation for v9.0 is:
 
-3. **Debounce rapid inputs** (search, filter) - 200-300ms delay
-4. **Disable UI during fetch** (optional but clear UX)
+1. **Ensure the canvas fills the shadow host 1:1:** Keep the `#chart` container at `position: absolute; inset: 0;` inside `:host { display: block; position: relative; }`. This makes the shadow host and canvas bounding rects identical, eliminating coordinate discrepancy.
 
-**Phase impact:** Phase 2 (Sorting/Filtering) - implement AbortController pattern from first server interaction
+2. **Do not use `position: fixed` or complex nesting** for chart containers in shadow roots — this is what causes the bounding rect mismatch.
 
-**Sources:**
-- [TkDodo - Concurrent Optimistic Updates](https://tkdodo.eu/blog/concurrent-optimistic-updates-in-react-query)
-- [Dejan Vasic - Optimistic Update Race Conditions](https://dejan.vasic.com.au/blog/2025/11/solving-optimistic-update-race-conditions-in-sveltekit)
+3. **Test tooltip/click events early in Phase 1.** If events are wrong, the fix is layout-level, not a code patch.
+
+4. **Note:** standard pointer events (`click`, `mousemove`) have `composed: true` and do cross the shadow boundary — the issue is retargeting the hit-test element, not event propagation itself.
+
+**Warning signs:**
+- Tooltip shows wrong data on hover
+- Click events fire on adjacent data points
+- Interaction issues only when chart is inside shadow DOM, not in a plain div
+
+**Phase to address:** Phase 1 (base component) — verify event hit-testing works before building any interactive chart.
 
 ---
 
 ## High-Severity Pitfalls
 
-Mistakes that cause significant bugs, poor UX, or accessibility issues.
+Mistakes that cause significant bugs, performance failures, or developer experience problems.
 
 ---
 
-### HIGH-01: Inline Editing Focus Trap
+### HIGH-01: `window.resize` Instead of `ResizeObserver` for Chart Resizing
 
-**What goes wrong:** User tabs into an editable cell. Focus gets trapped - Tab key moves to next cell input instead of allowing escape from table. Or: Tab escapes table entirely, skipping other editable cells.
+**What goes wrong:**
+Chart is initialized at 600px wide. Parent container is resized by CSS or JavaScript to 400px. The chart remains at 600px — it does not resize. `chart.resize()` is never called because the resize only affects the shadow root container, not the browser window.
 
-**Why it happens:** Data grids require two navigation modes:
-1. **Grid navigation:** Arrow keys between cells, Tab to leave grid
-2. **Edit mode:** Arrow keys for text editing, Tab to next form field
+**Why it happens:**
+`window.addEventListener('resize', ...)` only fires when the browser viewport changes. Container-level resizing (caused by flex/grid layout changes, parent resizes, panel collapses) does not trigger window resize. Developers familiar with older charting libraries (Chart.js pre-3.0, ECharts without ResizeObserver) use window resize as a default.
 
-Mixing these modes or not clearly transitioning causes focus chaos.
+**How to avoid:**
+Use native `ResizeObserver` on the shadow root's chart container. Do NOT use `window.resize` or polyfill-based observers (`@juggle/resize-observer` — polyfills only observe main document mutations, not shadow root mutations):
 
-**Consequences:**
-- Keyboard-only users cannot edit data
-- Screen reader users cannot navigate edited content
-- Tab order unpredictable
-- Form submission may skip cells
+```typescript
+private _resizeObserver?: ResizeObserver;
+
+firstUpdated() {
+  // ... echarts.init() ...
+  const container = this.shadowRoot!.querySelector('#chart')!;
+  this._resizeObserver = new ResizeObserver(() => {
+    this._chart?.resize();
+  });
+  this._resizeObserver.observe(container);
+}
+
+disconnectedCallback() {
+  super.disconnectedCallback();
+  this._resizeObserver?.disconnect();
+  this._resizeObserver = undefined;
+}
+```
 
 **Warning signs:**
-- Cells become editable on click/Enter
-- Multiple editable cells visible simultaneously
-- Form controls (input, select) rendered in cells
+- Chart overflows its container after layout changes
+- Chart correct on initial render but wrong size after tab/panel changes
+- Resize only works on browser window drag
 
-**Prevention:**
-1. **Use two distinct modes with clear entry/exit:**
-   - **Navigation mode:** Arrow keys move between cells, Enter/F2 enters edit mode
-   - **Edit mode:** Arrow keys work in input, Escape exits edit mode, Tab can optionally move to next editable cell within row
-
-2. **AG Grid pattern:**
-   - Single `tabindex="0"` on the grid
-   - `aria-activedescendant` points to current cell
-   - `suppressKeyboardEvent` callback for custom behavior in edit mode
-
-3. **Clear visual indicator of current mode:**
-   - Navigation: Cell outline focus ring
-   - Edit: Input focus ring within cell
-
-4. **Roving tabindex for cells:** Only one cell has `tabindex="0"`, others have `tabindex="-1"`
-
-**Phase impact:** Phase 3 (Inline Editing) - establish navigation mode state machine early
-
-**Sources:**
-- [AG Grid Keyboard Interaction](https://www.ag-grid.com/javascript-data-grid/keyboard-navigation/)
-- [UXPin Keyboard Navigation Patterns](https://www.uxpin.com/studio/blog/keyboard-navigation-patterns-complex-widgets/)
-- [Telerik Grid Keyboard Navigation](https://demos.telerik.com/blazor-ui/grid/keyboard-navigation)
+**Phase to address:** Phase 1 (base component) — build this into the base `LitChartElement` class so all chart types inherit correct resize behavior.
 
 ---
 
-### HIGH-02: Optimistic Update Rollback Failure
+### HIGH-02: Bundle Contamination — Importing `echarts-gl` into the Main LitUI Bundle
 
-**What goes wrong:** User edits cell, sees immediate update, server rejects edit, but UI doesn't revert. Or: UI reverts but selection state corrupted. Or: Undo conflicts with server state.
+**What goes wrong:**
+`import 'echarts-gl'` or `import { ScatterGLChart } from 'echarts-gl'` appears at the top of any chart component. Any user who installs `@lit-ui/charts` and imports even a simple line chart also downloads the full ECharts GL package (~1.5–2MB minified, ~500–600KB gzipped) even if they never use a WebGL chart. This makes the charts package unusable for projects with bundle size budgets.
 
-**Why it happens:** Optimistic updates require:
-1. Snapshot of previous state
-2. Immediate UI update
-3. Server confirmation OR rollback
-4. Correct handling of concurrent edits
+**Why it happens:**
+Tree-shaking does not eliminate ECharts GL. Unlike the base `echarts` package which has proper tree-shakeable subpath exports (`echarts/core`, `echarts/charts`, `echarts/components`), `echarts-gl` does not support the same granular tree-shaking and must be imported as a whole. Any static top-level import of `echarts-gl` loads the entire library unconditionally.
 
-Any gap in this chain causes state corruption.
+**How to avoid:**
+Use dynamic imports at the component level for all GL-dependent chart types. GL charts (`ScatterGL`, `LinesGL`, `Bar3D`) must be separate component classes from their 2D counterparts:
 
-**Consequences:**
-- User sees data that doesn't exist on server
-- Subsequent operations fail mysteriously
-- Save/cancel flow breaks
-- Bulk operations partial-commit
+```typescript
+// lui-scatter-gl.ts — ONLY imports echarts-gl, dynamically
+async firstUpdated() {
+  await this.updateComplete;
+  // Dynamically import both echarts and echarts-gl
+  const [{ init, use }, { ScatterGLChart }, { CanvasRenderer }] = await Promise.all([
+    import('echarts/core'),
+    import('echarts-gl/charts'),
+    import('echarts/renderers'),
+  ]);
+  use([ScatterGLChart, CanvasRenderer]);
+  // ... init chart
+}
+```
+
+Additionally, in the package's `package.json`, list `echarts-gl` as an optional peer dependency (not a regular dependency), so users who only need 2D charts don't install it at all:
+
+```json
+{
+  "peerDependencies": {
+    "echarts": ">=5.3.0",
+    "echarts-gl": ">=2.0.0"
+  },
+  "peerDependenciesMeta": {
+    "echarts-gl": { "optional": true }
+  }
+}
+```
 
 **Warning signs:**
-- Inline cell editing
-- Optimistic row updates
-- Concurrent user editing scenarios
+- Bundle analyzer shows `echarts-gl` in the initial chunk
+- `npx lit-ui add line-chart` installs echarts-gl as a dependency
+- Any non-GL chart component file has a static `import ... from 'echarts-gl'`
 
-**Prevention:**
-1. **Snapshot before mutation:**
+**Phase to address:** Phase 1 (package setup) — the package.json peer dependency structure must be correct before any GL chart is built.
+
+---
+
+### HIGH-03: Real-Time Update Rate Exceeding ECharts Render Capacity
+
+**What goes wrong:**
+A streaming line chart connected to a WebSocket receives data at 50ms intervals (20 updates/second). `setOption()` is called on every message. The chart renders at only 3–5fps, appears to freeze, accumulates a backlog of pending updates, and eventually locks the browser's main thread.
+
+**Why it happens:**
+ECharts `setOption()` is a synchronous operation that performs a full diff of the chart state, recomputes layouts, and schedules a re-render. Calling it at 20Hz on a line chart with 10,000 points consumes ~10–30ms per call — far more than the 50ms update interval. The main thread is never free to process the render queue.
+
+Additionally, ECharts internally batches renders using `requestAnimationFrame` (max ~60fps), so calling `setOption` at 20Hz with animations enabled means each update triggers an animated transition that won't complete before the next update arrives.
+
+**How to avoid:**
+1. **Disable ECharts animations for real-time streaming:**
    ```typescript
-   async updateCell(rowId: string, field: string, newValue: any) {
-     const previousValue = this.getCell(rowId, field);
+   this._chart.setOption({
+     animation: false,
+     animationDuration: 0,
+   });
+   ```
 
-     // Optimistic update
-     this.setCell(rowId, field, newValue);
+2. **Batch incoming data and call `setOption` (or `appendData`) at most once per animation frame using RAF coalescing:**
+   ```typescript
+   private _pendingData: [number, number][] = [];
+   private _rafId?: number;
 
-     try {
-       await this.saveCell(rowId, field, newValue);
-     } catch (e) {
-       // Rollback on failure
-       this.setCell(rowId, field, previousValue);
-       this.showError(e);
+   onMessage(point: [number, number]) {
+     this._pendingData.push(point);
+     if (this._rafId === undefined) {
+       this._rafId = requestAnimationFrame(() => {
+         this._flush();
+         this._rafId = undefined;
+       });
      }
    }
+
+   private _flush() {
+     if (!this._pendingData.length) return;
+     // appendData with accumulated points
+     this._chart?.appendData({ seriesIndex: 0, data: this._pendingData });
+     this._pendingData = [];
+   }
    ```
 
-2. **Row-level editing mode (simpler):**
-   - Enter edit mode on row
-   - Changes buffered locally
-   - Save or Cancel button commits/reverts entire row
-   - No optimistic updates - explicit save action
+3. **Use `TypedArray` (`Float32Array`) for data in appendData** — reduces garbage collection pressure compared to plain JS arrays.
 
-3. **Version/ETag conflict detection:**
-   - Track row version from server
-   - Reject stale updates with "edited by another user" message
+4. **Cap displayed data window:** For a streaming line chart showing the last N seconds, maintain a circular buffer and only render a bounded dataset rather than accumulating all points indefinitely.
 
-4. **Disable other rows during edit** (simplest approach)
+**Warning signs:**
+- Chart update rate appears much lower than incoming data rate
+- `setOption` calls visible in flame chart consuming main thread
+- Browser tab becomes unresponsive during streaming
+- `requestAnimationFrame` callbacks queuing behind each other
 
-**Phase impact:** Phase 3 (Inline Editing) - decide on optimistic vs explicit save pattern
-
-**Sources:**
-- [TanStack Query Optimistic Updates](https://tanstack.com/query/v4/docs/framework/react/guides/optimistic-updates)
-- [DEV Community - Data Table Optimistic Updates](https://dev.to/enyelsequeira/building-a-data-table-with-optimistic-updates-4j9a)
+**Phase to address:** Phase 2 (Line Chart) — streaming architecture must be established at the first real-time chart.
 
 ---
 
-### HIGH-03: Column Resize/Reorder State Persistence
+### HIGH-04: ECharts Memory Leak — `dispose()` Without `null` Assignment
 
-**What goes wrong:** User resizes column, scrolls down, resizes another column - first column resets to original width. Or: Column order persists but widths lost on page reload. Or: Drag ghost doesn't match actual column.
+**What goes wrong:**
+`chart.dispose()` is called in `disconnectedCallback()`, but the component property `this._chart` retains the reference to the disposed ECharts instance. Chrome heap snapshots show ECharts instance objects accumulating in memory, each holding references to DOM nodes (the chart container divs from previous shadow roots), keeping them alive even after disconnection. Memory grows on every SPA navigation.
 
-**Why it happens:** Column customization requires coordinating:
-1. Drag/resize DOM events
-2. Internal state updates
-3. Style recalculation
-4. Virtual scroll recalculation (widths affect total width)
-5. Persistence to localStorage/server
+**Why it happens:**
+`chart.dispose()` cleans up internal ECharts state and removes canvas elements but does not release the JavaScript reference to the ECharts instance object itself. The instance object has closures and internal references that keep a subgraph of objects alive. The Lit component property `this._chart` is the remaining root reference preventing GC.
 
-Failure at any step causes state inconsistency.
+**How to avoid:**
+Always `null` the reference immediately after `dispose()`:
 
-**Consequences:**
-- Users lose customization work
-- Jarring visual resets during interaction
-- Saved preferences not restored
-- Export doesn't match visible columns
+```typescript
+disconnectedCallback() {
+  super.disconnectedCallback();
+  this._resizeObserver?.disconnect();
+  this._resizeObserver = undefined;
+  if (this._chart) {
+    this._chart.dispose();
+    this._chart = null; // REQUIRED — dispose() alone leaves the reference alive
+  }
+}
+```
+
+Also null the reference in error recovery paths and component property setters.
 
 **Warning signs:**
-- Column resize handles
-- Column drag-to-reorder
-- Column show/hide toggles
-- Preference persistence
+- Memory profiler shows ECharts instances accumulating across route navigations
+- `echarts.getInstanceByDom(container)` returns an instance after disconnect
+- Component count in memory grows unbounded
 
-**Prevention:**
-1. **Use resize guides (not live resize):**
-   - On drag start: Show vertical guide line
-   - On drag: Move guide only
-   - On drag end: Apply width change once
-   - Avoids jittery redraws during drag
-
-2. **Separate concerns:**
-   ```typescript
-   // Column definition (immutable per session)
-   interface ColumnDef {
-     field: string;
-     header: string;
-     defaultWidth: number;
-   }
-
-   // Column state (mutable, persisted)
-   interface ColumnState {
-     field: string;
-     width: number;
-     order: number;
-     visible: boolean;
-   }
-   ```
-
-3. **Debounce persistence** - don't save on every resize pixel, save 500ms after resize end
-
-4. **Frozen columns cannot be reordered** - Tabulator pattern, explicit constraint
-
-5. **CSS Grid for column widths:**
-   - `grid-template-columns` from state
-   - Single source of truth for widths
-   - Virtual scroll header and body share same template
-
-**Phase impact:** Phase 4 (Column Customization) - column state model must support all operations
-
-**Sources:**
-- [Tabulator Layout Docs](https://tabulator.info/docs/6.3/layout) - Resize guides, frozen columns
-- [Let's Build UI - Resizable Tables](https://www.letsbuildui.dev/articles/resizable-tables-with-react-and-css-grid/)
+**Phase to address:** Phase 1 (base component) — establish the disposal pattern in the base class so all chart types inherit it correctly.
 
 ---
 
-### HIGH-04: Shift+Click Range Selection Edge Cases
+### HIGH-05: CSS Custom Properties Not Resolved When Building ECharts Theme Object
 
-**What goes wrong:** User selects row 5, filters list, shift+clicks row 10 (which was row 20 before filter). Range includes invisible rows. Or: shift+click across page boundary selects nothing.
+**What goes wrong:**
+The LitUI design system uses `--ui-*` CSS custom properties for all theming (colors, radius, spacing). A developer tries to use these tokens directly in the ECharts option object:
 
-**Why it happens:** Range selection must track:
-1. Anchor row (first selection)
-2. Current row (shift+click target)
-3. Whether range is over filtered/visible data or underlying data
-4. Whether range crosses pagination boundaries
+```typescript
+// BROKEN — ECharts canvas does not resolve CSS variables
+this._chart.setOption({
+  color: ['var(--ui-color-primary)', 'var(--ui-color-secondary)'],
+});
+```
 
-**Consequences:**
-- Bulk delete removes wrong rows
-- Export includes unintended data
-- User expectation mismatch
+The chart renders with `var(--ui-color-primary)` as a literal string color, which is invalid CSS for a canvas context. Canvas `fillStyle` does not evaluate CSS custom properties. ECharts silently ignores invalid colors and falls back to its own defaults.
+
+**Why it happens:**
+ECharts renders to a `<canvas>` element. The Canvas 2D API resolves colors at draw time using the browser's CSS parser, but CSS custom properties are not evaluated by the canvas context — only by the CSS cascade. The ECharts team has explicitly declined to add native CSS variable support, stating they want to keep the API platform-independent. (GitHub Issue #16044)
+
+**How to avoid:**
+Read resolved CSS custom property values before building the ECharts option. Use `getComputedStyle` on the host element, which is inside the shadow DOM and can access inherited `--ui-*` values:
+
+```typescript
+private _readToken(name: string, fallback: string): string {
+  return (
+    getComputedStyle(this).getPropertyValue(name).trim() || fallback
+  );
+}
+
+private _buildTheme() {
+  return {
+    color: [
+      this._readToken('--ui-color-primary', '#3b82f6'),
+      this._readToken('--ui-color-secondary', '#8b5cf6'),
+      this._readToken('--ui-color-success', '#10b981'),
+      this._readToken('--ui-color-warning', '#f59e0b'),
+      this._readToken('--ui-color-danger', '#ef4444'),
+    ],
+    textStyle: {
+      color: this._readToken('--ui-color-foreground', '#0f172a'),
+      fontFamily: this._readToken('--ui-font-sans', 'system-ui'),
+    },
+  };
+}
+```
+
+Call `_buildTheme()` inside `firstUpdated()` (after the element is in the DOM and can see inherited CSS), and rebuild when the host document switches dark/light mode.
+
+For dark mode support: `setOption` must be called again when `.dark` class toggles on the document root. Observe this with a `MutationObserver` on `document.documentElement`.
 
 **Warning signs:**
-- Shift+click range selection
-- Filtering with selection active
-- Pagination with selection active
+- Chart colors don't match the rest of the design system
+- Chart colors are ECharts defaults (blue, orange, green) not `--ui-*` values
+- `var(--ui-...)` visible as literal text in a canvas debugger
 
-**Prevention:**
-1. **Clear selection on filter/sort change** (simplest, safest)
-
-2. **If preserving selection across filter:**
-   - Store selection by row ID, not index
-   - Shift+click selects only VISIBLE rows in range
-   - Show count: "5 selected (3 hidden by filter)"
-
-3. **Cross-page selection:**
-   - Either: disable shift+click across pages
-   - Or: "Select all 3,200 matching items" explicit action (Gmail pattern)
-
-4. **Track anchor by ID:**
-   ```typescript
-   private _anchorRowId: string | null = null;
-   private _selectedIds = new Set<string>();
-
-   handleClick(rowId: string, event: MouseEvent) {
-     if (event.shiftKey && this._anchorRowId) {
-       // Select range of VISIBLE rows between anchor and target
-       this.selectVisibleRange(this._anchorRowId, rowId);
-     } else {
-       this._anchorRowId = rowId;
-       this.toggleSelection(rowId);
-     }
-   }
-   ```
-
-**Phase impact:** Phase 3 (Selection) - define selection behavior before implementing bulk actions
-
-**Sources:**
-- [TanStack Table Discussion #3068](https://github.com/TanStack/table/discussions/3068) - Shift+click implementation
-- [Eleken - Bulk Action UX Guidelines](https://www.eleken.co/blog-posts/bulk-actions-ux)
+**Phase to address:** Phase 1 (base component) — establish the `_readToken` / `_buildTheme` pattern before any chart uses color tokens.
 
 ---
 
-### HIGH-05: Sticky Header/Column with Virtual Scroll
+### HIGH-06: WebGL Not Available — No Fallback to 2D Canvas
 
-**What goes wrong:** Sticky header disappears when scrolling in virtualized table. Or: Sticky column and header don't stay synchronized during scroll. Or: Sticky elements scroll at different speeds.
+**What goes wrong:**
+A user runs a WebGL chart on a corporate machine with GPU acceleration disabled (common in enterprise environments, VMs, and some mobile browsers). `echarts-gl` silently fails to initialize or logs a cryptic WebGL error. The chart renders as a blank space with no error message to the user.
 
-**Why it happens:** Virtual scrolling transforms row positions dynamically. CSS `position: sticky` relies on containing block relationships that get disrupted by virtualizer's absolute positioning.
+**Why it happens:**
+ECharts GL assumes WebGL is available and does not provide automatic fallback. In environments where WebGL is blocked (corporate proxy, hardware acceleration disabled, headless browser), `canvas.getContext('webgl')` returns `null` and ECharts GL throws or silently no-ops.
 
-**Consequences:**
-- Users lose context (which column is this data?)
-- Visual glitches during scroll
-- Header/column offset misalignment
+**How to avoid:**
+Implement WebGL feature detection before initializing any GL chart, and provide a graceful fallback:
+
+```typescript
+private _isWebGLSupported(): boolean {
+  if (typeof window === 'undefined') return false;
+  try {
+    const canvas = document.createElement('canvas');
+    return !!(
+      canvas.getContext('webgl2') ||
+      canvas.getContext('webgl') ||
+      canvas.getContext('experimental-webgl')
+    );
+  } catch {
+    return false;
+  }
+}
+
+async firstUpdated() {
+  await this.updateComplete;
+  requestAnimationFrame(async () => {
+    if (!this._isWebGLSupported()) {
+      this._webglUnavailable = true;
+      this.requestUpdate();
+      return;
+    }
+    // Proceed with echarts-gl init
+  });
+}
+```
+
+Render a fallback message or a 2D chart equivalent when `_webglUnavailable` is true. Expose a `webgl-unavailable` custom event so the host application can handle it.
 
 **Warning signs:**
-- `position: sticky` on header
-- Virtual scrolling enabled
-- Horizontal scrolling with frozen columns
+- Blank chart space in enterprise/VM environments
+- No console error shown to user
+- Works in Chrome/Firefox dev machines but not in QA environment
 
-**Prevention:**
-1. **Use dedicated sticky containers (TanStack pattern):**
-   ```css
-   .sticky-header-container {
-     position: sticky;
-     top: 0;
-     z-index: 10;
-   }
-
-   .virtual-scroll-container {
-     height: calc(100% - header-height);
-     overflow: auto;
-   }
-   ```
-
-2. **Separate scroll containers:**
-   - Header: Fixed position, synced via `scrollLeft` on body scroll
-   - Body: Virtual scrolled
-   - Left frozen columns: Separate container, synced via `scrollTop`
-
-3. **Single scroll ref pattern (TanStack recommendation):**
-   - One ref for both horizontal and vertical scrolling
-   - Header and frozen column use `position: sticky` within that container
-   - Add `stickyHeight` and `stickyWidth` to virtual container sizing
-
-4. **Z-index layering:**
-   - Header cells: `z-index: 2`
-   - Frozen column cells: `z-index: 5`
-   - Frozen header corner: `z-index: 6`
-
-**Phase impact:** Phase 1 (Core) - scroll architecture must support sticky from start
-
-**Sources:**
-- [TanStack Virtualizer Sticky Headers](https://mashuktamim.medium.com/building-sticky-headers-and-columns-with-tanstack-virtualizer-react-a-complete-guide-12123ef75334)
-- [CSS-Tricks - Position Sticky and Tables](https://css-tricks.com/position-sticky-and-table-headers/)
-- [TanStack Virtual Issue #640](https://github.com/TanStack/virtual/issues/640) - Sticky header disappears
+**Phase to address:** Phase 3 or whichever phase introduces the first GL chart (Scatter GL).
 
 ---
 
 ## Medium-Severity Pitfalls
 
-Mistakes that cause bugs, confusion, or technical debt.
+Mistakes that cause technical debt, DX problems, or non-obvious bugs.
 
 ---
 
-### MEDIUM-01: Form-Associated Cell Validation Timing
+### MEDIUM-01: Using `notMerge: true` on Every `setOption` Call
 
-**What goes wrong:** Cell shows valid state, user submits form, validation runs late, form submits with invalid data. Or: Validation message appears in wrong position relative to cell.
-
-**Why it happens:** ElementInternals validation is separate from native form validation timing. Shadow DOM boundary complicates error message positioning.
-
-**Consequences:**
-- Invalid data submitted
-- Error messages hidden or misplaced
-- Validation state flickers
-
-**Prevention:**
-1. **Validate on blur AND before submit:**
-   ```typescript
-   setValidity(flags: ValidityStateFlags, message: string) {
-     this.internals?.setValidity(flags, message, this.inputElement);
-   }
-
-   handleBlur() {
-     this.validate();
-   }
-
-   formAssociatedCallback(form: HTMLFormElement) {
-     form.addEventListener('submit', () => this.validate());
-   }
-   ```
-
-2. **Error messages inside cell** (same shadow root as validation anchor)
-
-3. **Use `reportValidity()` for immediate feedback**
-
-**Phase impact:** Phase 3 (Inline Editing) - validation architecture
-
-**Sources:**
-- [WebKit - ElementInternals](https://webkit.org/blog/13711/elementinternals-and-form-associated-custom-elements/)
-- [CSS-Tricks - ElementInternals](https://css-tricks.com/creating-custom-form-controls-with-elementinternals/)
-
----
-
-### MEDIUM-02: Memory Leaks from Event Listeners
-
-**What goes wrong:** Table with 100K rows adds resize observer per row. Component disconnected but observers still running. Memory grows on navigation.
+**What goes wrong:**
+The developer sets `notMerge: true` on every `setOption` call to ensure a "clean" update. This causes ECharts to destroy and recreate every chart element on each update — axes, legend, grid, tooltip, series — rather than diffing. The smooth update animations stop working. CPU usage spikes on each update. Canvas flickers on fast updates.
 
 **Why it happens:**
-- Event listeners on rows not cleaned up on disconnect
-- ResizeObserver/IntersectionObserver not disconnected
-- VirtualizerController not cleaned up
+`notMerge: true` is found in many ECharts code snippets and tutorials as a safe default. Developers use it to avoid stale option merging without understanding the performance cost.
 
-**Consequences:**
-- Memory grows over time
-- CPU usage increases
-- Browser tab slows/crashes
+**How to avoid:**
+Use `notMerge: false` (the default) for most updates. Use `notMerge: true` only when fundamentally changing the chart type or removing series. For data updates, let ECharts' diff engine handle transitions. For option structure changes, `notMerge: true` is appropriate exactly once during a reconfiguration, not as a runtime default.
 
-**Prevention:**
-1. **Single observer pattern:**
-   - One ResizeObserver for entire table
-   - One IntersectionObserver for infinite scroll sentinel
-   - Never per-row observers
-
-2. **Clean up in disconnectedCallback:**
-   ```typescript
-   disconnectedCallback() {
-     super.disconnectedCallback();
-     this._virtualizer = undefined;
-     this._resizeObserver?.disconnect();
-     this._abortController?.abort();
-   }
-   ```
-
-3. **Remove global listeners:**
-   ```typescript
-   connectedCallback() {
-     window.addEventListener('resize', this._handleResize);
-   }
-
-   disconnectedCallback() {
-     window.removeEventListener('resize', this._handleResize);
-   }
-   ```
-
-**Phase impact:** All phases - establish cleanup pattern in Phase 1
-
-**Sources:**
-- [Lit GitHub Issue #3935](https://github.com/lit/lit/issues/3935) - Detached HTMLTemplateElement leak
-- [TanStack Virtual Issue #196](https://github.com/TanStack/virtual/issues/196) - Memory leak with react-table
+**Phase to address:** Phase 2+ (all chart update paths)
 
 ---
 
-### MEDIUM-03: Minimum Column Width Below Usable
+### MEDIUM-02: Initializing Multiple ECharts Instances with the Same Container DOM Element
 
-**What goes wrong:** User drags column resize handle all the way left. Column becomes 0px or 10px. Content invisible. No way to resize back (handle too small to click).
+**What goes wrong:**
+A chart component is disconnected and reconnected to the DOM (e.g., by moving it in the document, or via framework keyed list reconciliation). On reconnect, `firstUpdated` is called again and `echarts.init()` is called on a container that still has an ECharts instance attached (from the previous connection). ECharts throws `"Already have an echarts instance"` and the chart does not reinitialize.
 
-**Why it happens:** No minimum width constraint during resize drag.
+**Why it happens:**
+`firstUpdated` in Lit runs only once per component lifetime — but if the component is moved in the DOM (not disconnected/reconnected as a new element), `connectedCallback` fires without `firstUpdated`. If `echarts.init()` is called in `connectedCallback` without checking for an existing instance, the double-init error occurs.
 
-**Consequences:**
-- Column content invisible
-- Cannot undo resize
-- Table unusable without reset
+**How to avoid:**
+Always check for an existing ECharts instance before calling `init()`:
 
-**Prevention:**
-1. **Enforce minimum width (50px recommended):**
-   ```typescript
-   handleResize(newWidth: number) {
-     const clampedWidth = Math.max(newWidth, 50);
-     this.setColumnWidth(columnId, clampedWidth);
-   }
-   ```
+```typescript
+connectedCallback() {
+  super.connectedCallback();
+  if (this._chart && !this._chart.isDisposed()) {
+    // Chart already initialized — just call resize in case dimensions changed
+    this._chart.resize();
+    return;
+  }
+}
+```
 
-2. **Reset button in column header menu**
+Or, use `echarts.getInstanceByDom(container)` and dispose before reinitializing:
 
-3. **Double-click to auto-fit content**
+```typescript
+const existing = echarts.getInstanceByDom(container);
+if (existing) existing.dispose();
+this._chart = echarts.init(container, ...);
+```
 
-**Phase impact:** Phase 4 (Column Customization)
-
-**Sources:**
-- [Tabulator Docs](https://tabulator.info/docs/6.3/layout) - Minimum column width
-
----
-
-### MEDIUM-04: CSS Display Grid Breaking Table Semantics
-
-**What goes wrong:** Using `display: grid` on table element removes native table semantics from accessibility tree. Screen readers no longer treat it as a table.
-
-**Why it happens:** CSS display property overrides HTML semantics in some browsers.
-
-**Consequences:**
-- Screen readers don't announce "table with X rows, Y columns"
-- Table navigation shortcuts don't work
-- ARIA roles become required to restore semantics
-
-**Prevention:**
-1. **Use ARIA roles explicitly when using CSS Grid:**
-   ```html
-   <div role="grid" aria-rowcount="100" aria-colcount="5">
-     <div role="row">
-       <div role="columnheader">Name</div>
-     </div>
-   </div>
-   ```
-
-2. **Or use CSS `display: contents` carefully** (has its own issues)
-
-3. **Test with screen readers** - JAWS + Chrome recommended
-
-**Phase impact:** Phase 1 (Core) - HTML structure decision
-
-**Sources:**
-- [Adrian Roselli - Tables and CSS Display](https://adrianroselli.com/2018/02/tables-css-display-properties-and-aria.html)
-- [Sarah Higley - Grids Part 2](https://sarahmhigley.com/writing/grids-part2/)
+**Phase to address:** Phase 1 (base component) — guard this in the base class.
 
 ---
 
-## Low-Severity Pitfalls
+### MEDIUM-03: `appendData` Is Incompatible with `dataset`
 
-Annoyances or minor issues that are easily fixable.
+**What goes wrong:**
+A developer reads the ECharts handbook chapter on `dataset` for efficient data sharing across series. They implement a streaming chart using `dataset` for data management, then try to use `appendData` to incrementally add points. `appendData` silently does nothing when a series is bound to a `dataset` — it only works with inline series `data` arrays.
 
----
+**Why it happens:**
+ECharts documentation for `appendData` and `dataset` is in separate handbook sections. The incompatibility is noted in a footnote of the `appendData` docs: "Note: Streaming cannot be used with datasets."
 
-### LOW-01: Column Header Text Truncation Without Tooltip
+**How to avoid:**
+For any chart that needs streaming, use inline `series.data` arrays (not `dataset`). Reserve `dataset` for static or fully-replaced charts (bar, pie, heatmap). Document this constraint in the streaming chart API.
 
-**What goes wrong:** Long column header text truncated with ellipsis. Users can't see full header name.
-
-**Prevention:** Add `title` attribute or show tooltip on truncated headers.
-
-**Phase impact:** Phase 1 (Core)
-
----
-
-### LOW-02: Empty State Not Showing During Load
-
-**What goes wrong:** Table shows "No data" briefly while loading, then data appears. Confusing flicker.
-
-**Prevention:** Show skeleton/loading state, not empty state, during initial load. Only show "No data" when load completes with zero results.
-
-**Phase impact:** Phase 2 (Filtering) - empty vs loading distinction
+**Phase to address:** Phase 2 (Line Chart) — streaming architecture decision.
 
 ---
 
-### LOW-03: Export Includes Hidden Columns
+### MEDIUM-04: Dark Mode Theme Not Rebuilt on Document Class Change
 
-**What goes wrong:** User hides columns for viewing, exports data, hidden columns appear in export.
+**What goes wrong:**
+ECharts theme is built from `--ui-*` CSS tokens at component init time. User toggles dark mode on the page (`.dark` class added to `<html>`). All other LitUI components update via `:host-context(.dark)` CSS. The chart does not update because ECharts themes are JavaScript objects passed to the chart at init — CSS cascade changes do not propagate into the canvas.
 
-**Prevention:** Add export option: "Export visible columns only" vs "Export all columns"
+**Why it happens:**
+Unlike HTML elements styled via CSS, ECharts draws to a canvas using JavaScript-resolved color values. Once the theme object is built and passed to ECharts, changing the CSS tokens has no effect unless the chart is explicitly told to re-read them.
 
-**Phase impact:** Phase 4 (Column Customization) + Export feature
+**How to avoid:**
+Observe `document.documentElement` for class mutations and rebuild the theme on dark/light toggle:
 
----
+```typescript
+private _colorSchemeObserver?: MutationObserver;
 
-## Phase-Specific Warning Summary
+firstUpdated() {
+  // ... chart init ...
+  this._colorSchemeObserver = new MutationObserver(() => {
+    this._applyTheme(); // Re-read --ui-* tokens and call setOption with new colors
+  });
+  this._colorSchemeObserver.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['class'],
+  });
+}
 
-| Phase | Primary Pitfall Risk | Mitigation |
-|-------|---------------------|------------|
-| Phase 1: Core Virtual Scroll | CRITICAL-01 (Variable heights), CRITICAL-03 (Shadow DOM ARIA), HIGH-05 (Sticky scroll) | Fixed row height, container-rendered pattern, separate sticky containers |
-| Phase 2: Sorting/Filtering | CRITICAL-04 (Race conditions), HIGH-04 (Range selection with filter) | AbortController, clear selection on filter |
-| Phase 3: Inline Editing | HIGH-01 (Focus trap), HIGH-02 (Optimistic rollback), MEDIUM-01 (Validation) | Two-mode navigation, explicit save pattern |
-| Phase 4: Column Customization | HIGH-03 (State persistence), MEDIUM-03 (Min width) | Resize guides, debounced persistence, 50px minimum |
-| Phase 5: Selection & Bulk Actions | HIGH-04 (Shift+click edge cases) | ID-based selection, visible-only range |
+disconnectedCallback() {
+  super.disconnectedCallback();
+  this._colorSchemeObserver?.disconnect();
+  // ...
+}
+```
 
----
-
-## Quick Reference: Do/Don't
-
-| Category | Do | Don't |
-|----------|-----|-------|
-| Row heights | Use fixed heights (48px) | Dynamic heights without estimation |
-| ARIA | Use `role="grid"` with full contract | Use `role="table"` for interactive cells |
-| Shadow DOM | Keep all ARIA IDs in same shadow root | Reference IDs across shadow boundaries |
-| Server operations | Cancel pending requests on new operation | Ignore stale responses |
-| Keyboard | Implement grid navigation + edit mode | Trap focus in edit mode |
-| Column resize | Use resize guides, enforce 50px min | Live resize every pixel |
-| Selection | Track by row ID, not index | Assume filter/sort preserves selection |
-| Sticky elements | Separate sticky container | position: sticky in virtual scroll |
-| Memory | Clean up observers in disconnectedCallback | Per-row observers |
+**Phase to address:** Phase 1 (base component) or Phase 5 (CSS token theming system phase).
 
 ---
 
-## Sources Summary
+### MEDIUM-05: `echarts-gl` `scatterGL` Cannot Be Tree-Shaken
 
-**Virtual Scrolling:**
-- [TanStack Virtual Docs](https://tanstack.com/virtual/latest/docs/api/virtualizer)
-- [TanStack Virtual GitHub Issues](https://github.com/TanStack/virtual/issues)
-- [DEV Community - Virtual Scrolling](https://dev.to/lalitkhu/rendering-massive-tables-at-lightning-speed-virtualization-with-virtual-scrolling-2dpp)
+**What goes wrong:**
+A developer follows ECharts' tree-shaking guide and imports only `LineChart`, `BarChart`, `CanvasRenderer` from `echarts/charts` and `echarts/renderers`. This produces a correctly minimized bundle for 2D charts. They then add `scatterGL` from `echarts-gl`. Unlike base ECharts, `echarts-gl` does not expose subpath exports for individual chart types — importing `echarts-gl/charts` for just `ScatterGLChart` pulls in the entire `echarts-gl` module including all 3D primitives, globe, and bar3D.
 
-**Accessibility:**
-- [W3C APG Grid Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/grid/)
-- [Sarah Higley - Grids](https://sarahmhigley.com/writing/grids-part1/)
-- [Nolan Lawson - Shadow DOM ARIA](https://nolanlawson.com/2022/11/28/shadow-dom-and-accessibility-the-trouble-with-aria/)
-- [MDN ARIA Roles](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/)
+**How to avoid:**
+Accept this limitation. Isolate `echarts-gl` entirely to GL-specific component files (never imported by 2D chart components), use dynamic `import()` to lazy-load the GL module, and list `echarts-gl` as an optional peer dependency. The GL bundle will always be ~500–600KB gzipped for any GL chart — there is no granular tree-shaking available as of early 2026.
 
-**State Management:**
-- [TkDodo - Optimistic Updates](https://tkdodo.eu/blog/concurrent-optimistic-updates-in-react-query)
-- [TanStack Query Docs](https://tanstack.com/query/v4/docs/framework/react/guides/optimistic-updates)
+**Phase to address:** Phase 1 (package architecture decision) — document this constraint explicitly.
 
-**Keyboard/Focus:**
-- [AG Grid Keyboard Navigation](https://www.ag-grid.com/javascript-data-grid/keyboard-navigation/)
-- [UXPin Keyboard Patterns](https://www.uxpin.com/studio/blog/keyboard-navigation-patterns-complex-widgets/)
+---
 
-**Column Operations:**
-- [Tabulator Layout](https://tabulator.info/docs/6.3/layout)
-- [DataTables ColReorder](https://datatables.net/extensions/colreorder/)
+## Performance Traps
 
-**Form Integration:**
-- [WebKit ElementInternals](https://webkit.org/blog/13711/elementinternals-and-form-associated-custom-elements/)
-- [CSS-Tricks ElementInternals](https://css-tricks.com/creating-custom-form-controls-with-elementinternals/)
+Patterns that work at small scale but degrade severely with larger datasets or higher update frequencies.
+
+| Trap | Symptoms | Prevention | When It Breaks |
+|------|----------|------------|----------------|
+| Plain JS arrays for streaming data | GC pauses during rapid updates, stuttering | Use `Float32Array`/`Int32Array` for appendData | > 10,000 points / > 10 updates/sec |
+| `setOption` on every incoming data event | Main thread lock, <5fps chart updates | Batch with RAF coalescing, call at most 1× per frame | > 5 updates/sec |
+| ResizeObserver without debounce | Multiple resize calls per drag pixel | Not critical for ECharts (resize is cheap), but add 16ms debounce if triggering redraws elsewhere | Continuous resize drag |
+| Multiple GL charts on same page without context limits | "Too many WebGL contexts" warning, charts go blank | Cap at 8 simultaneous GL chart instances, explicit loseContext on dispose | > 12 GL charts visible simultaneously |
+| `animation: true` (default) on streaming charts | Transitions pile up behind real-time data, visible lag | Set `animation: false` at chart init for any streaming chart type | > 5 updates/sec with animations |
+| Loading full `echarts` (not tree-shaken) in each chart component | All chart types download 1MB+ even if user only uses one | Use `echarts/core` + selective imports + `echarts.use()` in every chart file | Always — this is a baseline requirement |
+| `notMerge: true` as default `setOption` flag | CPU spike per update, animation disabled | Use `notMerge: false` (default); only use `true` for structural chart reconfiguration | Any update faster than ~2 seconds |
+
+---
+
+## Integration Gotchas
+
+Common mistakes when connecting to external systems.
+
+| Integration | Common Mistake | Correct Approach |
+|-------------|----------------|------------------|
+| SSR frameworks (Next.js, Astro) | Static import of `echarts` at module top level | Dynamic `import()` inside `firstUpdated()` with `isServer` guard |
+| CSS token system (`--ui-*`) | Passing `var(--ui-...)` strings directly to ECharts | `getComputedStyle(this).getPropertyValue('--ui-...')` to resolve values before passing to ECharts |
+| Dark mode toggle | Build theme once at init, never update | MutationObserver on `document.documentElement` class, rebuild theme on change |
+| WebSocket streaming | Call `setOption` on every message | Batch in RAF queue; use `appendData` for line/scatter series |
+| SPA navigation (Vue Router, React Router) | `dispose()` without nulling reference, no `loseContext()` | Full cleanup: `loseContext()` → `dispose()` → `null` → `observer.disconnect()` |
+| CLI `npx lit-ui add scatter-gl` | Installing `echarts-gl` as a regular dependency for 2D-only users | Make `echarts-gl` an optional peer dependency in `@lit-ui/charts` |
+
+---
+
+## "Looks Done But Isn't" Checklist
+
+Things that appear complete but are missing critical pieces.
+
+- [ ] **Chart renders:** Verify it also renders correctly when the host container has `display: none` → `display: block` transition (common with tab panels). ECharts may have zero-dimension on first render if inside a hidden panel.
+- [ ] **Real-time chart:** Verify WebSocket disconnect and reconnect does not accumulate duplicate ECharts instances or unbounded memory growth.
+- [ ] **Dark mode:** Verify chart colors actually change when `.dark` is toggled on `<html>`, not just CSS-styled elements around the chart.
+- [ ] **SSR build:** Verify `npm run build` for the Next.js App Router example does not crash with `window is not defined` after adding any chart component.
+- [ ] **Multiple charts on page:** Verify 10 GL charts on a single page show no "too many WebGL contexts" warning and all render correctly.
+- [ ] **Dispose on unmount:** Verify memory profiler shows no chart instance or canvas element accumulation after 10 mount/unmount cycles.
+- [ ] **CSS token theming:** Verify `getPropertyValue` returns a non-empty string — in copy-source mode, `--ui-color-primary` may not be defined if the user hasn't imported the token system. All `_readToken` calls need a non-empty fallback value.
+- [ ] **Chart resize in tab panel:** Verify chart calls `resize()` when a hidden tab becomes visible. Lit's tab component dispatches a custom `tab-changed` event — the chart component should listen and call `this._chart?.resize()`.
+- [ ] **appendData max data cap:** Verify the streaming chart does not grow unbounded in memory — implement a max-points cap and rolling window.
+
+---
+
+## Recovery Strategies
+
+When pitfalls occur despite prevention, how to recover.
+
+| Pitfall | Recovery Cost | Recovery Steps |
+|---------|---------------|----------------|
+| CRITICAL-01: Zero-dimension init | LOW | Add `requestAnimationFrame` wrapper around `echarts.init()`. Redeploy. |
+| CRITICAL-02: WebGL context exhaustion | MEDIUM | Add `loseContext()` before `dispose()` in all GL chart components. Test in isolation then with full dashboard. |
+| CRITICAL-03: appendData + setOption wipeout | HIGH | Audit all `setOption` calls in streaming chart components. Split into "init setOption" (once) and "data update via appendData" (streaming). Possible architectural rewrite of streaming chart. |
+| CRITICAL-04: SSR crash | MEDIUM | Convert all ECharts imports to dynamic `import()` in lifecycle methods. Add `isServer` guard. Add SSR test to CI. |
+| CRITICAL-05: Shadow DOM event offset | LOW-MEDIUM | Fix host element layout to `position: relative; display: block` with chart container `position: absolute; inset: 0`. Verify bounding rects match. |
+| HIGH-01: window.resize instead of ResizeObserver | LOW | Replace `window.addEventListener('resize', ...)` with `ResizeObserver` on container. Clean up in disconnect. |
+| HIGH-02: Bundle contamination from echarts-gl | HIGH | Move all GL chart components to dynamic imports. Update package.json to optional peer dependency. Requires restructuring component module graph. |
+| HIGH-05: CSS tokens not resolving | LOW | Add `getComputedStyle` resolution step. Add non-empty fallbacks to all token reads. |
+| MEDIUM-04: Dark mode not updating | LOW | Add MutationObserver on documentElement. Rebuild theme on class change. |
+
+---
+
+## Pitfall-to-Phase Mapping
+
+How roadmap phases should address these pitfalls.
+
+| Pitfall | Prevention Phase | Verification |
+|---------|------------------|--------------|
+| CRITICAL-01: Zero-dimension init | Phase 1 (base component) | Automated test: render chart in hidden container, show, verify dimensions |
+| CRITICAL-02: WebGL context exhaustion | Phase 1 (disposal pattern) + Phase 3 (first GL chart) | Manual test: 15 GL chart instances on one page, verify zero warnings |
+| CRITICAL-03: appendData + setOption wipeout | Phase 2 (Line Chart streaming) | Unit test: appendData, then setOption(title), verify data not cleared |
+| CRITICAL-04: SSR crash | Phase 1 (package setup) | CI: add chart import to Next.js App Router example, verify build |
+| CRITICAL-05: Shadow DOM event hit-test | Phase 1 (base component) | Manual test: click data points in shadow DOM, verify correct tooltip |
+| HIGH-01: ResizeObserver | Phase 1 (base component) | Manual test: resize container via CSS, verify chart resizes |
+| HIGH-02: Bundle contamination | Phase 1 (package structure) | Bundle analyzer: verify echarts-gl absent from line-chart chunk |
+| HIGH-03: Update rate overload | Phase 2 (streaming architecture) | Performance test: 50ms interval, verify 60fps chart rendering |
+| HIGH-04: Dispose memory leak | Phase 1 (base component) | Memory profiler: 10 mount/unmount cycles, verify no instance growth |
+| HIGH-05: CSS tokens not resolving | Phase 1 (base component) + Phase 5 (theming) | Visual test: verify chart colors match `--ui-color-primary` |
+| HIGH-06: WebGL not available fallback | Phase 3 (first GL chart) | Test with hardware acceleration disabled, verify fallback renders |
+| MEDIUM-01: notMerge: true default | Phase 2+ (chart updates) | Code review: search for `notMerge: true` in update call paths |
+| MEDIUM-02: Double-init on reconnect | Phase 1 (base component) | Test: move chart element in DOM, verify no double-init error |
+| MEDIUM-04: Dark mode not updating | Phase 5 (theming) | Manual test: toggle dark mode, verify chart colors change |
+| MEDIUM-05: echarts-gl tree-shaking | Phase 1 (package architecture) | Bundle analyzer: verify GL code absent from 2D chart bundles |
+
+---
+
+## Sources
+
+- [Apache ECharts GitHub Issue #12327](https://github.com/apache/echarts/issues/12327) — `setOption` clears data after `appendData`
+- [Apache ECharts GitHub Issue #20475](https://github.com/apache/echarts/issues/20475) — `window is not defined` in Next.js SSR
+- [Apache ECharts GitHub Issue #16044](https://github.com/apache/echarts/issues/16044) — CSS variables not supported natively
+- [Apache ECharts GitHub Issue #18312](https://github.com/apache/echarts/issues/18312) — Real-time updates performance regression in ECharts 5
+- [ECharts GL GitHub Issue #253](https://github.com/ecomfe/echarts-gl/issues/253) — Too many active WebGL contexts, loseContext workaround
+- [ECharts GL GitHub Issue #439](https://github.com/ecomfe/echarts-gl/issues/439) — Shared WebGL context solution proposal
+- [Apache ECharts Handbook — Import (Tree Shaking)](https://apache.github.io/echarts-handbook/en/basics/import/)
+- [Apache ECharts Handbook — Server-Side Rendering](https://apache.github.io/echarts-handbook/en/how-to/cross-platform/server/)
+- [Apache ECharts Handbook — Dynamic Data](https://apache.github.io/echarts-handbook/en/how-to/data/dynamic-data/)
+- [Apache ECharts Handbook — Chart Container and Size](https://apache.github.io/echarts-handbook/en/concepts/chart-size/)
+- [DEV Community — Using Apache ECharts with Lit and TypeScript](https://dev.to/manufac/using-apache-echarts-with-lit-and-typescript-1597)
+- [Medium — Memory Leak from ECharts if Not Properly Disposed](https://medium.com/@kelvinausoftware/memory-leak-from-echarts-occurs-if-not-properly-disposed-7050c5d93028)
+- [GitHub vue-echarts Issue #613](https://github.com/ecomfe/vue-echarts/issues/613) — Chart does not render in Shadow DOM
+- [Lit GitHub Issue #3770](https://github.com/lit/lit/issues/3770) — `window is not defined` in SSR with Lit
+- [Khronos WebGL Wiki — Handling Context Lost](https://www.khronos.org/webgl/wiki/HandlingContextLost)
+- [MDN — webglcontextlost event](https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/webglcontextlost_event)
+- [MDN — ResizeObserver](https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver)
+- [ECharts Design Token Discussion](https://github.com/apache/echarts/issues/20202)
+
+---
+*Pitfalls research for: ECharts + ECharts GL in Lit.js 3 Shadow DOM component library (v9.0 Charts System)*
+*Researched: 2026-02-28*
