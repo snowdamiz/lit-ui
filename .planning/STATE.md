@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Design System Polish
 status: completed
-last_updated: "2026-02-28T06:34:02.085Z"
+last_updated: "2026-02-28T06:52:49.421Z"
 last_activity: 2026-02-28 — Phase 80-03 complete (Date Range Picker SKILL.md — 7 stale CSS tokens replaced with 31 accurate --ui-date-range-* tokens; change event verified; 12-entry Behavior Notes added)
 progress:
-  total_phases: 76
+  total_phases: 77
   completed_phases: 76
-  total_plans: 267
-  completed_plans: 267
-  percent: 100
+  total_plans: 270
+  completed_plans: 268
+  percent: 99
 ---
 
 # Project State: LitUI
@@ -20,18 +20,18 @@ progress:
 See: .planning/PROJECT.md (updated 2026-02-27)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** Phase 80 — Date Range Picker Polish
+**Current focus:** Phase 81 — Time Picker Polish
 
 ## Current Position
 
 **Milestone:** v8.0 Design System Polish — IN PROGRESS
-**Phase:** 80 of 87 (Date Range Picker Polish) — COMPLETE
-**Plan:** 3 of 3 in Phase 80 — COMPLETE
-**Status:** Milestone complete
-**Last activity:** 2026-02-28 — Phase 80-03 complete (Date Range Picker SKILL.md — 7 stale CSS tokens replaced with 31 accurate --ui-date-range-* tokens; change event verified; 12-entry Behavior Notes added)
+**Phase:** 81 of 87 (Time Picker Polish) — IN PROGRESS
+**Plan:** 1 of 3 in Phase 81 — COMPLETE
+**Status:** In progress
+**Last activity:** 2026-02-28 — Phase 81-01 complete (Time Picker dark mode cleanup — 47 var(--color-gray-*) declarations removed from .dark; 6 oklch literal exceptions retained)
 
 **Progress:**
-[██████████] 100%
+[██████████] 99%
 Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 
 ## Performance Metrics
@@ -72,6 +72,7 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 | Phase 80-date-range-picker P01 | 1min | 1 tasks | 1 files |
 | Phase 80-date-range-picker P02 | 1min | 1 tasks | 1 files |
 | Phase 80-date-range-picker P03 | 1min | 1 tasks | 1 files |
+| Phase 81-time-picker P01 | 1min | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -115,6 +116,7 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 - Phase 80-01: Date Range Picker dark mode governed by semantic .dark cascade — 23 hardcoded .dark --ui-date-range-* declarations removed; 2 compare-* oklch literal exceptions (highlight-bg oklch(0.30) and preview-bg oklch(0.22)) kept in .dark
 - Phase 80-02: dateRangePickerCSSVars expanded from 16 stale entries (--ui-range-*, --ui-date-picker-*) to 31 accurate --ui-date-range-* tokens matching tailwind.css :root; cssVarsCode example updated to reference correct token names
 - Phase 80-03: SKILL.md CSS tokens replaced 7 stale --ui-range-*/--ui-date-picker-* entries with 31 accurate --ui-date-range-* tokens; event name confirmed as 'change' from source; Behavior Notes section added with 12 entries (range selection, drag, popup positioning, presets, comparison mode, dark mode, form integration, keyboard nav)
+- Phase 81-01: Time Picker dark mode governed by semantic .dark cascade — 47 hardcoded var(--color-gray-*) declarations removed; 6 oklch literal exceptions kept (option-selected-bg, option-selected-text, business-accent, business-bg, business-hover-bg, wheel-highlight-bg)
 
 ### Architecture Notes
 
@@ -145,14 +147,14 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 ## Session Continuity
 
 ### Last Session
-- Phase 80-03: Date Range Picker SKILL.md — 7 stale CSS tokens replaced with 31 accurate --ui-date-range-* tokens; change event verified from source; 12-entry Behavior Notes added; Phase 80 all 3 plans complete
+- Phase 81-01: Time Picker dark mode cleanup — 47 var(--color-gray-*) .dark overrides removed; 6 oklch exceptions retained; tailwind.css .dark block now follows semantic cascade pattern
 
 ### Next Actions
-Execute Phase 81 (next component polish phase per ROADMAP.md).
+Execute Phase 81-02 (Time Picker docs update) and 81-03 (Time Picker SKILL.md).
 
 ### Open Questions
 *None.*
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-02-28 — Phase 80-03 complete (Date Range Picker SKILL.md — 7 stale tokens replaced with 31 accurate --ui-date-range-* entries; Behavior Notes added)*
+*Last updated: 2026-02-28 — Phase 81-01 complete (Time Picker dark mode cleanup — 47 var(--color-gray-*) declarations removed from .dark; 6 oklch literal exceptions retained)*
