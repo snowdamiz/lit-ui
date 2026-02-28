@@ -9,24 +9,24 @@ See: .planning/PROJECT.md (updated 2026-02-05)
 
 ## Current Position
 
-**Milestone:** v7.0 Data Table — SHIPPED
-**Phase:** All 8 phases complete (61-68)
-**Status:** Milestone archived
-**Last activity:** 2026-02-27 — Completed quick task 3: Split components skill into 18 individual per-component skills
+**Milestone:** v8.0 Design System Polish — IN PROGRESS
+**Phase:** Not started (defining requirements)
+**Status:** Defining requirements
+**Last activity:** 2026-02-27 — Milestone v8.0 started
 
 **Progress:**
 ```
-Milestone: [##########] 100% — SHIPPED
+Milestone: [░░░░░░░░░░] 0%
 ```
 
 ## Performance Metrics
 
 | Metric | Value |
 |--------|-------|
-| Plans completed | 28 |
-| Requirements satisfied | 76/76 |
-| Phases completed | 8/8 |
-| Commits | 112 |
+| Plans completed | 0 |
+| Requirements satisfied | 0/57 |
+| Phases completed | 0/19 |
+| Commits | 0 |
 
 ## Accumulated Context
 
@@ -78,4 +78,4 @@ Start next milestone with `/gsd:new-milestone` in a fresh context window.
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-02-27 (quick-002: agents skill with progressive disclosure)*
+*Last updated: 2026-02-27 — Milestone v8.0 started*

@@ -96,7 +96,11 @@ Developers can use polished, accessible UI components in any framework without l
 
 ### Active
 
-(None — planning next milestone)
+<!-- v8.0 Design System Polish -->
+- [ ] All 18 components share a unified monochrome design token baseline
+- [ ] All 18 component default styles polished to match shadcn aesthetic
+- [ ] All 18 component docs pages accurate and up-to-date
+- [ ] All 18 component skill files accurate and up-to-date
 
 ### Deferred
 
@@ -235,5 +239,15 @@ Developers can use polished, accessible UI components in any framework without l
 - **v6.0 Layout Components** (2026-02-02): Accordion, Tabs with full accessibility, animations, SSR, CLI, documentation
 - **v7.0 Data Table** (2026-02-05): Full-featured data table with virtual scrolling, sorting, filtering, inline editing, selection, bulk actions, column customization, CSV export, expandable rows
 
+## Current Milestone: v8.0 Design System Polish
+
+**Goal:** Polish all 18 component default styles to a unified monochrome shadcn-quality theme, and ensure all docs pages and skill files are accurate.
+
+**Target features:**
+- Unified design token system in `@lit-ui/core` (THEME-01 through THEME-03)
+- Per-component style polish matching the new theme (BTN through DAT -01)
+- Per-component docs accuracy pass (BTN through DAT -02)
+- Per-component skill file accuracy pass (BTN through DAT -03)
+
 ---
-*Last updated: 2026-02-05 after v7.0 milestone*
+*Last updated: 2026-02-27 after v8.0 milestone start*
