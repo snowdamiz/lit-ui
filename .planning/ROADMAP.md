@@ -72,7 +72,11 @@ Plans:
   3. Developer can call `pushData(point)` on a line chart and see the series extend in real time without a full re-render flash
   4. Developer can render an area chart with `stacked` and `smooth` props and see filled areas that stack correctly across multiple series
   5. Multiple rapid `pushData()` calls within the same animation frame are batched into one ECharts update — observable via no dropped frames at 60fps streaming
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 89-01-PLAN.md — Shared option builder + line-registry + LuiLineChart component
+- [ ] 89-02-PLAN.md — LuiAreaChart component + index.ts public API exports
 
 ### Phase 90: Bar Chart
 **Goal**: Developer can render grouped, stacked, and horizontal bar charts with value labels and streaming data updates via pushData()
@@ -154,7 +158,7 @@ Plans:
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 88. Package Foundation + BaseChartElement | 3/3 | Complete    | 2026-02-28 | - |
-| 89. Line Chart + Area Chart | v9.0 | 0/TBD | Not started | - |
+| 89. Line Chart + Area Chart | v9.0 | 0/2 | Not started | - |
 | 90. Bar Chart | v9.0 | 0/TBD | Not started | - |
 | 91. Pie + Donut Chart | v9.0 | 0/TBD | Not started | - |
 | 92. Scatter + Bubble Chart with WebGL | v9.0 | 0/TBD | Not started | - |
