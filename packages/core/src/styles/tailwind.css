@@ -400,13 +400,6 @@
 
   /* Checkbox dark mode */
   --ui-checkbox-check-color: oklch(0.18 0 0); /* near-black checkmark on near-white bg-checked (--color-primary) */
-
-  /* Radio dark mode */
-  --ui-radio-bg: oklch(0.10 0 0);
-  --ui-radio-border: oklch(0.45 0 0);
-  --ui-radio-border-checked: oklch(0.985 0 0);
-  --ui-radio-dot-color: oklch(0.985 0 0);
-  --ui-radio-ring: oklch(0.55 0 0);
 }
 
 /* ==========================================================================
