@@ -11,3 +11,7 @@ export type { EChartsOption } from './base/base-chart-element.js';
 export { LuiLineChart } from './line/line-chart.js';
 export { LuiAreaChart } from './area/area-chart.js';
 export type { LineChartSeries, MarkLineSpec, LineOptionProps } from './shared/line-option-builder.js';
+
+// Phase 90: Bar Chart
+export { LuiBarChart } from './bar/bar-chart.js';
+export type { BarChartSeries, BarOptionProps } from './shared/bar-option-builder.js';
