@@ -46,7 +46,7 @@ Requirements for the Design System Polish milestone. Each component phase maps t
 ### Checkbox
 
 - [x] **CHK-01**: Checkbox default styles match the v8.0 monochrome theme
-- [ ] **CHK-02**: Checkbox docs page is accurate and up-to-date
+- [x] **CHK-02**: Checkbox docs page is accurate and up-to-date
 - [ ] **CHK-03**: `skill/skills/checkbox` skill file is accurate and up-to-date
 
 ### Radio
@@ -157,7 +157,7 @@ Requirements for the Design System Polish milestone. Each component phase maps t
 | SEL-02 | Phase 74 | Complete |
 | SEL-03 | Phase 74 | Complete |
 | CHK-01 | Phase 75 | Complete |
-| CHK-02 | Phase 75 | Pending |
+| CHK-02 | Phase 75 | Complete |
 | CHK-03 | Phase 75 | Pending |
 | RAD-01 | Phase 76 | Pending |
 | RAD-02 | Phase 76 | Pending |
