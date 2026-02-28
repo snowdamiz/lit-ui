@@ -40,7 +40,7 @@ Phases 1-68 are archived. See:
 - [x] **Phase 72: Input** - Polish Input styles, docs, and skill file (completed 2026-02-28)
 - [x] **Phase 73: Textarea** - Polish Textarea styles, docs, and skill file (completed 2026-02-28)
 - [x] **Phase 74: Select** - Polish Select styles, docs, and skill file (completed 2026-02-28)
-- [ ] **Phase 75: Checkbox** - Polish Checkbox styles, docs, and skill file
+- [x] **Phase 75: Checkbox** - Polish Checkbox styles, docs, and skill file (completed 2026-02-28)
 - [ ] **Phase 76: Radio** - Polish Radio styles, docs, and skill file
 - [ ] **Phase 77: Switch** - Polish Switch styles, docs, and skill file
 - [ ] **Phase 78: Calendar** - Polish Calendar styles, docs, and skill file
@@ -353,7 +353,7 @@ Note: Phases 70-87 all depend on Phase 69. Phases 70-78 and 80-87 are independen
 | 72. Input | 3/3 | Complete    | 2026-02-28 | - |
 | 73. Textarea | 3/3 | Complete    | 2026-02-28 | - |
 | 74. Select | 3/3 | Complete    | 2026-02-28 | - |
-| 75. Checkbox | v8.0 | 0/3 | Not started | - |
+| 75. Checkbox | 3/3 | Complete   | 2026-02-28 | - |
 | 76. Radio | v8.0 | 0/3 | Not started | - |
 | 77. Switch | v8.0 | 0/3 | Not started | - |
 | 78. Calendar | v8.0 | 0/3 | Not started | - |

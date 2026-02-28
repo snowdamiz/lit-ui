@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Design System Polish
-status: completed
-last_updated: "2026-02-28T03:44:16.995Z"
-last_activity: 2026-02-28 — Phase 74-03 complete (select SKILL.md expanded CSS tokens from 7 to 27, Behavior Notes section added, Events table expanded from 1 to 3)
+status: executing
+last_updated: "2026-02-28T03:56:07.296Z"
+last_activity: "2026-02-27 — Phase 75-02 complete (checkbox docs CSS token table expanded from 12 to 21 entries, corrected defaults to match tailwind.css :root exactly)"
 progress:
-  total_phases: 70
-  completed_phases: 70
-  total_plans: 249
-  completed_plans: 249
+  total_phases: 71
+  completed_phases: 71
+  total_plans: 252
+  completed_plans: 252
   percent: 100
 ---
 
@@ -20,15 +20,15 @@ progress:
 See: .planning/PROJECT.md (updated 2026-02-27)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** Phase 74 — Select Polish
+**Current focus:** Phase 75 — Checkbox Polish
 
 ## Current Position
 
 **Milestone:** v8.0 Design System Polish — IN PROGRESS
-**Phase:** 74 of 87 (Select Polish) — COMPLETE
-**Plan:** 3 of 3 in Phase 74 — COMPLETE
-**Status:** Milestone complete
-**Last activity:** 2026-02-28 — Phase 74-03 complete (select SKILL.md expanded CSS tokens from 7 to 27, Behavior Notes section added, Events table expanded from 1 to 3)
+**Phase:** 75 of 87 (Checkbox Polish) — IN PROGRESS
+**Plan:** 2 of 3 in Phase 75 — COMPLETE
+**Status:** In progress
+**Last activity:** 2026-02-27 — Phase 75-02 complete (checkbox docs CSS token table expanded from 12 to 21 entries, corrected defaults to match tailwind.css :root exactly)
 
 **Progress:**
 [██████████] 100%
@@ -56,6 +56,9 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 | Phase 73-textarea P03 | 1min | 1 tasks | 1 files |
 | Phase 74-select P01 | 1min | 1 tasks | 1 files |
 | Phase 74-select P02 | 1min | 1 tasks | 1 files |
+| Phase 75-checkbox P01 | 1min | 1 tasks | 1 files |
+| Phase 75-checkbox P02 | 1min | 1 tasks | 1 files |
+| Phase 75-checkbox P03 | 1min | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -81,6 +84,8 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 - Phase 74-01: Select dark mode governed by semantic .dark overrides — hardcoded .dark --ui-select-* declarations removed; double-fallback cascade in :root is sufficient (same pattern as Phase 70-01, 71-01, 72-01, 73-01)
 - Phase 74-02: Select docs CSS token table expanded from 7 to 27 entries — structural tokens use exact rem/px values, color tokens use double-fallback var() form matching tailwind.css :root; Phase 33/34/35/36 development badge spans removed from section headers
 - Phase 74-03: Select SKILL.md CSS token table expanded from 7 to 27 entries with exact tailwind.css :root values; Behavior Notes section added with 8 entries; Events table expanded from 1 to 3 (change, clear, create)
+- Phase 75-01: Checkbox dark mode governed by semantic .dark overrides — 7 hardcoded .dark --ui-checkbox-* declarations removed; double-fallback cascade in :root is sufficient (same pattern as Phase 70-01, 71-01, 72-01, 73-01, 74-01); --ui-checkbox-check-color kept as dark mode exception (white :root value cannot cascade to dark)
+- Phase 75-02: Checkbox docs CSS token table expanded from 12 to 21 entries — added size (sm/md/lg), border-width, font-size (sm/md/lg), indeterminate state tokens; corrected check-color default to 'white' (not var(--color-primary-foreground)); corrected radius default to '0.25rem' (not var(--radius-sm)); updated all color token defaults to double-fallback var() form matching tailwind.css :root (same pattern as Phase 72-02, 73-02, 74-02)
 
 ### Architecture Notes
 
@@ -111,15 +116,16 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 ## Session Continuity
 
 ### Last Session
-- Phase 74-01: Select dark mode polished — removed 20 hardcoded oklch overrides from .dark block (same pattern as Phase 73-01)
-- Phase 74-03: Select SKILL.md updated with expanded token set from 7 to 27 entries and Behavior Notes section (same pattern as Phase 73-03)
+- Phase 75-01: Checkbox dark mode polished — removed 7 hardcoded oklch overrides from .dark block; kept --ui-checkbox-check-color (same pattern as Phase 74-01)
+- Phase 75-02: Checkbox docs CSS token table expanded from 12 to 21 entries, corrected defaults to match tailwind.css :root exactly
+- Phase 75-03: Checkbox SKILL.md updated (concurrent execution)
 
 ### Next Actions
-Execute next phase after Phase 74-select (all 3 plans complete).
+Execute next phase after Phase 75-checkbox (all 3 plans complete).
 
 ### Open Questions
 *None.*
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-02-27 — Phase 74-02 complete (Select docs CSS token table expanded from 7 to 27 entries, phase development badges removed from section headers)*
+*Last updated: 2026-02-27 — Phase 75-02 complete (Checkbox docs CSS token table expanded from 12 to 21 entries, corrected defaults to match tailwind.css :root exactly)*
