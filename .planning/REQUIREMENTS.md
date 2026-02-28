@@ -33,7 +33,7 @@ Requirements for the Design System Polish milestone. Each component phase maps t
 
 ### Textarea
 
-- [ ] **TXT-01**: Textarea default styles match the v8.0 monochrome theme
+- [x] **TXT-01**: Textarea default styles match the v8.0 monochrome theme
 - [x] **TXT-02**: Textarea docs page is accurate and up-to-date
 - [x] **TXT-03**: `skill/skills/textarea` skill file is accurate and up-to-date
 
@@ -150,7 +150,7 @@ Requirements for the Design System Polish milestone. Each component phase maps t
 | INP-01 | Phase 72 | Complete |
 | INP-02 | Phase 72 | Complete |
 | INP-03 | Phase 72 | Complete |
-| TXT-01 | Phase 73 | Pending |
+| TXT-01 | Phase 73 | Complete |
 | TXT-02 | Phase 73 | Complete |
 | TXT-03 | Phase 73 | Complete |
 | SEL-01 | Phase 74 | Pending |
