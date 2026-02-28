@@ -40,8 +40,8 @@ Requirements for the Design System Polish milestone. Each component phase maps t
 ### Select
 
 - [x] **SEL-01**: Select default styles match the v8.0 monochrome theme
-- [ ] **SEL-02**: Select docs page is accurate and up-to-date
-- [ ] **SEL-03**: `skill/skills/select` skill file is accurate and up-to-date
+- [x] **SEL-02**: Select docs page is accurate and up-to-date
+- [x] **SEL-03**: `skill/skills/select` skill file is accurate and up-to-date
 
 ### Checkbox
 
@@ -154,8 +154,8 @@ Requirements for the Design System Polish milestone. Each component phase maps t
 | TXT-02 | Phase 73 | Complete |
 | TXT-03 | Phase 73 | Complete |
 | SEL-01 | Phase 74 | Complete |
-| SEL-02 | Phase 74 | Pending |
-| SEL-03 | Phase 74 | Pending |
+| SEL-02 | Phase 74 | Complete |
+| SEL-03 | Phase 74 | Complete |
 | CHK-01 | Phase 75 | Pending |
 | CHK-02 | Phase 75 | Pending |
 | CHK-03 | Phase 75 | Pending |
