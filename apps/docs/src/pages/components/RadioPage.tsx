@@ -86,16 +86,34 @@ const radioGroupProps: PropDef[] = [
 // CSS Custom Properties data
 type CSSVarDef = { name: string; default: string; description: string };
 const radioCSSVars: CSSVarDef[] = [
-  { name: '--ui-radio-border', default: 'var(--color-border)', description: 'Border color of the radio circle.' },
-  { name: '--ui-radio-border-checked', default: 'var(--color-primary)', description: 'Border color when checked.' },
+  // Size — circle dimensions
+  { name: '--ui-radio-size-sm', default: '1rem', description: 'Radio circle size (small).' },
+  { name: '--ui-radio-size-md', default: '1.25rem', description: 'Radio circle size (medium, default).' },
+  { name: '--ui-radio-size-lg', default: '1.5rem', description: 'Radio circle size (large).' },
+  // Size — dot dimensions
+  { name: '--ui-radio-dot-size-sm', default: '0.5rem', description: 'Inner dot size (small).' },
+  { name: '--ui-radio-dot-size-md', default: '0.625rem', description: 'Inner dot size (medium, default).' },
+  { name: '--ui-radio-dot-size-lg', default: '0.75rem', description: 'Inner dot size (large).' },
+  // Layout
   { name: '--ui-radio-border-width', default: '2px', description: 'Border width of the radio circle.' },
-  { name: '--ui-radio-bg', default: 'var(--color-background)', description: 'Background color of the radio circle.' },
-  { name: '--ui-radio-dot-color', default: 'var(--color-primary)', description: 'Color of the inner dot when checked.' },
-  { name: '--ui-radio-ring', default: 'var(--color-ring)', description: 'Focus ring color.' },
-  { name: '--ui-radio-transition', default: '150ms', description: 'Transition duration for state changes.' },
   { name: '--ui-radio-label-gap', default: '0.5rem', description: 'Gap between radio circle and label.' },
   { name: '--ui-radio-group-gap', default: '0.5rem', description: 'Gap between radio items in a group.' },
-  { name: '--ui-radio-text-error', default: 'var(--color-destructive)', description: 'Error message text color.' },
+  { name: '--ui-radio-transition', default: '150ms', description: 'Transition duration for state changes.' },
+  // Typography
+  { name: '--ui-radio-font-size-sm', default: '0.875rem', description: 'Label font size (small).' },
+  { name: '--ui-radio-font-size-md', default: '1rem', description: 'Label font size (medium, default).' },
+  { name: '--ui-radio-font-size-lg', default: '1.125rem', description: 'Label font size (large).' },
+  // Unchecked state
+  { name: '--ui-radio-bg', default: 'var(--color-background, white)', description: 'Background color of the radio circle.' },
+  { name: '--ui-radio-border', default: 'var(--color-border, var(--ui-color-border))', description: 'Border color of the radio circle.' },
+  // Checked state
+  { name: '--ui-radio-border-checked', default: 'var(--color-primary, var(--ui-color-primary))', description: 'Border color when checked.' },
+  { name: '--ui-radio-dot-color', default: 'var(--color-primary, var(--ui-color-primary))', description: 'Color of the inner dot when checked.' },
+  // Focus state
+  { name: '--ui-radio-ring', default: 'var(--color-ring, var(--ui-color-ring))', description: 'Focus ring color.' },
+  // Error state
+  { name: '--ui-radio-border-error', default: 'var(--color-destructive, var(--ui-color-destructive))', description: 'Border color in error state.' },
+  { name: '--ui-radio-text-error', default: 'var(--color-destructive, var(--ui-color-destructive))', description: 'Error message text color.' },
 ];
 
 // Code examples - web components use same syntax in all frameworks
