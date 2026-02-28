@@ -348,7 +348,7 @@ Note: Phases 70-87 all depend on Phase 69. Phases 70-78 and 80-87 are independen
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 69. Theme Foundation | 1/1 | Complete    | 2026-02-28 | - |
-| 70. Button | 3/3 | Complete   | 2026-02-28 | - |
+| 70. Button | 3/3 | Complete    | 2026-02-28 | - |
 | 71. Dialog | v8.0 | 0/3 | Not started | - |
 | 72. Input | v8.0 | 0/3 | Not started | - |
 | 73. Textarea | v8.0 | 0/3 | Not started | - |
