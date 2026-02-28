@@ -197,12 +197,12 @@ Plans:
   1. Calendar renders with correct monochrome default styles (day cells, selected state, navigation) matching the token spec
   2. The Calendar docs page reflects the actual component API and examples without stale content
   3. `skill/skills/calendar` accurately describes the component so Claude can implement it correctly
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 78-01: Polish Calendar CSS defaults to match monochrome theme
-- [ ] 78-02: Update Calendar docs page for accuracy
-- [ ] 78-03: Update `skill/skills/calendar` skill file
+- [ ] 78-01-PLAN.md — Remove .dark calendar block (10 declarations); add tooltip tokens to :root (CAL-01)
+- [ ] 78-02-PLAN.md — Expand CalendarPage.tsx CSS vars table from 16 to 21 entries with correct defaults (CAL-02)
+- [ ] 78-03-PLAN.md — Expand skill/skills/calendar/SKILL.md CSS tokens, add all 3 events, add Behavior Notes (CAL-03)
 
 ### Phase 79: Date Picker
 **Goal**: Date Picker component looks and feels like shadcn DatePicker out of the box, with accurate docs and skill file
