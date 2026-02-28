@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Design System Polish
-status: completed
-last_updated: "2026-02-28T01:50:08.414Z"
-last_activity: 2026-02-28 — Phase 70-01 complete (removed hardcoded button dark mode overrides from tailwind.css .dark block)
+status: in-progress
+last_updated: "2026-02-28T02:02:00.000Z"
+last_activity: 2026-02-28 — Phase 71-02 complete (updated Dialog docs CSS vars from --lui-dialog-* to --ui-dialog-*, expanded from 3 to 12 tokens)
 progress:
-  total_phases: 66
-  completed_phases: 66
-  total_plans: 237
-  completed_plans: 237
+  total_phases: 67
+  completed_phases: 67
+  total_plans: 240
+  completed_plans: 240
   percent: 100
 ---
 
@@ -20,15 +20,15 @@ progress:
 See: .planning/PROJECT.md (updated 2026-02-27)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** Phase 70 — Button Polish
+**Current focus:** Phase 71 — Dialog Polish
 
 ## Current Position
 
 **Milestone:** v8.0 Design System Polish — IN PROGRESS
-**Phase:** 70 of 87 (Button Polish) — COMPLETE
-**Plan:** 1 of 3 in Phase 70 — COMPLETE
-**Status:** Milestone complete
-**Last activity:** 2026-02-28 — Phase 70-01 complete (removed hardcoded button dark mode overrides from tailwind.css .dark block)
+**Phase:** 71 of 87 (Dialog Polish) — Plan 2 of 3 COMPLETE
+**Plan:** 2 of 3 in Phase 71 — COMPLETE
+**Status:** In progress
+**Last activity:** 2026-02-28 — Phase 71-02 complete (updated Dialog docs CSS vars from --lui-dialog-* to --ui-dialog-*, expanded from 3 to 12 tokens)
 
 **Progress:**
 [██████████] 100%
@@ -45,6 +45,8 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 | Phase 70-button P03 | 1 | 1 tasks | 1 files |
 | Phase 70-button P02 | 2 | 1 tasks | 1 files |
 | Phase 70-button P01 | 1min | 1 tasks | 1 files |
+| Phase 71-dialog P01 | 1min | 1 tasks | 1 files |
+| Phase 71-dialog P02 | 2min | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -58,6 +60,8 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 - Phase 70-01: Button dark mode governed by semantic .dark overrides — hardcoded .dark --ui-button-* declarations removed; double-fallback cascade in :root is sufficient
 - Phase 70-02: Documented 12 key --ui-button-* tokens in ButtonPage.tsx docs rather than all 20+ — keeps table focused on high-value user overrides
 - Phase 70-03: CSS token prefix fix --lui-button-* → --ui-button-* in skill file; Behavior Notes section added for accessibility semantics
+- Phase 71-01: Dialog dark mode governed by semantic .dark overrides — hardcoded .dark --ui-dialog-* declarations removed; double-fallback cascade in :root is sufficient (same pattern as Phase 70-01)
+- Phase 71-02: Dialog CSS docs updated — old --lui-dialog-* prefix (3 tokens) replaced with --ui-dialog-* prefix (12 tokens) matching tailwind.css :root
 
 ### Architecture Notes
 
@@ -88,15 +92,16 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 ## Session Continuity
 
 ### Last Session
-- Phase 70-01: Removed 14 hardcoded --ui-button-* oklch overrides from .dark block in tailwind.css
-- Phase 70-01: Button dark mode now inherits correctly via semantic .dark → --color-* → var(--color-*, var(--ui-color-*)) cascade
+- Phase 71-01: Removed 3 hardcoded --ui-dialog-* oklch overrides from .dark block in tailwind.css
+- Phase 71-01: Dialog dark mode now inherits correctly via semantic .dark → --color-card → var(--color-card, var(--ui-color-card)) cascade
+- Phase 71-02: Updated DialogPage.tsx CSS vars from --lui-dialog-* to --ui-dialog-*, expanded from 3 to 12 tokens
 
 ### Next Actions
-Execute Phase 70 plan 02 (button docs) using `/gsd:execute-phase 70-button`.
+Execute Phase 71 plan 03 (dialog skill) using `/gsd:execute-phase 71-dialog`.
 
 ### Open Questions
 *None.*
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-02-28 — Phase 70-01 complete*
+*Last updated: 2026-02-28 — Phase 71-02 complete*

@@ -21,7 +21,7 @@ Requirements for the Design System Polish milestone. Each component phase maps t
 
 ### Dialog
 
-- [ ] **DLG-01**: Dialog default styles match the v8.0 monochrome theme
+- [x] **DLG-01**: Dialog default styles match the v8.0 monochrome theme
 - [ ] **DLG-02**: Dialog docs page is accurate and up-to-date
 - [ ] **DLG-03**: `skill/skills/dialog` skill file is accurate and up-to-date
 
@@ -144,7 +144,7 @@ Requirements for the Design System Polish milestone. Each component phase maps t
 | BTN-01 | Phase 70 | Complete |
 | BTN-02 | Phase 70 | Complete |
 | BTN-03 | Phase 70 | Complete |
-| DLG-01 | Phase 71 | Pending |
+| DLG-01 | Phase 71 | Complete |
 | DLG-02 | Phase 71 | Pending |
 | DLG-03 | Phase 71 | Pending |
 | INP-01 | Phase 72 | Pending |
