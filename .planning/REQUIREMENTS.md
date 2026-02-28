@@ -1,0 +1,172 @@
+# Requirements: LitUI Charts System
+
+**Defined:** 2026-02-28
+**Core Value:** Developers can use polished, accessible UI components in any framework without lock-in
+
+## v9.0 Requirements
+
+Requirements for the v9.0 Charts System milestone. Each maps to a roadmap phase.
+
+### Package Infrastructure
+
+- [ ] **INFRA-01**: Developer can install `@lit-ui/charts` as an opt-in package separate from other LitUI packages
+- [ ] **INFRA-02**: Developer can use chart components in SSR frameworks (Next.js, Astro) without `window`/`document` crash
+- [ ] **INFRA-03**: Developer can enable WebGL rendering via `enable-gl` attribute with automatic Canvas fallback when WebGL is unavailable
+- [ ] **INFRA-04**: Developer can apply dark mode to charts via the `.dark` class (same pattern as all other LitUI components)
+- [ ] **INFRA-05**: Developer can customize chart appearance via `--ui-chart-*` CSS custom properties (series palette, grid, axis, tooltip, legend)
+
+### Shared Chart Behaviors
+
+- [ ] **CHART-01**: Developer can pass chart data via a `data` property on every chart component
+- [ ] **CHART-02**: Developer can pass a raw ECharts `option` object to override or extend any chart behavior
+- [ ] **CHART-03**: Developer can access the underlying ECharts instance via a `getChart()` method for event binding and advanced customization
+- [ ] **CHART-04**: Developer can toggle a loading skeleton state on any chart via a `loading` property
+- [ ] **CHART-05**: Charts automatically resize when their container dimensions change (ResizeObserver, not `window.resize`)
+
+### Streaming Infrastructure
+
+- [ ] **STRM-01**: Developer can stream data into any chart via a `pushData(point)` method
+- [ ] **STRM-02**: Developer can configure the circular buffer size via a `maxPoints` property (default 1000)
+- [ ] **STRM-03**: Multiple `pushData()` calls within a single animation frame are batched into one render via `requestAnimationFrame`
+- [ ] **STRM-04**: Line and Area charts use ECharts native `appendData` path for streaming; all other chart types use circular buffer + `setOption({ lazyUpdate: true })`
+
+### Line Chart
+
+- [ ] **LINE-01**: Developer can render a line chart with one or more named data series
+- [ ] **LINE-02**: Developer can enable smooth curve interpolation, zoom/pan controls, and mark lines
+- [ ] **LINE-03**: Developer can stream real-time data points into a line chart via `pushData()`
+
+### Area Chart
+
+- [ ] **AREA-01**: Developer can render a filled area chart with `stacked` and `smooth` options
+- [ ] **AREA-02**: Developer can stream real-time data points into an area chart via `pushData()`
+
+### Bar Chart
+
+- [ ] **BAR-01**: Developer can render grouped, stacked, and horizontal bar charts
+- [ ] **BAR-02**: Developer can display value labels on bars and enable per-bar color mode
+- [ ] **BAR-03**: Developer can stream data updates into a bar chart via `pushData()` with circular buffer
+
+### Pie / Donut Chart
+
+- [ ] **PIE-01**: Developer can render a pie chart with automatic small-slice merging below a configurable threshold
+- [ ] **PIE-02**: Developer can render a donut chart with configurable inner radius and center label text
+- [ ] **PIE-03**: Developer can stream data updates into pie/donut charts via `pushData()`
+
+### Scatter / Bubble Chart
+
+- [ ] **SCAT-01**: Developer can render a scatter chart with optional bubble size dimension (`bubble` mode)
+- [ ] **SCAT-02**: Developer can enable WebGL rendering for 500K+ point datasets via `enable-gl` attribute (ScatterGL via echarts-gl)
+- [ ] **SCAT-03**: Developer can stream data points into a scatter chart via `pushData()` with circular buffer
+
+### Heatmap Chart
+
+- [ ] **HEAT-01**: Developer can render a Cartesian heatmap with configurable x/y categories and VisualMap color scale
+- [ ] **HEAT-02**: Developer can stream cell value updates into a heatmap via `pushData()`
+
+### Candlestick Chart
+
+- [ ] **CNDL-01**: Developer can render a candlestick chart from OHLC `[open, close, low, high]` data with configurable bull/bear colors
+- [ ] **CNDL-02**: Developer can display a volume panel on a secondary axis below the candlestick chart
+- [ ] **CNDL-03**: Developer can display SMA/EMA moving average overlays via a `moving-averages` prop
+- [ ] **CNDL-04**: Developer can stream new OHLC bars into a candlestick chart via `pushData()`
+
+### Treemap Chart
+
+- [ ] **TREE-01**: Developer can render a treemap from hierarchical `{ name, value, children[] }` data
+- [ ] **TREE-02**: Developer can configure breadcrumb navigation, rounded cells, and per-level colors
+
+### CLI & Distribution
+
+- [ ] **CLI-01**: Developer can install any chart component via `npx lit-ui add [chart-name]` using the same CLI UX as other LitUI components
+- [ ] **CLI-02**: Developer can import individual chart types via subpath exports (`@lit-ui/charts/line-chart`) to tree-shake unused charts
+- [ ] **CLI-03**: Developer can get a working copy-source starter template for each of the 8 chart types
+
+### Documentation
+
+- [ ] **DOCS-01**: Developer can reference a complete interactive demo, API property table, and CSS token table for each chart type on the docs site
+- [ ] **DOCS-02**: Developer can understand bundle size impact (Canvas vs WebGL, per-chart tree-shaking) from inline size documentation
+
+## Future Requirements
+
+### v9.1
+
+- **PERF-01**: Native `appendData` streaming path for Line/Area at 1M+ continuous points (advanced mode avoiding CRITICAL-03 `setOption` wipeout bug)
+- **PERF-02**: Calendar heatmap mode (`mode="calendar"` on heatmap chart)
+- **PERF-03**: Moving average computed column for streaming candlestick (real-time MA line update)
+
+### v10.0+
+
+- ECharts 6 + echarts-gl 3.x upgrade (blocked on echarts-gl 3.x release — no timeline announced)
+- Geographic map chart (`lui-map-chart`) with GeoJSON support
+- SSR SVG rendering with client rehydration (ECharts 5.5+ `ssr: true` mode)
+- Waterfall chart mode on Bar component
+
+## Out of Scope
+
+| Feature | Reason |
+|---------|--------|
+| Built-in WebSocket / data fetching | Component cannot know auth, reconnect policy, or message format |
+| `data="[...]"` attribute serialization | JSON.parse on large datasets is lossy and slow; property-only API |
+| ECharts 6.x support | Blocked on echarts-gl 3.x (no release timeline as of 2026-02-28) |
+| Geographic map chart | GeoJSON bundling strategy unresolved; deferred to v10+ |
+| SSR chart rendering | ECharts canvas/WebGL cannot execute server-side |
+| Waterfall chart | HIGH complexity, LOW demand; defer to v10+ |
+| Exposing ECharts instance as reactive property | `getChart()` method with stability warning is the correct escape hatch |
+
+## Traceability
+
+Which phases cover which requirements. Populated during roadmap creation.
+
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+| INFRA-01 | — | Pending |
+| INFRA-02 | — | Pending |
+| INFRA-03 | — | Pending |
+| INFRA-04 | — | Pending |
+| INFRA-05 | — | Pending |
+| CHART-01 | — | Pending |
+| CHART-02 | — | Pending |
+| CHART-03 | — | Pending |
+| CHART-04 | — | Pending |
+| CHART-05 | — | Pending |
+| STRM-01 | — | Pending |
+| STRM-02 | — | Pending |
+| STRM-03 | — | Pending |
+| STRM-04 | — | Pending |
+| LINE-01 | — | Pending |
+| LINE-02 | — | Pending |
+| LINE-03 | — | Pending |
+| AREA-01 | — | Pending |
+| AREA-02 | — | Pending |
+| BAR-01 | — | Pending |
+| BAR-02 | — | Pending |
+| BAR-03 | — | Pending |
+| PIE-01 | — | Pending |
+| PIE-02 | — | Pending |
+| PIE-03 | — | Pending |
+| SCAT-01 | — | Pending |
+| SCAT-02 | — | Pending |
+| SCAT-03 | — | Pending |
+| HEAT-01 | — | Pending |
+| HEAT-02 | — | Pending |
+| CNDL-01 | — | Pending |
+| CNDL-02 | — | Pending |
+| CNDL-03 | — | Pending |
+| CNDL-04 | — | Pending |
+| TREE-01 | — | Pending |
+| TREE-02 | — | Pending |
+| CLI-01 | — | Pending |
+| CLI-02 | — | Pending |
+| CLI-03 | — | Pending |
+| DOCS-01 | — | Pending |
+| DOCS-02 | — | Pending |
+
+**Coverage:**
+- v9.0 requirements: 41 total
+- Mapped to phases: 0 (roadmapper fills this)
+- Unmapped: 41 ⚠️ (pending roadmap)
+
+---
+*Requirements defined: 2026-02-28*
+*Last updated: 2026-02-28 after initial definition*
