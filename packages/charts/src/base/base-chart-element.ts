@@ -118,8 +118,8 @@ export abstract class BaseChartElement extends TailwindElement {
   /** STRM-03: Handle for the scheduled requestAnimationFrame flush. */
   private _rafId?: number;
 
-  /** Set to true when WebGL probe fails — used for diagnostics. */
-  private _webglUnavailable = false;
+  /** Set to true when WebGL probe fails; readable by subclasses for series type selection. */
+  protected _webglUnavailable = false;
 
   // ---------------------------------------------------------------------------
   // Abstract interface (implemented by every concrete chart class)
