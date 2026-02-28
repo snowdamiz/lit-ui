@@ -150,26 +150,73 @@ const timePickerEvents: EventDef[] = [
 // ---------------------------------------------------------------------------
 type CSSVarDef = { name: string; default: string; description: string };
 const timePickerCSSVars: CSSVarDef[] = [
-  { name: '--ui-time-picker-bg', default: 'var(--ui-input-bg, white)', description: 'Background color for the input display.' },
-  { name: '--ui-time-picker-text', default: 'var(--ui-input-text, inherit)', description: 'Text color for the displayed time.' },
-  { name: '--ui-time-picker-border', default: 'var(--ui-input-border, #d1d5db)', description: 'Border color for the input display.' },
-  { name: '--ui-time-picker-border-focus', default: 'var(--ui-input-border-focus, #3b82f6)', description: 'Border color when focused.' },
-  { name: '--ui-time-picker-radius', default: 'var(--ui-input-radius, 0.375rem)', description: 'Border radius for the input.' },
-  { name: '--ui-time-picker-placeholder', default: 'var(--ui-input-placeholder, #9ca3af)', description: 'Placeholder text color.' },
-  { name: '--ui-time-picker-label-text', default: 'var(--ui-input-text, inherit)', description: 'Label text color.' },
-  { name: '--ui-time-picker-error', default: 'var(--ui-input-text-error, #ef4444)', description: 'Error message and border color.' },
-  { name: '--ui-time-picker-popup-bg', default: 'white', description: 'Background color of the popup panel.' },
-  { name: '--ui-time-picker-popup-border', default: '#e5e7eb', description: 'Border color of the popup panel.' },
-  { name: '--ui-time-picker-primary', default: 'var(--ui-primary, #3b82f6)', description: 'Primary accent color for selected tab, Now button.' },
-  { name: '--ui-time-picker-tab-bg', default: '#f9fafb', description: 'Background for interface tabs (clock/list toggle).' },
-  { name: '--ui-time-picker-tab-bg-hover', default: '#e5e7eb', description: 'Background for interface tabs on hover.' },
-  { name: '--ui-time-picker-preset-bg', default: '#f9fafb', description: 'Background color for preset buttons.' },
-  { name: '--ui-time-picker-preset-border', default: '#d1d5db', description: 'Border color for preset buttons.' },
-  { name: '--ui-time-picker-preset-text', default: 'inherit', description: 'Text color for preset buttons.' },
-  { name: '--ui-time-picker-timezone-text', default: 'var(--ui-input-placeholder, #6b7280)', description: 'Color for timezone abbreviation label.' },
-  { name: '--ui-time-picker-bg-disabled', default: 'var(--ui-input-bg-disabled, #f3f4f6)', description: 'Background when disabled.' },
-  { name: '--ui-time-picker-border-disabled', default: 'var(--ui-input-border-disabled, #e5e7eb)', description: 'Border color when disabled.' },
-  { name: '--ui-time-picker-border-width', default: 'var(--ui-input-border-width, 1px)', description: 'Border width for the input.' },
+  { name: '--ui-time-picker-bg', default: 'var(--color-background, white)', description: 'Input display background color.' },
+  { name: '--ui-time-picker-text', default: 'var(--color-foreground, var(--ui-color-foreground))', description: 'Input display text color.' },
+  { name: '--ui-time-picker-border', default: 'var(--color-border, var(--ui-color-border))', description: 'Input display border color.' },
+  { name: '--ui-time-picker-placeholder', default: 'var(--color-muted-foreground, var(--ui-color-muted-foreground))', description: 'Placeholder text color.' },
+  { name: '--ui-time-picker-label-text', default: 'var(--color-foreground, var(--ui-color-foreground))', description: 'Label text color.' },
+  { name: '--ui-time-picker-error', default: 'var(--color-destructive, var(--ui-color-destructive))', description: 'Error state text and border color.' },
+  { name: '--ui-time-picker-ring', default: 'var(--color-ring, var(--ui-color-ring))', description: 'Focus ring color.' },
+  { name: '--ui-time-picker-popup-bg', default: 'var(--color-card, var(--ui-color-card))', description: 'Popup panel background color.' },
+  { name: '--ui-time-picker-popup-border', default: 'var(--color-border, var(--ui-color-border))', description: 'Popup panel border color.' },
+  { name: '--ui-time-picker-popup-shadow', default: '0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.08)', description: 'Popup panel box shadow.' },
+  { name: '--ui-time-picker-hover-bg', default: 'var(--color-muted, var(--ui-color-muted))', description: 'Input display hover background color.' },
+  { name: '--ui-time-picker-disabled-bg', default: 'var(--color-muted, var(--ui-color-muted))', description: 'Disabled state background color.' },
+  { name: '--ui-time-picker-disabled-border', default: 'var(--color-border, var(--ui-color-border))', description: 'Disabled state border color.' },
+  { name: '--ui-time-picker-tab-bg', default: 'var(--color-background, white)', description: 'Interface tab bar background (clock/list/wheel toggle).' },
+  { name: '--ui-time-picker-tab-text', default: 'var(--color-foreground, var(--ui-color-foreground))', description: 'Tab text color.' },
+  { name: '--ui-time-picker-tab-border', default: 'var(--color-border, var(--ui-color-border))', description: 'Tab border color.' },
+  { name: '--ui-time-picker-tab-hover-bg', default: 'var(--color-muted, var(--ui-color-muted))', description: 'Tab hover background.' },
+  { name: '--ui-time-picker-tab-active-bg', default: 'var(--color-primary, var(--ui-color-primary))', description: 'Active tab background.' },
+  { name: '--ui-time-picker-tab-active-text', default: 'var(--color-primary-foreground, var(--ui-color-primary-foreground))', description: 'Active tab text color.' },
+  { name: '--ui-time-picker-preset-bg', default: 'var(--color-background, white)', description: 'Preset button background.' },
+  { name: '--ui-time-picker-preset-text', default: 'var(--color-foreground, var(--ui-color-foreground))', description: 'Preset button text color.' },
+  { name: '--ui-time-picker-preset-border', default: 'var(--color-border, var(--ui-color-border))', description: 'Preset button border color.' },
+  { name: '--ui-time-picker-preset-hover-bg', default: 'var(--color-muted, var(--ui-color-muted))', description: 'Preset button hover background.' },
+  { name: '--ui-time-picker-preset-hover-border', default: 'var(--color-muted-foreground, var(--ui-color-muted-foreground))', description: 'Preset button hover border color.' },
+  { name: '--ui-time-picker-muted-text', default: 'var(--color-muted-foreground, var(--ui-color-muted-foreground))', description: 'Muted/secondary text color.' },
+  { name: '--ui-time-picker-z-index', default: '40', description: 'z-index for the popup panel.' },
+  { name: '--ui-time-picker-dropdown-bg', default: 'var(--color-card, var(--ui-color-card))', description: 'Time dropdown list background.' },
+  { name: '--ui-time-picker-dropdown-border', default: 'var(--color-border, var(--ui-color-border))', description: 'Time dropdown list border.' },
+  { name: '--ui-time-picker-option-text', default: 'var(--color-foreground, var(--ui-color-foreground))', description: 'Dropdown option text color.' },
+  { name: '--ui-time-picker-option-hover-bg', default: 'var(--color-muted, var(--ui-color-muted))', description: 'Dropdown option hover background.' },
+  { name: '--ui-time-picker-option-selected-bg', default: 'oklch(0.95 0.03 250)', description: 'Selected time option background (blue tint).' },
+  { name: '--ui-time-picker-option-selected-text', default: 'oklch(0.45 0.15 250)', description: 'Selected time option text color.' },
+  { name: '--ui-time-picker-business-accent', default: 'oklch(0.60 0.18 150)', description: 'Business hours accent color (green).' },
+  { name: '--ui-time-picker-business-bg', default: 'oklch(0.97 0.02 150)', description: 'Business hours slot background (light green).' },
+  { name: '--ui-time-picker-business-hover-bg', default: 'oklch(0.93 0.04 150)', description: 'Business hours slot hover background.' },
+  { name: '--ui-time-picker-spinbutton-bg', default: 'var(--color-background, white)', description: 'Spinbutton (hour/minute/second) background.' },
+  { name: '--ui-time-picker-spinbutton-text', default: 'var(--color-foreground, var(--ui-color-foreground))', description: 'Spinbutton text color.' },
+  { name: '--ui-time-picker-spinbutton-border', default: 'var(--color-border, var(--ui-color-border))', description: 'Spinbutton border color.' },
+  { name: '--ui-time-picker-separator-color', default: 'var(--color-muted-foreground, var(--ui-color-muted-foreground))', description: 'Colon separator color between spinbuttons.' },
+  { name: '--ui-time-picker-period-bg', default: 'var(--color-background, white)', description: 'AM/PM period toggle background.' },
+  { name: '--ui-time-picker-period-text', default: 'var(--color-foreground, var(--ui-color-foreground))', description: 'AM/PM period toggle text color.' },
+  { name: '--ui-time-picker-period-border', default: 'var(--color-border, var(--ui-color-border))', description: 'AM/PM period toggle border color.' },
+  { name: '--ui-time-picker-period-hover-bg', default: 'var(--color-muted, var(--ui-color-muted))', description: 'AM/PM period toggle hover background.' },
+  { name: '--ui-time-picker-clock-bg', default: 'var(--color-muted, var(--ui-color-muted))', description: 'Clock face background.' },
+  { name: '--ui-time-picker-clock-border', default: 'var(--color-border, var(--ui-color-border))', description: 'Clock face border color.' },
+  { name: '--ui-time-picker-clock-text', default: 'var(--color-foreground, var(--ui-color-foreground))', description: 'Clock face number text color.' },
+  { name: '--ui-time-picker-clock-selected-bg', default: 'var(--color-primary, var(--ui-color-primary))', description: 'Selected clock position background.' },
+  { name: '--ui-time-picker-clock-selected-text', default: 'var(--color-primary-foreground, var(--ui-color-primary-foreground))', description: 'Selected clock position text color.' },
+  { name: '--ui-time-picker-clock-hand', default: 'var(--color-primary, var(--ui-color-primary))', description: 'Clock hand color.' },
+  { name: '--ui-time-picker-voice-bg', default: 'var(--color-background, white)', description: 'Voice input area background.' },
+  { name: '--ui-time-picker-voice-text', default: 'var(--color-foreground, var(--ui-color-foreground))', description: 'Voice input text color.' },
+  { name: '--ui-time-picker-voice-border', default: 'var(--color-border, var(--ui-color-border))', description: 'Voice input border color.' },
+  { name: '--ui-time-picker-voice-hover-border', default: 'var(--color-primary, var(--ui-color-primary))', description: 'Voice input hover border color.' },
+  { name: '--ui-time-picker-voice-hover-text', default: 'var(--color-primary, var(--ui-color-primary))', description: 'Voice input hover text color.' },
+  { name: '--ui-time-picker-range-label', default: 'var(--color-foreground, var(--ui-color-foreground))', description: 'Range slider label text color.' },
+  { name: '--ui-time-picker-range-muted', default: 'var(--color-muted-foreground, var(--ui-color-muted-foreground))', description: 'Range slider muted text color.' },
+  { name: '--ui-time-picker-range-track', default: 'var(--color-border, var(--ui-color-border))', description: 'Range slider track color.' },
+  { name: '--ui-time-picker-range-fill', default: 'var(--color-primary, var(--ui-color-primary))', description: 'Range slider fill color between thumbs.' },
+  { name: '--ui-time-picker-range-thumb-bg', default: 'var(--color-background, white)', description: 'Range slider thumb background.' },
+  { name: '--ui-time-picker-range-thumb-border', default: 'var(--color-primary, var(--ui-color-primary))', description: 'Range slider thumb border color.' },
+  { name: '--ui-time-picker-wheel-text', default: 'var(--color-foreground, var(--ui-color-foreground))', description: 'Scroll wheel text color.' },
+  { name: '--ui-time-picker-wheel-selected-text', default: 'var(--color-primary, var(--ui-color-primary))', description: 'Scroll wheel selected item text color.' },
+  { name: '--ui-time-picker-wheel-highlight-border', default: 'var(--color-border, var(--ui-color-border))', description: 'Scroll wheel highlight zone border.' },
+  { name: '--ui-time-picker-wheel-highlight-bg', default: 'oklch(0.97 0.01 250)', description: 'Scroll wheel highlight zone background (light blue tint).' },
+  { name: '--ui-time-picker-wheel-separator', default: 'var(--color-muted-foreground, var(--ui-color-muted-foreground))', description: 'Scroll wheel column separator color.' },
+  { name: '--ui-time-picker-timezone-text', default: 'var(--color-muted-foreground, var(--ui-color-muted-foreground))', description: 'Timezone display text color.' },
+  { name: '--ui-time-picker-timezone-separator', default: 'var(--color-border, var(--ui-color-border))', description: 'Timezone display separator color.' },
 ];
 
 // ---------------------------------------------------------------------------
@@ -211,15 +258,15 @@ const voiceCode = `<lui-time-picker label="Time" voice></lui-time-picker>`;
 // CSS Custom Properties example
 const cssVarsCode = `/* Global override */
 :root {
-  --ui-time-picker-primary: var(--color-accent);
-  --ui-time-picker-radius: 0.5rem;
-  --ui-time-picker-popup-bg: #fafafa;
+  --ui-time-picker-popup-bg: var(--color-card);
+  --ui-time-picker-option-selected-bg: oklch(0.95 0.03 280); /* purple tint */
+  --ui-time-picker-business-bg: oklch(0.97 0.02 150);
 }
 
 /* Scoped override */
 .scheduling-widget {
   --ui-time-picker-border: var(--color-border);
-  --ui-time-picker-preset-bg: var(--color-surface);
+  --ui-time-picker-preset-bg: var(--color-background);
 }`;
 
 // ---------------------------------------------------------------------------
