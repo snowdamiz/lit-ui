@@ -364,5 +364,5 @@ Note: Phases 70-87 all depend on Phase 69. Phases 70-78 and 80-87 are independen
 | 83. Popover | 3/3 | Complete    | 2026-02-28 | - |
 | 84. Toast | 3/3 | Complete    | 2026-02-28 | - |
 | 85. Accordion | 3/3 | Complete    | 2026-02-28 | - |
-| 86. Tabs | 3/3 | Complete   | 2026-02-28 | - |
+| 86. Tabs | 3/3 | Complete    | 2026-02-28 | - |
 | 87. Data Table | v8.0 | 0/3 | Not started | - |
