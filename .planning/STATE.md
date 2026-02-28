@@ -2,9 +2,9 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Design System Polish
-status: executing
-last_updated: "2026-02-28T07:27:03.232Z"
-last_activity: "2026-02-28 — Phase 82-02 complete (tooltipCSSVars bg/text corrected to double-fallback var() form; shadow corrected from stale single-layer to two-layer value matching tailwind.css :root; cssVarsCode example updated)"
+status: completed
+last_updated: "2026-02-28T07:30:27.008Z"
+last_activity: 2026-02-28 — Phase 82-03 complete (Tooltip SKILL.md CSS token defaults corrected — double-fallback var() form for bg/text, two-layer shadow; Behavior Notes section added with 12 entries)
 progress:
   total_phases: 78
   completed_phases: 78
@@ -27,7 +27,7 @@ See: .planning/PROJECT.md (updated 2026-02-27)
 **Milestone:** v8.0 Design System Polish — IN PROGRESS
 **Phase:** 82 of 87 (Tooltip Polish) — COMPLETE
 **Plan:** 3 of 3 in Phase 82 — COMPLETE
-**Status:** In progress
+**Status:** Milestone complete
 **Last activity:** 2026-02-28 — Phase 82-03 complete (Tooltip SKILL.md CSS token defaults corrected — double-fallback var() form for bg/text, two-layer shadow; Behavior Notes section added with 12 entries)
 
 **Progress:**
