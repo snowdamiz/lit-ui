@@ -120,53 +120,53 @@ Which phases cover which requirements. Populated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| INFRA-01 | — | Pending |
-| INFRA-02 | — | Pending |
-| INFRA-03 | — | Pending |
-| INFRA-04 | — | Pending |
-| INFRA-05 | — | Pending |
-| CHART-01 | — | Pending |
-| CHART-02 | — | Pending |
-| CHART-03 | — | Pending |
-| CHART-04 | — | Pending |
-| CHART-05 | — | Pending |
-| STRM-01 | — | Pending |
-| STRM-02 | — | Pending |
-| STRM-03 | — | Pending |
-| STRM-04 | — | Pending |
-| LINE-01 | — | Pending |
-| LINE-02 | — | Pending |
-| LINE-03 | — | Pending |
-| AREA-01 | — | Pending |
-| AREA-02 | — | Pending |
-| BAR-01 | — | Pending |
-| BAR-02 | — | Pending |
-| BAR-03 | — | Pending |
-| PIE-01 | — | Pending |
-| PIE-02 | — | Pending |
-| PIE-03 | — | Pending |
-| SCAT-01 | — | Pending |
-| SCAT-02 | — | Pending |
-| SCAT-03 | — | Pending |
-| HEAT-01 | — | Pending |
-| HEAT-02 | — | Pending |
-| CNDL-01 | — | Pending |
-| CNDL-02 | — | Pending |
-| CNDL-03 | — | Pending |
-| CNDL-04 | — | Pending |
-| TREE-01 | — | Pending |
-| TREE-02 | — | Pending |
-| CLI-01 | — | Pending |
-| CLI-02 | — | Pending |
-| CLI-03 | — | Pending |
-| DOCS-01 | — | Pending |
-| DOCS-02 | — | Pending |
+| INFRA-01 | Phase 88 | Pending |
+| INFRA-02 | Phase 88 | Pending |
+| INFRA-03 | Phase 88 | Pending |
+| INFRA-04 | Phase 88 | Pending |
+| INFRA-05 | Phase 88 | Pending |
+| CHART-01 | Phase 88 | Pending |
+| CHART-02 | Phase 88 | Pending |
+| CHART-03 | Phase 88 | Pending |
+| CHART-04 | Phase 88 | Pending |
+| CHART-05 | Phase 88 | Pending |
+| STRM-01 | Phase 88 | Pending |
+| STRM-02 | Phase 88 | Pending |
+| STRM-03 | Phase 88 | Pending |
+| STRM-04 | Phase 88 | Pending |
+| LINE-01 | Phase 89 | Pending |
+| LINE-02 | Phase 89 | Pending |
+| LINE-03 | Phase 89 | Pending |
+| AREA-01 | Phase 89 | Pending |
+| AREA-02 | Phase 89 | Pending |
+| BAR-01 | Phase 90 | Pending |
+| BAR-02 | Phase 90 | Pending |
+| BAR-03 | Phase 90 | Pending |
+| PIE-01 | Phase 91 | Pending |
+| PIE-02 | Phase 91 | Pending |
+| PIE-03 | Phase 91 | Pending |
+| SCAT-01 | Phase 92 | Pending |
+| SCAT-02 | Phase 92 | Pending |
+| SCAT-03 | Phase 92 | Pending |
+| HEAT-01 | Phase 93 | Pending |
+| HEAT-02 | Phase 93 | Pending |
+| CNDL-01 | Phase 94 | Pending |
+| CNDL-02 | Phase 94 | Pending |
+| CNDL-03 | Phase 94 | Pending |
+| CNDL-04 | Phase 94 | Pending |
+| TREE-01 | Phase 95 | Pending |
+| TREE-02 | Phase 95 | Pending |
+| CLI-01 | Phase 96 | Pending |
+| CLI-02 | Phase 96 | Pending |
+| CLI-03 | Phase 96 | Pending |
+| DOCS-01 | Phase 96 | Pending |
+| DOCS-02 | Phase 96 | Pending |
 
 **Coverage:**
 - v9.0 requirements: 41 total
-- Mapped to phases: 0 (roadmapper fills this)
-- Unmapped: 41 ⚠️ (pending roadmap)
+- Mapped to phases: 41 (100%)
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-28*
-*Last updated: 2026-02-28 after initial definition*
+*Last updated: 2026-02-28 — Traceability populated by roadmapper (phases 88-96)*
