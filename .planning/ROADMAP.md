@@ -215,9 +215,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 79-01-PLAN.md — Remove .dark date-picker block (17 declarations) from tailwind.css (DTP-01)
-- [ ] 79-02-PLAN.md — Expand DatePickerPage.tsx CSS vars table from 12 to 21 entries with correct defaults (DTP-02)
-- [ ] 79-03-PLAN.md — Expand skill/skills/date-picker/SKILL.md CSS tokens, verify Events table, add Behavior Notes (DTP-03)
+- [x] 79-01-PLAN.md — Remove .dark date-picker block (17 declarations) from tailwind.css (DTP-01)
+- [x] 79-02-PLAN.md — Expand DatePickerPage.tsx CSS vars table from 12 to 21 entries with correct defaults (DTP-02)
+- [x] 79-03-PLAN.md — Expand skill/skills/date-picker/SKILL.md CSS tokens, verify Events table, add Behavior Notes (DTP-03)
 
 ### Phase 80: Date Range Picker
 **Goal**: Date Range Picker component looks polished and matches the monochrome theme, with accurate docs and skill file
@@ -230,9 +230,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 80-01-PLAN.md — Remove .dark date-range block (21 declarations, keep 2 compare-* oklch exceptions) from tailwind.css (DRP-01)
-- [ ] 80-02-PLAN.md — Replace stale dateRangePickerCSSVars (16 entries, wrong names) with 31 accurate --ui-date-range-* entries (DRP-02)
-- [ ] 80-03-PLAN.md — Rewrite skill/skills/date-range-picker/SKILL.md with 31 correct tokens and Behavior Notes (DRP-03)
+- [x] 80-01-PLAN.md — Remove .dark date-range block (21 declarations, keep 2 compare-* oklch exceptions) from tailwind.css (DRP-01)
+- [x] 80-02-PLAN.md — Replace stale dateRangePickerCSSVars (16 entries, wrong names) with 31 accurate --ui-date-range-* entries (DRP-02)
+- [x] 80-03-PLAN.md — Rewrite skill/skills/date-range-picker/SKILL.md with 31 correct tokens and Behavior Notes (DRP-03)
 
 ### Phase 81: Time Picker
 **Goal**: Time Picker component looks polished and matches the monochrome theme, with accurate docs and skill file
@@ -242,12 +242,12 @@ Plans:
   1. Time Picker renders with correct monochrome default styles (clock face, scroll wheels, spinbuttons) matching the token spec
   2. The Time Picker docs page reflects the actual component API and examples without stale content
   3. `skill/skills/time-picker` accurately describes the component so Claude can implement it correctly
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 81-01: Polish Time Picker CSS defaults to match monochrome theme
-- [ ] 81-02: Update Time Picker docs page for accuracy
-- [ ] 81-03: Update `skill/skills/time-picker` skill file
+- [ ] 81-01-PLAN.md — Remove .dark time-picker block (keep 6 oklch exceptions) (TMP-01)
+- [ ] 81-02-PLAN.md — Replace timePickerCSSVars with 67 accurate --ui-time-picker-* entries (TMP-02)
+- [ ] 81-03-PLAN.md — Rewrite skill/skills/time-picker/SKILL.md with 67 tokens and Behavior Notes (TMP-03)
 
 ### Phase 82: Tooltip
 **Goal**: Tooltip component looks and feels like shadcn Tooltip out of the box, with accurate docs and skill file
