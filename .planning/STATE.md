@@ -3,13 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Design System Polish
 status: completed
-last_updated: "2026-02-28T01:22:51.510Z"
-last_activity: 2026-02-28 — Phase 69-01 complete (THEME-SPEC.md authored, token audit passed)
+last_updated: "2026-02-28T01:44:18.028Z"
+last_activity: 2026-02-28 — Phase 70-03 complete (button SKILL.md rewritten with --ui-button-* tokens and Behavior Notes)
 progress:
-  total_phases: 65
-  completed_phases: 65
-  total_plans: 234
-  completed_plans: 234
+  total_phases: 66
+  completed_phases: 66
+  total_plans: 237
+  completed_plans: 237
+  percent: 100
 ---
 
 # Project State: LitUI
@@ -24,13 +25,13 @@ See: .planning/PROJECT.md (updated 2026-02-27)
 ## Current Position
 
 **Milestone:** v8.0 Design System Polish — IN PROGRESS
-**Phase:** 69 of 87 (Theme Foundation) — COMPLETE
-**Plan:** 1 of 1 in Phase 69 — COMPLETE
-**Status:** Milestone complete
-**Last activity:** 2026-02-28 — Phase 69-01 complete (THEME-SPEC.md authored, token audit passed)
+**Phase:** 70 of 87 (Button Polish) — COMPLETE
+**Plan:** 3 of 3 in Phase 70 — COMPLETE
+**Status:** In progress
+**Last activity:** 2026-02-28 — Phase 70-03 complete (button SKILL.md rewritten with --ui-button-* tokens and Behavior Notes)
 
 **Progress:**
-```
+[██████████] 100%
 Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 ```
 
@@ -42,6 +43,9 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 | Requirements satisfied | 3/57 (THEME-01, THEME-02, THEME-03) |
 | Phases completed | 1/19 |
 | Commits | 2 |
+| Phase 70-button P03 | 1 | 1 tasks | 1 files |
+| Phase 70-button P02 | 2 | 1 tasks | 1 files |
+| Phase 70-button P01 | 1min | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -52,6 +56,8 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 - v8.0: Preserve existing `--ui-*` token names; only update default values
 - v8.0: Wave structure per phase — style (01), docs (02), skill (03)
 - Phase 69-01: tailwind.css :root block was already aligned to shadcn monochrome spec — no value changes required
+- Phase 70-02: Documented 12 key --ui-button-* tokens in ButtonPage.tsx docs rather than all 20+ — keeps table focused on high-value user overrides
+- Phase 70-03: CSS token prefix fix --lui-button-* → --ui-button-* in skill file; Behavior Notes section added for accessibility semantics
 
 ### Architecture Notes
 
@@ -82,16 +88,17 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 ## Session Continuity
 
 ### Last Session
-- Phase 69-01: Audited tailwind.css token defaults (no changes needed)
-- Phase 69-01: Authored THEME-SPEC.md covering all 18 components with exact token values
-- Phase 69 complete — THEME-SPEC.md ready for phases 70-87 to reference
+- Phase 70-01: Button component style polish (CSS tokens updated)
+- Phase 70-02: Button documentation updated
+- Phase 70-03: Rewrote skill/skills/button/SKILL.md — fixed --lui-button-* to --ui-button-*, added Behavior Notes section
+- Phase 70 complete — all 3 plans executed
 
 ### Next Actions
-Execute Phase 70 (Button Polish) using `/gsd:execute-phase 70-button`.
+Execute Phase 71 or next component phase using `/gsd:execute-phase`.
 
 ### Open Questions
 *None.*
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-02-28 — Phase 69-01 complete*
+*Last updated: 2026-02-28 — Phase 70-03 complete*

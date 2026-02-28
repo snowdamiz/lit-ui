@@ -16,8 +16,8 @@ Requirements for the Design System Polish milestone. Each component phase maps t
 ### Button
 
 - [ ] **BTN-01**: Button default styles match the v8.0 monochrome theme
-- [ ] **BTN-02**: Button docs page is accurate and up-to-date
-- [ ] **BTN-03**: `skill/skills/button` skill file is accurate and up-to-date
+- [x] **BTN-02**: Button docs page is accurate and up-to-date
+- [x] **BTN-03**: `skill/skills/button` skill file is accurate and up-to-date
 
 ### Dialog
 
@@ -142,8 +142,8 @@ Requirements for the Design System Polish milestone. Each component phase maps t
 | THEME-02 | Phase 69 | Complete |
 | THEME-03 | Phase 69 | Complete |
 | BTN-01 | Phase 70 | Pending |
-| BTN-02 | Phase 70 | Pending |
-| BTN-03 | Phase 70 | Pending |
+| BTN-02 | Phase 70 | Complete |
+| BTN-03 | Phase 70 | Complete |
 | DLG-01 | Phase 71 | Pending |
 | DLG-02 | Phase 71 | Pending |
 | DLG-03 | Phase 71 | Pending |

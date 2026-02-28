@@ -35,7 +35,7 @@ Phases 1-68 are archived. See:
 - Wave 3 (03): Skill update — `skill/skills/<component>` accurate and up-to-date
 
 - [x] **Phase 69: Theme Foundation** - Define unified monochrome design token baseline in `@lit-ui/core` (completed 2026-02-28)
-- [ ] **Phase 70: Button** - Polish Button styles, docs, and skill file
+- [x] **Phase 70: Button** - Polish Button styles, docs, and skill file (completed 2026-02-28)
 - [ ] **Phase 71: Dialog** - Polish Dialog styles, docs, and skill file
 - [ ] **Phase 72: Input** - Polish Input styles, docs, and skill file
 - [ ] **Phase 73: Textarea** - Polish Textarea styles, docs, and skill file
@@ -348,7 +348,7 @@ Note: Phases 70-87 all depend on Phase 69. Phases 70-78 and 80-87 are independen
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 69. Theme Foundation | 1/1 | Complete    | 2026-02-28 | - |
-| 70. Button | v8.0 | 0/3 | Not started | - |
+| 70. Button | 3/3 | Complete   | 2026-02-28 | - |
 | 71. Dialog | v8.0 | 0/3 | Not started | - |
 | 72. Input | v8.0 | 0/3 | Not started | - |
 | 73. Textarea | v8.0 | 0/3 | Not started | - |
