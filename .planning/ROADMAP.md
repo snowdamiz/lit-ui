@@ -167,12 +167,12 @@ Plans:
   1. Radio and RadioGroup render with correct monochrome default styles matching the token spec
   2. The Radio docs page reflects the actual component API and examples without stale content
   3. `skill/skills/radio` accurately describes the component so Claude can implement it correctly
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 76-01: Polish Radio CSS defaults to match monochrome theme
-- [ ] 76-02: Update Radio docs page for accuracy
-- [ ] 76-03: Update `skill/skills/radio` skill file
+- [ ] 76-01-PLAN.md — Remove hardcoded radio dark mode tokens from .dark block (RAD-01)
+- [ ] 76-02-PLAN.md — Expand RadioPage.tsx CSS vars table to full token set (RAD-02)
+- [ ] 76-03-PLAN.md — Rewrite skill/skills/radio/SKILL.md with Behavior Notes and expanded tokens (RAD-03)
 
 ### Phase 77: Switch
 **Goal**: Switch component looks and feels like shadcn Switch out of the box, with accurate docs and skill file
