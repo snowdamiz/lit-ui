@@ -23,3 +23,7 @@ export type { PieSlice, PieOptionProps } from './shared/pie-option-builder.js';
 // Phase 92: Scatter + Bubble Chart
 export { LuiScatterChart } from './scatter/scatter-chart.js';
 export type { ScatterPoint, ScatterOptionProps } from './shared/scatter-option-builder.js';
+
+// Phase 93: Heatmap Chart
+export { LuiHeatmapChart } from './heatmap/heatmap-chart.js';
+export type { HeatmapCell, HeatmapOptionProps } from './shared/heatmap-option-builder.js';
