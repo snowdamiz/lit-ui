@@ -59,7 +59,7 @@ Each task was committed atomically:
 
 1. **Task 1: Update CSS vars data and example code in DialogPage.tsx** - `9d0a147` (feat)
 
-**Plan metadata:** TBD after docs commit
+**Plan metadata:** `a576675` (docs: complete plan)
 
 ## Files Created/Modified
 - `apps/docs/src/pages/components/DialogPage.tsx` - Updated dialogCSSVars array (3 → 12 entries, --lui- → --ui-) and cssVarsCode example string
@@ -88,6 +88,13 @@ None - no external service configuration required.
 - Dialog docs are now accurate with correct --ui-dialog-* token names
 - CSS vars count badge in the docs will show 12 (up from 3)
 - DLG-02 requirement satisfied
+
+## Self-Check: PASSED
+
+- FOUND: `apps/docs/src/pages/components/DialogPage.tsx`
+- FOUND: `.planning/phases/71-dialog/71-02-SUMMARY.md`
+- FOUND: commit `9d0a147` (task commit)
+- FOUND: commit `a576675` (docs commit)
 
 ---
 *Phase: 71-dialog*
