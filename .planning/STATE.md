@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Design System Polish
 status: completed
-last_updated: "2026-02-28T02:08:11.539Z"
+last_updated: "2026-02-28T02:53:37.451Z"
 last_activity: 2026-02-28 — Phase 71-03 complete (dialog SKILL.md CSS token prefix fixed --lui-dialog-* → --ui-dialog-*, expanded to 12 tokens, Behavior Notes added)
 progress:
-  total_phases: 67
-  completed_phases: 67
-  total_plans: 240
-  completed_plans: 240
+  total_phases: 68
+  completed_phases: 68
+  total_plans: 243
+  completed_plans: 243
   percent: 100
 ---
 
@@ -20,15 +20,15 @@ progress:
 See: .planning/PROJECT.md (updated 2026-02-27)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** Phase 71 — Dialog Polish
+**Current focus:** Phase 72 — Input Polish
 
 ## Current Position
 
 **Milestone:** v8.0 Design System Polish — IN PROGRESS
-**Phase:** 71 of 87 (Dialog Polish) — COMPLETE
-**Plan:** 3 of 3 in Phase 71 — COMPLETE
-**Status:** Milestone complete
-**Last activity:** 2026-02-28 — Phase 71-03 complete (dialog SKILL.md CSS token prefix fixed --lui-dialog-* → --ui-dialog-*, expanded to 12 tokens, Behavior Notes added)
+**Phase:** 72 of 87 (Input Polish) — IN PROGRESS
+**Plan:** 2 of 3 in Phase 72 — COMPLETE
+**Status:** In progress
+**Last activity:** 2026-02-27 — Phase 72-02 complete (Input docs CSS token table expanded from 7 to 16 tokens with accurate default values)
 
 **Progress:**
 [██████████] 100%
@@ -48,6 +48,9 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 | Phase 71-dialog P01 | 1min | 1 tasks | 1 files |
 | Phase 71-dialog P02 | 2min | 1 tasks | 1 files |
 | Phase 71-dialog P03 | 1min | 1 tasks | 1 files |
+| Phase 72-input P02 | 1min | 1 tasks | 1 files |
+| Phase 72-input P03 | 1min | 1 tasks | 1 files |
+| Phase 72-input P01 | 1min | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -64,6 +67,8 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 - Phase 71-01: Dialog dark mode governed by semantic .dark overrides — hardcoded .dark --ui-dialog-* declarations removed; double-fallback cascade in :root is sufficient (same pattern as Phase 70-01)
 - Phase 71-02: Dialog CSS docs updated — old --lui-dialog-* prefix (3 tokens) replaced with --ui-dialog-* prefix (12 tokens) matching tailwind.css :root
 - Phase 71-03: Dialog SKILL.md CSS token prefix fixed --lui-dialog-* → --ui-dialog-*; expanded from 3 to 12 tokens; Behavior Notes section added (same pattern as Phase 70-03)
+- Phase 72-01: Input dark mode governed by semantic .dark overrides — hardcoded .dark --ui-input-* declarations removed; double-fallback cascade in :root is sufficient (same pattern as Phase 70-01 and Phase 71-01)
+- Phase 72-02: Expanded inputCSSVars in InputPage.tsx from 7 to 16 entries — added layout, typography, spacing, disabled state tokens; updated default values to match tailwind.css :root
 
 ### Architecture Notes
 
@@ -100,11 +105,11 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 - Phase 71-03: Rewrote dialog SKILL.md with correct --ui-dialog-* tokens (12 entries) and Behavior Notes section
 
 ### Next Actions
-Execute next phase after Phase 71-dialog (all 3 plans complete).
+Execute Phase 72-03 (Input SKILL.md update).
 
 ### Open Questions
 *None.*
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-02-28 — Phase 71-03 complete*
+*Last updated: 2026-02-27 — Phase 72-02 complete*
