@@ -105,6 +105,12 @@ None - no external service configuration required.
 | Event rows | 1 (lui-checkbox only) | 2 (lui-checkbox + lui-checkbox-group) |
 | Behavior Notes | absent | 9 entries |
 
+## Self-Check: PASSED
+
+- FOUND: skill/skills/checkbox/SKILL.md
+- FOUND: .planning/phases/75-checkbox/75-03-SUMMARY.md
+- FOUND commit: 5309804 (feat(75-03): expand checkbox SKILL.md CSS tokens and add Behavior Notes)
+
 ---
 *Phase: 75-checkbox*
 *Completed: 2026-02-28*

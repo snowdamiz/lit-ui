@@ -92,6 +92,13 @@ None - no external service configuration required.
 - SKILL.md is the agent-facing reference; accuracy directly affects implementation quality for agents using the tooltip component
 - Ready to proceed to Phase 83
 
+## Self-Check: PASSED
+
+- FOUND: skill/skills/tooltip/SKILL.md
+- FOUND: .planning/phases/82-tooltip/82-03-SUMMARY.md
+- FOUND: d27b7f3 (task commit)
+- FOUND: 33c140a (metadata commit)
+
 ---
 *Phase: 82-tooltip*
 *Completed: 2026-02-28*

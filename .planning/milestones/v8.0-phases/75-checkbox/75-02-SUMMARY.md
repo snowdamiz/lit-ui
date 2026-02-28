@@ -110,3 +110,10 @@ None - no external service configuration required.
 ---
 *Phase: 75-checkbox*
 *Completed: 2026-02-27*
+
+## Self-Check: PASSED
+
+- FOUND: apps/docs/src/pages/components/CheckboxPage.tsx
+- FOUND: .planning/phases/75-checkbox/75-02-SUMMARY.md
+- FOUND commit: 5f6d2c1 (feat: expand checkboxCSSVars)
+- FOUND commit: 89e0197 (docs: plan metadata)
