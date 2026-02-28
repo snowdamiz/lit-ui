@@ -42,7 +42,7 @@ Phases 1-68 are archived. See:
 - [x] **Phase 74: Select** - Polish Select styles, docs, and skill file (completed 2026-02-28)
 - [x] **Phase 75: Checkbox** - Polish Checkbox styles, docs, and skill file (completed 2026-02-28)
 - [x] **Phase 76: Radio** - Polish Radio styles, docs, and skill file (completed 2026-02-28)
-- [ ] **Phase 77: Switch** - Polish Switch styles, docs, and skill file
+- [x] **Phase 77: Switch** - Polish Switch styles, docs, and skill file (completed 2026-02-28)
 - [ ] **Phase 78: Calendar** - Polish Calendar styles, docs, and skill file
 - [ ] **Phase 79: Date Picker** - Polish Date Picker styles, docs, and skill file
 - [ ] **Phase 80: Date Range Picker** - Polish Date Range Picker styles, docs, and skill file
@@ -355,7 +355,7 @@ Note: Phases 70-87 all depend on Phase 69. Phases 70-78 and 80-87 are independen
 | 74. Select | 3/3 | Complete    | 2026-02-28 | - |
 | 75. Checkbox | 3/3 | Complete    | 2026-02-28 | - |
 | 76. Radio | 3/3 | Complete    | 2026-02-28 | - |
-| 77. Switch | v8.0 | 0/3 | Not started | - |
+| 77. Switch | 3/3 | Complete   | 2026-02-28 | - |
 | 78. Calendar | v8.0 | 0/3 | Not started | - |
 | 79. Date Picker | v8.0 | 0/3 | Not started | - |
 | 80. Date Range Picker | v8.0 | 0/3 | Not started | - |

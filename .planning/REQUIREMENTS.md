@@ -57,9 +57,9 @@ Requirements for the Design System Polish milestone. Each component phase maps t
 
 ### Switch
 
-- [ ] **SWT-01**: Switch default styles match the v8.0 monochrome theme
-- [ ] **SWT-02**: Switch docs page is accurate and up-to-date
-- [ ] **SWT-03**: `skill/skills/switch` skill file is accurate and up-to-date
+- [x] **SWT-01**: Switch default styles match the v8.0 monochrome theme
+- [x] **SWT-02**: Switch docs page is accurate and up-to-date
+- [x] **SWT-03**: `skill/skills/switch` skill file is accurate and up-to-date
 
 ### Calendar
 
@@ -162,9 +162,9 @@ Requirements for the Design System Polish milestone. Each component phase maps t
 | RAD-01 | Phase 76 | Complete |
 | RAD-02 | Phase 76 | Complete |
 | RAD-03 | Phase 76 | Complete |
-| SWT-01 | Phase 77 | Pending |
-| SWT-02 | Phase 77 | Pending |
-| SWT-03 | Phase 77 | Pending |
+| SWT-01 | Phase 77 | Complete |
+| SWT-02 | Phase 77 | Complete |
+| SWT-03 | Phase 77 | Complete |
 | CAL-01 | Phase 78 | Pending |
 | CAL-02 | Phase 78 | Pending |
 | CAL-03 | Phase 78 | Pending |

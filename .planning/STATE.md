@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Design System Polish
-status: completed
-last_updated: "2026-02-28T04:41:49.540Z"
-last_activity: 2026-02-27 — Phase 76-01 complete (Radio dark mode — 5 hardcoded oklch .dark overrides removed; semantic .dark cascade now governs radio dark mode)
+status: executing
+last_updated: "2026-02-28T04:56:35.621Z"
+last_activity: "2026-02-27 — Phase 77-01 complete (Switch dark mode — 6 hardcoded oklch .dark overrides removed; --ui-switch-thumb-bg retained as exception since :root is hardcoded 'white')"
 progress:
-  total_phases: 72
-  completed_phases: 72
-  total_plans: 255
-  completed_plans: 255
-  percent: 99
+  total_phases: 73
+  completed_phases: 73
+  total_plans: 258
+  completed_plans: 258
+  percent: 100
 ---
 
 # Project State: LitUI
@@ -20,18 +20,18 @@ progress:
 See: .planning/PROJECT.md (updated 2026-02-27)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** Phase 76 — Radio Polish
+**Current focus:** Phase 77 — Switch Polish
 
 ## Current Position
 
 **Milestone:** v8.0 Design System Polish — IN PROGRESS
-**Phase:** 76 of 87 (Radio Polish) — IN PROGRESS
-**Plan:** 1 of 3 in Phase 76 — COMPLETE
-**Status:** Milestone complete
-**Last activity:** 2026-02-27 — Phase 76-01 complete (Radio dark mode — 5 hardcoded oklch .dark overrides removed; semantic .dark cascade now governs radio dark mode)
+**Phase:** 77 of 87 (Switch Polish) — IN PROGRESS
+**Plan:** 1 of 3 in Phase 77 — COMPLETE
+**Status:** Milestone in progress
+**Last activity:** 2026-02-27 — Phase 77-01 complete (Switch dark mode — 6 hardcoded oklch .dark overrides removed; --ui-switch-thumb-bg retained as exception since :root is hardcoded 'white')
 
 **Progress:**
-[██████████] 99%
+[██████████] 100%
 Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 
 ## Performance Metrics
@@ -60,6 +60,9 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 | Phase 75-checkbox P02 | 1min | 1 tasks | 1 files |
 | Phase 75-checkbox P03 | 1min | 1 tasks | 1 files |
 | Phase 76-radio P01 | 1min | 1 tasks | 1 files |
+| Phase 77-switch P01 | 1min | 1 tasks | 1 files |
+| Phase 77-switch P03 | 1min | 1 tasks | 1 files |
+| Phase 77-switch P02 | 1min | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -90,6 +93,9 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 - Phase 75-03: Checkbox SKILL.md CSS tokens expanded from 12 to 21 entries; check-color default corrected to white (was var(--color-primary-foreground)); radius default corrected to 0.25rem (was var(--radius-sm)); Events table event name corrected from change to ui-change; lui-checkbox-group ui-change event added; Behavior Notes section added with 9 entries (same pattern as Phase 70-03, 71-03, 72-03, 73-03, 74-03)
 - Phase 76-01: Radio dark mode governed by semantic .dark overrides — 5 hardcoded .dark --ui-radio-* declarations removed; double-fallback cascade in :root is sufficient (same pattern as Phase 70-01, 71-01, 72-01, 73-01, 74-01, 75-01); no .dark exceptions required (unlike checkbox check-color: white)
 
+- Phase 77-01: Switch dark mode governed by semantic .dark overrides — 6 hardcoded .dark --ui-switch-* declarations removed; --ui-switch-thumb-bg kept as dark mode exception (white :root value cannot cascade to dark)
+- Phase 77-02: Switch docs CSS token table expanded from 12 to 26 entries — all tokens from tailwind.css :root switch block documented with double-fallback var() form for color defaults; thumb-bg remains 'white' (hardcoded in tailwind.css, same exception as dark mode)
+
 ### Architecture Notes
 
 - Phase 69 produces the token reference spec all other phases use
@@ -119,14 +125,14 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 ## Session Continuity
 
 ### Last Session
-- Phase 76-01: Radio dark mode polished — removed 5 hardcoded oklch overrides from .dark block; no exceptions required (unlike checkbox check-color)
+- Phase 77-02: Switch CSS token docs expanded — switchCSSVars in SwitchPage.tsx expanded from 12 to 26 entries; all tailwind.css :root switch tokens documented with double-fallback var() defaults
 
 ### Next Actions
-Execute Phase 76-02: Radio CSS token docs expansion.
+Execute Phase 77-03: Switch SKILL.md expansion.
 
 ### Open Questions
 *None.*
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-02-27 — Phase 76-01 complete (Radio dark mode — 5 hardcoded oklch .dark overrides removed, semantic .dark cascade governs radio dark mode)*
+*Last updated: 2026-02-27 — Phase 77-01 complete (Switch dark mode — 6 hardcoded oklch .dark overrides removed; --ui-switch-thumb-bg retained as white :root exception)*
