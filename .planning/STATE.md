@@ -26,9 +26,9 @@ See: .planning/PROJECT.md (updated 2026-02-27)
 
 **Milestone:** v8.0 Design System Polish — IN PROGRESS
 **Phase:** 85 of 87 (Accordion Polish) — IN PROGRESS
-**Plan:** 2 of 3 in Phase 85 — COMPLETE
-**Status:** In progress
-**Last activity:** 2026-02-28 — Phase 85-02 complete (Accordion docs accordionCSSVars corrected from 13 to 14 entries; added --ui-accordion-gap token; fixed 5 color token defaults to double-fallback var() form; cssVarsCode example updated to semantic token reference)
+**Plan:** 3 of 3 in Phase 85 — COMPLETE
+**Status:** Phase 85 complete
+**Last activity:** 2026-02-28 — Phase 85-03 complete (Accordion SKILL.md CSS tokens corrected 13→14 entries; --ui-accordion-gap added; 5 color token defaults updated to double-fallback var() form; Behavior Notes section with 13 entries added)
 
 **Progress:**
 [██████████] 100%
@@ -141,8 +141,10 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 - Phase 83-03: Popover SKILL.md CSS token defaults corrected — bg/text/border use double-fallback var() form; shadow corrected to two-layer 0.08 opacity value; z-index corrected from stale 50 to actual tailwind.css :root value of 45; Behavior Notes section added with 13 entries (trigger model, light dismiss, Escape, Floating UI, arrow, focus management, modal mode, controlled mode, nested popovers, match-trigger-width, dark mode, SSR safety, cleanup)
 - Phase 84-01: Toast base dark mode governed by semantic .dark cascade — 3 hardcoded .dark --ui-toast-bg/text/border declarations removed; double-fallback cascade in :root is sufficient (same pattern as Phases 70-01 through 83-01); 12 variant oklch dark mode tokens kept in .dark (lightness 0.25 cannot cascade from :root lightness 0.95)
 - Phase 84-02: Toast docs color tokens corrected to double-fallback var() form (bg, text, border); shadow corrected from single-layer to two-layer matching tailwind.css :root; z-index corrected from stale 50 to 55; cssVarsCode example replaced hex literals (#f0fdf4 etc.) with oklch/var() semantic token references
+- Phase 85-01: Accordion dark mode governed by semantic .dark cascade — 4 hardcoded .dark --ui-accordion-* declarations removed (header-text, header-hover-bg, border, panel-text); double-fallback cascade in :root is sufficient (same pattern as Phases 70-01 through 84-01); no .dark exceptions required (unlike checkbox check-color: white or switch thumb-bg: white)
 - Phase 84-03: Toast SKILL.md CSS token defaults corrected — bg/text/border use double-fallback var() form; shadow corrected to two-layer value; z-index corrected to 55; --ui-toast-padding row added (21 total tokens); all 12 variant oklch tokens filled with actual :root values; Behavior Notes section added with 13 entries
 - Phase 85-02: accordionCSSVars expanded from 13 to 14 entries — added missing --ui-accordion-gap token (default: 0); all 5 color token defaults corrected from single var() to double-fallback var(--color-X, var(--ui-color-X)) form matching tailwind.css :root; cssVarsCode example updated from rgba(0,0,0,0.05) to var(--color-accent, var(--ui-color-accent))
+- Phase 85-03: Accordion SKILL.md CSS token defaults corrected — 13→14 entries; --ui-accordion-gap added with default 0; 5 color token defaults updated to double-fallback var() form; Behavior Notes section with 13 entries (state management, controlled/uncontrolled, single/multi-expand, collapsible, lazy rendering, CSS Grid animation, reduced motion, keyboard nav, data-state, heading level, disabled propagation)
 
 ### Architecture Notes
 
@@ -173,14 +175,14 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 ## Session Continuity
 
 ### Last Session
-- Phase 85-02: Accordion docs accordionCSSVars corrected from 13 to 14 entries; added --ui-accordion-gap (default 0); fixed 5 color token defaults to double-fallback var(--color-X, var(--ui-color-X)) form; cssVarsCode example updated to semantic token reference var(--color-accent, var(--ui-color-accent))
+- Phase 85-03: Accordion SKILL.md CSS tokens corrected 13→14 entries; --ui-accordion-gap added; 5 color token defaults updated to double-fallback var() form; Behavior Notes section with 13 entries added
 
 ### Next Actions
-Execute Phase 85-03: Accordion SKILL.md CSS token defaults update.
+Execute Phase 86 (next phase after Accordion Polish).
 
 ### Open Questions
 *None.*
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-02-28 — Phase 85-02 complete (Accordion docs accordionCSSVars corrected to 14 entries; --ui-accordion-gap added; double-fallback var() colors for 5 tokens; cssVarsCode updated to semantic token reference)*
+*Last updated: 2026-02-28 — Phase 85-03 complete (Accordion SKILL.md CSS tokens corrected 13→14 entries; --ui-accordion-gap added; double-fallback var() colors; Behavior Notes with 13 entries)*
