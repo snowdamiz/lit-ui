@@ -82,7 +82,7 @@ Requirements for the Design System Polish milestone. Each component phase maps t
 ### Time Picker
 
 - [x] **TMP-01**: Time Picker default styles match the v8.0 monochrome theme
-- [ ] **TMP-02**: Time Picker docs page is accurate and up-to-date
+- [x] **TMP-02**: Time Picker docs page is accurate and up-to-date
 - [ ] **TMP-03**: `skill/skills/time-picker` skill file is accurate and up-to-date
 
 ### Tooltip
@@ -175,7 +175,7 @@ Requirements for the Design System Polish milestone. Each component phase maps t
 | DRP-02 | Phase 80 | Complete |
 | DRP-03 | Phase 80 | Complete |
 | TMP-01 | Phase 81 | Complete |
-| TMP-02 | Phase 81 | Pending |
+| TMP-02 | Phase 81 | Complete |
 | TMP-03 | Phase 81 | Pending |
 | TTP-01 | Phase 82 | Pending |
 | TTP-02 | Phase 82 | Pending |

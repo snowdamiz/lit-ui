@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Design System Polish
-status: completed
-last_updated: "2026-02-28T06:52:49.421Z"
-last_activity: 2026-02-28 — Phase 80-03 complete (Date Range Picker SKILL.md — 7 stale CSS tokens replaced with 31 accurate --ui-date-range-* tokens; change event verified; 12-entry Behavior Notes added)
+status: executing
+last_updated: "2026-02-28T06:56:42.679Z"
+last_activity: 2026-02-28 — Phase 81-01 complete (Time Picker dark mode cleanup — 47 var(--color-gray-*) declarations removed from .dark; 6 oklch literal exceptions retained)
 progress:
   total_phases: 77
   completed_phases: 76
   total_plans: 270
-  completed_plans: 268
-  percent: 99
+  completed_plans: 269
+  percent: 100
 ---
 
 # Project State: LitUI
@@ -26,12 +26,12 @@ See: .planning/PROJECT.md (updated 2026-02-27)
 
 **Milestone:** v8.0 Design System Polish — IN PROGRESS
 **Phase:** 81 of 87 (Time Picker Polish) — IN PROGRESS
-**Plan:** 1 of 3 in Phase 81 — COMPLETE
+**Plan:** 2 of 3 in Phase 81 — COMPLETE
 **Status:** In progress
-**Last activity:** 2026-02-28 — Phase 81-01 complete (Time Picker dark mode cleanup — 47 var(--color-gray-*) declarations removed from .dark; 6 oklch literal exceptions retained)
+**Last activity:** 2026-02-28 — Phase 81-02 complete (Time Picker docs CSS vars — 20 stale entries replaced with 67 accurate --ui-time-picker-* tokens matching tailwind.css :root)
 
 **Progress:**
-[██████████] 99%
+[██████████] 100%
 Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 
 ## Performance Metrics
@@ -73,6 +73,7 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 | Phase 80-date-range-picker P02 | 1min | 1 tasks | 1 files |
 | Phase 80-date-range-picker P03 | 1min | 1 tasks | 1 files |
 | Phase 81-time-picker P01 | 1min | 1 tasks | 1 files |
+| Phase 81-time-picker P02 | 2min | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -117,6 +118,7 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 - Phase 80-02: dateRangePickerCSSVars expanded from 16 stale entries (--ui-range-*, --ui-date-picker-*) to 31 accurate --ui-date-range-* tokens matching tailwind.css :root; cssVarsCode example updated to reference correct token names
 - Phase 80-03: SKILL.md CSS tokens replaced 7 stale --ui-range-*/--ui-date-picker-* entries with 31 accurate --ui-date-range-* tokens; event name confirmed as 'change' from source; Behavior Notes section added with 12 entries (range selection, drag, popup positioning, presets, comparison mode, dark mode, form integration, keyboard nav)
 - Phase 81-01: Time Picker dark mode governed by semantic .dark cascade — 47 hardcoded var(--color-gray-*) declarations removed; 6 oklch literal exceptions kept (option-selected-bg, option-selected-text, business-accent, business-bg, business-hover-bg, wheel-highlight-bg)
+- Phase 81-02: timePickerCSSVars expanded from 20 stale entries (--ui-time-picker-primary, --ui-time-picker-radius, --ui-time-picker-border-focus, --ui-time-picker-bg-disabled, --ui-time-picker-border-width, --ui-time-picker-tab-bg-hover) to 67 accurate --ui-time-picker-* tokens matching tailwind.css :root; cssVarsCode example updated to reference correct token names
 
 ### Architecture Notes
 
@@ -147,14 +149,14 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 ## Session Continuity
 
 ### Last Session
-- Phase 81-01: Time Picker dark mode cleanup — 47 var(--color-gray-*) .dark overrides removed; 6 oklch exceptions retained; tailwind.css .dark block now follows semantic cascade pattern
+- Phase 81-02: Time Picker docs CSS vars — timePickerCSSVars replaced 20 stale entries with 67 accurate --ui-time-picker-* tokens; cssVarsCode example updated
 
 ### Next Actions
-Execute Phase 81-02 (Time Picker docs update) and 81-03 (Time Picker SKILL.md).
+Execute Phase 81-03 (Time Picker SKILL.md).
 
 ### Open Questions
 *None.*
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-02-28 — Phase 81-01 complete (Time Picker dark mode cleanup — 47 var(--color-gray-*) declarations removed from .dark; 6 oklch literal exceptions retained)*
+*Last updated: 2026-02-28 — Phase 81-02 complete (Time Picker docs CSS vars — 20 stale entries replaced with 67 accurate --ui-time-picker-* tokens matching tailwind.css :root)*
