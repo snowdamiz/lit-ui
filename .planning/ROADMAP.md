@@ -260,9 +260,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 82-01-PLAN.md — Remove .dark tooltip block (2 gray declarations cascade via semantic tokens) (TTP-01)
-- [ ] 82-02-PLAN.md — Fix tooltipCSSVars defaults (shadow, bg/text double-fallback) to match tailwind.css :root (TTP-02)
-- [ ] 82-03-PLAN.md — Fix SKILL.md CSS token defaults and add Behavior Notes (TTP-03)
+- [x] 82-01-PLAN.md — Remove .dark tooltip block (2 gray declarations cascade via semantic tokens) (TTP-01)
+- [x] 82-02-PLAN.md — Fix tooltipCSSVars defaults (shadow, bg/text double-fallback) to match tailwind.css :root (TTP-02)
+- [x] 82-03-PLAN.md — Fix SKILL.md CSS token defaults and add Behavior Notes (TTP-03)
 
 ### Phase 83: Popover
 **Goal**: Popover component looks and feels like shadcn Popover out of the box, with accurate docs and skill file
@@ -272,12 +272,12 @@ Plans:
   1. Popover renders with correct monochrome default styles (panel, shadow, border) matching the token spec
   2. The Popover docs page reflects the actual component API and examples without stale content
   3. `skill/skills/popover` accurately describes the component so Claude can implement it correctly
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 83-01: Polish Popover CSS defaults to match monochrome theme
-- [ ] 83-02: Update Popover docs page for accuracy
-- [ ] 83-03: Update `skill/skills/popover` skill file
+- [ ] 83-01-PLAN.md — Remove hardcoded popover dark mode tokens from .dark block (POP-01)
+- [ ] 83-02-PLAN.md — Fix popoverCSSVars defaults (shadow, color double-fallback) to match tailwind.css :root (POP-02)
+- [ ] 83-03-PLAN.md — Fix SKILL.md CSS token defaults and add Behavior Notes (POP-03)
 
 ### Phase 84: Toast
 **Goal**: Toast component looks and feels like shadcn Toast/Sonner out of the box, with accurate docs and skill file
