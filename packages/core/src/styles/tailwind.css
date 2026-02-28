@@ -390,13 +390,7 @@
   --ui-data-table-menu-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.2);
 
   /* Switch dark mode */
-  --ui-switch-track-bg: oklch(0.37 0 0);
-  --ui-switch-track-border: oklch(0.45 0 0);
-  --ui-switch-thumb-bg: oklch(0.82 0 0);
-  --ui-switch-track-bg-checked: oklch(0.985 0 0);
-  --ui-switch-track-bg-disabled: oklch(0.27 0 0);
-  --ui-switch-thumb-bg-disabled: oklch(0.45 0 0);
-  --ui-switch-ring: oklch(0.55 0 0);
+  --ui-switch-thumb-bg: oklch(0.82 0 0); /* light-gray thumb on dark track; :root is hardcoded 'white' */
 
   /* Checkbox dark mode */
   --ui-checkbox-check-color: oklch(0.18 0 0); /* near-black checkmark on near-white bg-checked (--color-primary) */
