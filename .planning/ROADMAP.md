@@ -118,8 +118,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 92-01-PLAN.md — echarts-gl type shim + _webglUnavailable protected + scatter-option-builder.ts + scatter-registry.ts
-- [ ] 92-02-PLAN.md — LuiScatterChart component + index.ts public API exports
+- [x] 92-01-PLAN.md — echarts-gl type shim + _webglUnavailable protected + scatter-option-builder.ts + scatter-registry.ts
+- [x] 92-02-PLAN.md — LuiScatterChart component + index.ts public API exports
 
 ### Phase 93: Heatmap Chart
 **Goal**: Developer can render a Cartesian heatmap with configurable category axes, VisualMap color scale, and streaming cell value updates
@@ -129,7 +129,11 @@ Plans:
   1. Developer can pass `x-categories`, `y-categories`, and `data` to a heatmap chart and see a color-coded cell matrix with the VisualMap legend
   2. Developer can configure `color-range` to change the min/max color endpoints of the VisualMap scale
   3. Developer can call `pushData(point)` on a heatmap to update individual cell values and see the color encoding update in place
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 93-01-PLAN.md — heatmap-option-builder.ts (HeatmapCell, HeatmapOptionProps, buildHeatmapOption) + heatmap-registry.ts (registerHeatmapModules)
+- [ ] 93-02-PLAN.md — LuiHeatmapChart component with pushData cell-update override + index.ts public API exports
 
 ### Phase 94: Candlestick Chart
 **Goal**: Developer can render a financial candlestick chart from OHLC data with configurable bull/bear colors, optional volume panel, moving average overlays, and streaming new bars
@@ -174,7 +178,7 @@ Plans:
 | 90. Bar Chart | 2/2 | Complete    | 2026-02-28 | - |
 | 91. Pie + Donut Chart | 2/2 | Complete    | 2026-02-28 | - |
 | 92. Scatter + Bubble Chart with WebGL | 2/2 | Complete    | 2026-02-28 | - |
-| 93. Heatmap Chart | v9.0 | 0/TBD | Not started | - |
+| 93. Heatmap Chart | v9.0 | 0/2 | Not started | - |
 | 94. Candlestick Chart | v9.0 | 0/TBD | Not started | - |
 | 95. Treemap Chart | v9.0 | 0/TBD | Not started | - |
 | 96. CLI Integration + Documentation | v9.0 | 0/TBD | Not started | - |
