@@ -182,12 +182,12 @@ Plans:
   1. Switch renders with correct monochrome default styles (track, thumb, checked state) matching the token spec
   2. The Switch docs page reflects the actual component API and examples without stale content
   3. `skill/skills/switch` accurately describes the component so Claude can implement it correctly
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 77-01: Polish Switch CSS defaults to match monochrome theme
-- [ ] 77-02: Update Switch docs page for accuracy
-- [ ] 77-03: Update `skill/skills/switch` skill file
+- [ ] 77-01-PLAN.md — Prune switch .dark block to thumb-bg exception only (SWT-01)
+- [ ] 77-02-PLAN.md — Expand SwitchPage.tsx CSS vars table from 12 to 24 tokens (SWT-02)
+- [ ] 77-03-PLAN.md — Expand skill/skills/switch/SKILL.md CSS tokens, fix event name, add Behavior Notes (SWT-03)
 
 ### Phase 78: Calendar
 **Goal**: Calendar component looks and feels like shadcn Calendar out of the box, with accurate docs and skill file
