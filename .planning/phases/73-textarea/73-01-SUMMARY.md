@@ -87,6 +87,12 @@ None - no external service configuration required.
 - Textarea CSS tokens clean and correct; ready for Phase 73-02 (textarea CSS docs update) and 73-03 (textarea SKILL.md update)
 - The same double-fallback cascade pattern applies to all remaining component phases
 
+## Self-Check: PASSED
+
+- FOUND: `.planning/phases/73-textarea/73-01-SUMMARY.md`
+- FOUND: task commit `5b6c6c9` (feat: remove hardcoded textarea tokens from .dark block)
+- FOUND: docs commit `951b499` (docs: complete textarea CSS token dark mode cleanup plan)
+
 ---
 *Phase: 73-textarea*
 *Completed: 2026-02-27*
