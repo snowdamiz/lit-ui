@@ -111,7 +111,7 @@ Requirements for the Design System Polish milestone. Each component phase maps t
 
 ### Tabs
 
-- [ ] **TAB-01**: Tabs default styles match the v8.0 monochrome theme
+- [x] **TAB-01**: Tabs default styles match the v8.0 monochrome theme
 - [x] **TAB-02**: Tabs docs page is accurate and up-to-date
 - [x] **TAB-03**: `skill/skills/tabs` skill file is accurate and up-to-date
 
@@ -189,7 +189,7 @@ Requirements for the Design System Polish milestone. Each component phase maps t
 | ACC-01 | Phase 85 | Complete |
 | ACC-02 | Phase 85 | Complete |
 | ACC-03 | Phase 85 | Complete |
-| TAB-01 | Phase 86 | Pending |
+| TAB-01 | Phase 86 | Complete |
 | TAB-02 | Phase 86 | Complete |
 | TAB-03 | Phase 86 | Complete |
 | DAT-01 | Phase 87 | Pending |
