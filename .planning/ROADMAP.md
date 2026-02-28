@@ -64,10 +64,10 @@ Phases 1-68 are archived. See:
   1. A token reference doc exists listing every `--ui-*` default value for the monochrome shadcn theme (spacing, radius, color scale, shadows, transitions)
   2. The default values are concrete CSS custom property values (not abstract descriptions) matching neutral-gray shadcn aesthetics
   3. Any component phase can be executed against this spec without ambiguity about what "matching the theme" means
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 69-01: Define unified monochrome design token baseline and write token reference document
+- [ ] 69-01-PLAN.md — Audit token defaults + write THEME-SPEC.md token reference document
 
 ### Phase 70: Button
 **Goal**: Button component looks and feels like shadcn Button out of the box, with accurate docs and skill file
