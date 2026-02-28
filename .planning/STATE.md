@@ -25,10 +25,10 @@ See: .planning/PROJECT.md (updated 2026-02-27)
 ## Current Position
 
 **Milestone:** v8.0 Design System Polish — IN PROGRESS
-**Phase:** 71 of 87 (Dialog Polish) — Plan 2 of 3 COMPLETE
-**Plan:** 2 of 3 in Phase 71 — COMPLETE
+**Phase:** 71 of 87 (Dialog Polish) — COMPLETE
+**Plan:** 3 of 3 in Phase 71 — COMPLETE
 **Status:** In progress
-**Last activity:** 2026-02-28 — Phase 71-02 complete (updated Dialog docs CSS vars from --lui-dialog-* to --ui-dialog-*, expanded from 3 to 12 tokens)
+**Last activity:** 2026-02-28 — Phase 71-03 complete (dialog SKILL.md CSS token prefix fixed --lui-dialog-* → --ui-dialog-*, expanded to 12 tokens, Behavior Notes added)
 
 **Progress:**
 [██████████] 100%
@@ -47,6 +47,7 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 | Phase 70-button P01 | 1min | 1 tasks | 1 files |
 | Phase 71-dialog P01 | 1min | 1 tasks | 1 files |
 | Phase 71-dialog P02 | 2min | 1 tasks | 1 files |
+| Phase 71-dialog P03 | 1min | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -62,6 +63,7 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 - Phase 70-03: CSS token prefix fix --lui-button-* → --ui-button-* in skill file; Behavior Notes section added for accessibility semantics
 - Phase 71-01: Dialog dark mode governed by semantic .dark overrides — hardcoded .dark --ui-dialog-* declarations removed; double-fallback cascade in :root is sufficient (same pattern as Phase 70-01)
 - Phase 71-02: Dialog CSS docs updated — old --lui-dialog-* prefix (3 tokens) replaced with --ui-dialog-* prefix (12 tokens) matching tailwind.css :root
+- Phase 71-03: Dialog SKILL.md CSS token prefix fixed --lui-dialog-* → --ui-dialog-*; expanded from 3 to 12 tokens; Behavior Notes section added (same pattern as Phase 70-03)
 
 ### Architecture Notes
 
@@ -95,13 +97,14 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 - Phase 71-01: Removed 3 hardcoded --ui-dialog-* oklch overrides from .dark block in tailwind.css
 - Phase 71-01: Dialog dark mode now inherits correctly via semantic .dark → --color-card → var(--color-card, var(--ui-color-card)) cascade
 - Phase 71-02: Updated DialogPage.tsx CSS vars from --lui-dialog-* to --ui-dialog-*, expanded from 3 to 12 tokens
+- Phase 71-03: Rewrote dialog SKILL.md with correct --ui-dialog-* tokens (12 entries) and Behavior Notes section
 
 ### Next Actions
-Execute Phase 71 plan 03 (dialog skill) using `/gsd:execute-phase 71-dialog`.
+Execute next phase after Phase 71-dialog (all 3 plans complete).
 
 ### Open Questions
 *None.*
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-02-28 — Phase 71-02 complete*
+*Last updated: 2026-02-28 — Phase 71-03 complete*
