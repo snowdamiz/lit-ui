@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Design System Polish
 status: completed
-last_updated: "2026-02-28T17:40:34.274Z"
+last_updated: "2026-02-28T17:48:07.230Z"
 last_activity: 2026-02-28 — Phase 87-03 complete (Data-table SKILL.md CSS tokens expanded from 18 stale entries to 35 accurate entries; selected-bg corrected to oklch(0.97 0.01 250); 12-entry Behavior Notes section added)
 progress:
   total_phases: 83
@@ -17,91 +17,39 @@ progress:
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-02-27)
+See: .planning/PROJECT.md (updated 2026-02-28)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** Phase 87 — Data Table Polish
+**Current focus:** Planning next milestone
 
 ## Current Position
 
-**Milestone:** v8.0 Design System Polish — IN PROGRESS
-**Phase:** 87 of 87 (Data Table Polish) — COMPLETE
-**Plan:** 3 of 3 in Phase 87 — COMPLETE
-**Status:** Milestone complete
-**Last activity:** 2026-02-28 — Phase 87-03 complete (Data-table SKILL.md CSS tokens expanded from 18 stale entries to 35 accurate entries; selected-bg corrected to oklch(0.97 0.01 250); 12-entry Behavior Notes section added)
+**Milestone:** v8.0 Design System Polish — COMPLETE (shipped 2026-02-28)
+**Status:** Milestone archived. Run `/gsd:new-milestone` to start next.
+**Last activity:** 2026-02-28 — v8.0 milestone archived
 
 **Progress:**
-[██████████] 100%
-Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
+[██████████] 100% — 19 phases, 55 plans, 57/57 requirements
 
 ## Performance Metrics
 
 | Metric | Value |
 |--------|-------|
-| Plans completed | 1 |
-| Requirements satisfied | 3/57 (THEME-01, THEME-02, THEME-03) |
-| Phases completed | 1/19 |
-| Commits | 2 |
-| Phase 70-button P03 | 1 | 1 tasks | 1 files |
-| Phase 70-button P02 | 2 | 1 tasks | 1 files |
-| Phase 70-button P01 | 1min | 1 tasks | 1 files |
-| Phase 71-dialog P01 | 1min | 1 tasks | 1 files |
-| Phase 71-dialog P02 | 2min | 1 tasks | 1 files |
-| Phase 71-dialog P03 | 1min | 1 tasks | 1 files |
-| Phase 72-input P02 | 1min | 1 tasks | 1 files |
-| Phase 72-input P03 | 1min | 1 tasks | 1 files |
-| Phase 72-input P01 | 1min | 1 tasks | 1 files |
-| Phase 73-textarea P01 | 1min | 1 tasks | 1 files |
-| Phase 73-textarea P02 | 1min | 1 tasks | 1 files |
-| Phase 73-textarea P03 | 1min | 1 tasks | 1 files |
-| Phase 74-select P01 | 1min | 1 tasks | 1 files |
-| Phase 74-select P02 | 1min | 1 tasks | 1 files |
-| Phase 75-checkbox P01 | 1min | 1 tasks | 1 files |
-| Phase 75-checkbox P02 | 1min | 1 tasks | 1 files |
-| Phase 75-checkbox P03 | 1min | 1 tasks | 1 files |
-| Phase 76-radio P01 | 1min | 1 tasks | 1 files |
-| Phase 77-switch P01 | 1min | 1 tasks | 1 files |
-| Phase 77-switch P03 | 1min | 1 tasks | 1 files |
-| Phase 77-switch P02 | 1min | 1 tasks | 1 files |
-| Phase 78-calendar P01 | 1min | 1 tasks | 1 files |
-| Phase 78-calendar P02 | 1min | 1 tasks | 1 files |
-| Phase 78-calendar P03 | 1min | 1 tasks | 1 files |
-| Phase 79-date-picker P01 | 1min | 1 tasks | 1 files |
-| Phase 79-date-picker P02 | 1min | 1 tasks | 1 files |
-| Phase 79-date-picker P03 | 1min | 1 tasks | 1 files |
-| Phase 80-date-range-picker P01 | 1min | 1 tasks | 1 files |
-| Phase 80-date-range-picker P02 | 1min | 1 tasks | 1 files |
-| Phase 80-date-range-picker P03 | 1min | 1 tasks | 1 files |
-| Phase 81-time-picker P01 | 1min | 1 tasks | 1 files |
-| Phase 81-time-picker P02 | 2min | 1 tasks | 1 files |
-| Phase 81-time-picker P03 | 2min | 1 tasks | 1 files |
-| Phase 82-tooltip P01 | 1min | 1 tasks | 1 files |
-| Phase 82-tooltip P02 | 1min | 1 tasks | 1 files |
-| Phase 82-tooltip P03 | 1min | 1 tasks | 1 files |
-| Phase 83-popover P01 | 1min | 1 tasks | 1 files |
-| Phase 83-popover P02 | 1min | 1 tasks | 1 files |
-| Phase 83-popover P03 | 1min | 1 tasks | 1 files |
-| Phase 84-toast P01 | 1min | 1 tasks | 1 files |
-| Phase 84-toast P02 | 1min | 1 tasks | 1 files |
-| Phase 84-toast P03 | 1min | 1 tasks | 1 files |
-| Phase 85-accordion P02 | 1min | 1 tasks | 1 files |
-| Phase 85-accordion P01 | 26s | 1 tasks | 1 files |
-| Phase 85-accordion P03 | 1min | 1 tasks | 1 files |
-| Phase 86-tabs P01 | 1min | 1 tasks | 1 files |
-| Phase 86-tabs P02 | 1min | 1 tasks | 1 files |
-| Phase 86-tabs P03 | 1min | 1 tasks | 1 files |
-| Phase 87-data-table P01 | 2min | 1 tasks | 1 files |
-| Phase 87-data-table P03 | 1min | 1 tasks | 1 files |
-| Phase 87-data-table P02 | 1min | 1 tasks | 1 files |
+| Plans completed | 55/55 (v8.0) |
+| Requirements satisfied | 57/57 |
+| Phases completed | 19/19 |
+| Commits | 179 |
+| Files modified | 509 |
+| Lines | +36,559 / -16,857 |
 
 ## Accumulated Context
 
 ### Key Decisions
-*Carried forward from v7.0. Full log in PROJECT.md.*
+*Full log in PROJECT.md.*
 
-- v8.0: Polish-only milestone — no new components, no breaking CSS API changes
-- v8.0: Preserve existing `--ui-*` token names; only update default values
-- v8.0: Wave structure per phase — style (01), docs (02), skill (03)
+- v8.0: Semantic dark mode cascade — hardcoded .dark token blocks removed; only oklch literals and white values retained
+- v8.0: Double-fallback var() form standard for all CSS token docs/skill tables
+- v8.0: THEME-SPEC.md as Phase 69 deliverable — authoritative token reference for all 18 polish phases
 - Phase 69-01: tailwind.css :root block was already aligned to shadcn monochrome spec — no value changes required
 - Phase 70-01: Button dark mode governed by semantic .dark overrides — hardcoded .dark --ui-button-* declarations removed; double-fallback cascade in :root is sufficient
 - Phase 70-02: Documented 12 key --ui-button-* tokens in ButtonPage.tsx docs rather than all 20+ — keeps table focused on high-value user overrides
@@ -136,33 +84,10 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 - Phase 80-01: Date Range Picker dark mode governed by semantic .dark cascade — 23 hardcoded .dark --ui-date-range-* declarations removed; 2 compare-* oklch literal exceptions (highlight-bg oklch(0.30) and preview-bg oklch(0.22)) kept in .dark
 - Phase 80-02: dateRangePickerCSSVars expanded from 16 stale entries (--ui-range-*, --ui-date-picker-*) to 31 accurate --ui-date-range-* tokens matching tailwind.css :root; cssVarsCode example updated to reference correct token names
 - Phase 80-03: SKILL.md CSS tokens replaced 7 stale --ui-range-*/--ui-date-picker-* entries with 31 accurate --ui-date-range-* tokens; event name confirmed as 'change' from source; Behavior Notes section added with 12 entries (range selection, drag, popup positioning, presets, comparison mode, dark mode, form integration, keyboard nav)
-- Phase 81-01: Time Picker dark mode governed by semantic .dark cascade — 47 hardcoded var(--color-gray-*) declarations removed; 6 oklch literal exceptions kept (option-selected-bg, option-selected-text, business-accent, business-bg, business-hover-bg, wheel-highlight-bg)
-- Phase 81-02: timePickerCSSVars expanded from 20 stale entries (--ui-time-picker-primary, --ui-time-picker-radius, --ui-time-picker-border-focus, --ui-time-picker-bg-disabled, --ui-time-picker-border-width, --ui-time-picker-tab-bg-hover) to 67 accurate --ui-time-picker-* tokens matching tailwind.css :root; cssVarsCode example updated to reference correct token names
-- Phase 81-03: Time Picker SKILL.md CSS tokens expanded from 20 stale entries to 67 accurate --ui-time-picker-* tokens; stale names (--ui-time-picker-primary, --ui-time-picker-radius, --ui-time-picker-border-focus, --ui-time-picker-bg-disabled, --ui-time-picker-border-width, --ui-time-picker-tab-bg-hover) removed; event name confirmed as 'change' with detail { value: string, timeValue: TimeValue | null }; Behavior Notes section added with 12 entries
-- Phase 82-01: Tooltip dark mode governed by semantic .dark token cascade — 2 hardcoded .dark --ui-tooltip-* declarations (var(--color-gray-50) and var(--color-gray-950)) removed; double-fallback cascade in :root is sufficient (same pattern as Phases 70-01 through 81-01)
-- Phase 82-02: tooltipCSSVars bg/text defaults corrected to double-fallback var() form (var(--color-foreground, var(--ui-color-foreground)) and var(--color-background, white)); shadow corrected from stale single-layer '0 4px 6px -1px' to two-layer '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)' matching tailwind.css :root; cssVarsCode example updated to semantic token references
-- Phase 82-03: Tooltip SKILL.md CSS token defaults corrected — --ui-tooltip-bg and --ui-tooltip-text updated to double-fallback var() form; --ui-tooltip-shadow corrected from stale single-layer to two-layer value matching tailwind.css :root; Behavior Notes section added with 12 entries
-- Phase 83-01: Popover dark mode governed by semantic .dark token cascade — 3 hardcoded .dark --ui-popover-* declarations removed; double-fallback cascade in :root is sufficient (same pattern as Phases 70-01 through 82-01)
-- Phase 83-02: popoverCSSVars color token defaults corrected to double-fallback var() form (bg, text, border); shadow corrected from stale single-layer 0.1 opacity to two-layer 0.08 opacity matching tailwind.css :root; cssVarsCode example replaced hex literals (white, #1e293b, #e2e8f0) with semantic token references
-- Phase 83-03: Popover SKILL.md CSS token defaults corrected — bg/text/border use double-fallback var() form; shadow corrected to two-layer 0.08 opacity value; z-index corrected from stale 50 to actual tailwind.css :root value of 45; Behavior Notes section added with 13 entries (trigger model, light dismiss, Escape, Floating UI, arrow, focus management, modal mode, controlled mode, nested popovers, match-trigger-width, dark mode, SSR safety, cleanup)
-- Phase 84-01: Toast base dark mode governed by semantic .dark cascade — 3 hardcoded .dark --ui-toast-bg/text/border declarations removed; double-fallback cascade in :root is sufficient (same pattern as Phases 70-01 through 83-01); 12 variant oklch dark mode tokens kept in .dark (lightness 0.25 cannot cascade from :root lightness 0.95)
-- Phase 84-02: Toast docs color tokens corrected to double-fallback var() form (bg, text, border); shadow corrected from single-layer to two-layer matching tailwind.css :root; z-index corrected from stale 50 to 55; cssVarsCode example replaced hex literals (#f0fdf4 etc.) with oklch/var() semantic token references
-- Phase 85-01: Accordion dark mode governed by semantic .dark cascade — 4 hardcoded .dark --ui-accordion-* declarations removed (header-text, header-hover-bg, border, panel-text); double-fallback cascade in :root is sufficient (same pattern as Phases 70-01 through 84-01); no .dark exceptions required (unlike checkbox check-color: white or switch thumb-bg: white)
-- Phase 84-03: Toast SKILL.md CSS token defaults corrected — bg/text/border use double-fallback var() form; shadow corrected to two-layer value; z-index corrected to 55; --ui-toast-padding row added (21 total tokens); all 12 variant oklch tokens filled with actual :root values; Behavior Notes section added with 13 entries
-- Phase 85-02: accordionCSSVars expanded from 13 to 14 entries — added missing --ui-accordion-gap token (default: 0); all 5 color token defaults corrected from single var() to double-fallback var(--color-X, var(--ui-color-X)) form matching tailwind.css :root; cssVarsCode example updated from rgba(0,0,0,0.05) to var(--color-accent, var(--ui-color-accent))
-- Phase 85-03: Accordion SKILL.md CSS token defaults corrected — 13→14 entries; --ui-accordion-gap added with default 0; 5 color token defaults updated to double-fallback var() form; Behavior Notes section with 13 entries (state management, controlled/uncontrolled, single/multi-expand, collapsible, lazy rendering, CSS Grid animation, reduced motion, keyboard nav, data-state, heading level, disabled propagation)
-- Phase 86-01: Tabs dark mode governed by semantic .dark overrides — 7 hardcoded .dark --ui-tabs-* declarations removed; double-fallback cascade in :root is sufficient (same pattern as Phases 70-01 through 85-01); no .dark exceptions required (unlike checkbox check-color: white or switch thumb-bg: white)
-- Phase 86-03: Tabs SKILL.md CSS token color defaults corrected to double-fallback var() form; --ui-tabs-tab-active-bg uses literal white fallback (matching tailwind.css :root); Behavior Notes section added with 13 entries (state management, controlled/uncontrolled mode, orientation, activation mode, roving tabindex, animated indicator, overflow scroll, lazy panels, data-state, keyboard nav, panel tabindex, SSR compatibility)
-- Phase 87-01: Data Table dark mode partially governed by semantic .dark cascade — 10 hardcoded .dark --ui-data-table-* declarations (header-bg, row-bg, row-hover-bg, border-color, text-color, header-text, skeleton-base, skeleton-highlight, menu-bg, badge-default-text) removed; 19 exception tokens retained (oklch literals for selected-bg/hover-bg, value inversions for header-hover-bg/overlay-bg/editable-hover-bg/badge-default-bg, stronger opacity for sticky-shadow/menu-shadow, all 10 badge color variants, editing-bg with dark base)
-- Phase 87-02: dataTableCSSVars expanded from 18 stale entries to 35 accurate entries — all color defaults use double-fallback var() form or exact oklch/rgba matching tailwind.css :root; selected-bg uses oklch(0.97 0.01 250) not rgba(59,130,246,0.1); banner-bg uses color-mix() form matching component default; 17 previously missing tokens (sticky-shadow, menu-bg, menu-shadow, editable-hover-bg, editing-bg, 12 badge tokens) added
-- Phase 87-03: Data-table SKILL.md CSS token table expanded from 18 stale entries to 35 accurate entries matching tailwind.css :root; selected-bg corrected from rgba(59,130,246,0.1) to oklch(0.97 0.01 250); 17 new tokens added (sticky-shadow, menu-bg, menu-shadow, editable-hover-bg, editing-bg, badge-default-bg/text, badge-green/blue/red/yellow/purple bg/text); Behavior Notes section with 12 entries added
-
 ### Architecture Notes
 
-- Phase 69 produces the token reference spec all other phases use
-- THEME-SPEC.md is at `.planning/phases/69-theme-foundation/THEME-SPEC.md`
-- Phases 70-87 depend on Phase 69; within that group, 79 depends on 78, 80 depends on 79
-- All other component phases (70-78, 81-87) are independent of each other
+- THEME-SPEC.md at `.planning/phases/69-theme-foundation/THEME-SPEC.md` — authoritative v8.0 token reference
+- All v8.0 phase detail archived to `.planning/milestones/v8.0-ROADMAP.md`
 
 ### TODOs
 *None.*
@@ -186,10 +111,10 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 ## Session Continuity
 
 ### Last Session
-- Phase 87-03: Data-table SKILL.md CSS tokens expanded from 18 stale entries to 35 accurate entries; selected-bg corrected to oklch(0.97 0.01 250); Behavior Notes section with 12 entries added
+- v8.0 milestone complete: 19 phases (69-87), 55 plans, 57 requirements — all archived
 
 ### Next Actions
-Phase 87 complete — all 3 plans executed. Milestone v8.0 Design System Polish complete.
+Run `/gsd:new-milestone` to start the next milestone.
 
 ### Open Questions
 *None.*

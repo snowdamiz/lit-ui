@@ -257,3 +257,30 @@
 **What's next:** v2.0 NPM + SSR - Add NPM package mode and SSR compatibility with Declarative Shadow DOM
 
 ---
+
+## v8.0 Design System Polish (Shipped: 2026-02-28)
+
+**Delivered:** Polished all 18 component default styles to a unified monochrome shadcn-quality theme — removing hardcoded dark mode token overrides across the board and replacing them with a semantic cascade, while expanding CSS token documentation and skill files to be complete and accurate.
+
+**Phases completed:** 69-87 (19 phases, 55 plans)
+
+**Key accomplishments:**
+
+- Authored THEME-SPEC.md as authoritative v8.0 token reference — audited all `--ui-*` defaults in tailwind.css and documented the monochrome shadcn baseline so all 18 component phases had a concrete spec to match against
+- Removed hardcoded `.dark { --ui-*: ... }` overrides from all 18 components — dark mode now cascades via semantic tokens (`--color-background`, `--color-foreground`); only true exceptions (oklch literals, white values that can't cascade) retained per-component
+- Expanded CSS token documentation across all 18 component docs pages — e.g. Input 7→16 entries, Select 7→27, Switch 12→26, Time Picker 20→67, Data Table 18→35; all defaults now use double-fallback `var()` form matching `tailwind.css :root`
+- Updated all 18 component skill files with complete CSS token tables and new Behavior Notes sections (8-13 entries each) covering state management, keyboard nav, dark mode, accessibility, and framework integration patterns
+- Corrected stale token names across skill files — prefixes fixed (`--lui-*` → `--ui-*`), obsolete tokens removed, z-index values corrected (popover 45, toast 55), shadow values updated to two-layer form matching tailwind.css
+
+**Stats:**
+
+- 509 files modified
+- +36,559 / -16,857 lines
+- 19 phases, 55 plans
+- 23 days (2026-02-05 → 2026-02-28)
+- 179 commits
+
+**Git range:** `docs(69-theme-foundation)` → `docs(phase-87)`
+
+---
+

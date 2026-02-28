@@ -4,15 +4,15 @@
 
 A framework-agnostic component library built on Lit.js, following ShadCN's philosophy of beautiful defaults and CLI-driven installation. Components work natively in React, Vue, Svelte, or plain HTML because they're standard web components underneath.
 
-Now with **dual distribution** (copy-source or npm), **SSR support** via Declarative Shadow DOM, **build-time theme customization** via visual configurator, **complete form toolkit** (Input, Textarea, Select, Checkbox, Radio, Switch with group containers), **date/time components** (Calendar, Date Picker, Date Range Picker, Time Picker), **overlay/feedback primitives** (Toast, Tooltip, Popover with shared Floating UI infrastructure), **layout components** (Accordion, Tabs), and **data table** (virtual scrolling, sorting, filtering, inline editing, selection, bulk actions, column customization, CSV export, expandable rows).
+Now with **dual distribution** (copy-source or npm), **SSR support** via Declarative Shadow DOM, **build-time theme customization** via visual configurator, **complete form toolkit** (Input, Textarea, Select, Checkbox, Radio, Switch with group containers), **date/time components** (Calendar, Date Picker, Date Range Picker, Time Picker), **overlay/feedback primitives** (Toast, Tooltip, Popover with shared Floating UI infrastructure), **layout components** (Accordion, Tabs), **data table** (virtual scrolling, sorting, filtering, inline editing, selection, bulk actions, column customization, CSV export, expandable rows), and a **unified monochrome design system** (all 18 components polished to a consistent shadcn-quality theme with semantic dark mode cascade, complete CSS token documentation, and accurate per-component skill files).
 
 ## Core Value
 
 Developers can use polished, accessible UI components in any framework without lock-in — one component library that works everywhere.
 
-## Current State (v7.0)
+## Current State (v8.0)
 
-- ~91,000+ lines TypeScript/CSS across packages and apps
+- ~110,000+ lines TypeScript/CSS across packages and apps (v7.0 was ~91,000; v8.0 added +36,559/-16,857)
 - Tech stack: Lit.js 3, Tailwind CSS v4, Vite, TypeScript, pnpm workspaces, colorjs.io, Floating UI, @tanstack/lit-virtual, @tanstack/lit-table, date-fns, composed-offset-position
 - 21 publishable packages: @lit-ui/core, @lit-ui/button, @lit-ui/dialog, @lit-ui/input, @lit-ui/textarea, @lit-ui/select, @lit-ui/checkbox, @lit-ui/radio, @lit-ui/switch, @lit-ui/calendar, @lit-ui/date-picker, @lit-ui/date-range-picker, @lit-ui/time-picker, @lit-ui/tooltip, @lit-ui/popover, @lit-ui/toast, @lit-ui/accordion, @lit-ui/tabs, @lit-ui/data-table, @lit-ui/ssr, lit-ui (CLI)
 - Framework examples: Next.js App Router, Astro, Express/Node.js
@@ -93,14 +93,14 @@ Developers can use polished, accessible UI components in any framework without l
 - ✓ @lit-ui/data-table package with SSR support, peer dependencies, JSX declarations, 18 CSS custom properties — v7.0
 - ✓ CLI integration with copy-source starter template, registry entry, npm mapping — v7.0
 - ✓ Documentation with 11 interactive demos, API reference (44 properties, 13 events), accessibility guide — v7.0
+- ✓ All 18 components share a unified monochrome design token baseline (THEME-SPEC.md) — v8.0
+- ✓ All 18 component default styles polished to shadcn aesthetic via semantic dark mode cascade — v8.0
+- ✓ All 18 component docs pages expanded with complete CSS token tables (double-fallback form) — v8.0
+- ✓ All 18 component skill files updated with complete CSS tokens and Behavior Notes sections — v8.0
 
 ### Active
 
-<!-- v8.0 Design System Polish -->
-- [ ] All 18 components share a unified monochrome design token baseline
-- [ ] All 18 component default styles polished to match shadcn aesthetic
-- [ ] All 18 component docs pages accurate and up-to-date
-- [ ] All 18 component skill files accurate and up-to-date
+*(None — all planned requirements shipped through v8.0. Next milestone to define new active requirements.)*
 
 ### Deferred
 
@@ -224,6 +224,11 @@ Developers can use polished, accessible UI components in any framework without l
 | Native confirmation dialog for bulk | Avoids lui-dialog dependency overhead | ✓ Good — matches project pattern |
 | Column preferences with version field | Enables future migration of stored preferences | ✓ Good — forward-compatible |
 | Utility column _ prefix exclusion | All columns with _ prefix excluded from CSV export | ✓ Good — clean export output |
+| v8.0 polish-only milestone (no new components) | Unify design without scope creep | ✓ Good — focused, shipped in 23 days |
+| Semantic dark mode cascade over hardcoded .dark tokens | Hardcoded tokens fight the semantic token system | ✓ Good — dark mode now correct everywhere |
+| Double-fallback var() form in docs/skill tables | Single var() breaks if --color-* not imported | ✓ Good — tables work in both contexts |
+| THEME-SPEC.md as authoritative token reference | Phases needed concrete spec, not abstract descriptions | ✓ Good — all 18 phases executed consistently |
+| Retain oklch literals and white values as .dark exceptions | These cannot cascade from :root through semantic tokens | ✓ Good — correct per-exception approach |
 
 ## Shipped Milestones
 
@@ -238,16 +243,11 @@ Developers can use polished, accessible UI components in any framework without l
 - **v5.0 Overlay & Feedback Components** (2026-02-02): Toast, Tooltip, Popover with shared Floating UI infrastructure
 - **v6.0 Layout Components** (2026-02-02): Accordion, Tabs with full accessibility, animations, SSR, CLI, documentation
 - **v7.0 Data Table** (2026-02-05): Full-featured data table with virtual scrolling, sorting, filtering, inline editing, selection, bulk actions, column customization, CSV export, expandable rows
+- **v8.0 Design System Polish** (2026-02-28): Unified monochrome design system — removed hardcoded dark mode overrides from all 18 components, expanded CSS token docs (avg 3x more tokens per component), rewrote all 18 skill files with Behavior Notes sections
 
-## Current Milestone: v8.0 Design System Polish
+## Current Milestone
 
-**Goal:** Polish all 18 component default styles to a unified monochrome shadcn-quality theme, and ensure all docs pages and skill files are accurate.
-
-**Target features:**
-- Unified design token system in `@lit-ui/core` (THEME-01 through THEME-03)
-- Per-component style polish matching the new theme (BTN through DAT -01)
-- Per-component docs accuracy pass (BTN through DAT -02)
-- Per-component skill file accuracy pass (BTN through DAT -03)
+No active milestone. Run `/gsd:new-milestone` to start the next.
 
 ---
-*Last updated: 2026-02-27 after v8.0 milestone start*
+*Last updated: 2026-02-28 after v8.0 milestone*
