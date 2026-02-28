@@ -389,22 +389,6 @@
   --ui-data-table-editing-bg: color-mix(in oklch, var(--color-primary, var(--ui-color-primary)) 8%, var(--color-gray-950));
   --ui-data-table-menu-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.2);
 
-  /* Button dark mode */
-  --ui-button-primary-bg: oklch(0.985 0 0);
-  --ui-button-primary-text: oklch(0.18 0 0);
-  --ui-button-secondary-bg: oklch(0.27 0 0);
-  --ui-button-secondary-text: oklch(0.96 0 0);
-  --ui-button-secondary-hover-bg: oklch(0.37 0 0);
-  --ui-button-outline-bg: transparent;
-  --ui-button-outline-text: oklch(0.985 0 0);
-  --ui-button-outline-border: oklch(0.37 0 0);
-  --ui-button-outline-hover-bg: oklch(0.27 0 0);
-  --ui-button-ghost-bg: transparent;
-  --ui-button-ghost-text: oklch(0.985 0 0);
-  --ui-button-ghost-hover-bg: oklch(0.27 0 0);
-  --ui-button-destructive-bg: oklch(0.55 0.22 25);
-  --ui-button-destructive-text: white;
-
   /* Dialog dark mode */
   --ui-dialog-bg: oklch(0.18 0 0);
   --ui-dialog-text: oklch(0.985 0 0);
