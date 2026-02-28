@@ -26,9 +26,9 @@ See: .planning/PROJECT.md (updated 2026-02-27)
 
 **Milestone:** v8.0 Design System Polish — IN PROGRESS
 **Phase:** 77 of 87 (Switch Polish) — IN PROGRESS
-**Plan:** 2 of 3 in Phase 77 — COMPLETE
+**Plan:** 3 of 3 in Phase 77 — COMPLETE
 **Status:** Milestone in progress
-**Last activity:** 2026-02-27 — Phase 77-02 complete (Switch CSS token docs expanded from 12 to 26 entries; double-fallback var() form for all color defaults)
+**Last activity:** 2026-02-28 — Phase 77-03 complete (Switch SKILL.md — CSS tokens expanded 12→26, event corrected to ui-change with value: string | null, Behavior Notes added with 10 entries)
 
 **Progress:**
 [██████████] 100%
@@ -95,6 +95,7 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 
 - Phase 77-01: Switch dark mode governed by semantic .dark overrides — 6 hardcoded .dark --ui-switch-* declarations removed; --ui-switch-thumb-bg kept as dark mode exception (white :root value cannot cascade to dark)
 - Phase 77-02: Switch docs CSS token table expanded from 12 to 26 entries — all tokens from tailwind.css :root switch block documented with double-fallback var() form for color defaults; thumb-bg remains 'white' (hardcoded in tailwind.css, same exception as dark mode)
+- Phase 77-03: Switch SKILL.md CSS tokens expanded from 12 to 26 entries (all 24 tailwind.css :root switch tokens); event name corrected to ui-change with value: string | null detail; Behavior Notes section added with 10 entries
 
 ### Architecture Notes
 
@@ -125,14 +126,14 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 ## Session Continuity
 
 ### Last Session
-- Phase 77-02: Switch CSS token docs expanded — switchCSSVars in SwitchPage.tsx expanded from 12 to 26 entries; all tailwind.css :root switch tokens documented with double-fallback var() defaults
+- Phase 77-03: Switch SKILL.md polished — CSS tokens expanded from 12 to 26 entries (all 24 tailwind.css :root tokens), event corrected to ui-change with value: string | null, Behavior Notes added with 10 entries
 
 ### Next Actions
-Execute Phase 77-03: Switch SKILL.md expansion.
+Execute Phase 78 plans.
 
 ### Open Questions
 *None.*
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-02-27 — Phase 77-01 complete (Switch dark mode — 6 hardcoded oklch .dark overrides removed; --ui-switch-thumb-bg retained as white :root exception)*
+*Last updated: 2026-02-28 — Phase 77-03 complete (Switch SKILL.md — CSS tokens expanded 12→26, event corrected to ui-change, Behavior Notes added with 10 entries)*
