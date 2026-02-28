@@ -2,8 +2,8 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Charts System
-status: unknown
-last_updated: "2026-02-28T21:19:15.627Z"
+status: in_progress
+last_updated: "2026-02-28T21:50:00.000Z"
 progress:
   total_phases: 67
   completed_phases: 67
@@ -18,16 +18,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-02-28)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** Phase 91 — Pie/Donut Chart (IN PROGRESS — 91-01 complete)
+**Current focus:** Phase 91 — Pie/Donut Chart (COMPLETE — 91-01 and 91-02 done)
 
 ## Current Position
 
-Phase: 91 of 96 (Pie/Donut Chart — Plan 01 complete)
-Plan: 1 of 2 in current phase (91-01 complete, 91-02 pending)
-Status: 91-01 complete — PIE-01 and PIE-02 foundational layer established
-Last activity: 2026-02-28 — Completed 91-01: pie-option-builder.ts + pie-registry.ts
+Phase: 91 of 96 (Pie/Donut Chart — complete)
+Plan: 2 of 2 in current phase (91-01 complete, 91-02 complete)
+Status: Phase 91 complete — LuiPieChart + full public API (LuiPieChart, PieSlice, PieOptionProps)
+Last activity: 2026-02-28 — Completed 91-02: LuiPieChart component + index.ts Phase 91 exports
 
-Progress: [███░░░░░░░] 27% (v9.0 milestone, 9 phases, 4.5 of 9 complete)
+Progress: [███░░░░░░░] 27% (v9.0 milestone, 9 phases, 5 of 9 complete)
 
 ## Accumulated Context
 
@@ -65,6 +65,9 @@ Progress: [███░░░░░░░] 27% (v9.0 milestone, 9 phases, 4.5 of
 - 91-01: isDonut guard handles four falsy cases: 0, '0', '0%', '' — '0' is truthy in JS but semantically means no inner radius
 - 91-01: centerLabel title injected only when isDonut && centerLabel truthy — empty title key causes ECharts layout interference
 - 91-01: PieChart module covers both pie and donut — donut is pie with innerRadius, no separate DonutChart ECharts module
+- 91-02: No _streamingMode override in LuiPieChart — inherits 'buffer' default from BaseChartElement (STRM-04)
+- 91-02: centerLabel passed as undefined when empty string — prevents ECharts layout interference from empty title key
+- 91-02: innerRadius declared @property without type converter — HTML attribute arrives as string; buildPieOption handles string '0' as pie mode
 
 ### Architecture Notes
 
@@ -74,6 +77,7 @@ Progress: [███░░░░░░░] 27% (v9.0 milestone, 9 phases, 4.5 of
 - packages/charts/ is now a fully compilable workspace package ready for BaseChartElement implementation
 - BaseChartElement (88-03) is complete — all 5 critical pitfalls and 11 requirements implemented; Phases 89-95 extend without re-solving cross-cutting concerns
 - Phase 90 complete: LuiBarChart, LuiLineChart, LuiAreaChart all exported from @lit-ui/charts public API
+- Phase 91 complete: LuiPieChart (lui-pie-chart) exported from @lit-ui/charts with PieSlice + PieOptionProps types
 
 ### TODOs
 *None.*
@@ -107,21 +111,22 @@ Progress: [███░░░░░░░] 27% (v9.0 milestone, 9 phases, 4.5 of
 | 90 | 01 | 1min | 2 | 2 |
 | 90 | 02 | 1min | 2 | 2 |
 | 91 | 01 | 1min | 2 | 2 |
+| 91 | 02 | 2min | 2 | 2 |
 
 ## Session Continuity
 
 ### Last Session
-- 2026-02-28: Completed 91-01 — pie-option-builder.ts (PieSlice, PieOptionProps, buildPieOption, _mergeSmallSlices) + pie-registry.ts (registerPieModules)
+- 2026-02-28: Completed 91-02 — LuiPieChart component (pie-chart.ts) + index.ts Phase 91 exports (LuiPieChart, PieSlice, PieOptionProps)
 
 ### Stopped At
-Completed 91-01-PLAN.md
+Completed 91-02-PLAN.md
 
 ### Next Actions
-Continue Phase 91: Plan 02 — LuiPieChart component + index.ts exports (PIE-01, PIE-02, PIE-03).
+Phase 91 complete. Continue to Phase 92.
 
 ### Open Questions
 *None.*
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-02-28 — 91-01 complete, pie-option-builder.ts + pie-registry.ts, PIE-01 and PIE-02 foundational layer done*
+*Last updated: 2026-02-28 — 91-02 complete, LuiPieChart component + Phase 91 public API exports, PIE-03 delivered*
