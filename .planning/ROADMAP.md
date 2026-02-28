@@ -107,12 +107,12 @@ Plans:
   1. Input renders with correct monochrome default styles (border, focus ring, placeholder) matching the token spec
   2. The Input docs page reflects the actual component API and examples without stale content
   3. `skill/skills/input` accurately describes the component so Claude can implement it correctly
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 72-01: Polish Input CSS defaults to match monochrome theme
-- [ ] 72-02: Update Input docs page for accuracy
-- [ ] 72-03: Update `skill/skills/input` skill file
+- [ ] 72-01-PLAN.md — Remove hardcoded input dark mode tokens from .dark block (INP-01)
+- [ ] 72-02-PLAN.md — Expand InputPage.tsx CSS vars table to full token set (INP-02)
+- [ ] 72-03-PLAN.md — Rewrite skill/skills/input/SKILL.md with Behavior Notes and expanded tokens (INP-03)
 
 ### Phase 73: Textarea
 **Goal**: Textarea component looks and feels like shadcn Textarea out of the box, with accurate docs and skill file
