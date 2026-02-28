@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Design System Polish
 status: completed
-last_updated: "2026-02-28T07:07:23.465Z"
+last_updated: "2026-02-28T07:21:20.258Z"
 last_activity: 2026-02-28 — Phase 81-03 complete (Time Picker SKILL.md CSS tokens expanded 20->67 accurate --ui-time-picker-* tokens; stale names removed; Behavior Notes added with 12 entries)
 progress:
-  total_phases: 77
+  total_phases: 78
   completed_phases: 77
-  total_plans: 270
-  completed_plans: 270
-  percent: 100
+  total_plans: 273
+  completed_plans: 271
+  percent: 99
 ---
 
 # Project State: LitUI
@@ -20,18 +20,18 @@ progress:
 See: .planning/PROJECT.md (updated 2026-02-27)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** Phase 81 — Time Picker Polish
+**Current focus:** Phase 82 — Tooltip Polish
 
 ## Current Position
 
 **Milestone:** v8.0 Design System Polish — IN PROGRESS
-**Phase:** 81 of 87 (Time Picker Polish) — COMPLETE
-**Plan:** 3 of 3 in Phase 81 — COMPLETE
-**Status:** Milestone complete
-**Last activity:** 2026-02-28 — Phase 81-03 complete (Time Picker SKILL.md CSS tokens expanded 20->67 accurate --ui-time-picker-* tokens; stale names removed; Behavior Notes added with 12 entries)
+**Phase:** 82 of 87 (Tooltip Polish) — IN PROGRESS
+**Plan:** 1 of 3 in Phase 82 — COMPLETE
+**Status:** In progress
+**Last activity:** 2026-02-28 — Phase 82-01 complete (Tooltip .dark block removed — 2 hardcoded var(--color-gray-*) declarations eliminated; semantic .dark cascade now governs tooltip dark mode)
 
 **Progress:**
-[██████████] 100%
+[██████████] 99%
 Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 
 ## Performance Metrics
@@ -75,6 +75,7 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 | Phase 81-time-picker P01 | 1min | 1 tasks | 1 files |
 | Phase 81-time-picker P02 | 2min | 1 tasks | 1 files |
 | Phase 81-time-picker P03 | 2min | 1 tasks | 1 files |
+| Phase 82-tooltip P01 | 1min | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -121,6 +122,7 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 - Phase 81-01: Time Picker dark mode governed by semantic .dark cascade — 47 hardcoded var(--color-gray-*) declarations removed; 6 oklch literal exceptions kept (option-selected-bg, option-selected-text, business-accent, business-bg, business-hover-bg, wheel-highlight-bg)
 - Phase 81-02: timePickerCSSVars expanded from 20 stale entries (--ui-time-picker-primary, --ui-time-picker-radius, --ui-time-picker-border-focus, --ui-time-picker-bg-disabled, --ui-time-picker-border-width, --ui-time-picker-tab-bg-hover) to 67 accurate --ui-time-picker-* tokens matching tailwind.css :root; cssVarsCode example updated to reference correct token names
 - Phase 81-03: Time Picker SKILL.md CSS tokens expanded from 20 stale entries to 67 accurate --ui-time-picker-* tokens; stale names (--ui-time-picker-primary, --ui-time-picker-radius, --ui-time-picker-border-focus, --ui-time-picker-bg-disabled, --ui-time-picker-border-width, --ui-time-picker-tab-bg-hover) removed; event name confirmed as 'change' with detail { value: string, timeValue: TimeValue | null }; Behavior Notes section added with 12 entries
+- Phase 82-01: Tooltip dark mode governed by semantic .dark token cascade — 2 hardcoded .dark --ui-tooltip-* declarations (var(--color-gray-50) and var(--color-gray-950)) removed; double-fallback cascade in :root is sufficient (same pattern as Phases 70-01 through 81-01)
 
 ### Architecture Notes
 
@@ -151,14 +153,14 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 ## Session Continuity
 
 ### Last Session
-- Phase 81-03: Time Picker SKILL.md — CSS token table expanded 20->67 accurate --ui-time-picker-* tokens; stale tokens removed; Behavior Notes section added with 12 entries
+- Phase 82-01: Tooltip .dark block removed — 2 hardcoded var(--color-gray-*) declarations eliminated; semantic .dark cascade now governs tooltip dark mode
 
 ### Next Actions
-Execute Phase 82 (next component polish phase).
+Execute Phase 82-02 (tooltip docs update) and 82-03 (tooltip SKILL.md update).
 
 ### Open Questions
 *None.*
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-02-28 — Phase 81-03 complete (Time Picker SKILL.md CSS tokens expanded 20->67 accurate --ui-time-picker-* tokens; stale names removed; Behavior Notes added with 12 entries)*
+*Last updated: 2026-02-28 — Phase 82-01 complete (Tooltip .dark block removed — 2 hardcoded var(--color-gray-*) declarations eliminated; semantic .dark cascade now governs tooltip dark mode)*

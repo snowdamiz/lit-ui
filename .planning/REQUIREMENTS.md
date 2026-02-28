@@ -87,7 +87,7 @@ Requirements for the Design System Polish milestone. Each component phase maps t
 
 ### Tooltip
 
-- [ ] **TTP-01**: Tooltip default styles match the v8.0 monochrome theme
+- [x] **TTP-01**: Tooltip default styles match the v8.0 monochrome theme
 - [ ] **TTP-02**: Tooltip docs page is accurate and up-to-date
 - [ ] **TTP-03**: `skill/skills/tooltip` skill file is accurate and up-to-date
 
@@ -177,7 +177,7 @@ Requirements for the Design System Polish milestone. Each component phase maps t
 | TMP-01 | Phase 81 | Complete |
 | TMP-02 | Phase 81 | Complete |
 | TMP-03 | Phase 81 | Complete |
-| TTP-01 | Phase 82 | Pending |
+| TTP-01 | Phase 82 | Complete |
 | TTP-02 | Phase 82 | Pending |
 | TTP-03 | Phase 82 | Pending |
 | POP-01 | Phase 83 | Pending |
