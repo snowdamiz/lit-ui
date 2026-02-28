@@ -67,7 +67,7 @@ Phases 1-68 are archived. See:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 69-01-PLAN.md — Audit token defaults + write THEME-SPEC.md token reference document
+- [x] 69-01-PLAN.md — Audit token defaults + write THEME-SPEC.md token reference document
 
 ### Phase 70: Button
 **Goal**: Button component looks and feels like shadcn Button out of the box, with accurate docs and skill file
@@ -80,9 +80,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 70-01-PLAN.md — Remove hardcoded button dark mode tokens from .dark block (BTN-01)
-- [ ] 70-02-PLAN.md — Update ButtonPage.tsx CSS vars to --ui-button-* names (BTN-02)
-- [ ] 70-03-PLAN.md — Rewrite skill/skills/button/SKILL.md with accurate v8.0 content (BTN-03)
+- [x] 70-01-PLAN.md — Remove hardcoded button dark mode tokens from .dark block (BTN-01)
+- [x] 70-02-PLAN.md — Update ButtonPage.tsx CSS vars to --ui-button-* names (BTN-02)
+- [x] 70-03-PLAN.md — Rewrite skill/skills/button/SKILL.md with accurate v8.0 content (BTN-03)
 
 ### Phase 71: Dialog
 **Goal**: Dialog component looks and feels like shadcn Dialog out of the box, with accurate docs and skill file
@@ -95,9 +95,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 71-01-PLAN.md — Remove hardcoded dialog dark mode tokens from .dark block (DLG-01)
-- [ ] 71-02-PLAN.md — Update DialogPage.tsx CSS vars to --ui-dialog-* names (DLG-02)
-- [ ] 71-03-PLAN.md — Rewrite skill/skills/dialog/SKILL.md with accurate v8.0 content (DLG-03)
+- [x] 71-01-PLAN.md — Remove hardcoded dialog dark mode tokens from .dark block (DLG-01)
+- [x] 71-02-PLAN.md — Update DialogPage.tsx CSS vars to --ui-dialog-* names (DLG-02)
+- [x] 71-03-PLAN.md — Rewrite skill/skills/dialog/SKILL.md with accurate v8.0 content (DLG-03)
 
 ### Phase 72: Input
 **Goal**: Input component looks and feels like shadcn Input out of the box, with accurate docs and skill file
@@ -110,9 +110,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 72-01-PLAN.md — Remove hardcoded input dark mode tokens from .dark block (INP-01)
-- [ ] 72-02-PLAN.md — Expand InputPage.tsx CSS vars table to full token set (INP-02)
-- [ ] 72-03-PLAN.md — Rewrite skill/skills/input/SKILL.md with Behavior Notes and expanded tokens (INP-03)
+- [x] 72-01-PLAN.md — Remove hardcoded input dark mode tokens from .dark block (INP-01)
+- [x] 72-02-PLAN.md — Expand InputPage.tsx CSS vars table to full token set (INP-02)
+- [x] 72-03-PLAN.md — Rewrite skill/skills/input/SKILL.md with Behavior Notes and expanded tokens (INP-03)
 
 ### Phase 73: Textarea
 **Goal**: Textarea component looks and feels like shadcn Textarea out of the box, with accurate docs and skill file
@@ -125,9 +125,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 73-01-PLAN.md — Remove hardcoded textarea dark mode tokens from .dark block (TXT-01)
-- [ ] 73-02-PLAN.md — Expand TextareaPage.tsx CSS vars table to full token set (TXT-02)
-- [ ] 73-03-PLAN.md — Rewrite skill/skills/textarea/SKILL.md with Behavior Notes and expanded tokens (TXT-03)
+- [x] 73-01-PLAN.md — Remove hardcoded textarea dark mode tokens from .dark block (TXT-01)
+- [x] 73-02-PLAN.md — Expand TextareaPage.tsx CSS vars table to full token set (TXT-02)
+- [x] 73-03-PLAN.md — Rewrite skill/skills/textarea/SKILL.md with Behavior Notes and expanded tokens (TXT-03)
 
 ### Phase 74: Select
 **Goal**: Select component looks and feels like shadcn Select out of the box, with accurate docs and skill file
@@ -140,9 +140,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 74-01-PLAN.md — Remove hardcoded select dark mode tokens from .dark block (SEL-01)
-- [ ] 74-02-PLAN.md — Expand SelectPage.tsx CSS vars table to full token set and remove phase badges (SEL-02)
-- [ ] 74-03-PLAN.md — Rewrite skill/skills/select/SKILL.md with Behavior Notes and expanded tokens (SEL-03)
+- [x] 74-01-PLAN.md — Remove hardcoded select dark mode tokens from .dark block (SEL-01)
+- [x] 74-02-PLAN.md — Expand SelectPage.tsx CSS vars table to full token set and remove phase badges (SEL-02)
+- [x] 74-03-PLAN.md — Rewrite skill/skills/select/SKILL.md with Behavior Notes and expanded tokens (SEL-03)
 
 ### Phase 75: Checkbox
 **Goal**: Checkbox component looks and feels like shadcn Checkbox out of the box, with accurate docs and skill file
@@ -155,9 +155,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 75-01-PLAN.md — Remove hardcoded checkbox dark mode tokens from .dark block (CHK-01)
-- [ ] 75-02-PLAN.md — Expand CheckboxPage.tsx CSS vars table to full token set (CHK-02)
-- [ ] 75-03-PLAN.md — Rewrite skill/skills/checkbox/SKILL.md with Behavior Notes and expanded tokens (CHK-03)
+- [x] 75-01-PLAN.md — Remove hardcoded checkbox dark mode tokens from .dark block (CHK-01)
+- [x] 75-02-PLAN.md — Expand CheckboxPage.tsx CSS vars table to full token set (CHK-02)
+- [x] 75-03-PLAN.md — Rewrite skill/skills/checkbox/SKILL.md with Behavior Notes and expanded tokens (CHK-03)
 
 ### Phase 76: Radio
 **Goal**: Radio component looks and feels like shadcn Radio out of the box, with accurate docs and skill file
@@ -170,9 +170,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 76-01-PLAN.md — Remove hardcoded radio dark mode tokens from .dark block (RAD-01)
-- [ ] 76-02-PLAN.md — Expand RadioPage.tsx CSS vars table to full token set (RAD-02)
-- [ ] 76-03-PLAN.md — Rewrite skill/skills/radio/SKILL.md with Behavior Notes and expanded tokens (RAD-03)
+- [x] 76-01-PLAN.md — Remove hardcoded radio dark mode tokens from .dark block (RAD-01)
+- [x] 76-02-PLAN.md — Expand RadioPage.tsx CSS vars table to full token set (RAD-02)
+- [x] 76-03-PLAN.md — Rewrite skill/skills/radio/SKILL.md with Behavior Notes and expanded tokens (RAD-03)
 
 ### Phase 77: Switch
 **Goal**: Switch component looks and feels like shadcn Switch out of the box, with accurate docs and skill file
@@ -185,9 +185,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 77-01-PLAN.md — Prune switch .dark block to thumb-bg exception only (SWT-01)
-- [ ] 77-02-PLAN.md — Expand SwitchPage.tsx CSS vars table from 12 to 24 tokens (SWT-02)
-- [ ] 77-03-PLAN.md — Expand skill/skills/switch/SKILL.md CSS tokens, fix event name, add Behavior Notes (SWT-03)
+- [x] 77-01-PLAN.md — Prune switch .dark block to thumb-bg exception only (SWT-01)
+- [x] 77-02-PLAN.md — Expand SwitchPage.tsx CSS vars table from 12 to 24 tokens (SWT-02)
+- [x] 77-03-PLAN.md — Expand skill/skills/switch/SKILL.md CSS tokens, fix event name, add Behavior Notes (SWT-03)
 
 ### Phase 78: Calendar
 **Goal**: Calendar component looks and feels like shadcn Calendar out of the box, with accurate docs and skill file
@@ -200,9 +200,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 78-01-PLAN.md — Remove .dark calendar block (10 declarations); add tooltip tokens to :root (CAL-01)
-- [ ] 78-02-PLAN.md — Expand CalendarPage.tsx CSS vars table from 16 to 21 entries with correct defaults (CAL-02)
-- [ ] 78-03-PLAN.md — Expand skill/skills/calendar/SKILL.md CSS tokens, add all 3 events, add Behavior Notes (CAL-03)
+- [x] 78-01-PLAN.md — Remove .dark calendar block (10 declarations); add tooltip tokens to :root (CAL-01)
+- [x] 78-02-PLAN.md — Expand CalendarPage.tsx CSS vars table from 16 to 21 entries with correct defaults (CAL-02)
+- [x] 78-03-PLAN.md — Expand skill/skills/calendar/SKILL.md CSS tokens, add all 3 events, add Behavior Notes (CAL-03)
 
 ### Phase 79: Date Picker
 **Goal**: Date Picker component looks and feels like shadcn DatePicker out of the box, with accurate docs and skill file
@@ -212,12 +212,12 @@ Plans:
   1. Date Picker renders with correct monochrome default styles (trigger, popup, input) matching the token spec
   2. The Date Picker docs page reflects the actual component API and examples without stale content
   3. `skill/skills/date-picker` accurately describes the component so Claude can implement it correctly
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 79-01: Polish Date Picker CSS defaults to match monochrome theme
-- [ ] 79-02: Update Date Picker docs page for accuracy
-- [ ] 79-03: Update `skill/skills/date-picker` skill file
+- [ ] 79-01-PLAN.md — Remove .dark date-picker block (17 declarations) from tailwind.css (DTP-01)
+- [ ] 79-02-PLAN.md — Expand DatePickerPage.tsx CSS vars table from 12 to 21 entries with correct defaults (DTP-02)
+- [ ] 79-03-PLAN.md — Expand skill/skills/date-picker/SKILL.md CSS tokens, verify Events table, add Behavior Notes (DTP-03)
 
 ### Phase 80: Date Range Picker
 **Goal**: Date Range Picker component looks polished and matches the monochrome theme, with accurate docs and skill file
