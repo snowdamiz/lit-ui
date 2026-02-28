@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Design System Polish
 status: completed
-last_updated: "2026-02-28T06:03:58.085Z"
+last_updated: "2026-02-28T06:22:40.978Z"
 last_activity: 2026-02-28 — Phase 79-03 complete (Date Picker SKILL.md CSS tokens expanded 12→21; Behavior Notes section added with 12 entries)
 progress:
-  total_phases: 75
+  total_phases: 76
   completed_phases: 75
-  total_plans: 264
-  completed_plans: 264
-  percent: 100
+  total_plans: 267
+  completed_plans: 265
+  percent: 99
 ---
 
 # Project State: LitUI
@@ -20,18 +20,18 @@ progress:
 See: .planning/PROJECT.md (updated 2026-02-27)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** Phase 79 — Date Picker Polish
+**Current focus:** Phase 80 — Date Range Picker Polish
 
 ## Current Position
 
 **Milestone:** v8.0 Design System Polish — IN PROGRESS
-**Phase:** 79 of 87 (Date Picker Polish) — COMPLETE
-**Plan:** 3 of 3 in Phase 79 — COMPLETE
-**Status:** Milestone complete
-**Last activity:** 2026-02-28 — Phase 79-03 complete (Date Picker SKILL.md CSS tokens expanded 12→21; Behavior Notes section added with 12 entries)
+**Phase:** 80 of 87 (Date Range Picker Polish) — IN PROGRESS
+**Plan:** 1 of 3 in Phase 80 — COMPLETE
+**Status:** In progress
+**Last activity:** 2026-02-28 — Phase 80-01 complete (Date Range Picker dark mode — 23 hardcoded .dark declarations removed; 2 compare-* oklch exceptions kept)
 
 **Progress:**
-[██████████] 100%
+[██████████] 99%
 Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 
 ## Performance Metrics
@@ -69,6 +69,7 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 | Phase 79-date-picker P01 | 1min | 1 tasks | 1 files |
 | Phase 79-date-picker P02 | 1min | 1 tasks | 1 files |
 | Phase 79-date-picker P03 | 1min | 1 tasks | 1 files |
+| Phase 80-date-range-picker P01 | 1min | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -109,6 +110,7 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 - Phase 79-01: Date Picker dark mode governed by semantic .dark token cascade — all 17 hardcoded .dark --ui-date-picker-* declarations removed; no exceptions required (unlike checkbox check-color: white or switch thumb-bg: white)
 - Phase 79-02: Date Picker docs CSS token table expanded from 12 to 21 entries matching tailwind.css :root; border-focus, radius, border-width excluded (not in :root; inherited via --ui-input-* fallbacks); color tokens use double-fallback var() form
 - Phase 79-03: Date Picker SKILL.md CSS tokens expanded 12→21 to match tailwind.css :root; border-focus/radius/border-width excluded (not in :root; inherited via --ui-input-* fallbacks); Behavior Notes section added with 12 entries
+- Phase 80-01: Date Range Picker dark mode governed by semantic .dark cascade — 23 hardcoded .dark --ui-date-range-* declarations removed; 2 compare-* oklch literal exceptions (highlight-bg oklch(0.30) and preview-bg oklch(0.22)) kept in .dark
 
 ### Architecture Notes
 
@@ -139,14 +141,14 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 ## Session Continuity
 
 ### Last Session
-- Phase 79-03: Date Picker SKILL.md CSS token expansion — SKILL.md expanded from 12 to 21 tokens; all defaults match tailwind.css :root with double-fallback var() form; Behavior Notes section added with 12 entries; Phase 79 complete
+- Phase 80-01: Date Range Picker dark mode — 23 hardcoded .dark declarations removed; 2 compare-* oklch exceptions kept; tailwind.css updated; Phase 80 plan 1 of 3 complete
 
 ### Next Actions
-Execute Phase 80 (next component polish).
+Execute Phase 80-02 (Date Range Picker docs update).
 
 ### Open Questions
 *None.*
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-02-28 — Phase 79-03 complete (Date Picker SKILL.md CSS tokens expanded 12→21; Behavior Notes section added with 12 entries; Phase 79 complete)*
+*Last updated: 2026-02-28 — Phase 80-01 complete (Date Range Picker dark mode — 23 hardcoded .dark declarations removed; 2 compare-* oklch exceptions kept)*
