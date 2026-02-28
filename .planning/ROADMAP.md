@@ -55,7 +55,12 @@ Phases 1-87 are archived. See:
   3. Developer can set `enable-gl` attribute and the chart dynamically loads echarts-gl; when WebGL is unavailable the chart falls back to Canvas and fires a `webgl-unavailable` event
   4. Chart colors, grid, axis, tooltip, and legend all update when `.dark` class is toggled on `document.documentElement` — no page reload required
   5. Developer can read `--ui-chart-color-1` through `--ui-chart-color-8` plus grid/tooltip/legend CSS custom properties and override any of them to retheme all charts globally
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 88-01-PLAN.md — Package scaffold: package.json, tsconfig.json, vite.config.ts, install deps
+- [ ] 88-02-PLAN.md — ThemeBridge (CSS token resolution) + canvas-core registry (ECharts module registration)
+- [ ] 88-03-PLAN.md — BaseChartElement (full lifecycle + streaming) + index.ts public API exports
 
 ### Phase 89: Line Chart + Area Chart
 **Goal**: Developer can render production-quality line and area charts with multiple named series, smooth interpolation, zoom/pan, mark lines, and real-time streaming via pushData()
@@ -148,7 +153,7 @@ Phases 1-87 are archived. See:
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
-| 88. Package Foundation + BaseChartElement | v9.0 | 0/TBD | Not started | - |
+| 88. Package Foundation + BaseChartElement | v9.0 | 0/3 | Not started | - |
 | 89. Line Chart + Area Chart | v9.0 | 0/TBD | Not started | - |
 | 90. Bar Chart | v9.0 | 0/TBD | Not started | - |
 | 91. Pie + Donut Chart | v9.0 | 0/TBD | Not started | - |
