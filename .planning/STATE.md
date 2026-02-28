@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Design System Polish
-status: completed
-last_updated: "2026-02-28T03:26:37.803Z"
-last_activity: 2026-02-28 — Phase 73-03 complete (textarea SKILL.md expanded CSS tokens from 7 to 16, Behavior Notes section added)
+status: executing
+last_updated: "2026-02-28T03:40:36.432Z"
+last_activity: 2026-02-28 — Phase 74-01 complete (select dark mode hardcoded .dark overrides removed, semantic cascade sufficient)
 progress:
-  total_phases: 69
-  completed_phases: 69
-  total_plans: 246
-  completed_plans: 246
+  total_phases: 70
+  completed_phases: 70
+  total_plans: 249
+  completed_plans: 249
   percent: 100
 ---
 
@@ -20,15 +20,15 @@ progress:
 See: .planning/PROJECT.md (updated 2026-02-27)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** Phase 73 — Textarea Polish
+**Current focus:** Phase 74 — Select Polish
 
 ## Current Position
 
 **Milestone:** v8.0 Design System Polish — IN PROGRESS
-**Phase:** 73 of 87 (Textarea Polish) — COMPLETE
-**Plan:** 3 of 3 in Phase 73 — COMPLETE
-**Status:** Milestone complete
-**Last activity:** 2026-02-28 — Phase 73-03 complete (textarea SKILL.md expanded CSS tokens from 7 to 16, Behavior Notes section added)
+**Phase:** 74 of 87 (Select Polish) — IN PROGRESS
+**Plan:** 1 of 3 in Phase 74 — COMPLETE
+**Status:** In progress
+**Last activity:** 2026-02-28 — Phase 74-01 complete (select dark mode hardcoded .dark overrides removed, semantic cascade sufficient)
 
 **Progress:**
 [██████████] 100%
@@ -54,6 +54,8 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 | Phase 73-textarea P01 | 1min | 1 tasks | 1 files |
 | Phase 73-textarea P02 | 1min | 1 tasks | 1 files |
 | Phase 73-textarea P03 | 1min | 1 tasks | 1 files |
+| Phase 74-select P01 | 1min | 1 tasks | 1 files |
+| Phase 74-select P02 | 1min | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -76,6 +78,7 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 - Phase 73-01: Textarea dark mode governed by semantic .dark overrides — hardcoded .dark --ui-textarea-* declarations removed; double-fallback cascade in :root is sufficient (same pattern as Phase 70-01, 71-01, 72-01)
 - Phase 73-02: Textarea docs CSS token table expanded from 7 to 16 entries — structural tokens use exact rem/px values, color tokens use var() references (same pattern as Phase 72-02)
 - Phase 73-03: Textarea SKILL.md CSS tokens expanded from 7 to 16 entries; Behavior Notes section added with 8 entries; focus ring noted as applied to textarea:focus directly (not container :focus-within)
+- Phase 74-01: Select dark mode governed by semantic .dark overrides — hardcoded .dark --ui-select-* declarations removed; double-fallback cascade in :root is sufficient (same pattern as Phase 70-01, 71-01, 72-01, 73-01)
 
 ### Architecture Notes
 
@@ -106,16 +109,14 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 ## Session Continuity
 
 ### Last Session
-- Phase 73-01: Textarea dark mode polished (same pattern as Phase 72-01)
-- Phase 73-02: Textarea CSS docs expanded from 7 to 16 entries (same pattern as Phase 72-02)
-- Phase 73-03: Textarea SKILL.md updated with expanded token set (same pattern as Phase 72-03)
+- Phase 74-01: Select dark mode polished — removed 20 hardcoded oklch overrides from .dark block (same pattern as Phase 73-01)
 
 ### Next Actions
-Execute next phase after Phase 73-textarea (all 3 plans complete).
+Execute Phase 74-02 (Select docs CSS token table expansion) and Phase 74-03 (Select SKILL.md update).
 
 ### Open Questions
 *None.*
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-02-28 — Phase 73-03 complete (Textarea SKILL.md expanded from 7 to 16 CSS tokens, Behavior Notes added)*
+*Last updated: 2026-02-28 — Phase 74-01 complete (Select dark mode hardcoded .dark overrides removed, semantic cascade sufficient)*
