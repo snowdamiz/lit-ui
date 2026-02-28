@@ -35,7 +35,7 @@ Phases 1-87 are archived. See:
 
 - [x] **Phase 88: Package Foundation + BaseChartElement** - @lit-ui/charts package scaffolding, BaseChartElement with lifecycle management, ThemeBridge, SSR guard, streaming infrastructure (completed 2026-02-28)
 - [x] **Phase 89: Line Chart + Area Chart** - Line and Area chart components with smooth/zoom/streaming support via pushData() (completed 2026-02-28)
-- [ ] **Phase 90: Bar Chart** - Bar chart with grouped, stacked, horizontal variants, value labels, and streaming
+- [x] **Phase 90: Bar Chart** - Bar chart with grouped, stacked, horizontal variants, value labels, and streaming (completed 2026-02-28)
 - [ ] **Phase 91: Pie + Donut Chart** - Pie and Donut chart components with slice merging, center label, and streaming
 - [ ] **Phase 92: Scatter + Bubble Chart with WebGL** - Scatter/Bubble with enable-gl WebGL path for 500K+ point datasets
 - [ ] **Phase 93: Heatmap Chart** - Cartesian heatmap with VisualMap color scale and streaming
@@ -163,7 +163,7 @@ Plans:
 |-------|-----------|----------------|--------|-----------|
 | 88. Package Foundation + BaseChartElement | 3/3 | Complete    | 2026-02-28 | - |
 | 89. Line Chart + Area Chart | 2/2 | Complete    | 2026-02-28 | - |
-| 90. Bar Chart | 1/2 | In Progress|  | - |
+| 90. Bar Chart | 2/2 | Complete   | 2026-02-28 | - |
 | 91. Pie + Donut Chart | v9.0 | 0/TBD | Not started | - |
 | 92. Scatter + Bubble Chart with WebGL | v9.0 | 0/TBD | Not started | - |
 | 93. Heatmap Chart | v9.0 | 0/TBD | Not started | - |

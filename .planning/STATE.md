@@ -2,13 +2,13 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Charts System
-status: unknown
-last_updated: "2026-02-28T21:11:46.530Z"
+status: in-progress
+last_updated: "2026-02-28T21:14:45.000Z"
 progress:
   total_phases: 67
-  completed_phases: 66
+  completed_phases: 67
   total_plans: 240
-  completed_plans: 239
+  completed_plans: 240
 ---
 
 # Project State: LitUI
@@ -18,16 +18,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-02-28)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** Phase 90 — next chart type
+**Current focus:** Phase 90 — Bar Chart (COMPLETE)
 
 ## Current Position
 
-Phase: 90 of 96 (Bar Chart — IN PROGRESS)
-Plan: 1 of 2 in current phase (90-01 complete)
-Status: Phase 90 in progress — 90-01 complete, 90-02 remaining
-Last activity: 2026-02-28 — Completed 90-01: bar-option-builder.ts + bar-registry.ts (BAR-01/02/03 foundation)
+Phase: 90 of 96 (Bar Chart — COMPLETE)
+Plan: 2 of 2 in current phase (90-01 complete, 90-02 complete)
+Status: Phase 90 complete — all requirements BAR-01, BAR-02, BAR-03 satisfied
+Last activity: 2026-02-28 — Completed 90-02: LuiBarChart component + index.ts exports
 
-Progress: [██░░░░░░░░] 22% (v9.0 milestone, 9 phases, 3 of 9 complete)
+Progress: [██░░░░░░░░] 22% (v9.0 milestone, 9 phases, 4 of 9 complete)
 
 ## Accumulated Context
 
@@ -58,6 +58,9 @@ Progress: [██░░░░░░░░] 22% (v9.0 milestone, 9 phases, 3 of 9
 - 90-01: label position adapts to orientation: 'top' vertical, 'right' horizontal — avoids clipping at bar boundaries
 - 90-01: colorBy: 'data' uses ThemeBridge palette automatically; no manual color lookup needed in bar charts
 - 90-01: categories field optional in BarOptionProps — omit for ECharts integer index defaults
+- 90-02: No _streamingMode override in LuiBarChart — inherits 'buffer' default from BaseChartElement (STRM-04)
+- 90-02: categories not a reactive property on LuiBarChart — passed via option prop (BaseChartElement passthrough)
+- 90-02: show-labels and color-by-data use kebab-case attribute names; JS properties are camelCase (showLabels, colorByData)
 
 ### Architecture Notes
 
@@ -66,6 +69,7 @@ Progress: [██░░░░░░░░] 22% (v9.0 milestone, 9 phases, 3 of 9
 - Per-chart registry files (e.g., line-registry.ts) tree-shake ECharts to ~135KB gzipped vs 400KB for full import
 - packages/charts/ is now a fully compilable workspace package ready for BaseChartElement implementation
 - BaseChartElement (88-03) is complete — all 5 critical pitfalls and 11 requirements implemented; Phases 89-95 extend without re-solving cross-cutting concerns
+- Phase 90 complete: LuiBarChart, LuiLineChart, LuiAreaChart all exported from @lit-ui/charts public API
 
 ### TODOs
 *None.*
@@ -97,21 +101,22 @@ Progress: [██░░░░░░░░] 22% (v9.0 milestone, 9 phases, 3 of 9
 | 89 | 01 | 2min | 2 | 3 |
 | 89 | 02 | 1min | 2 | 2 |
 | 90 | 01 | 1min | 2 | 2 |
+| 90 | 02 | 1min | 2 | 2 |
 
 ## Session Continuity
 
 ### Last Session
-- 2026-02-28: Completed 90-01 — bar-option-builder.ts (buildBarOption, BarChartSeries, BarOptionProps) + bar-registry.ts (registerBarModules)
+- 2026-02-28: Completed 90-02 — LuiBarChart component (bar-chart.ts) + index.ts Phase 90 exports (LuiBarChart, BarChartSeries, BarOptionProps)
 
 ### Stopped At
-Completed 90-01-PLAN.md
+Completed 90-02-PLAN.md
 
 ### Next Actions
-Continue Phase 90 — Plan 02: LuiBarChart Lit component using bar-option-builder.ts and bar-registry.ts.
+Phase 90 complete. Continue to Phase 91 (next chart type).
 
 ### Open Questions
 *None.*
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-02-28 — 90-01 complete, bar-option-builder.ts + bar-registry.ts, Phase 90 in progress (BAR-01/02/03 foundation)*
+*Last updated: 2026-02-28 — 90-02 complete, LuiBarChart + index.ts exports, Phase 90 fully done (BAR-01/02/03 all satisfied)*
