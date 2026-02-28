@@ -49,7 +49,7 @@ Phases 1-68 are archived. See:
 - [x] **Phase 81: Time Picker** - Polish Time Picker styles, docs, and skill file (completed 2026-02-28)
 - [x] **Phase 82: Tooltip** - Polish Tooltip styles, docs, and skill file (completed 2026-02-28)
 - [x] **Phase 83: Popover** - Polish Popover styles, docs, and skill file (completed 2026-02-28)
-- [ ] **Phase 84: Toast** - Polish Toast styles, docs, and skill file
+- [x] **Phase 84: Toast** - Polish Toast styles, docs, and skill file (completed 2026-02-28)
 - [ ] **Phase 85: Accordion** - Polish Accordion styles, docs, and skill file
 - [ ] **Phase 86: Tabs** - Polish Tabs styles, docs, and skill file
 - [ ] **Phase 87: Data Table** - Polish Data Table styles, docs, and skill file
@@ -362,7 +362,7 @@ Note: Phases 70-87 all depend on Phase 69. Phases 70-78 and 80-87 are independen
 | 81. Time Picker | 3/3 | Complete    | 2026-02-28 | - |
 | 82. Tooltip | 3/3 | Complete    | 2026-02-28 | - |
 | 83. Popover | 3/3 | Complete    | 2026-02-28 | - |
-| 84. Toast | 2/3 | In Progress|  | - |
+| 84. Toast | 3/3 | Complete   | 2026-02-28 | - |
 | 85. Accordion | v8.0 | 0/3 | Not started | - |
 | 86. Tabs | v8.0 | 0/3 | Not started | - |
 | 87. Data Table | v8.0 | 0/3 | Not started | - |

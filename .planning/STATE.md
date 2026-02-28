@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Design System Polish
 status: executing
-last_updated: "2026-02-28T08:11:55.462Z"
-last_activity: 2026-02-28 — Phase 84-01 complete (Toast base dark mode declarations removed from .dark; semantic cascade via .dark --color-card now sufficient; 12 variant oklch tokens retained)
+last_updated: "2026-02-28T08:15:20.524Z"
+last_activity: 2026-02-28 — Phase 84-03 complete (Toast SKILL.md CSS token defaults corrected to 21 entries with double-fallback var() colors, two-layer shadow, z-index 55; --ui-toast-padding added; all 12 variant oklch tokens filled; Behavior Notes section with 13 entries added)
 progress:
   total_phases: 80
-  completed_phases: 79
+  completed_phases: 80
   total_plans: 279
-  completed_plans: 278
+  completed_plans: 279
   percent: 100
 ---
 
@@ -26,9 +26,9 @@ See: .planning/PROJECT.md (updated 2026-02-27)
 
 **Milestone:** v8.0 Design System Polish — IN PROGRESS
 **Phase:** 84 of 87 (Toast Polish) — IN PROGRESS
-**Plan:** 2 of 3 in Phase 84 — COMPLETE
+**Plan:** 3 of 3 in Phase 84 — COMPLETE
 **Status:** In progress
-**Last activity:** 2026-02-28 — Phase 84-02 complete (Toast docs color tokens corrected to double-fallback var() form; shadow two-layer; z-index 55; cssVarsCode updated from hex literals to oklch/var() semantic references)
+**Last activity:** 2026-02-28 — Phase 84-03 complete (Toast SKILL.md CSS token defaults corrected to 21 entries with double-fallback var() colors, two-layer shadow, z-index 55; --ui-toast-padding added; all 12 variant oklch tokens filled; Behavior Notes section with 13 entries added)
 
 **Progress:**
 [██████████] 100%
@@ -83,6 +83,7 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 | Phase 83-popover P03 | 1min | 1 tasks | 1 files |
 | Phase 84-toast P01 | 1min | 1 tasks | 1 files |
 | Phase 84-toast P02 | 1min | 1 tasks | 1 files |
+| Phase 84-toast P03 | 1min | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -137,6 +138,7 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 - Phase 83-03: Popover SKILL.md CSS token defaults corrected — bg/text/border use double-fallback var() form; shadow corrected to two-layer 0.08 opacity value; z-index corrected from stale 50 to actual tailwind.css :root value of 45; Behavior Notes section added with 13 entries (trigger model, light dismiss, Escape, Floating UI, arrow, focus management, modal mode, controlled mode, nested popovers, match-trigger-width, dark mode, SSR safety, cleanup)
 - Phase 84-01: Toast base dark mode governed by semantic .dark cascade — 3 hardcoded .dark --ui-toast-bg/text/border declarations removed; double-fallback cascade in :root is sufficient (same pattern as Phases 70-01 through 83-01); 12 variant oklch dark mode tokens kept in .dark (lightness 0.25 cannot cascade from :root lightness 0.95)
 - Phase 84-02: Toast docs color tokens corrected to double-fallback var() form (bg, text, border); shadow corrected from single-layer to two-layer matching tailwind.css :root; z-index corrected from stale 50 to 55; cssVarsCode example replaced hex literals (#f0fdf4 etc.) with oklch/var() semantic token references
+- Phase 84-03: Toast SKILL.md CSS token defaults corrected — bg/text/border use double-fallback var() form; shadow corrected to two-layer value; z-index corrected to 55; --ui-toast-padding row added (21 total tokens); all 12 variant oklch tokens filled with actual :root values; Behavior Notes section added with 13 entries
 
 ### Architecture Notes
 
@@ -167,14 +169,14 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 ## Session Continuity
 
 ### Last Session
-- Phase 84-02: Toast docs toastCSSVars corrected — bg/text/border double-fallback var(), shadow two-layer, z-index 55; cssVarsCode updated from hex literals to oklch/var() semantic references
+- Phase 84-03: Toast SKILL.md CSS token defaults corrected — 21 token rows (added --ui-toast-padding); bg/text/border double-fallback var() form; shadow two-layer; z-index 55; all 12 variant oklch tokens filled; Behavior Notes section added with 13 entries
 
 ### Next Actions
-Execute Phase 84-03 (Toast SKILL.md CSS token defaults update).
+Execute Phase 85 (next phase after Toast Polish).
 
 ### Open Questions
 *None.*
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-02-28 — Phase 84-01 complete (Toast base dark mode declarations removed from .dark block; semantic cascade sufficient; 12 variant oklch tokens retained)*
+*Last updated: 2026-02-28 — Phase 84-03 complete (Toast SKILL.md CSS token defaults corrected to 21 entries; --ui-toast-padding added; double-fallback var() colors; two-layer shadow; z-index 55; all 12 variant oklch tokens filled; Behavior Notes with 13 entries)*
