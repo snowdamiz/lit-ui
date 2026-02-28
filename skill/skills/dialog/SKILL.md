@@ -69,9 +69,18 @@ const [open, setOpen] = useState(false);
 
 | Property | Default | Description |
 |----------|---------|-------------|
-| `--lui-dialog-radius` | `var(--radius-lg)` | Border radius of the dialog content. |
-| `--lui-dialog-shadow` | `var(--shadow-lg)` | Box shadow of the dialog content. |
-| `--lui-dialog-padding` | `var(--spacing-6)` | Inner padding of the dialog content. |
+| `--ui-dialog-radius` | `0.5rem` | Border radius of the dialog content panel. |
+| `--ui-dialog-shadow` | `0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)` | Box shadow of the dialog content panel. |
+| `--ui-dialog-padding` | `1.5rem` | Inner padding of the dialog content panel. |
+| `--ui-dialog-max-width-sm` | `24rem` | Max-width for size="sm". |
+| `--ui-dialog-max-width-md` | `28rem` | Max-width for size="md". |
+| `--ui-dialog-max-width-lg` | `32rem` | Max-width for size="lg". |
+| `--ui-dialog-bg` | `var(--color-card, var(--ui-color-card))` | Background color of the dialog content panel. |
+| `--ui-dialog-backdrop` | `rgba(0, 0, 0, 0.5)` | Color of the backdrop overlay. |
+| `--ui-dialog-title-size` | `1.125rem` | Font size of the dialog title. |
+| `--ui-dialog-title-weight` | `600` | Font weight of the dialog title. |
+| `--ui-dialog-body-color` | `var(--color-muted-foreground, var(--ui-color-muted-foreground))` | Text color of the dialog body. |
+| `--ui-dialog-footer-gap` | `0.75rem` | Gap between buttons in the footer. |
 
 ## CSS Parts
 
@@ -83,3 +92,13 @@ const [open, setOpen] = useState(false);
 | `header` | The header/title section. |
 | `body` | The main body content area. |
 | `footer` | The footer section for action buttons. |
+
+## Behavior Notes
+
+- **Focus trapping**: Uses native `showModal()` — the browser automatically traps focus inside the dialog and places it in the top layer. No custom focus trap needed.
+- **Close reasons**: The `close` event fires with `{ reason: 'escape' | 'backdrop' | 'programmatic' }` so consumers can distinguish how the dialog was dismissed.
+- **dismissible=false**: When set, Escape key and backdrop clicks are blocked. Only `dialog.close()` or setting `open=false` will close the dialog.
+- **Focus restoration**: `show()` captures the active element and restores focus to it after the dialog closes. Call `show()` instead of setting `open=true` directly when focus restoration matters.
+- **dialog-class**: Passes Tailwind classes to the inner `.dialog-content` div (the visible panel), not the outer `<dialog>` element. Use this for per-instance width overrides like `dialog-class="max-w-2xl"`.
+- **Nested dialogs**: Supported natively via the browser's top-layer stack. Use `@close=${(e) => e.stopPropagation()}` on the inner dialog to prevent its close event from bubbling to the parent.
+- **Animations**: Enter/exit uses `@starting-style` + `transition-behavior: allow-discrete` — modern CSS with no JavaScript required. Reduced motion is respected (`prefers-reduced-motion: reduce` sets `transition: none`).
