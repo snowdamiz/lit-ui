@@ -102,16 +102,33 @@ description: >-
 
 | Property | Default | Description |
 |----------|---------|-------------|
-| `--ui-accordion-border` | `var(--color-border)` | Border color between items and around the container. |
+| `--ui-accordion-border` | `var(--color-border, var(--ui-color-border))` | Border color between items and around the container. |
 | `--ui-accordion-border-width` | `1px` | Border width. |
 | `--ui-accordion-radius` | `0.375rem` | Container border radius. |
+| `--ui-accordion-gap` | `0` | Gap between accordion items. |
 | `--ui-accordion-header-padding` | `1rem` | Header button padding. |
 | `--ui-accordion-header-font-weight` | `500` | Header font weight. |
 | `--ui-accordion-header-font-size` | `1rem` | Header font size. |
-| `--ui-accordion-header-text` | `var(--color-foreground)` | Header text color. |
+| `--ui-accordion-header-text` | `var(--color-foreground, var(--ui-color-foreground))` | Header text color. |
 | `--ui-accordion-header-bg` | `transparent` | Header background color. |
-| `--ui-accordion-header-hover-bg` | `var(--color-muted)` | Header background on hover. |
+| `--ui-accordion-header-hover-bg` | `var(--color-muted, var(--ui-color-muted))` | Header background on hover. |
 | `--ui-accordion-panel-padding` | `0 1rem 1rem` | Panel content padding. |
-| `--ui-accordion-panel-text` | `var(--color-muted-foreground)` | Panel text color. |
-| `--ui-accordion-transition` | `200ms` | Animation duration for expand/collapse (CSS Grid height animation). |
-| `--ui-accordion-ring` | `var(--color-ring)` | Focus ring color. |
+| `--ui-accordion-panel-text` | `var(--color-muted-foreground, var(--ui-color-muted-foreground))` | Panel text color. |
+| `--ui-accordion-transition` | `200ms` | Animation duration for expand/collapse. |
+| `--ui-accordion-ring` | `var(--color-ring, var(--ui-color-ring))` | Focus ring color. |
+
+## Behavior Notes
+
+- **State management**: `lui-accordion` manages expanded state centrally. `lui-accordion-item` never self-toggles — it fires `ui-accordion-toggle` (internal) and the parent updates `expanded` on each item.
+- **Controlled mode**: Set `value` (comma-separated item values) to control expanded state externally. React to `ui-change` event to update.
+- **Uncontrolled mode**: Use `default-value` for initial state. Omit `value` entirely — once `value` is set it takes precedence over `default-value`.
+- **Single-expand (default)**: Opening one panel auto-closes others. Clicking the active header is a no-op unless `collapsible` is set.
+- **Collapsible**: With `collapsible` attribute on the container, clicking the active header closes all panels (value becomes `""`).
+- **Multi-expand**: `multiple` attribute allows any number of panels open simultaneously. `value` is a comma-separated string (e.g. `"item-1,item-3"`).
+- **Lazy rendering**: `lazy` attribute on an item defers default slot mounting until first expand. Once expanded once, content is preserved on collapse (not destroyed).
+- **CSS Grid animation**: Panel uses `grid-template-rows: 0fr → 1fr` transition via `--ui-accordion-transition`. No JS height calculation needed.
+- **Reduced motion**: `prefers-reduced-motion: reduce` sets both panel wrapper and chevron transition-duration to `0ms`.
+- **Keyboard navigation**: ArrowDown/ArrowUp move focus between enabled items (wrapping). Home/End jump to first/last. Enter/Space toggle via native button click. Roving tabindex managed by parent.
+- **data-state attribute**: Each `lui-accordion-item` exposes `data-state="open"` or `data-state="closed"` for CSS targeting or test queries.
+- **Heading level**: `heading-level` on `lui-accordion-item` sets the `aria-level` on the wrapping `role="heading"` div. Default is 3. Match your page's document outline.
+- **Disabled propagation**: `disabled` on `lui-accordion` sets `disabled` on all child items. Individual items can also be disabled independently.
