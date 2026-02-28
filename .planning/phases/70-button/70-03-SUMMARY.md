@@ -67,7 +67,7 @@ Each task was committed atomically:
 
 1. **Task 1: Rewrite skill/skills/button/SKILL.md with accurate v8.0 content** - `aa3cf85` (feat)
 
-**Plan metadata:** (docs commit follows)
+**Plan metadata:** `4efb963` (docs: complete button skill rewrite plan)
 
 ## Files Created/Modified
 
@@ -95,7 +95,14 @@ None — no external service configuration required.
 
 - Button skill file is accurate and ready for AI agents to use
 - BTN-03 requirement satisfied
-- Phase 70 has 3 plans total; plans 01 and 02 remain to be executed
+- Phase 70 is now fully complete — all 3 plans (style, docs, skill) executed successfully
+
+## Self-Check: PASSED
+
+- FOUND: skill/skills/button/SKILL.md
+- FOUND: .planning/phases/70-button/70-03-SUMMARY.md
+- FOUND commit: aa3cf85 (task)
+- FOUND commit: 4efb963 (metadata)
 
 ---
 *Phase: 70-button*
