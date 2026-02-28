@@ -26,9 +26,9 @@ See: .planning/PROJECT.md (updated 2026-02-27)
 
 **Milestone:** v8.0 Design System Polish — IN PROGRESS
 **Phase:** 77 of 87 (Switch Polish) — IN PROGRESS
-**Plan:** 1 of 3 in Phase 77 — COMPLETE
+**Plan:** 2 of 3 in Phase 77 — COMPLETE
 **Status:** Milestone in progress
-**Last activity:** 2026-02-27 — Phase 77-01 complete (Switch dark mode — 6 hardcoded oklch .dark overrides removed; --ui-switch-thumb-bg retained as exception since :root is hardcoded 'white')
+**Last activity:** 2026-02-27 — Phase 77-02 complete (Switch CSS token docs expanded from 12 to 26 entries; double-fallback var() form for all color defaults)
 
 **Progress:**
 [██████████] 100%
