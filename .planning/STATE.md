@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Design System Polish
-status: executing
-last_updated: "2026-02-28T17:36:01.948Z"
-last_activity: 2026-02-28 — Phase 87-01 complete (Data Table .dark block pruned to 19 oklch/value-inversion exceptions; 10 semantic-cascade tokens removed)
+status: completed
+last_updated: "2026-02-28T17:36:35.542Z"
+last_activity: 2026-02-28 — Phase 87-03 complete (Data-table SKILL.md CSS tokens expanded from 18 stale entries to 35 accurate entries; selected-bg corrected to oklch(0.97 0.01 250); 12-entry Behavior Notes section added)
 progress:
   total_phases: 83
-  completed_phases: 82
+  completed_phases: 83
   total_plans: 288
-  completed_plans: 287
+  completed_plans: 288
   percent: 100
 ---
 
@@ -25,10 +25,10 @@ See: .planning/PROJECT.md (updated 2026-02-27)
 ## Current Position
 
 **Milestone:** v8.0 Design System Polish — IN PROGRESS
-**Phase:** 87 of 87 (Data Table Polish) — IN PROGRESS
-**Plan:** 1 of 3 in Phase 87 — COMPLETE
-**Status:** In progress
-**Last activity:** 2026-02-28 — Phase 87-01 complete (Data Table .dark block pruned to 19 oklch/value-inversion exceptions; 10 semantic-cascade tokens removed)
+**Phase:** 87 of 87 (Data Table Polish) — COMPLETE
+**Plan:** 3 of 3 in Phase 87 — COMPLETE
+**Status:** Milestone complete
+**Last activity:** 2026-02-28 — Phase 87-03 complete (Data-table SKILL.md CSS tokens expanded from 18 stale entries to 35 accurate entries; selected-bg corrected to oklch(0.97 0.01 250); 12-entry Behavior Notes section added)
 
 **Progress:**
 [██████████] 100%
@@ -92,6 +92,7 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 | Phase 86-tabs P03 | 1min | 1 tasks | 1 files |
 | Phase 87-data-table P01 | 2min | 1 tasks | 1 files |
 | Phase 87-data-table P03 | 1min | 1 tasks | 1 files |
+| Phase 87-data-table P02 | 1min | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -153,6 +154,8 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 - Phase 86-01: Tabs dark mode governed by semantic .dark overrides — 7 hardcoded .dark --ui-tabs-* declarations removed; double-fallback cascade in :root is sufficient (same pattern as Phases 70-01 through 85-01); no .dark exceptions required (unlike checkbox check-color: white or switch thumb-bg: white)
 - Phase 86-03: Tabs SKILL.md CSS token color defaults corrected to double-fallback var() form; --ui-tabs-tab-active-bg uses literal white fallback (matching tailwind.css :root); Behavior Notes section added with 13 entries (state management, controlled/uncontrolled mode, orientation, activation mode, roving tabindex, animated indicator, overflow scroll, lazy panels, data-state, keyboard nav, panel tabindex, SSR compatibility)
 - Phase 87-01: Data Table dark mode partially governed by semantic .dark cascade — 10 hardcoded .dark --ui-data-table-* declarations (header-bg, row-bg, row-hover-bg, border-color, text-color, header-text, skeleton-base, skeleton-highlight, menu-bg, badge-default-text) removed; 19 exception tokens retained (oklch literals for selected-bg/hover-bg, value inversions for header-hover-bg/overlay-bg/editable-hover-bg/badge-default-bg, stronger opacity for sticky-shadow/menu-shadow, all 10 badge color variants, editing-bg with dark base)
+- Phase 87-02: dataTableCSSVars expanded from 18 stale entries to 35 accurate entries — all color defaults use double-fallback var() form or exact oklch/rgba matching tailwind.css :root; selected-bg uses oklch(0.97 0.01 250) not rgba(59,130,246,0.1); banner-bg uses color-mix() form matching component default; 17 previously missing tokens (sticky-shadow, menu-bg, menu-shadow, editable-hover-bg, editing-bg, 12 badge tokens) added
+- Phase 87-03: Data-table SKILL.md CSS token table expanded from 18 stale entries to 35 accurate entries matching tailwind.css :root; selected-bg corrected from rgba(59,130,246,0.1) to oklch(0.97 0.01 250); 17 new tokens added (sticky-shadow, menu-bg, menu-shadow, editable-hover-bg, editing-bg, badge-default-bg/text, badge-green/blue/red/yellow/purple bg/text); Behavior Notes section with 12 entries added
 
 ### Architecture Notes
 
@@ -183,14 +186,14 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 ## Session Continuity
 
 ### Last Session
-- Phase 87-01: Data Table .dark block pruned to 19 exceptions; 10 semantic-cascade declarations removed
+- Phase 87-03: Data-table SKILL.md CSS tokens expanded from 18 stale entries to 35 accurate entries; selected-bg corrected to oklch(0.97 0.01 250); Behavior Notes section with 12 entries added
 
 ### Next Actions
-Execute Phase 87-02 (Data Table docs update).
+Phase 87 complete — all 3 plans executed. Milestone v8.0 Design System Polish complete.
 
 ### Open Questions
 *None.*
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-02-28 — Phase 86-03 complete (Tabs SKILL.md CSS tokens corrected to double-fallback var() form; --ui-tabs-tab-active-bg literal white fallback; Behavior Notes with 13 entries)*
+*Last updated: 2026-02-28 — Phase 87-03 complete (Data-table SKILL.md CSS tokens expanded from 18 stale to 35 accurate entries; selected-bg corrected to oklch; Behavior Notes with 12 entries)*
