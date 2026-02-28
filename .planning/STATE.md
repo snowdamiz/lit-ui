@@ -2,9 +2,9 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Design System Polish
-status: executing
-last_updated: "2026-02-28T07:54:06.959Z"
-last_activity: 2026-02-28 — Phase 83-02 complete (popoverCSSVars color token defaults corrected to double-fallback var() form; shadow corrected to two-layer 0.08 opacity; cssVarsCode replaced hex literals with semantic token references)
+status: completed
+last_updated: "2026-02-28T07:57:14.948Z"
+last_activity: 2026-02-28 — Phase 83-03 complete (Popover SKILL.md CSS token defaults corrected to double-fallback var() form; shadow two-layer 0.08 opacity; z-index corrected to 45; Behavior Notes section added with 13 entries)
 progress:
   total_phases: 79
   completed_phases: 79
@@ -27,7 +27,7 @@ See: .planning/PROJECT.md (updated 2026-02-27)
 **Milestone:** v8.0 Design System Polish — IN PROGRESS
 **Phase:** 83 of 87 (Popover Polish) — COMPLETE
 **Plan:** 3 of 3 in Phase 83 — COMPLETE
-**Status:** In progress
+**Status:** Milestone complete
 **Last activity:** 2026-02-28 — Phase 83-03 complete (Popover SKILL.md CSS token defaults corrected to double-fallback var() form; shadow two-layer 0.08 opacity; z-index corrected to 45; Behavior Notes section added with 13 entries)
 
 **Progress:**
