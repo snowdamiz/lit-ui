@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Design System Polish
 status: completed
-last_updated: "2026-02-28T08:30:03.581Z"
+last_updated: "2026-02-28T08:34:00.778Z"
 last_activity: 2026-02-28 — Phase 85-03 complete (Accordion SKILL.md CSS tokens corrected 13→14 entries; --ui-accordion-gap added; 5 color token defaults updated to double-fallback var() form; Behavior Notes section with 13 entries added)
 progress:
   total_phases: 81
@@ -27,7 +27,7 @@ See: .planning/PROJECT.md (updated 2026-02-27)
 **Milestone:** v8.0 Design System Polish — IN PROGRESS
 **Phase:** 85 of 87 (Accordion Polish) — IN PROGRESS
 **Plan:** 3 of 3 in Phase 85 — COMPLETE
-**Status:** Phase 85 complete
+**Status:** Milestone complete
 **Last activity:** 2026-02-28 — Phase 85-03 complete (Accordion SKILL.md CSS tokens corrected 13→14 entries; --ui-accordion-gap added; 5 color token defaults updated to double-fallback var() form; Behavior Notes section with 13 entries added)
 
 **Progress:**
