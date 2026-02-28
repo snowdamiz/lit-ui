@@ -38,8 +38,8 @@ Requirements for the v9.0 Charts System milestone. Each maps to a roadmap phase.
 
 ### Area Chart
 
-- [ ] **AREA-01**: Developer can render a filled area chart with `stacked` and `smooth` options
-- [ ] **AREA-02**: Developer can stream real-time data points into an area chart via `pushData()`
+- [x] **AREA-01**: Developer can render a filled area chart with `stacked` and `smooth` options
+- [x] **AREA-02**: Developer can stream real-time data points into an area chart via `pushData()`
 
 ### Bar Chart
 
@@ -137,8 +137,8 @@ Which phases cover which requirements. Populated during roadmap creation.
 | LINE-01 | Phase 89 | Complete |
 | LINE-02 | Phase 89 | Complete |
 | LINE-03 | Phase 89 | Complete |
-| AREA-01 | Phase 89 | Pending |
-| AREA-02 | Phase 89 | Pending |
+| AREA-01 | Phase 89 | Complete |
+| AREA-02 | Phase 89 | Complete |
 | BAR-01 | Phase 90 | Pending |
 | BAR-02 | Phase 90 | Pending |
 | BAR-03 | Phase 90 | Pending |

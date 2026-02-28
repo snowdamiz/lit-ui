@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Charts System
 status: unknown
-last_updated: "2026-02-28T19:58:51.414Z"
+last_updated: "2026-02-28T20:45:24.248Z"
 progress:
-  total_phases: 65
-  completed_phases: 65
-  total_plans: 236
-  completed_plans: 236
+  total_phases: 66
+  completed_phases: 66
+  total_plans: 238
+  completed_plans: 238
 ---
 
 # Project State: LitUI
@@ -18,16 +18,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-02-28)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** Phase 89 — Line Chart + Area Chart
+**Current focus:** Phase 90 — next chart type
 
 ## Current Position
 
-Phase: 89 of 96 (Line Chart + Area Chart)
-Plan: 1 of 2 in current phase (89-01 complete)
-Status: In progress
-Last activity: 2026-02-28 — Completed 89-01: line-option-builder, line-registry, LuiLineChart with smooth/zoom/markLines and appendData streaming
+Phase: 89 of 96 (Line Chart + Area Chart — COMPLETE)
+Plan: 2 of 2 in current phase (89-02 complete)
+Status: Phase 89 complete
+Last activity: 2026-02-28 — Completed 89-02: LuiAreaChart with smooth/stacked/zoom props and full @lit-ui/charts public API exports
 
-Progress: [█░░░░░░░░░] 11% (v9.0 milestone, 9 phases, 1 of 9 complete)
+Progress: [██░░░░░░░░] 22% (v9.0 milestone, 9 phases, 2 of 9 complete)
 
 ## Accumulated Context
 
@@ -52,6 +52,8 @@ Progress: [█░░░░░░░░░] 11% (v9.0 milestone, 9 phases, 1 of 9
 - 89-01: buildLineOption mode param ('line'|'area') — single function for both chart types
 - 89-01: markLine on index-0 series only — prevents N duplicate threshold lines with N series
 - 89-01: stack uses string 'total' not boolean — ECharts requires string group name to activate stacking
+- 89-02: LuiAreaChart reuses registerLineModules() — ECharts has no separate AreaChart module; areaStyle is a line series property
+- 89-02: stacked prop Boolean on component but translates to string 'total' in buildLineOption() — consistent with Plan 01 decision
 
 ### Architecture Notes
 
@@ -89,21 +91,22 @@ Progress: [█░░░░░░░░░] 11% (v9.0 milestone, 9 phases, 1 of 9
 | 88 | 02 | 2min | 2 | 2 |
 | 88 | 03 | 4min | 2 | 2 |
 | 89 | 01 | 2min | 2 | 3 |
+| 89 | 02 | 1min | 2 | 2 |
 
 ## Session Continuity
 
 ### Last Session
-- 2026-02-28: Completed 89-01 — line-option-builder, line-registry, LuiLineChart (LINE-01/02/03 done)
+- 2026-02-28: Completed 89-02 — LuiAreaChart, updated index.ts with full Phase 89 API exports (AREA-01/02 done)
 
 ### Stopped At
-Completed 89-01-PLAN.md
+Completed 89-02-PLAN.md
 
 ### Next Actions
-Continue to 89-02 — LuiAreaChart (area-chart.ts, area-registry.ts) and index.ts export updates for both charts.
+Phase 89 complete. Continue to Phase 90 — next chart type following the per-chart registry + option-builder pattern.
 
 ### Open Questions
 *None.*
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-02-28 — 89-01 complete, LuiLineChart implemented, LINE-01/02/03 requirements done*
+*Last updated: 2026-02-28 — 89-02 complete, LuiAreaChart + index.ts exports, Phase 89 done (LINE-01/02/03 + AREA-01/02)*
