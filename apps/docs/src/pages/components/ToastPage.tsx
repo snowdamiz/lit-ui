@@ -60,15 +60,15 @@ type CSSVarDef = { name: string; default: string; description: string };
 
 const toastCSSVars: CSSVarDef[] = [
   // Base
-  { name: '--ui-toast-bg', default: 'var(--color-card)', description: 'Background color of the toast.' },
-  { name: '--ui-toast-text', default: 'var(--color-card-foreground)', description: 'Text color of the toast.' },
-  { name: '--ui-toast-border', default: 'var(--color-border)', description: 'Border color of the toast.' },
+  { name: '--ui-toast-bg', default: 'var(--color-card, var(--ui-color-card))', description: 'Background color of the toast.' },
+  { name: '--ui-toast-text', default: 'var(--color-card-foreground, var(--ui-color-card-foreground))', description: 'Text color of the toast.' },
+  { name: '--ui-toast-border', default: 'var(--color-border, var(--ui-color-border))', description: 'Border color of the toast.' },
   { name: '--ui-toast-radius', default: '0.5rem', description: 'Border radius of the toast.' },
   { name: '--ui-toast-padding', default: '1rem', description: 'Inner padding of the toast.' },
-  { name: '--ui-toast-shadow', default: '0 10px 15px -3px rgb(0 0 0 / 0.1)', description: 'Box shadow of the toast.' },
+  { name: '--ui-toast-shadow', default: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)', description: 'Box shadow of the toast.' },
   { name: '--ui-toast-max-width', default: '24rem', description: 'Maximum width of the toast container.' },
   { name: '--ui-toast-gap', default: '0.75rem', description: 'Gap between stacked toasts.' },
-  { name: '--ui-toast-z-index', default: '50', description: 'Z-index of the toaster container.' },
+  { name: '--ui-toast-z-index', default: '55', description: 'Z-index of the toaster container.' },
   // Success variant
   { name: '--ui-toast-success-bg', default: 'oklch(0.95 0.05 150)', description: 'Background color for success toasts.' },
   { name: '--ui-toast-success-border', default: 'oklch(0.70 0.15 150)', description: 'Border color for success toasts.' },
@@ -346,21 +346,18 @@ const toasterConfigCode = `<!-- Add to your app's root layout -->
 
 const cssVarsCode = `/* Global override - affects all toasts */
 :root {
-  --ui-toast-radius: 1rem;
-  --ui-toast-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
-  --ui-toast-padding: 1.25rem;
+  --ui-toast-bg: var(--color-card, var(--ui-color-card));
+  --ui-toast-text: var(--color-card-foreground, var(--ui-color-card-foreground));
+  --ui-toast-border: var(--color-border, var(--ui-color-border));
+  --ui-toast-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
   --ui-toast-max-width: 28rem;
 }
 
 /* Customize variant colors */
 :root {
-  --ui-toast-success-bg: #f0fdf4;
-  --ui-toast-success-border: #86efac;
-  --ui-toast-success-icon: #16a34a;
-
-  --ui-toast-error-bg: #fef2f2;
-  --ui-toast-error-border: #fca5a5;
-  --ui-toast-error-icon: #dc2626;
+  --ui-toast-success-bg: oklch(0.95 0.05 150);
+  --ui-toast-success-border: oklch(0.70 0.15 150);
+  --ui-toast-success-icon: oklch(0.55 0.20 150);
 }`;
 
 // ---------------------------------------------------------------------------
