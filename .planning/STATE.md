@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Design System Polish
-status: completed
-last_updated: "2026-02-28T04:36:22.473Z"
-last_activity: 2026-02-28 — Phase 76-03 complete (radio SKILL.md CSS tokens expanded from 10 to 20 entries, event name fixed from change to ui-change, Behavior Notes section added with 9 entries)
+status: in_progress
+last_updated: "2026-02-27T00:01:00Z"
+last_activity: 2026-02-27 — Phase 76-01 complete (Radio dark mode — 5 hardcoded oklch .dark overrides removed; semantic .dark cascade now governs radio dark mode)
 progress:
   total_phases: 72
-  completed_phases: 72
+  completed_phases: 71
   total_plans: 255
-  completed_plans: 255
-  percent: 100
+  completed_plans: 253
+  percent: 99
 ---
 
 # Project State: LitUI
@@ -25,13 +25,13 @@ See: .planning/PROJECT.md (updated 2026-02-27)
 ## Current Position
 
 **Milestone:** v8.0 Design System Polish — IN PROGRESS
-**Phase:** 76 of 87 (Radio Polish) — COMPLETE
-**Plan:** 3 of 3 in Phase 76 — COMPLETE
+**Phase:** 76 of 87 (Radio Polish) — IN PROGRESS
+**Plan:** 1 of 3 in Phase 76 — COMPLETE
 **Status:** In progress
-**Last activity:** 2026-02-28 — Phase 76-03 complete (Radio SKILL.md CSS tokens expanded from 10 to 20 entries, event name fixed from change to ui-change, Behavior Notes section added with 9 entries)
+**Last activity:** 2026-02-27 — Phase 76-01 complete (Radio dark mode — 5 hardcoded oklch .dark overrides removed; semantic .dark cascade now governs radio dark mode)
 
 **Progress:**
-[██████████] 100%
+[██████████] 99%
 Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 
 ## Performance Metrics
@@ -60,8 +60,6 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 | Phase 75-checkbox P02 | 1min | 1 tasks | 1 files |
 | Phase 75-checkbox P03 | 1min | 1 tasks | 1 files |
 | Phase 76-radio P01 | 1min | 1 tasks | 1 files |
-| Phase 76-radio P02 | 1min | 1 tasks | 1 files |
-| Phase 76-radio P03 | 1min | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -90,8 +88,7 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 - Phase 75-01: Checkbox dark mode governed by semantic .dark overrides — 7 hardcoded .dark --ui-checkbox-* declarations removed; double-fallback cascade in :root is sufficient (same pattern as Phase 70-01, 71-01, 72-01, 73-01, 74-01); --ui-checkbox-check-color kept as dark mode exception (white :root value cannot cascade to dark)
 - Phase 75-02: Checkbox docs CSS token table expanded from 12 to 21 entries — added size (sm/md/lg), border-width, font-size (sm/md/lg), indeterminate state tokens; corrected check-color default to 'white' (not var(--color-primary-foreground)); corrected radius default to '0.25rem' (not var(--radius-sm)); updated all color token defaults to double-fallback var() form matching tailwind.css :root (same pattern as Phase 72-02, 73-02, 74-02)
 - Phase 75-03: Checkbox SKILL.md CSS tokens expanded from 12 to 21 entries; check-color default corrected to white (was var(--color-primary-foreground)); radius default corrected to 0.25rem (was var(--radius-sm)); Events table event name corrected from change to ui-change; lui-checkbox-group ui-change event added; Behavior Notes section added with 9 entries (same pattern as Phase 70-03, 71-03, 72-03, 73-03, 74-03)
-- Phase 76-02: Radio docs CSS token table expanded from 10 to 20 entries — added size (sm/md/lg), dot-size (sm/md/lg), font-size (sm/md/lg), border-error tokens; updated all color token defaults to double-fallback var() form matching tailwind.css :root (same pattern as Phase 72-02, 73-02, 74-02, 75-02)
-- Phase 76-03: Radio SKILL.md CSS tokens expanded from 10 to 20 entries with exact tailwind.css :root values; Events table event name corrected from change to ui-change; ui-radio-change internal event documented with warning; Behavior Notes section added with 9 entries (same pattern as Phase 75-03)
+- Phase 76-01: Radio dark mode governed by semantic .dark overrides — 5 hardcoded .dark --ui-radio-* declarations removed; double-fallback cascade in :root is sufficient (same pattern as Phase 70-01, 71-01, 72-01, 73-01, 74-01, 75-01); no .dark exceptions required (unlike checkbox check-color: white)
 
 ### Architecture Notes
 
@@ -122,16 +119,14 @@ Milestone: [░░░░░░░░░░] 2%  (1/55 plans complete)
 ## Session Continuity
 
 ### Last Session
-- Phase 76-01: Radio dark mode polished — removed hardcoded .dark --ui-radio-* declarations; double-fallback cascade in :root sufficient (same pattern as Phase 75-01)
-- Phase 76-02: Radio docs CSS token table expanded from 10 to 20 entries, corrected all color defaults to double-fallback var() form matching tailwind.css :root exactly
-- Phase 76-03: Radio SKILL.md expanded from 10 to 20 CSS tokens, event name fixed (change -> ui-change), internal ui-radio-change documented, Behavior Notes section added with 9 entries
+- Phase 76-01: Radio dark mode polished — removed 5 hardcoded oklch overrides from .dark block; no exceptions required (unlike checkbox check-color)
 
 ### Next Actions
-Execute next phase after Phase 76-radio (all 3 plans complete). Phase 76 is fully complete.
+Execute Phase 76-02: Radio CSS token docs expansion.
 
 ### Open Questions
 *None.*
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-02-28 — Phase 76-03 complete (Radio SKILL.md expanded from 10 to 20 CSS tokens, event name fixed, Behavior Notes section added)*
+*Last updated: 2026-02-27 — Phase 76-01 complete (Radio dark mode — 5 hardcoded oklch .dark overrides removed, semantic .dark cascade governs radio dark mode)*
