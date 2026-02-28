@@ -229,22 +229,12 @@
   --ui-date-range-compare-highlight-bg: oklch(0.30 0.06 85);
   --ui-date-range-compare-preview-bg: oklch(0.22 0.04 85);
 
-  /* Data Table dark mode */
-  --ui-data-table-header-bg: var(--color-gray-800);
-  --ui-data-table-row-bg: var(--color-gray-950);
-  --ui-data-table-row-hover-bg: var(--color-gray-800);
-  --ui-data-table-border-color: var(--color-gray-700);
-  --ui-data-table-text-color: var(--color-gray-50);
-  --ui-data-table-header-text: var(--color-gray-400);
+  /* Data Table dark mode exceptions (oklch literals and value inversions that cannot cascade) */
   --ui-data-table-selected-bg: oklch(0.25 0.03 250);
   --ui-data-table-selected-hover-bg: oklch(0.28 0.04 250);
-  --ui-data-table-skeleton-base: var(--color-gray-700);
-  --ui-data-table-skeleton-highlight: var(--color-gray-600);
   --ui-data-table-header-hover-bg: rgba(255, 255, 255, 0.05);
   --ui-data-table-sticky-shadow: rgba(0, 0, 0, 0.2);
-  --ui-data-table-menu-bg: var(--color-gray-900);
   --ui-data-table-badge-default-bg: rgba(255, 255, 255, 0.1);
-  --ui-data-table-badge-default-text: var(--color-gray-50);
   --ui-data-table-badge-green-bg: oklch(0.30 0.06 150);
   --ui-data-table-badge-green-text: oklch(0.80 0.12 150);
   --ui-data-table-badge-blue-bg: oklch(0.30 0.06 250);
