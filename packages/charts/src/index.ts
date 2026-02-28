@@ -19,3 +19,7 @@ export type { BarChartSeries, BarOptionProps } from './shared/bar-option-builder
 // Phase 91: Pie + Donut Chart
 export { LuiPieChart } from './pie/pie-chart.js';
 export type { PieSlice, PieOptionProps } from './shared/pie-option-builder.js';
+
+// Phase 92: Scatter + Bubble Chart
+export { LuiScatterChart } from './scatter/scatter-chart.js';
+export type { ScatterPoint, ScatterOptionProps } from './shared/scatter-option-builder.js';
