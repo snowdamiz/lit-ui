@@ -117,7 +117,7 @@ Requirements for the Design System Polish milestone. Each component phase maps t
 
 ### Data Table
 
-- [ ] **DAT-01**: Data Table default styles match the v8.0 monochrome theme
+- [x] **DAT-01**: Data Table default styles match the v8.0 monochrome theme
 - [ ] **DAT-02**: Data Table docs page is accurate and up-to-date
 - [ ] **DAT-03**: `skill/skills/data-table` skill file is accurate and up-to-date
 
@@ -192,7 +192,7 @@ Requirements for the Design System Polish milestone. Each component phase maps t
 | TAB-01 | Phase 86 | Complete |
 | TAB-02 | Phase 86 | Complete |
 | TAB-03 | Phase 86 | Complete |
-| DAT-01 | Phase 87 | Pending |
+| DAT-01 | Phase 87 | Complete |
 | DAT-02 | Phase 87 | Pending |
 | DAT-03 | Phase 87 | Pending |
 
