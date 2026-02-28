@@ -305,9 +305,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 85-01-PLAN.md — Remove 4 hardcoded accordion dark mode declarations from .dark block (ACC-01)
-- [ ] 85-02-PLAN.md — Update AccordionPage.tsx CSS vars to 14 accurate entries with double-fallback defaults (ACC-02)
-- [ ] 85-03-PLAN.md — Fix skill/skills/accordion/SKILL.md CSS token defaults and add Behavior Notes (ACC-03)
+- [x] 85-01-PLAN.md — Remove 4 hardcoded accordion dark mode declarations from .dark block (ACC-01)
+- [x] 85-02-PLAN.md — Update AccordionPage.tsx CSS vars to 14 accurate entries with double-fallback defaults (ACC-02)
+- [x] 85-03-PLAN.md — Fix skill/skills/accordion/SKILL.md CSS token defaults and add Behavior Notes (ACC-03)
 
 ### Phase 86: Tabs
 **Goal**: Tabs component looks and feels like shadcn Tabs out of the box, with accurate docs and skill file
@@ -317,12 +317,12 @@ Plans:
   1. Tabs renders with correct monochrome default styles (tablist, active indicator, panel) matching the token spec
   2. The Tabs docs page reflects the actual component API and examples without stale content
   3. `skill/skills/tabs` accurately describes the component so Claude can implement it correctly
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 86-01: Polish Tabs CSS defaults to match monochrome theme
-- [ ] 86-02: Update Tabs docs page for accuracy
-- [ ] 86-03: Update `skill/skills/tabs` skill file
+- [ ] 86-01-PLAN.md — Remove 7 hardcoded tabs dark mode declarations from .dark block (TAB-01)
+- [ ] 86-02-PLAN.md — Fix tabsCSSVars color defaults to double-fallback form in TabsPage.tsx (TAB-02)
+- [ ] 86-03-PLAN.md — Fix skill/skills/tabs/SKILL.md CSS token defaults and add Behavior Notes (TAB-03)
 
 ### Phase 87: Data Table
 **Goal**: Data Table component looks polished and consistent with the monochrome theme, with accurate docs and skill file
