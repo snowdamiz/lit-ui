@@ -92,12 +92,12 @@ Plans:
   1. Dialog renders with correct monochrome default styles (backdrop, panel, borders) matching the token spec
   2. The Dialog docs page reflects the actual component API and examples without stale content
   3. `skill/skills/dialog` accurately describes the component so Claude can implement it correctly
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 71-01: Polish Dialog CSS defaults to match monochrome theme
-- [ ] 71-02: Update Dialog docs page for accuracy
-- [ ] 71-03: Update `skill/skills/dialog` skill file
+- [ ] 71-01-PLAN.md — Remove hardcoded dialog dark mode tokens from .dark block (DLG-01)
+- [ ] 71-02-PLAN.md — Update DialogPage.tsx CSS vars to --ui-dialog-* names (DLG-02)
+- [ ] 71-03-PLAN.md — Rewrite skill/skills/dialog/SKILL.md with accurate v8.0 content (DLG-03)
 
 ### Phase 72: Input
 **Goal**: Input component looks and feels like shadcn Input out of the box, with accurate docs and skill file
