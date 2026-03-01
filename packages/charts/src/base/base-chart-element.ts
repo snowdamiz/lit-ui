@@ -314,7 +314,7 @@ export abstract class BaseChartElement extends TailwindElement {
    * MEDIUM-02: getInstanceByDom check handles Chrome moveBefore() double-init
    * scenario where the element is moved in the DOM without being disconnected first.
    */
-  private async _initChart(): Promise<void> {
+  protected async _initChart(): Promise<void> {
     // Register chart-type-specific ECharts modules (implemented by subclass)
     await this._registerModules();
 
