@@ -18,14 +18,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-01)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** v10.0 WebGPU Charts — Phase 98 Plans 01+02 complete, Phase 98 done
+**Current focus:** v10.0 WebGPU Charts — Phase 99 next (Incremental Moving Average State Machine)
 
 ## Current Position
 
-Phase: 98-webgpu-detector-renderer-infrastructure
-Plan: 02 complete (Phase 98 all plans done)
-Status: In progress — Phase 98 complete, Phase 99 next
-Last activity: 2026-03-01 — 98-02 complete: WebGPU detection in BaseChartElement, RendererTier exported
+Phase: 99-incremental-moving-average-state-machine
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-03-01 — Phase 98 complete: WebGPU detector + GPUDevice singleton infrastructure shipped
 
 ## Accumulated Context
 
@@ -86,4 +86,4 @@ Last activity: 2026-03-01 — 98-02 complete: WebGPU detection in BaseChartEleme
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-03-01 — 98-02 complete: WebGPU detection in BaseChartElement (enableWebGpu, renderer, _detectRenderer), RendererTier exported from @lit-ui/charts*
+*Last updated: 2026-03-01 — Phase 98 complete, transitioned to Phase 99*

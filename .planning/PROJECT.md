@@ -107,6 +107,8 @@ Developers can use polished, accessible UI components in any framework without l
 - ✓ All 18 component default styles polished to shadcn aesthetic via semantic dark mode cascade — v8.0
 - ✓ All 18 component docs pages expanded with complete CSS token tables (double-fallback form) — v8.0
 - ✓ All 18 component skill files updated with complete CSS tokens and Behavior Notes sections — v8.0
+- ✓ Auto-detecting WebGPU renderer for all chart types with WebGL → Canvas fallback chain (WEBGPU-01) — v10.0
+- ✓ GPUDevice singleton shared across all chart instances via webgpu-device.ts (WEBGPU-03) — v10.0
 - ✓ @lit-ui/charts package with ECharts 5.6 + ECharts GL integration, BaseChartElement with SSR guard and WebGL lifecycle — v9.0
 - ✓ 8 chart types: Line, Area, Bar, Pie/Donut, Scatter/Bubble (WebGL 500K+ pts), Heatmap, Candlestick (OHLC), Treemap — v9.0
 - ✓ Real-time streaming via `pushData()` with appendData path for Line/Area and circular buffer for all others — v9.0
@@ -121,7 +123,7 @@ Developers can use polished, accessible UI components in any framework without l
 
 - [ ] Native `appendData` streaming for Line/Area at 1M+ continuous points without `setOption` wipeout (PERF-01)
 - [ ] Moving average computed series overlay for streaming candlestick (PERF-03)
-- [ ] Auto-detecting WebGPU renderer for all chart types with WebGL → Canvas fallback chain (WEBGPU-01)
+- [ ] WebGPU two-layer canvas for Line/Area on WebGPU browsers (WEBGPU-02)
 
 ### Deferred from v9.0
 
@@ -255,6 +257,10 @@ Developers can use polished, accessible UI components in any framework without l
 | THEME-SPEC.md as authoritative token reference | Phases needed concrete spec, not abstract descriptions | ✓ Good — all 18 phases executed consistently |
 | Retain oklch literals and white values as .dark exceptions | These cannot cascade from :root through semantic tokens | ✓ Good — correct per-exception approach |
 | ECharts in dependencies (not peerDeps) for @lit-ui/charts | Heavy dep is implementation detail, not user contract | ✓ Good — zero-config install for chart users |
+| Triple-slash directive for @webgpu/types (not tsconfig types array) | Scopes WebGPU types to webgpu-device.ts only — no base tsconfig conflict | ✓ Good — clean isolation |
+| Cache Promise\<GPUDevice\> not the adapter in singleton | Subsequent callers skip requestDevice() without consuming their adapters | ✓ Good — spec-correct, idempotent |
+| renderer field NOT decorated with @property() | GPU tier is infrastructure state — must not trigger Lit reactive update cycles | ✓ Good — no spurious re-renders |
+| _detectRenderer() is protected not private | Phase 101 WebGPU canvas layer subclasses may need to override detection | ✓ Good — correct extensibility point |
 | echarts-gl as optional peer dep, dynamic import only | Static top-level import crashes SSR; lazy-load on demand | ✓ Good — SSR safe, no bundle overhead without WebGL |
 | Pin ECharts to 5.6.0 | echarts-gl 2.0.9 only supports ECharts 5.x; no 3.x release | ✓ Good — stable dependency pair |
 | ThemeBridge via getComputedStyle | ECharts canvas cannot resolve CSS var() natively | ✓ Good — correct design, no runtime overhead |
@@ -283,4 +289,4 @@ Developers can use polished, accessible UI components in any framework without l
 - **v9.0 Charts System** (2026-03-01): `@lit-ui/charts` package with 8 chart types (ECharts 5.6 + ECharts GL), WebGL rendering for 500K+ point datasets, real-time streaming via `pushData()`, CSS token theming, CLI distribution, 8 interactive docs pages, and 9 AI skill files with chart-specific gotcha warnings
 
 ---
-*Last updated: 2026-03-01 after v10.0 milestone started*
+*Last updated: 2026-03-01 after Phase 98*
