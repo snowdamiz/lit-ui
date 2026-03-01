@@ -23,9 +23,9 @@ See: .planning/PROJECT.md (updated 2026-03-01)
 ## Current Position
 
 Phase: 102-docs-skills-update
-Plan: 02 complete — candlestick-chart SKILL.md updated with v10.0 MA API: MAConfig.color optional with CSS token defaults, showType legend label, NaN-gap null rule, LOOKS DONE BUT ISN'T reinit warning.
-Status: Phase 102 Plan 02 of 03 done
-Last activity: 2026-03-01 — 102-02 complete: candlestick skill SKILL.md updated with accurate MAConfig type (color?: optional, showType?: boolean), usage examples (CSS token defaults + NaN streaming), 4 new Behavior Notes (MA CSS colors, NaN gaps, showType legend, reinit warning)
+Plan: 03 complete — LineChartPage and AreaChartPage updated with v10.0 WebGPU docs: enable-webgpu PropDef, renderer PropDef, corrected max-points default (500000), ChartGPU dynamic-import tree-shaking note, WebGPU browser support table (Chrome/Edge/Firefox 141+/Safari 26+/Fallback Canvas). Phase 102 documentation complete.
+Status: Phase 102 complete (Plan 03 of 03 done)
+Last activity: 2026-03-01 — 102-03 complete: LineChartPage and AreaChartPage have enable-webgpu (boolean, default false), renderer (read-only, 'webgpu'|'webgl'|'canvas'), max-points corrected to 500000, ChartGPU dynamic-import note in tree-shaking callout, WebGPU browser support table
 
 ## Accumulated Context
 
@@ -62,6 +62,7 @@ Last activity: 2026-03-01 — 102-02 complete: candlestick skill SKILL.md update
 - v10.0 (101-02): disconnectedCallback() reverse-init order: RAF cancel → gpuResizeObserver.disconnect → gpuChart.dispose → void releaseGpuDevice() → super
 - v10.0 (101-03): Area chart WebGPU integration identical to line chart — no new decisions; all patterns inherited from 101-02 (appendData(seriesIndex, pairs), adapter null guard, double-cast, reverse-init order)
 - v10.0 (102-02): candlestick SKILL.md: MAConfig.color documented as optional; showType, NaN-gap rule, CSS token default color sequence (color-2 to color-5), and LOOKS DONE BUT ISN'T reinit warning added
+- v10.0 (102-03): max-points default corrected from 1000 to 500000 in LineChartPage and AreaChartPage docs to match Phase 100 override; renderer PropDef description explicitly warns against synchronous read before renderer-selected event
 - v9.0: ECharts pinned to 5.6.0; echarts-gl as dynamic-import-only optional peer dep
 - v9.0: appendData/setOption strict boundary — setOption after appendData wipes streamed data (CRITICAL-03)
 - v9.0: BaseChartElement-first — all 5 cross-cutting concerns solved before any chart built
@@ -110,4 +111,4 @@ Last activity: 2026-03-01 — 102-02 complete: candlestick skill SKILL.md update
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-03-01 — 102-02 complete: candlestick-chart SKILL.md updated with v10.0 MA API (optional color, showType, NaN-gap rule, LOOKS DONE BUT ISN'T reinit warning)*
+*Last updated: 2026-03-01 — 102-03 complete: LineChartPage and AreaChartPage updated with v10.0 WebGPU docs (enable-webgpu, renderer, max-points 500000, ChartGPU tree-shaking note, browser support table). Phase 102 complete.*
