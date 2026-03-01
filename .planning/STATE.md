@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Charts System
 status: unknown
-last_updated: "2026-03-01T04:04:00.138Z"
+last_updated: "2026-03-01T04:41:43.299Z"
 progress:
-  total_phases: 72
+  total_phases: 73
   completed_phases: 72
-  total_plans: 250
-  completed_plans: 250
+  total_plans: 254
+  completed_plans: 251
 ---
 
 # Project State: LitUI
@@ -22,12 +22,12 @@ See: .planning/PROJECT.md (updated 2026-02-28)
 
 ## Current Position
 
-Phase: 95 of 96 (Treemap Chart — COMPLETE)
-Plan: 2 of 2 in current phase (95-02 complete — LuiTreemapChart component + index.ts Phase 95 exports)
-Status: Phase 95 complete — TREE-01 and TREE-02 fully delivered; LuiTreemapChart, TreemapNode, TreemapOptionProps all exported from @lit-ui/charts
-Last activity: 2026-03-01 — Completed 95-02: treemap-chart.ts (LuiTreemapChart with breadcrumb/rounded/level-colors) + index.ts (Phase 95 export block); Phase 95 complete
+Phase: 96 of 96 (CLI Integration and Documentation — IN PROGRESS)
+Plan: 1 of 4 in current phase (96-01 complete — multi-entry Vite build + subpath exports for @lit-ui/charts)
+Status: Phase 96 plan 01 complete — CLI-02 delivered; @lit-ui/charts now supports per-chart subpath imports with tree-shaking
+Last activity: 2026-03-01 — Completed 96-01: vite.config.ts (9-key multi-entry build) + package.json (8 subpath export entries); dist/ now has 9 named JS+DTS outputs
 
-Progress: [███░░░░░░░] 27% (v9.0 milestone, 9 phases, 6 of 9 complete)
+Progress: [████░░░░░░] 30% (v9.0 milestone, 9 phases, 6 of 9 complete)
 
 ## Accumulated Context
 
@@ -97,6 +97,8 @@ Progress: [███░░░░░░░] 27% (v9.0 milestone, 9 phases, 6 of 9
 - 95-02: notMerge: false in _applyData() preserves drill-down state when props change (Pitfall 5)
 - 95-02: pushData() overridden with console.warn no-op — prevents base class circular-buffer from overwriting hierarchical data (Pitfall 4)
 - 95-02: _parseLevelColors() validates array-of-arrays with Array.isArray(entry) — rejects flat string array (Pitfall 3)
+- 96-01: Bespoke defineConfig instead of createLibraryConfig for multi-entry chart builds — wrapper hardcodes fileName:'index', breaking per-entry naming
+- 96-01: fileName field omitted from lib config — Vite uses entry keys as output filenames automatically when fileName absent
 
 ### Architecture Notes
 
@@ -114,6 +116,7 @@ Progress: [███░░░░░░░] 27% (v9.0 milestone, 9 phases, 6 of 9
 - Phase 94 complete: LuiCandlestickChart (lui-candlestick-chart) exported from @lit-ui/charts with OhlcBar + MAConfig + CandlestickBarPoint + CandlestickOptionProps types; all CNDL requirements delivered
 - Phase 95 plan 01 complete: treemap-option-builder.ts (TreemapNode, TreemapOptionProps, buildTreemapOption) + treemap-registry.ts (registerTreemapModules with TreemapChart-only, no BreadcrumbComponent)
 - Phase 95 complete: LuiTreemapChart (lui-treemap-chart) exported from @lit-ui/charts with TreemapNode + TreemapOptionProps types; TREE-01/TREE-02 delivered
+- Phase 96 plan 01 complete: vite.config.ts (9-key multi-entry build) + package.json (8 subpath exports); @lit-ui/charts now has dist/line-chart.js through dist/treemap-chart.js with matching .d.ts; CLI-02 delivered
 
 ### TODOs
 *None.*
@@ -156,21 +159,22 @@ Progress: [███░░░░░░░] 27% (v9.0 milestone, 9 phases, 6 of 9
 | 94 | 02 | 2min | 2 | 2 |
 | 95 | 01 | 2min | 2 | 2 |
 | 95 | 02 | 1min | 2 | 2 |
+| 96 | 01 | 1min | 2 | 2 |
 
 ## Session Continuity
 
 ### Last Session
-- 2026-03-01: Completed 95-02 — treemap-chart.ts (LuiTreemapChart with breadcrumb/rounded/level-colors props, pushData no-op, _parseLevelColors validation) + index.ts (Phase 95 export block); Phase 95 fully complete
+- 2026-03-01: Completed 96-01 — vite.config.ts (bespoke multi-entry defineConfig, 9-key entry object) + package.json (8 subpath export entries ./line-chart through ./treemap-chart); @lit-ui/charts produces 9 JS+DTS outputs; CLI-02 delivered
 
 ### Stopped At
-Completed 095-02-PLAN.md
+Completed 096-01-PLAN.md
 
 ### Next Actions
-Phase 95 complete. Continue to Phase 96.
+Phase 96 plan 01 complete. Continue to Phase 96 plan 02.
 
 ### Open Questions
 *None.*
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-03-01 — 95-02 complete, LuiTreemapChart + index.ts Phase 95 exports, Phase 95 fully complete*
+*Last updated: 2026-03-01 — 96-01 complete, vite.config.ts multi-entry build + package.json subpath exports, CLI-02 delivered*

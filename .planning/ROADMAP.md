@@ -176,7 +176,7 @@ Plans:
 **Plans**: 4 plans
 
 Plans:
-- [ ] 096-01-PLAN.md — Subpath exports: multi-entry vite.config.ts + package.json exports map for all 8 charts
+- [x] 096-01-PLAN.md — Subpath exports: multi-entry vite.config.ts + package.json exports map for all 8 charts
 - [ ] 096-02-PLAN.md — CLI registry: 8 chart registry entries + 8 templates + install-component.ts npm mappings
 - [ ] 096-03-PLAN.md — Docs pages (wave 2): LineChartPage, AreaChartPage, BarChartPage, PieChartPage + @lit-ui/charts docs dep
 - [ ] 096-04-PLAN.md — Docs pages (wave 2): ScatterChartPage, HeatmapChartPage, CandlestickChartPage, TreemapChartPage + App.tsx routes + nav.ts Charts section
