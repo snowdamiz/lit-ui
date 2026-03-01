@@ -61,6 +61,9 @@ Last activity: 2026-03-01 — 102-03 complete: LineChartPage and AreaChartPage h
 - v10.0 (101-02): Incremental appendData tracking via _gpuFlushedLengths[] per series — x-index starts from lastFlushed, reset to [] in _triggerReset()
 - v10.0 (101-02): disconnectedCallback() reverse-init order: RAF cancel → gpuResizeObserver.disconnect → gpuChart.dispose → void releaseGpuDevice() → super
 - v10.0 (101-03): Area chart WebGPU integration identical to line chart — no new decisions; all patterns inherited from 101-02 (appendData(seriesIndex, pairs), adapter null guard, double-cast, reverse-init order)
+- v10.0 (102-01): renderer-selected added to shared charts SKILL.md because all 8 charts inherit _detectRenderer() from BaseChartElement — table note clarifies only line/area activate ChartGPU rendering
+- v10.0 (102-01): pushData seriesIndex kept out of shared methods table signature (base is single-arg); documented as note below table and in full in line/area sub-skill files
+- v10.0 (102-01): maxPoints override (500,000) documented in sub-skill Props section header rather than shared props table which correctly shows base default of 1000
 - v10.0 (102-02): candlestick SKILL.md: MAConfig.color documented as optional; showType, NaN-gap rule, CSS token default color sequence (color-2 to color-5), and LOOKS DONE BUT ISN'T reinit warning added
 - v10.0 (102-03): max-points default corrected from 1000 to 500000 in LineChartPage and AreaChartPage docs to match Phase 100 override; renderer PropDef description explicitly warns against synchronous read before renderer-selected event
 - v9.0: ECharts pinned to 5.6.0; echarts-gl as dynamic-import-only optional peer dep
@@ -111,4 +114,4 @@ Last activity: 2026-03-01 — 102-03 complete: LineChartPage and AreaChartPage h
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-03-01 — 102-03 complete: LineChartPage and AreaChartPage updated with v10.0 WebGPU docs (enable-webgpu, renderer, max-points 500000, ChartGPU tree-shaking note, browser support table). Phase 102 complete.*
+*Last updated: 2026-03-01 — 102-01 complete: line-chart, area-chart, and charts skill files updated with v10.0 WebGPU + streaming API (enable-webgpu, renderer-selected, pushData seriesIndex, maxPoints 500000). Phase 102 Plan 01 of 03 done.*
