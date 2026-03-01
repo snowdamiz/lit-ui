@@ -2,13 +2,13 @@
 gsd_state_version: 1.0
 milestone: v10.0
 milestone_name: WebGPU Charts
-status: roadmap_created
-last_updated: "2026-03-01T00:00:00.000Z"
+status: in_progress
+last_updated: "2026-03-01T00:07:17Z"
 progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 0
-  completed_plans: 0
+  completed_plans: 1
 ---
 
 # Project State: LitUI
@@ -18,20 +18,23 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-01)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** v10.0 WebGPU Charts — roadmap created, ready to plan Phase 98
+**Current focus:** v10.0 WebGPU Charts — Phase 98 Plan 01 complete, executing Plan 02
 
 ## Current Position
 
-Phase: Not started (roadmap created)
-Plan: —
-Status: Roadmap created — ready for phase planning
-Last activity: 2026-03-01 — v10.0 roadmap created (5 phases: 98-102)
+Phase: 98-webgpu-detector-renderer-infrastructure
+Plan: 02 (98-01 complete)
+Status: In progress — Phase 98 Plan 01 complete
+Last activity: 2026-03-01 — 98-01 complete: GPUDevice singleton module + @webgpu/types installed
 
 ## Accumulated Context
 
 ### Key Decisions
 *Full log in PROJECT.md.*
 
+- v10.0 (98-01): Use triple-slash directive in webgpu-device.ts (not tsconfig types array) to scope @webgpu/types without base config conflicts
+- v10.0 (98-01): GPUDevice singleton caches Promise<GPUDevice> not the adapter — subsequent callers skip requestDevice() without consuming adapters
+- v10.0 (98-01): releaseGpuDevice() is Phase 98 stub — device.destroy() teardown is Phase 101's responsibility
 - v9.0: ECharts pinned to 5.6.0; echarts-gl as dynamic-import-only optional peer dep
 - v9.0: appendData/setOption strict boundary — setOption after appendData wipes streamed data (CRITICAL-03)
 - v9.0: BaseChartElement-first — all 5 cross-cutting concerns solved before any chart built
@@ -80,4 +83,4 @@ Last activity: 2026-03-01 — v10.0 roadmap created (5 phases: 98-102)
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-03-01 — v10.0 roadmap created (phases 98-102)*
+*Last updated: 2026-03-01 — 98-01 complete: GPUDevice singleton module created, @webgpu/types installed*
