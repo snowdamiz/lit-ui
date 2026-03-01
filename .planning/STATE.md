@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Charts System
 status: unknown
-last_updated: "2026-03-01T04:49:56.187Z"
+last_updated: "2026-03-01T05:01:27.000Z"
 progress:
   total_phases: 73
-  completed_phases: 72
+  completed_phases: 73
   total_plans: 254
-  completed_plans: 253
+  completed_plans: 254
 ---
 
 # Project State: LitUI
@@ -18,16 +18,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-02-28)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** Phase 96 — next phase (Phase 95 complete: LuiTreemapChart + all exports delivered)
+**Current focus:** Phase 96 complete — v9.0 milestone delivered (all 8 chart types: built, CLI-integrated, documented)
 
 ## Current Position
 
-Phase: 96 of 96 (CLI Integration and Documentation — IN PROGRESS)
-Plan: 3 of 4 in current phase (96-03 complete — 4 chart doc pages: Line, Area, Bar, Pie with live demos + tree-shaking callouts)
-Status: Phase 96 plan 03 complete — DOCS-01 and DOCS-02 delivered for first 4 charts; pages in apps/docs/src/pages/charts/
-Last activity: 2026-03-01 — Completed 96-03: LineChartPage.tsx, AreaChartPage.tsx, BarChartPage.tsx, PieChartPage.tsx + @lit-ui/charts workspace dep
+Phase: 96 of 96 (CLI Integration and Documentation — COMPLETE)
+Plan: 4 of 4 in current phase (96-04 complete — all 8 chart docs pages + routing + nav + bundle size guidance)
+Status: Phase 96 COMPLETE — all 4 plans delivered; DOCS-01 and DOCS-02 complete; v9.0 milestone achieved
+Last activity: 2026-03-01 — Completed 96-04: ScatterChartPage.tsx, HeatmapChartPage.tsx, CandlestickChartPage.tsx, TreemapChartPage.tsx + App.tsx routing + nav.ts Charts section
 
-Progress: [████░░░░░░] 30% (v9.0 milestone, 9 phases, 6 of 9 complete)
+Progress: [██████████] 100% (v9.0 milestone, all phases complete)
 
 ## Accumulated Context
 
@@ -103,6 +103,9 @@ Progress: [████░░░░░░] 30% (v9.0 milestone, 9 phases, 6 of 9
 - 96-02: Chart templates use '@lit-ui/charts/[name]' subpath imports to demonstrate tree-shaking; void trick pattern preserves custom element registration side effects
 - 96-03: useRef + useEffect for .data binding in all chart demos — ECharts data is a complex object array that cannot be serialized as HTML attribute strings; JS property assignment required
 - 96-03: CSS token table rendered as inline JSX <table> not PropsTable — CSSVarDef has different shape (no 'type' field) from PropDef
+- 96-04: xCategories/yCategories set as separate useEffect property assignments in HeatmapChartDemo — array values cannot be serialized as HTML attributes
+- 96-04: OHLC order warning rendered as amber callout box in CandlestickChartPage — [open,close,low,high] order trap warrants high-visibility treatment beyond PropsTable
+- 96-04: Bundle size table placed in ScatterChartPage (enable-gl WebGL impact) with recommendation paragraph — DOCS-02
 
 ### Architecture Notes
 
@@ -123,6 +126,7 @@ Progress: [████░░░░░░] 30% (v9.0 milestone, 9 phases, 6 of 9
 - Phase 96 plan 01 complete: vite.config.ts (9-key multi-entry build) + package.json (8 subpath exports); @lit-ui/charts now has dist/line-chart.js through dist/treemap-chart.js with matching .d.ts; CLI-02 delivered
 - Phase 96 plan 02 complete: 8 chart entries in registry.json + 8 componentToPackage entries in install-component.ts + 8 chart template files + templates/index.ts updated; CLI-01 and CLI-03 delivered
 - Phase 96 plan 03 complete: LineChartPage.tsx + AreaChartPage.tsx + BarChartPage.tsx + PieChartPage.tsx in apps/docs/src/pages/charts/; @lit-ui/charts workspace dep added; DOCS-01 and DOCS-02 delivered
+- Phase 96 plan 04 complete: ScatterChartPage.tsx + HeatmapChartPage.tsx + CandlestickChartPage.tsx + TreemapChartPage.tsx; App.tsx all 8 chart routes; nav.ts Charts section; DOCS-01 and DOCS-02 fully complete
 
 ### TODOs
 *None.*
@@ -168,21 +172,22 @@ Progress: [████░░░░░░] 30% (v9.0 milestone, 9 phases, 6 of 9
 | 96 | 01 | 1min | 2 | 2 |
 | 96 | 02 | 8min | 2 | 11 |
 | 96 | 03 | 3min | 2 | 5 |
+| 96 | 04 | 5min | 2 | 6 |
 
 ## Session Continuity
 
 ### Last Session
-- 2026-03-01: Completed 96-03 — LineChartPage.tsx, AreaChartPage.tsx, BarChartPage.tsx, PieChartPage.tsx created in apps/docs/src/pages/charts/; @lit-ui/charts workspace:* added to docs package.json; DOCS-01 and DOCS-02 delivered for first 4 charts
+- 2026-03-01: Completed 96-04 — ScatterChartPage.tsx, HeatmapChartPage.tsx, CandlestickChartPage.tsx, TreemapChartPage.tsx created; App.tsx wired with all 8 chart routes; nav.ts Charts section added; Phase 96 and v9.0 milestone complete
 
 ### Stopped At
-Completed 096-03-PLAN.md
+Completed 096-04-PLAN.md
 
 ### Next Actions
-Phase 96 plan 03 complete. Continue to Phase 96 plan 04 (remaining 4 charts + routing).
+Phase 96 complete. v9.0 milestone delivered. All 8 chart types built, CLI-integrated, and documented.
 
 ### Open Questions
 *None.*
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-03-01 — 96-03 complete, 4 chart doc pages (Line/Area/Bar/Pie) + @lit-ui/charts workspace dep, DOCS-01 and DOCS-02 delivered*
+*Last updated: 2026-03-01 — 96-04 complete, all 8 chart doc pages + App.tsx routing + nav.ts Charts section; DOCS-01 and DOCS-02 fully delivered; Phase 96 and v9.0 milestone complete*
