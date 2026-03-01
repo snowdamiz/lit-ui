@@ -110,11 +110,25 @@ export class LuiCandlestickChart extends BaseChartElement {
     if (!this._chart) return;
     // Sync _ohlcBuffer from this.data so pushData() starts from current authoritative state.
     this._ohlcBuffer = this.data ? [...(this.data as CandlestickBarPoint[])] : [];
+    const mas = _parseMovingAverages(this.movingAverages);
+
+    // MA-01: Rebuild state machines atomically with _ohlcBuffer reset.
+    // Always rebuild from scratch — handles MA config count changes (Pitfall 3 from RESEARCH.md).
+    this._maStateMachines = mas.map((ma) => new MAStateMachine(ma));
+
+    // Replay all closes through state machines to build historical MA arrays.
+    // O(n) here is unavoidable — this only runs on full data changes, not per-bar.
+    const closes = this._ohlcBuffer.map((b) => b.ohlc[1]);
+    const maValueArrays = this._maStateMachines.map((sm) => sm.reset(closes));
+    const resolvedMAColors = this._resolveMAColors(mas);
+
     const option = buildCandlestickOption(this._ohlcBuffer, {
       bullColor: this.bullColor ?? undefined,
       bearColor: this.bearColor ?? undefined,
       showVolume: this.showVolume,
-      movingAverages: _parseMovingAverages(this.movingAverages),
+      movingAverages: mas,
+      maValueArrays,
+      resolvedMAColors,
     });
     // notMerge: false — merge with any option prop overrides from the base class.
     this._chart.setOption(option, { notMerge: false });
@@ -136,6 +150,8 @@ export class LuiCandlestickChart extends BaseChartElement {
     // Trim to maxPoints — prevents unbounded memory growth during long streaming sessions.
     if (this._ohlcBuffer.length > this.maxPoints) {
       this._ohlcBuffer = this._ohlcBuffer.slice(-this.maxPoints);
+      // Trim MA value arrays in parallel to keep indices aligned with _ohlcBuffer.
+      this._maStateMachines.forEach((sm) => sm.trim(this.maxPoints));
     }
     // Schedule flush — coalesces multiple pushData() calls in the same RAF frame.
     if (this._barRafId === undefined) {
@@ -154,11 +170,21 @@ export class LuiCandlestickChart extends BaseChartElement {
    */
   private _flushBarUpdates(): void {
     if (!this._chart || this._ohlcBuffer.length === 0) return;
+    const mas = _parseMovingAverages(this.movingAverages);
+
+    // MA-01: Incremental push — O(1) per machine per bar.
+    // Only the last bar's close is needed — state machines hold the running window.
+    const lastClose = this._ohlcBuffer[this._ohlcBuffer.length - 1].ohlc[1];
+    const maValueArrays = this._maStateMachines.map((sm) => sm.push(lastClose));
+    const resolvedMAColors = this._resolveMAColors(mas);
+
     const option = buildCandlestickOption(this._ohlcBuffer, {
       bullColor: this.bullColor ?? undefined,
       bearColor: this.bearColor ?? undefined,
       showVolume: this.showVolume,
-      movingAverages: _parseMovingAverages(this.movingAverages),
+      movingAverages: mas,
+      maValueArrays,
+      resolvedMAColors,
     });
     // lazyUpdate: true — preserves DataZoom state while batching update to next render cycle.
     this._chart.setOption(option, { lazyUpdate: true } as object);

@@ -147,6 +147,16 @@ export class MAStateMachine {
   }
 
   /**
+   * Trim _values to match a trimmed _ohlcBuffer. Call after _ohlcBuffer.slice(-maxPoints).
+   * Keeps indices aligned between _maStateMachines[i]._values and _ohlcBuffer.
+   */
+  trim(maxLen: number): void {
+    if (this._values.length > maxLen) {
+      this._values = this._values.slice(-maxLen);
+    }
+  }
+
+  /**
    * Current computed MA values array.
    * Returns the internal reference — no copy. Suitable for direct ECharts series.data assignment.
    */
