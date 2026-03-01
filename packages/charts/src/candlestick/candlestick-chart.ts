@@ -19,6 +19,7 @@ import {
   type CandlestickBarPoint,
   type MAConfig,
 } from '../shared/candlestick-option-builder.js';
+import { MAStateMachine } from '../shared/ma-state-machine.js';
 
 /**
  * Module-level helper — NOT exported.
@@ -57,6 +58,36 @@ export class LuiCandlestickChart extends BaseChartElement {
   // CNDL-04: Authoritative OHLC bar store — synced from this.data in _applyData();
   // appended to by pushData() for real-time streaming.
   private _ohlcBuffer: CandlestickBarPoint[] = [];
+
+  // One MAStateMachine per MAConfig entry — rebuilt on every _applyData() call.
+  // MA-01: provides O(1) incremental push() for streaming bars.
+  private _maStateMachines: MAStateMachine[] = [];
+
+  // MA-02: Default color token sequence — starts at color-2 so MA lines don't clash with
+  // the chart's primary data color (color-1 = #3b82f6 used by ECharts theme).
+  private static readonly _MA_DEFAULT_COLOR_TOKENS = [
+    '--ui-chart-color-2',
+    '--ui-chart-color-3',
+    '--ui-chart-color-4',
+    '--ui-chart-color-5',
+  ] as const;
+
+  /**
+   * MA-02: Resolve MA line colors — uses MAConfig.color when provided, otherwise
+   * reads from CSS token sequence via readChartToken() (inherited from BaseChartElement).
+   * Cycles through 4 tokens for >4 MA overlays.
+   */
+  private _resolveMAColors(mas: MAConfig[]): string[] {
+    let defaultIndex = 0;
+    return mas.map((ma) => {
+      if (ma.color) return ma.color;
+      const token = LuiCandlestickChart._MA_DEFAULT_COLOR_TOKENS[
+        defaultIndex % LuiCandlestickChart._MA_DEFAULT_COLOR_TOKENS.length
+      ];
+      defaultIndex++;
+      return this.readChartToken(token);
+    });
+  }
 
   // Component's own RAF handle — must be cancelled in disconnectedCallback() before super.disconnectedCallback().
   // The BASE CLASS cancels its own _rafId but has no knowledge of _barRafId.
