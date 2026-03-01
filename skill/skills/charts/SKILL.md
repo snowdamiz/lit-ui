@@ -66,7 +66,7 @@ function LineChartDemo({ data }) {
 | `loading` | `loading` | `boolean` | `false` | Show ECharts loading skeleton. |
 | `enableGl` | `enable-gl` | `boolean` | `false` | Opt-in WebGL via echarts-gl (meaningful on scatter chart). |
 | `maxPoints` | `max-points` | `number` | `1000` | Circular buffer capacity for streaming via pushData(). Note: lui-line-chart and lui-area-chart override this to 500,000. |
-| `enableWebGpu` | `enable-webgpu` | `boolean` | `false` | Opt-in WebGPU detection. All charts inherit this from BaseChartElement. Only line/area charts activate ChartGPU rendering; other chart types fire `renderer-selected` but remain on Canvas. |
+| `enableWebGpu` | `enable-webgpu` | `boolean` | `false` | Opt-in WebGPU detection. All charts inherit this from BaseChartElement. Line, area, and candlestick charts activate ChartGPU rendering when WebGPU is available. Other chart types fire `renderer-selected` but remain on Canvas. |
 
 ## Shared Methods (All 8 Charts)
 
@@ -82,7 +82,7 @@ function LineChartDemo({ data }) {
 | Event | Detail | Description |
 |-------|--------|-------------|
 | `ui-webgl-unavailable` | `{ reason: string }` | Fires when `enable-gl` is set but WebGL is unavailable. Chart falls back to Canvas automatically. |
-| `renderer-selected` | `{ renderer: 'webgpu' \| 'webgl' \| 'canvas' }` | Fires in `firstUpdated()` when the renderer tier is determined. All 8 charts fire this when `enable-webgpu` is set. Only line/area charts activate ChartGPU; others fall through to Canvas. |
+| `renderer-selected` | `{ renderer: 'webgpu' \| 'webgl' \| 'canvas' }` | Fires in `firstUpdated()` when the renderer tier is determined. All 8 charts fire this when `enable-webgpu` is set. Line, area, and candlestick charts activate ChartGPU rendering; other chart types fall through to Canvas. |
 
 ## Shared CSS Custom Properties (All 8 Charts)
 
