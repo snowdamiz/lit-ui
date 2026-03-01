@@ -19,6 +19,22 @@ import {
   type LineChartSeries,
   type MarkLineSpec,
 } from '../shared/line-option-builder.js';
+import {
+  getGpuDevice,
+  getGpuAdapter,
+  releaseGpuDevice,
+} from '../shared/webgpu-device.js';
+
+// WEBGPU-02: Minimal ChartGPU instance interface — avoids hard dependency on chartgpu types
+// at module scope. Full type is inferred at runtime from await import('chartgpu').
+// appendData signature matches ChartGPU 0.3.2 real API: (seriesIndex, newPoints).
+// DataPoint accepts [x, y] tuples (DataPointTuple format).
+interface _GpuChartInstance {
+  resize(): void;
+  dispose(): void;
+  setZoomRange(start: number, end: number): void;
+  appendData(seriesIndex: number, newPoints: ReadonlyArray<readonly [number, number]>): void;
+}
 
 export class LuiLineChart extends BaseChartElement {
   // LINE-02: Smooth Catmull-Rom spline interpolation
@@ -43,9 +59,119 @@ export class LuiLineChart extends BaseChartElement {
   // Base class cancels its own _rafId but has no knowledge of _lineRafId.
   private _lineRafId?: number;
 
+  // WEBGPU-02: ChartGPU instance — null when WebGPU unavailable or before init.
+  private _gpuChart: _GpuChartInstance | null = null;
+
+  // WEBGPU-02: Separate ResizeObserver for ChartGPU — the base class observer only calls this._chart.resize().
+  private _gpuResizeObserver?: ResizeObserver;
+
+  // WEBGPU-02: Flag set to true when WebGPU path was active — used to gate releaseGpuDevice() in cleanup.
+  private _wasWebGpu = false;
+
   // STRM-02: Line/Area charts stream 1M+ points; base default of 1000 is for buffer-mode charts.
   // Override to 500_000 — allows ~8 minutes of streaming at 1000 pts/sec before reset.
   override maxPoints = 500_000;
+
+  /**
+   * WEBGPU-02: Override _initChart() to layer ChartGPU beneath ECharts when WebGPU is active.
+   *
+   * Calls super._initChart() first (registers modules, inits ECharts, sets up ResizeObserver,
+   * ColorSchemeObserver, calls _applyData), then conditionally initializes the ChartGPU
+   * data layer on top when this.renderer === 'webgpu'.
+   */
+  protected override async _initChart(): Promise<void> {
+    // 1. Standard ECharts init (registers modules, builds theme, sets up ResizeObserver).
+    await super._initChart();
+
+    // 2. If WebGPU was detected, layer ChartGPU beneath ECharts canvas.
+    if (this.renderer === 'webgpu') {
+      await this._initWebGpuLayer();
+    }
+  }
+
+  /**
+   * WEBGPU-02: Initialize the ChartGPU GPU-accelerated data layer beneath ECharts.
+   *
+   * Creates a host div with z-index:0 and pointer-events:none positioned absolutely
+   * inside the #chart container, then initializes ChartGPU inside it using the shared
+   * GPUDevice singleton from webgpu-device.ts.
+   */
+  private async _initWebGpuLayer(): Promise<void> {
+    const devicePromise = getGpuDevice();
+    if (!devicePromise) return; // guard — renderer === 'webgpu' implies device exists
+
+    const device = await devicePromise;
+    const adapter = getGpuAdapter(); // may be null for injected-device-only case; ChartGPU accepts device-only
+
+    // Dynamic import — NEVER at module top level (SSR + tree-shaking constraint).
+    // Same pattern as echarts-gl import in base-chart-element.ts.
+    const { ChartGPU } = await import('chartgpu');
+
+    const container = this.shadowRoot?.querySelector<HTMLDivElement>('#chart');
+    if (!container) return;
+
+    // Insert a host div for ChartGPU BEFORE ECharts' canvas elements.
+    // z-index:0 keeps ChartGPU below ECharts (which renders at default stacking order above 0).
+    // pointer-events:none is CRITICAL — ECharts must receive all mouse events for tooltip + DataZoom.
+    const gpuHost = document.createElement('div');
+    gpuHost.style.cssText =
+      'position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;';
+    container.insertBefore(gpuHost, container.firstChild);
+
+    // WEBGPU-03: Pass the Phase 98 singleton device — ChartGPU will NOT destroy it on dispose().
+    // ChartGPUCreateContext requires both adapter and device (adapter is not optional per 0.3.2 types).
+    // When adapter is null (edge case: device injected without adapter), fall back to standalone create.
+    if (!adapter) {
+      // No adapter stored — cannot use shared-context overload; create standalone instance.
+      // This path is defensive only; renderer === 'webgpu' implies adapter was acquired.
+      this._gpuChart = (await ChartGPU.create(gpuHost, {
+        series: [{ type: 'line', data: [] }],
+      })) as unknown as _GpuChartInstance;
+    } else {
+      this._gpuChart = (await ChartGPU.create(
+        gpuHost,
+        {
+          series: [{ type: 'line', data: [] }],
+          // Do NOT set renderMode:'external' — let ChartGPU own its RAF loop.
+          // (Research Pitfall 7: external mode requires manual renderFrame() calls; not needed for Phase 101.)
+        },
+        { device, adapter }
+      )) as unknown as _GpuChartInstance;
+    }
+
+    this._wasWebGpu = true;
+
+    // ChartGPU needs its own resize tracking — the base class ResizeObserver only calls this._chart.resize().
+    this._gpuResizeObserver = new ResizeObserver(() => this._gpuChart?.resize());
+    this._gpuResizeObserver.observe(container);
+
+    // Wire coordinate sync — fires on every DataZoom and after each layout paint.
+    this._chart!.on('dataZoom', () => this._syncCoordinates());
+    this._chart!.on('rendered', () => this._syncCoordinates());
+  }
+
+  /**
+   * WEBGPU-02: Sync ECharts DataZoom percent-space to ChartGPU zoom range.
+   *
+   * Uses getOption().dataZoom[0].start/end (percent-space [0, 100]) which maps
+   * directly to ChartGPU.setZoomRange() without an additional pixel→percent conversion.
+   * This is architecturally correct — ChartGPU operates in percent-space, not pixel-space.
+   */
+  private _syncCoordinates(): void {
+    if (!this._chart || !this._gpuChart) return;
+
+    const option = this._chart.getOption() as Record<string, unknown>;
+    const dataZoom = (option['dataZoom'] as Array<Record<string, unknown>> | undefined)?.[0];
+    if (!dataZoom) return;
+
+    const start = (dataZoom['start'] as number) ?? 0;
+    const end = (dataZoom['end'] as number) ?? 100;
+
+    // Guard against NaN — can occur before first setOption initializes coordinate system.
+    if (isNaN(start) || isNaN(end)) return;
+
+    this._gpuChart.setZoomRange(start, end);
+  }
 
   /**
    * STRM-01 + STRM-02 + STRM-03: Ring-buffer streaming with seriesIndex routing.
