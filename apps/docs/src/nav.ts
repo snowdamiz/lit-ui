@@ -55,6 +55,19 @@ export const navigation: NavSection[] = [
     ],
   },
   {
+    title: "Charts",
+    items: [
+      { title: "Line Chart", href: "/charts/line-chart" },
+      { title: "Area Chart", href: "/charts/area-chart" },
+      { title: "Bar Chart", href: "/charts/bar-chart" },
+      { title: "Pie Chart", href: "/charts/pie-chart" },
+      { title: "Scatter Chart", href: "/charts/scatter-chart" },
+      { title: "Heatmap Chart", href: "/charts/heatmap-chart" },
+      { title: "Candlestick Chart", href: "/charts/candlestick-chart" },
+      { title: "Treemap Chart", href: "/charts/treemap-chart" },
+    ],
+  },
+  {
     title: "Tools",
     items: [
       { title: "Theme Configurator", href: "/configurator" },

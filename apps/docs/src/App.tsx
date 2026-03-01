@@ -30,6 +30,14 @@ import { AccessibilityGuide } from './pages/AccessibilityGuide'
 import { FormIntegrationGuide } from './pages/FormIntegrationGuide'
 import { I18nGuide } from './pages/I18nGuide'
 import { ConfiguratorPage } from './pages/configurator/ConfiguratorPage'
+import { LineChartPage } from './pages/charts/LineChartPage'
+import { AreaChartPage } from './pages/charts/AreaChartPage'
+import { BarChartPage } from './pages/charts/BarChartPage'
+import { PieChartPage } from './pages/charts/PieChartPage'
+import { ScatterChartPage } from './pages/charts/ScatterChartPage'
+import { HeatmapChartPage } from './pages/charts/HeatmapChartPage'
+import { CandlestickChartPage } from './pages/charts/CandlestickChartPage'
+import { TreemapChartPage } from './pages/charts/TreemapChartPage'
 
 export default function App() {
   return (
@@ -77,6 +85,16 @@ export default function App() {
             <Route path="components/tooltip" element={<TooltipPage />} />
             <Route path="components/popover" element={<PopoverPage />} />
             <Route path="components/toast" element={<ToastPage />} />
+
+            {/* Charts */}
+            <Route path="charts/line-chart" element={<LineChartPage />} />
+            <Route path="charts/area-chart" element={<AreaChartPage />} />
+            <Route path="charts/bar-chart" element={<BarChartPage />} />
+            <Route path="charts/pie-chart" element={<PieChartPage />} />
+            <Route path="charts/scatter-chart" element={<ScatterChartPage />} />
+            <Route path="charts/heatmap-chart" element={<HeatmapChartPage />} />
+            <Route path="charts/candlestick-chart" element={<CandlestickChartPage />} />
+            <Route path="charts/treemap-chart" element={<TreemapChartPage />} />
 
             {/* Catch-all for undefined routes */}
             <Route path="*" element={<Placeholder />} />
