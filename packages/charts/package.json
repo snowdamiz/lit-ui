@@ -46,7 +46,9 @@
       "types": "./dist/treemap-chart.d.ts"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "sideEffects": true,
   "scripts": {
     "dev": "vite build --watch",
@@ -57,14 +59,15 @@
     "echarts-gl": "^2.0.9"
   },
   "peerDependencies": {
-    "lit": "^3.0.0",
-    "@lit-ui/core": "^1.0.0"
+    "@lit-ui/core": "^1.0.0",
+    "lit": "^3.0.0"
   },
   "devDependencies": {
     "@lit-ui/core": "workspace:*",
     "@lit-ui/typescript-config": "workspace:*",
     "@lit-ui/vite-config": "workspace:*",
     "@tailwindcss/vite": "^4.1.18",
+    "@webgpu/types": "0.1.67",
     "lit": "^3.3.2",
     "tailwindcss": "^4.1.18",
     "typescript": "^5.9.3",
