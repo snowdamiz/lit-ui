@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: WebGPU Charts
 status: unknown
-last_updated: "2026-03-01T20:19:54.233Z"
+last_updated: "2026-03-01T20:49:00.000Z"
 progress:
   total_phases: 69
   completed_phases: 69
@@ -23,9 +23,9 @@ See: .planning/PROJECT.md (updated 2026-03-01)
 ## Current Position
 
 Phase: 103-candlestick-webgpu
-Plan: 01 complete — LuiCandlestickChart WebGPU two-layer canvas: _GpuCandlestickInstance interface, _initWebGpuLayer(), _syncCoordinates(), _toGpuPoint(), incremental appendData in _flushBarUpdates(), transparent candle gate, trim reset, full disconnectedCallback cleanup.
-Status: Phase 103 in progress (Plan 01 of 03 done)
-Last activity: 2026-03-01 — 103-01 complete: candlestick-chart.ts has WebGPU rendering with ChartGPU two-layer canvas, ECharts retains axes/MA/volume/tooltip/DataZoom with transparent candles when WebGPU active
+Plan: 03 complete — Candlestick and shared charts skill files updated with WebGPU props, renderer documentation, and behavior notes (MA/volume ECharts split, init-time color limitation, DataZoom sync).
+Status: Phase 103 in progress (Plan 03 of 03 done)
+Last activity: 2026-03-01 — 103-03 complete: candlestick-chart SKILL.md has enable-webgpu/renderer props and 3 WebGPU behavior notes; shared charts SKILL.md updated to list candlestick in ChartGPU activation description
 
 ## Accumulated Context
 
@@ -61,6 +61,7 @@ Last activity: 2026-03-01 — 103-01 complete: candlestick-chart.ts has WebGPU r
 - v10.0 (101-02): Incremental appendData tracking via _gpuFlushedLengths[] per series — x-index starts from lastFlushed, reset to [] in _triggerReset()
 - v10.0 (101-02): disconnectedCallback() reverse-init order: RAF cancel → gpuResizeObserver.disconnect → gpuChart.dispose → void releaseGpuDevice() → super
 - v10.0 (101-03): Area chart WebGPU integration identical to line chart — no new decisions; all patterns inherited from 101-02 (appendData(seriesIndex, pairs), adapter null guard, double-cast, reverse-init order)
+- v10.0 (103-03): Candlestick skill shared props reference extended with enableWebGpu and renderer; bull/bear color init-time limitation documented with v10.1 deferral note
 - v10.0 (102-01): renderer-selected added to shared charts SKILL.md because all 8 charts inherit _detectRenderer() from BaseChartElement — table note clarifies only line/area activate ChartGPU rendering
 - v10.0 (102-01): pushData seriesIndex kept out of shared methods table signature (base is single-arg); documented as note below table and in full in line/area sub-skill files
 - v10.0 (102-01): maxPoints override (500,000) documented in sub-skill Props section header rather than shared props table which correctly shows base default of 1000
@@ -118,4 +119,4 @@ Last activity: 2026-03-01 — 103-01 complete: candlestick-chart.ts has WebGPU r
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-03-01 — 103-01 complete: candlestick-chart.ts has WebGPU two-layer canvas with ChartGPU rendering OHLC candles, ECharts retaining axes/MA/volume/tooltip/DataZoom with transparent candles. Phase 103 Plan 01 of 03 done.*
+*Last updated: 2026-03-01 — 103-03 complete: candlestick-chart SKILL.md updated with enable-webgpu/renderer props and 3 WebGPU behavior notes; shared charts SKILL.md updated with candlestick in ChartGPU activation list. Phase 103 Plan 03 of 03 done.*
