@@ -132,8 +132,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 93-01-PLAN.md — heatmap-option-builder.ts (HeatmapCell, HeatmapOptionProps, buildHeatmapOption) + heatmap-registry.ts (registerHeatmapModules)
-- [ ] 93-02-PLAN.md — LuiHeatmapChart component with pushData cell-update override + index.ts public API exports
+- [x] 93-01-PLAN.md — heatmap-option-builder.ts (HeatmapCell, HeatmapOptionProps, buildHeatmapOption) + heatmap-registry.ts (registerHeatmapModules)
+- [x] 93-02-PLAN.md — LuiHeatmapChart component with pushData cell-update override + index.ts public API exports
 
 ### Phase 94: Candlestick Chart
 **Goal**: Developer can render a financial candlestick chart from OHLC data with configurable bull/bear colors, optional volume panel, moving average overlays, and streaming new bars
@@ -144,7 +144,11 @@ Plans:
   2. Developer can set `show-volume` prop and see a volume bar panel rendered on a secondary y-axis below the main candlestick chart
   3. Developer can set `moving-averages` prop with period and color configuration and see SMA/EMA overlay lines computed from the OHLC data
   4. Developer can call `pushData(point)` to append a new OHLC bar and see the chart extend in real time
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 94-01-PLAN.md — candlestick-option-builder.ts (OhlcBar, MAConfig, CandlestickBarPoint, CandlestickOptionProps, buildCandlestickOption, SMA/EMA helpers) + candlestick-registry.ts (registerCandlestickModules)
+- [ ] 94-02-PLAN.md — LuiCandlestickChart component with pushData override + index.ts public API exports
 
 ### Phase 95: Treemap Chart
 **Goal**: Developer can render a treemap from hierarchical data with breadcrumb navigation, rounded cells, and per-level color configuration
@@ -179,6 +183,6 @@ Plans:
 | 91. Pie + Donut Chart | 2/2 | Complete    | 2026-02-28 | - |
 | 92. Scatter + Bubble Chart with WebGL | 2/2 | Complete    | 2026-02-28 | - |
 | 93. Heatmap Chart | 2/2 | Complete    | 2026-02-28 | - |
-| 94. Candlestick Chart | v9.0 | 0/TBD | Not started | - |
+| 94. Candlestick Chart | v9.0 | 0/2 | Not started | - |
 | 95. Treemap Chart | v9.0 | 0/TBD | Not started | - |
 | 96. CLI Integration + Documentation | v9.0 | 0/TBD | Not started | - |
