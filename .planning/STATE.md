@@ -2,8 +2,8 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: WebGPU Charts
-status: unknown
-last_updated: "2026-03-01T17:43:02Z"
+status: in-progress
+last_updated: "2026-03-01T17:44:30Z"
 progress:
   total_phases: 65
   completed_phases: 65
@@ -18,14 +18,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-01)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** v10.0 WebGPU Charts — Phase 99 Plan 02 next (MAConfig type expansion + candlestick option builder update)
+**Current focus:** v10.0 WebGPU Charts — Phase 99 Plan 03 next (MAStateMachine GREEN implementation)
 
 ## Current Position
 
 Phase: 99-incremental-moving-average-state-machine
-Plan: 01 complete — advancing to Plan 02
+Plan: 02 complete — advancing to Plan 03
 Status: In progress
-Last activity: 2026-03-01 — 99-01 complete: MAStateMachine O(1) incremental SMA/EMA state machine implemented (MA-01, MA-03)
+Last activity: 2026-03-01 — 99-02 complete: MAConfig type contract expanded, readChartToken() protected accessor added to BaseChartElement
 
 ## Accumulated Context
 
@@ -40,6 +40,9 @@ Last activity: 2026-03-01 — 99-01 complete: MAStateMachine O(1) incremental SM
 - v10.0 (98-02): Only RendererTier exported from index.ts — acquireGpuDevice is internal Phase 101 infrastructure
 - v10.0 (99-01): MAStateMachine uses O(1) ring buffer (SMA) and warm-up accumulator (EMA) with NaN gate before any state mutation
 - v10.0 (99-01): MAStateMachine type-only import of MAConfig avoids circular dependency with candlestick-option-builder
+- v10.0 (99-02): MAConfig.color made optional — component assigns CSS token defaults in candlestick chart update (Plan 03)
+- v10.0 (99-02): readChartToken() uses protected accessor pattern — ThemeBridge stays private, only read access exposed to subclasses
+- v10.0 (99-02): maValueArrays/resolvedMAColors in CandlestickOptionProps — streaming state machine passes pre-computed values, skipping O(n) SMA/EMA rebuilds on each tick
 - v9.0: ECharts pinned to 5.6.0; echarts-gl as dynamic-import-only optional peer dep
 - v9.0: appendData/setOption strict boundary — setOption after appendData wipes streamed data (CRITICAL-03)
 - v9.0: BaseChartElement-first — all 5 cross-cutting concerns solved before any chart built
@@ -88,4 +91,4 @@ Last activity: 2026-03-01 — 99-01 complete: MAStateMachine O(1) incremental SM
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-03-01 — Phase 99 Plan 01 complete: MAStateMachine O(1) SMA/EMA state machine*
+*Last updated: 2026-03-01 — 99-02 complete: MAConfig expanded, readChartToken() added to BaseChartElement*
