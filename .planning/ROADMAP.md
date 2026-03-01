@@ -49,7 +49,7 @@ Full phase details archived to `.planning/milestones/v9.0-ROADMAP.md`
 ## v10.0 WebGPU Charts (Phases 98-102)
 
 - [x] **Phase 98: WebGPU Detector + Renderer Infrastructure** (2 plans) (completed 2026-03-01)
-- [ ] **Phase 99: Incremental Moving Average State Machine** (N plans)
+- [ ] **Phase 99: Incremental Moving Average State Machine** (3 plans)
 - [ ] **Phase 100: 1M+ Streaming Infrastructure for Line/Area** (N plans)
 - [ ] **Phase 101: WebGPU Two-Layer Canvas for Line/Area** (N plans)
 - [ ] **Phase 102: Docs + Skills Update** (N plans)
@@ -80,7 +80,11 @@ Plans:
   2. An `MAConfig` with no `color` property renders each MA line in a visually distinct color drawn from `--ui-chart-color-2` through `--ui-chart-color-5` — MA lines are not all black or all the same color
   3. A bar with `close: NaN` in the streaming data does not produce a `NaN` tooltip value or a visible spike in the MA line — the MA series shows a gap at that bar and resumes correctly on the next valid close
   4. An `MAConfig` with `showType: true` and `type: 'ema'` renders the legend label as "MA20 (EMA)" rather than "MA20"
-**Plans**: TBD
+**Plans**: 3 plans
+Plans:
+- [ ] 99-01-PLAN.md — TDD: MAStateMachine O(1) SMA/EMA state machine with NaN gap handling
+- [ ] 99-02-PLAN.md — Update MAConfig type, option builder API, and add readChartToken() to BaseChartElement
+- [ ] 99-03-PLAN.md — Wire _maStateMachines[] into LuiCandlestickChart (_applyData + _flushBarUpdates)
 
 ### Phase 100: 1M+ Streaming Infrastructure for Line/Area
 **Goal**: Line and Area charts can sustain continuous point streaming well past 1M total points without tab crashes, main-thread frame drops, or data loss at zoom-out
@@ -130,7 +134,7 @@ Plans:
 | 96. CLI Integration + Documentation | v9.0 | 4/4 | Complete | 2026-03-01 |
 | 97. Update Chart Skills | v9.0 | 4/4 | Complete | 2026-03-01 |
 | 98. WebGPU Detector + Renderer Infrastructure | 2/2 | Complete    | 2026-03-01 | — |
-| 99. Incremental Moving Average State Machine | v10.0 | 0/? | Pending | — |
+| 99. Incremental Moving Average State Machine | v10.0 | 0/3 | Pending | — |
 | 100. 1M+ Streaming Infrastructure for Line/Area | v10.0 | 0/? | Pending | — |
 | 101. WebGPU Two-Layer Canvas for Line/Area | v10.0 | 0/? | Pending | — |
 | 102. Docs + Skills Update | v10.0 | 0/? | Pending | — |
