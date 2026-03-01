@@ -23,9 +23,9 @@ See: .planning/PROJECT.md (updated 2026-03-01)
 ## Current Position
 
 Phase: 101-webgpu-two-layer-canvas-for-line-area
-Plan: 02 complete — LuiLineChart WebGPU two-layer canvas: _initWebGpuLayer() creates ChartGPU beneath ECharts; DataZoom percent-space coord sync; incremental appendData streaming; full reverse-init disconnectedCallback() teardown (WEBGPU-02).
-Status: In progress (Plan 03 next — area chart)
-Last activity: 2026-03-01 — 101-02 complete: LuiLineChart has _gpuChart, _gpuResizeObserver, _wasWebGpu, _gpuFlushedLengths; _initChart() override; _initWebGpuLayer() with { device, adapter } shared context; _syncCoordinates(); incremental appendData(seriesIndex, pairs) in _flushLineUpdates(); full reverse-init disconnectedCallback()
+Plan: 03 complete — LuiAreaChart WebGPU two-layer canvas: _initWebGpuLayer() creates ChartGPU beneath ECharts; DataZoom percent-space coord sync; incremental appendData streaming; full reverse-init disconnectedCallback() teardown (WEBGPU-02). Phase 101 implementation complete.
+Status: Phase 101 complete (Plan 03 of 03 done)
+Last activity: 2026-03-01 — 101-03 complete: LuiAreaChart has _gpuChart, _gpuResizeObserver, _wasWebGpu, _gpuFlushedLengths; _initChart() override; _initWebGpuLayer() with { device, adapter } shared context; _syncCoordinates(); incremental appendData(seriesIndex, pairs) in _flushLineUpdates(); full reverse-init disconnectedCallback()
 
 ## Accumulated Context
 
@@ -60,6 +60,7 @@ Last activity: 2026-03-01 — 101-02 complete: LuiLineChart has _gpuChart, _gpuR
 - v10.0 (101-02): ChartGPUCreateContext.adapter is required (not optional) in 0.3.2 — null guard added; standalone ChartGPU.create() fallback when adapter unavailable
 - v10.0 (101-02): Incremental appendData tracking via _gpuFlushedLengths[] per series — x-index starts from lastFlushed, reset to [] in _triggerReset()
 - v10.0 (101-02): disconnectedCallback() reverse-init order: RAF cancel → gpuResizeObserver.disconnect → gpuChart.dispose → void releaseGpuDevice() → super
+- v10.0 (101-03): Area chart WebGPU integration identical to line chart — no new decisions; all patterns inherited from 101-02 (appendData(seriesIndex, pairs), adapter null guard, double-cast, reverse-init order)
 - v9.0: ECharts pinned to 5.6.0; echarts-gl as dynamic-import-only optional peer dep
 - v9.0: appendData/setOption strict boundary — setOption after appendData wipes streamed data (CRITICAL-03)
 - v9.0: BaseChartElement-first — all 5 cross-cutting concerns solved before any chart built
@@ -108,4 +109,4 @@ Last activity: 2026-03-01 — 101-02 complete: LuiLineChart has _gpuChart, _gpuR
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-03-01 — 101-02 complete: LuiLineChart WebGPU two-layer canvas (WEBGPU-02 line chart SC1-4 satisfied)*
+*Last updated: 2026-03-01 — 101-03 complete: LuiAreaChart WebGPU two-layer canvas (WEBGPU-02 line+area SC1-4 satisfied; Phase 101 implementation complete)*
