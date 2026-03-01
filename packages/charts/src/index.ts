@@ -35,3 +35,6 @@ export type { OhlcBar, MAConfig, CandlestickBarPoint, CandlestickOptionProps } f
 // Phase 95: Treemap Chart
 export { LuiTreemapChart } from './treemap/treemap-chart.js';
 export type { TreemapNode, TreemapOptionProps } from './shared/treemap-option-builder.js';
+
+// Phase 98: WebGPU Detector + Renderer Infrastructure
+export type { RendererTier } from './shared/webgpu-device.js';
