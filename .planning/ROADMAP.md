@@ -150,7 +150,7 @@ Plans:
 | 100. 1M+ Streaming Infrastructure for Line/Area | 3/3 | Complete    | 2026-03-01 | — |
 | 101. WebGPU Two-Layer Canvas for Line/Area | 3/3 | Complete    | 2026-03-01 | — |
 | 102. Docs + Skills Update | 3/3 | Complete    | 2026-03-01 | — |
-| 103. Candlestick WebGPU + Docs + Skills | 3/3 | Complete   | 2026-03-01 | — |
+| 103. Candlestick WebGPU + Docs + Skills | 3/3 | Complete    | 2026-03-01 | — |
 
 ### Phase 103: Candlestick WebGPU + Docs + Skills
 **Goal**: LuiCandlestickChart renders OHLC candles via ChartGPU 0.3.2 GPU canvas when `enable-webgpu` is set, with ECharts handling MA overlays, volume bars, axes, and DataZoom on the top layer; docs page has WebGPU enabled by default for testing; skill files document the feature accurately
