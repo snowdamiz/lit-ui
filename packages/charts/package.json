@@ -12,6 +12,38 @@
     ".": {
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
+    },
+    "./line-chart": {
+      "import": "./dist/line-chart.js",
+      "types": "./dist/line-chart.d.ts"
+    },
+    "./area-chart": {
+      "import": "./dist/area-chart.js",
+      "types": "./dist/area-chart.d.ts"
+    },
+    "./bar-chart": {
+      "import": "./dist/bar-chart.js",
+      "types": "./dist/bar-chart.d.ts"
+    },
+    "./pie-chart": {
+      "import": "./dist/pie-chart.js",
+      "types": "./dist/pie-chart.d.ts"
+    },
+    "./scatter-chart": {
+      "import": "./dist/scatter-chart.js",
+      "types": "./dist/scatter-chart.d.ts"
+    },
+    "./heatmap-chart": {
+      "import": "./dist/heatmap-chart.js",
+      "types": "./dist/heatmap-chart.d.ts"
+    },
+    "./candlestick-chart": {
+      "import": "./dist/candlestick-chart.js",
+      "types": "./dist/candlestick-chart.d.ts"
+    },
+    "./treemap-chart": {
+      "import": "./dist/treemap-chart.js",
+      "types": "./dist/treemap-chart.d.ts"
     }
   },
   "files": ["dist"],
