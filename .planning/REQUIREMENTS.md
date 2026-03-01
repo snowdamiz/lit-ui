@@ -21,7 +21,7 @@
 
 ### WebGPU Renderer
 
-- [ ] **WEBGPU-01**: All chart types auto-detect WebGPU availability via `navigator.gpu` (SSR-safe, inside `firstUpdated()`) and expose a `renderer-selected` custom event and `renderer` readable property with the active renderer tier
+- [x] **WEBGPU-01**: All chart types auto-detect WebGPU availability via `navigator.gpu` (SSR-safe, inside `firstUpdated()`) and expose a `renderer-selected` custom event and `renderer` readable property with the active renderer tier
 - [ ] **WEBGPU-02**: Line and Area charts automatically render data using ChartGPU 0.3.2 (two-layer canvas: WebGPU canvas below for data pixels, ECharts canvas above for axes/tooltip) when WebGPU is available, with coordinate sync via `convertToPixel()` on every `dataZoom` and `rendered` event
 - [x] **WEBGPU-03**: All WebGPU chart instances on a page share a single GPUDevice singleton to stay within browser device count limits
 
@@ -65,7 +65,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MA-02 | Phase 99 | Pending |
 | MA-03 | Phase 99 | Pending |
 | MA-04 | Phase 99 | Pending |
-| WEBGPU-01 | Phase 98 | Pending |
+| WEBGPU-01 | Phase 98 | Complete |
 | WEBGPU-02 | Phase 101 | Pending |
 | WEBGPU-03 | Phase 98 | Complete |
 

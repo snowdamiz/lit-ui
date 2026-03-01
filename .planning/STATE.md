@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v10.0
 milestone_name: WebGPU Charts
 status: in_progress
-last_updated: "2026-03-01T00:07:17Z"
+last_updated: "2026-03-01T08:31:42Z"
 progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 0
-  completed_plans: 1
+  completed_plans: 2
 ---
 
 # Project State: LitUI
@@ -18,14 +18,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-01)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** v10.0 WebGPU Charts — Phase 98 Plan 01 complete, executing Plan 02
+**Current focus:** v10.0 WebGPU Charts — Phase 98 Plans 01+02 complete, Phase 98 done
 
 ## Current Position
 
 Phase: 98-webgpu-detector-renderer-infrastructure
-Plan: 02 (98-01 complete)
-Status: In progress — Phase 98 Plan 01 complete
-Last activity: 2026-03-01 — 98-01 complete: GPUDevice singleton module + @webgpu/types installed
+Plan: 02 complete (Phase 98 all plans done)
+Status: In progress — Phase 98 complete, Phase 99 next
+Last activity: 2026-03-01 — 98-02 complete: WebGPU detection in BaseChartElement, RendererTier exported
 
 ## Accumulated Context
 
@@ -35,6 +35,9 @@ Last activity: 2026-03-01 — 98-01 complete: GPUDevice singleton module + @webg
 - v10.0 (98-01): Use triple-slash directive in webgpu-device.ts (not tsconfig types array) to scope @webgpu/types without base config conflicts
 - v10.0 (98-01): GPUDevice singleton caches Promise<GPUDevice> not the adapter — subsequent callers skip requestDevice() without consuming adapters
 - v10.0 (98-01): releaseGpuDevice() is Phase 98 stub — device.destroy() teardown is Phase 101's responsibility
+- v10.0 (98-02): renderer field is NOT @property() — GPU tier must not trigger Lit reactive updates
+- v10.0 (98-02): _detectRenderer() is protected so Phase 101 subclasses can override WebGPU detection
+- v10.0 (98-02): Only RendererTier exported from index.ts — acquireGpuDevice is internal Phase 101 infrastructure
 - v9.0: ECharts pinned to 5.6.0; echarts-gl as dynamic-import-only optional peer dep
 - v9.0: appendData/setOption strict boundary — setOption after appendData wipes streamed data (CRITICAL-03)
 - v9.0: BaseChartElement-first — all 5 cross-cutting concerns solved before any chart built
@@ -83,4 +86,4 @@ Last activity: 2026-03-01 — 98-01 complete: GPUDevice singleton module + @webg
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-03-01 — 98-01 complete: GPUDevice singleton module created, @webgpu/types installed*
+*Last updated: 2026-03-01 — 98-02 complete: WebGPU detection in BaseChartElement (enableWebGpu, renderer, _detectRenderer), RendererTier exported from @lit-ui/charts*
