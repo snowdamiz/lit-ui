@@ -149,4 +149,4 @@ Plans:
 | 99. Incremental Moving Average State Machine | 3/3 | Complete    | 2026-03-01 | — |
 | 100. 1M+ Streaming Infrastructure for Line/Area | 3/3 | Complete    | 2026-03-01 | — |
 | 101. WebGPU Two-Layer Canvas for Line/Area | 3/3 | Complete    | 2026-03-01 | — |
-| 102. Docs + Skills Update | v10.0 | 0/3 | Pending | — |
+| 102. Docs + Skills Update | 2/3 | In Progress|  | — |

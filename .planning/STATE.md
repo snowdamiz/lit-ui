@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: WebGPU Charts
 status: unknown
-last_updated: "2026-03-01T19:31:58.869Z"
+last_updated: "2026-03-01T20:13:45Z"
 progress:
   total_phases: 68
   completed_phases: 68
@@ -18,14 +18,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-01)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** v10.0 WebGPU Charts — Phase 100 complete, Phase 101 (WebGPU canvas layer) next
+**Current focus:** v10.0 WebGPU Charts — Phase 102 docs/skills update in progress
 
 ## Current Position
 
-Phase: 101-webgpu-two-layer-canvas-for-line-area
-Plan: 03 complete — LuiAreaChart WebGPU two-layer canvas: _initWebGpuLayer() creates ChartGPU beneath ECharts; DataZoom percent-space coord sync; incremental appendData streaming; full reverse-init disconnectedCallback() teardown (WEBGPU-02). Phase 101 implementation complete.
-Status: Phase 101 complete (Plan 03 of 03 done)
-Last activity: 2026-03-01 — 101-03 complete: LuiAreaChart has _gpuChart, _gpuResizeObserver, _wasWebGpu, _gpuFlushedLengths; _initChart() override; _initWebGpuLayer() with { device, adapter } shared context; _syncCoordinates(); incremental appendData(seriesIndex, pairs) in _flushLineUpdates(); full reverse-init disconnectedCallback()
+Phase: 102-docs-skills-update
+Plan: 02 complete — candlestick-chart SKILL.md updated with v10.0 MA API: MAConfig.color optional with CSS token defaults, showType legend label, NaN-gap null rule, LOOKS DONE BUT ISN'T reinit warning.
+Status: Phase 102 Plan 02 of 03 done
+Last activity: 2026-03-01 — 102-02 complete: candlestick skill SKILL.md updated with accurate MAConfig type (color?: optional, showType?: boolean), usage examples (CSS token defaults + NaN streaming), 4 new Behavior Notes (MA CSS colors, NaN gaps, showType legend, reinit warning)
 
 ## Accumulated Context
 
@@ -61,6 +61,7 @@ Last activity: 2026-03-01 — 101-03 complete: LuiAreaChart has _gpuChart, _gpuR
 - v10.0 (101-02): Incremental appendData tracking via _gpuFlushedLengths[] per series — x-index starts from lastFlushed, reset to [] in _triggerReset()
 - v10.0 (101-02): disconnectedCallback() reverse-init order: RAF cancel → gpuResizeObserver.disconnect → gpuChart.dispose → void releaseGpuDevice() → super
 - v10.0 (101-03): Area chart WebGPU integration identical to line chart — no new decisions; all patterns inherited from 101-02 (appendData(seriesIndex, pairs), adapter null guard, double-cast, reverse-init order)
+- v10.0 (102-02): candlestick SKILL.md: MAConfig.color documented as optional; showType, NaN-gap rule, CSS token default color sequence (color-2 to color-5), and LOOKS DONE BUT ISN'T reinit warning added
 - v9.0: ECharts pinned to 5.6.0; echarts-gl as dynamic-import-only optional peer dep
 - v9.0: appendData/setOption strict boundary — setOption after appendData wipes streamed data (CRITICAL-03)
 - v9.0: BaseChartElement-first — all 5 cross-cutting concerns solved before any chart built
@@ -109,4 +110,4 @@ Last activity: 2026-03-01 — 101-03 complete: LuiAreaChart has _gpuChart, _gpuR
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-03-01 — 101-03 complete: LuiAreaChart WebGPU two-layer canvas (WEBGPU-02 line+area SC1-4 satisfied; Phase 101 implementation complete)*
+*Last updated: 2026-03-01 — 102-02 complete: candlestick-chart SKILL.md updated with v10.0 MA API (optional color, showType, NaN-gap rule, LOOKS DONE BUT ISN'T reinit warning)*
