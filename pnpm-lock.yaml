@@ -310,6 +310,9 @@ importers:
 
   packages/charts:
     dependencies:
+      chartgpu:
+        specifier: 0.3.2
+        version: 0.3.2
       echarts:
         specifier: ^5.6.0
         version: 5.6.0
@@ -2305,6 +2308,9 @@ packages:
 
   chardet@2.1.1:
     resolution: {integrity: sha512-PsezH1rqdV9VvyNhxxOW32/d75r01NY7TQCmOqomRo15ZSOKbpTFVsfjghxo6JloQUCGnH4k1LGu0R4yCLlWQQ==}
+
+  chartgpu@0.3.2:
+    resolution: {integrity: sha512-VKSaZGIP9ByYypQ6dEEsGB3TZZM1RxLSFBuSF+WcRSvXVLUbe4RHJuhxbgDyrZnJmJlUHGKSxEA5Gljmt3mAaw==}
 
   chokidar@4.0.3:
     resolution: {integrity: sha512-Qgzu8kfBvo+cA4962jnP1KkS6Dop5NS6g7R5LFYJr4b8Ub94PPQXUksCw9PvXoeXPRRddRNC5C1JQUR2SMGtnA==}
@@ -4975,6 +4981,8 @@ snapshots:
   chalk@5.6.2: {}
 
   chardet@2.1.1: {}
+
+  chartgpu@0.3.2: {}
 
   chokidar@4.0.3:
     dependencies:

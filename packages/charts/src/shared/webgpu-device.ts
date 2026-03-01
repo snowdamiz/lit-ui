@@ -7,8 +7,11 @@
  *
  * Lifecycle:
  * - acquireGpuDevice(): called from BaseChartElement._detectRenderer() when WebGPU is available
+ *   Increments _refCount on every call; only calls adapter.requestDevice() on the first call.
  * - getGpuDevice(): called by Phase 101 renderer to obtain the shared device
- * - releaseGpuDevice(): called by Phase 101 disconnectedCallback() cleanup (stub in Phase 98)
+ * - getGpuAdapter(): called by Phase 101 to pass { adapter, device } to ChartGPU.create()
+ * - releaseGpuDevice(): called by Phase 101 disconnectedCallback() cleanup
+ *   Decrements _refCount; calls device.destroy() when refcount reaches zero (real teardown).
  *
  * CRITICAL: Do NOT call requestDevice() more than once on the same GPUAdapter.
  * The WebGPU spec marks an adapter as "consumed" after its first requestDevice() call.
@@ -34,23 +37,31 @@ declare global {
 }
 
 let _devicePromise: Promise<GPUDevice> | null = null;
+let _adapter: GPUAdapter | null = null;
+let _refCount = 0;
 
 /**
  * WEBGPU-03: Acquire or reuse the page-scoped GPUDevice singleton.
  *
- * First call: calls adapter.requestDevice() and caches the Promise.
- * Subsequent calls: ignore the adapter argument and return the cached Promise.
- *
- * The adapter argument is only used on the first call. This means:
- * - Multiple chart instances each pass their own adapter
- * - Only the first adapter is ever used to create the device
- * - Subsequent adapters are discarded (they are NOT consumed by requestDevice)
+ * First call: stores the adapter, calls adapter.requestDevice(), caches the Promise,
+ * and sets _refCount to 1.
+ * Subsequent calls: increment _refCount and return the cached Promise.
+ * The adapter argument on subsequent calls is discarded (NOT consumed by requestDevice).
  *
  * @param adapter - GPUAdapter obtained from navigator.gpu.requestAdapter()
  */
 export async function acquireGpuDevice(adapter: GPUAdapter): Promise<GPUDevice> {
-  if (_devicePromise) return _devicePromise;
-  // First call only — do NOT call requestDevice() again on any adapter
+  if (_devicePromise) {
+    // Shared device already exists — increment refcount and return cached promise.
+    // The incoming adapter is intentionally discarded here: calling requestDevice()
+    // on it would violate the WebGPU spec (adapter is consumed after first requestDevice).
+    _refCount++;
+    return _devicePromise;
+  }
+  // First call only — store adapter so getGpuAdapter() can return it to Plans 02/03.
+  _adapter = adapter;
+  _refCount = 1;
+  // Do NOT call requestDevice() again on any adapter after this point.
   _devicePromise = adapter.requestDevice();
   return _devicePromise;
 }
@@ -65,11 +76,36 @@ export function getGpuDevice(): Promise<GPUDevice> | null {
 }
 
 /**
- * Resets the singleton so a new GPUDevice can be acquired on the next call.
- * Called by Phase 101's disconnectedCallback() cleanup when the last chart
- * instance is removed from the DOM (device.destroy() is Phase 101's responsibility).
- * Phase 98 exposes this stub — Phase 101 wires the actual teardown.
+ * Returns the stored GPUAdapter from the first acquireGpuDevice() call.
+ * Returns null if acquireGpuDevice() has not been called yet.
+ * Used by Plans 02 and 03 to pass { adapter, device } to ChartGPU.create().
  */
-export function releaseGpuDevice(): void {
-  _devicePromise = null;
+export function getGpuAdapter(): GPUAdapter | null {
+  return _adapter;
+}
+
+/**
+ * Decrements the refcount for the shared GPUDevice.
+ *
+ * When _refCount reaches zero: awaits the device and calls device.destroy(),
+ * then nulls both _devicePromise and _adapter so a fresh device can be
+ * acquired on the next acquireGpuDevice() call.
+ *
+ * Called by Phase 101's disconnectedCallback() as `void releaseGpuDevice()`
+ * (async fire-and-forget from synchronous context — intentional per research).
+ *
+ * WEBGPU-02: This is the real teardown that prevents memory leaks over
+ * repeated create/destroy cycles.
+ */
+export async function releaseGpuDevice(): Promise<void> {
+  if (_refCount <= 0) return;
+
+  _refCount--;
+
+  if (_refCount === 0 && _devicePromise !== null) {
+    const device = await _devicePromise;
+    device.destroy();
+    _devicePromise = null;
+    _adapter = null;
+  }
 }
