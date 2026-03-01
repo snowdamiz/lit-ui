@@ -27,3 +27,7 @@ export type { ScatterPoint, ScatterOptionProps } from './shared/scatter-option-b
 // Phase 93: Heatmap Chart
 export { LuiHeatmapChart } from './heatmap/heatmap-chart.js';
 export type { HeatmapCell, HeatmapOptionProps } from './shared/heatmap-option-builder.js';
+
+// Phase 94: Candlestick Chart
+export { LuiCandlestickChart } from './candlestick/candlestick-chart.js';
+export type { OhlcBar, MAConfig, CandlestickBarPoint, CandlestickOptionProps } from './shared/candlestick-option-builder.js';
