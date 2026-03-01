@@ -50,7 +50,7 @@ Full phase details archived to `.planning/milestones/v9.0-ROADMAP.md`
 
 - [x] **Phase 98: WebGPU Detector + Renderer Infrastructure** (2 plans) (completed 2026-03-01)
 - [x] **Phase 99: Incremental Moving Average State Machine** (3 plans) (completed 2026-03-01)
-- [ ] **Phase 100: 1M+ Streaming Infrastructure for Line/Area** (N plans)
+- [ ] **Phase 100: 1M+ Streaming Infrastructure for Line/Area** (3 plans)
 - [ ] **Phase 101: WebGPU Two-Layer Canvas for Line/Area** (N plans)
 - [ ] **Phase 102: Docs + Skills Update** (N plans)
 
@@ -95,7 +95,11 @@ Plans:
   2. A Line chart configured with `maxPoints: 500000` automatically clears and resets without user intervention when the point count reaches the limit — the chart continues rendering new data seamlessly after the reset
   3. `pushData({ value: [timestamp, price] }, 1)` routes the new point to the second series (`seriesIndex: 1`) — the first series is not modified
   4. Zooming out on a Line chart with 1M+ streamed points renders a smooth, representative curve — not a flat line or missing segments — because LTTB decimation supplies ECharts with a high-quality 2K-point summary
-**Plans**: TBD
+**Plans**: 3 plans
+Plans:
+- [ ] 100-01-PLAN.md — Make _initChart() protected + add sampling:lttb/large flags to buildLineOption()
+- [ ] 100-02-PLAN.md — LuiLineChart: ring-buffer pushData override with seriesIndex routing and maxPoints truncation
+- [ ] 100-03-PLAN.md — LuiAreaChart: identical ring-buffer streaming override as LuiLineChart
 
 ### Phase 101: WebGPU Two-Layer Canvas for Line/Area
 **Goal**: Line and Area charts on WebGPU-capable browsers render their data series via a ChartGPU 0.3.2 canvas layer beneath the ECharts axes canvas, with coordinate systems kept in sync across DataZoom interactions
@@ -135,6 +139,6 @@ Plans:
 | 97. Update Chart Skills | v9.0 | 4/4 | Complete | 2026-03-01 |
 | 98. WebGPU Detector + Renderer Infrastructure | 2/2 | Complete    | 2026-03-01 | — |
 | 99. Incremental Moving Average State Machine | 3/3 | Complete    | 2026-03-01 | — |
-| 100. 1M+ Streaming Infrastructure for Line/Area | v10.0 | 0/? | Pending | — |
+| 100. 1M+ Streaming Infrastructure for Line/Area | v10.0 | 0/3 | Pending | — |
 | 101. WebGPU Two-Layer Canvas for Line/Area | v10.0 | 0/? | Pending | — |
 | 102. Docs + Skills Update | v10.0 | 0/? | Pending | — |
