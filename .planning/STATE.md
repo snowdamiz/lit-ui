@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Charts System
 status: unknown
-last_updated: "2026-03-01T04:43:26.215Z"
+last_updated: "2026-03-01T04:49:56.187Z"
 progress:
   total_phases: 73
   completed_phases: 72
   total_plans: 254
-  completed_plans: 252
+  completed_plans: 253
 ---
 
 # Project State: LitUI
@@ -23,9 +23,9 @@ See: .planning/PROJECT.md (updated 2026-02-28)
 ## Current Position
 
 Phase: 96 of 96 (CLI Integration and Documentation — IN PROGRESS)
-Plan: 2 of 4 in current phase (96-02 complete — 8 chart templates + registry entries for CLI install UX)
-Status: Phase 96 plan 02 complete — CLI-01 and CLI-03 delivered; all 8 charts installable via 'npx lit-ui add [chart-name]'
-Last activity: 2026-03-01 — Completed 96-02: 8 registry entries + 8 install-component.ts mappings + 8 template files + templates/index.ts update
+Plan: 3 of 4 in current phase (96-03 complete — 4 chart doc pages: Line, Area, Bar, Pie with live demos + tree-shaking callouts)
+Status: Phase 96 plan 03 complete — DOCS-01 and DOCS-02 delivered for first 4 charts; pages in apps/docs/src/pages/charts/
+Last activity: 2026-03-01 — Completed 96-03: LineChartPage.tsx, AreaChartPage.tsx, BarChartPage.tsx, PieChartPage.tsx + @lit-ui/charts workspace dep
 
 Progress: [████░░░░░░] 30% (v9.0 milestone, 9 phases, 6 of 9 complete)
 
@@ -101,6 +101,8 @@ Progress: [████░░░░░░] 30% (v9.0 milestone, 9 phases, 6 of 9
 - 96-01: fileName field omitted from lib config — Vite uses entry keys as output filenames automatically when fileName absent
 - 96-02: All 8 chart names map to single '@lit-ui/charts' in componentToPackage — not separate packages; charts package is a single bundled deliverable
 - 96-02: Chart templates use '@lit-ui/charts/[name]' subpath imports to demonstrate tree-shaking; void trick pattern preserves custom element registration side effects
+- 96-03: useRef + useEffect for .data binding in all chart demos — ECharts data is a complex object array that cannot be serialized as HTML attribute strings; JS property assignment required
+- 96-03: CSS token table rendered as inline JSX <table> not PropsTable — CSSVarDef has different shape (no 'type' field) from PropDef
 
 ### Architecture Notes
 
@@ -120,6 +122,7 @@ Progress: [████░░░░░░] 30% (v9.0 milestone, 9 phases, 6 of 9
 - Phase 95 complete: LuiTreemapChart (lui-treemap-chart) exported from @lit-ui/charts with TreemapNode + TreemapOptionProps types; TREE-01/TREE-02 delivered
 - Phase 96 plan 01 complete: vite.config.ts (9-key multi-entry build) + package.json (8 subpath exports); @lit-ui/charts now has dist/line-chart.js through dist/treemap-chart.js with matching .d.ts; CLI-02 delivered
 - Phase 96 plan 02 complete: 8 chart entries in registry.json + 8 componentToPackage entries in install-component.ts + 8 chart template files + templates/index.ts updated; CLI-01 and CLI-03 delivered
+- Phase 96 plan 03 complete: LineChartPage.tsx + AreaChartPage.tsx + BarChartPage.tsx + PieChartPage.tsx in apps/docs/src/pages/charts/; @lit-ui/charts workspace dep added; DOCS-01 and DOCS-02 delivered
 
 ### TODOs
 *None.*
@@ -164,21 +167,22 @@ Progress: [████░░░░░░] 30% (v9.0 milestone, 9 phases, 6 of 9
 | 95 | 02 | 1min | 2 | 2 |
 | 96 | 01 | 1min | 2 | 2 |
 | 96 | 02 | 8min | 2 | 11 |
+| 96 | 03 | 3min | 2 | 5 |
 
 ## Session Continuity
 
 ### Last Session
-- 2026-03-01: Completed 96-02 — 8 chart registry entries (registry.json) + 8 componentToPackage entries (install-component.ts) + 8 chart template files + templates/index.ts update; CLI-01 and CLI-03 delivered; all 8 charts installable via 'npx lit-ui add [chart-name]'
+- 2026-03-01: Completed 96-03 — LineChartPage.tsx, AreaChartPage.tsx, BarChartPage.tsx, PieChartPage.tsx created in apps/docs/src/pages/charts/; @lit-ui/charts workspace:* added to docs package.json; DOCS-01 and DOCS-02 delivered for first 4 charts
 
 ### Stopped At
-Completed 096-02-PLAN.md
+Completed 096-03-PLAN.md
 
 ### Next Actions
-Phase 96 plan 02 complete. Continue to Phase 96 plan 03.
+Phase 96 plan 03 complete. Continue to Phase 96 plan 04 (remaining 4 charts + routing).
 
 ### Open Questions
 *None.*
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-03-01 — 96-02 complete, 8 chart templates + registry entries + install-component.ts mappings, CLI-01 and CLI-03 delivered*
+*Last updated: 2026-03-01 — 96-03 complete, 4 chart doc pages (Line/Area/Bar/Pie) + @lit-ui/charts workspace dep, DOCS-01 and DOCS-02 delivered*

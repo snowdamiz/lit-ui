@@ -84,8 +84,8 @@ Requirements for the v9.0 Charts System milestone. Each maps to a roadmap phase.
 
 ### Documentation
 
-- [ ] **DOCS-01**: Developer can reference a complete interactive demo, API property table, and CSS token table for each chart type on the docs site
-- [ ] **DOCS-02**: Developer can understand bundle size impact (Canvas vs WebGL, per-chart tree-shaking) from inline size documentation
+- [x] **DOCS-01**: Developer can reference a complete interactive demo, API property table, and CSS token table for each chart type on the docs site
+- [x] **DOCS-02**: Developer can understand bundle size impact (Canvas vs WebGL, per-chart tree-shaking) from inline size documentation
 
 ## Future Requirements
 
@@ -159,8 +159,8 @@ Which phases cover which requirements. Populated during roadmap creation.
 | CLI-01 | Phase 96 | Complete |
 | CLI-02 | Phase 96 | Complete |
 | CLI-03 | Phase 96 | Complete |
-| DOCS-01 | Phase 96 | Pending |
-| DOCS-02 | Phase 96 | Pending |
+| DOCS-01 | Phase 96 | Complete |
+| DOCS-02 | Phase 96 | Complete |
 
 **Coverage:**
 - v9.0 requirements: 41 total
