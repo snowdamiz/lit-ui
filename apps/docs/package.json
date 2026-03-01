@@ -12,6 +12,7 @@
     "@lit-ui/accordion": "workspace:*",
     "@lit-ui/button": "workspace:*",
     "@lit-ui/calendar": "workspace:*",
+    "@lit-ui/charts": "workspace:*",
     "@lit-ui/checkbox": "workspace:*",
     "@lit-ui/cli": "workspace:^",
     "@lit-ui/core": "workspace:*",
