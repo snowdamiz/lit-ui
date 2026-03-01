@@ -23,7 +23,12 @@ export default defineConfig({
       formats: ['es'],
     },
     rollupOptions: {
-      external: ['lit', /^lit\//, /^@lit\//, /^@lit-ui\//],
+      // echarts-gl is externalized so that 'echarts-gl/charts' is not bundled into a
+      // Vite namespace chunk. When bundled, the '.then(s => s.x)' namespace accessor
+      // pattern breaks when downstream bundlers (e.g. the docs app Vite) re-process
+      // the dist — at() wraps the preload but then .then(n=>n.x) accesses .x on the
+      // already-extracted named export (not the module namespace), yielding undefined.
+      external: ['lit', /^lit\//, /^@lit\//, /^@lit-ui\//, 'echarts-gl', /^echarts-gl\//],
     },
   },
 });

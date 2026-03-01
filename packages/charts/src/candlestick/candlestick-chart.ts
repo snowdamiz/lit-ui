@@ -46,6 +46,7 @@ function _parseMovingAverages(raw: string | null): MAConfig[] {
 interface _GpuCandlestickInstance {
   resize(): void;
   dispose(): void;
+  setOption(options: { theme?: 'dark' | 'light' }): void;
   setZoomRange(start: number, end: number): void;
   appendData(seriesIndex: number, newPoints: ReadonlyArray<readonly [number, number, number, number, number]>): void;
 }
@@ -111,6 +112,9 @@ export class LuiCandlestickChart extends BaseChartElement {
   private _gpuChart: _GpuCandlestickInstance | null = null;
   // WEBGPU: Separate ResizeObserver for ChartGPU — base class observer only calls this._chart.resize().
   private _gpuResizeObserver?: ResizeObserver;
+  // WEBGPU: MutationObserver that mirrors .dark class changes to ChartGPU theme.
+  // The base class _colorSchemeObserver only updates ECharts; ChartGPU has its own theme state.
+  private _gpuColorSchemeObserver?: MutationObserver;
   // WEBGPU: Flag set to true when WebGPU path was active — gates releaseGpuDevice() in cleanup.
   private _wasWebGpu = false;
   // WEBGPU: Tracks how many bars have been pushed to ChartGPU — enables incremental appendData.
@@ -154,7 +158,12 @@ export class LuiCandlestickChart extends BaseChartElement {
       'position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;';
     container.insertBefore(gpuHost, container.firstChild);
 
+    // WEBGPU: Detect initial theme — ChartGPU defaults to 'dark' if not specified.
+    // Must be read at create time; theme updates are handled by _applyGpuTheme().
+    const isDark = document.documentElement.classList.contains('dark');
+
     const gpuSeries = {
+      theme: isDark ? 'dark' as const : 'light' as const,
       series: [{
         type: 'candlestick' as const,
         data: [] as Array<readonly [number, number, number, number, number]>,
@@ -176,6 +185,18 @@ export class LuiCandlestickChart extends BaseChartElement {
     this._wasWebGpu = true;
     this._gpuResizeObserver = new ResizeObserver(() => this._gpuChart?.resize());
     this._gpuResizeObserver.observe(container);
+
+    // WEBGPU: Mirror .dark class changes from <html> to ChartGPU theme.
+    // The base class _colorSchemeObserver updates ECharts only; ChartGPU maintains its own
+    // theme state and must be updated separately via setOption({ theme }).
+    this._gpuColorSchemeObserver = new MutationObserver(() => {
+      const isDarkNow = document.documentElement.classList.contains('dark');
+      this._gpuChart?.setOption({ theme: isDarkNow ? 'dark' : 'light' });
+    });
+    this._gpuColorSchemeObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class'],
+    });
 
     this._chart!.on('dataZoom', () => this._syncCoordinates());
     this._chart!.on('rendered', () => this._syncCoordinates());
@@ -337,9 +358,11 @@ export class LuiCandlestickChart extends BaseChartElement {
       this._barRafId = undefined;
     }
 
-    // 2. WEBGPU: Disconnect ChartGPU's resize observer before disposing.
+    // 2. WEBGPU: Disconnect ChartGPU's resize observer and color scheme observer before disposing.
     this._gpuResizeObserver?.disconnect();
     this._gpuResizeObserver = undefined;
+    this._gpuColorSchemeObserver?.disconnect();
+    this._gpuColorSchemeObserver = undefined;
 
     // 3. WEBGPU: Dispose ChartGPU — releases GPU buffers + removes WebGPU canvas.
     //    Does NOT destroy the shared GPUDevice (owned by webgpu-device.ts singleton).
