@@ -65,7 +65,8 @@ function LineChartDemo({ data }) {
 | `option` | — (JS only) | `EChartsOption` | `undefined` | Raw ECharts option passthrough for advanced use. |
 | `loading` | `loading` | `boolean` | `false` | Show ECharts loading skeleton. |
 | `enableGl` | `enable-gl` | `boolean` | `false` | Opt-in WebGL via echarts-gl (meaningful on scatter chart). |
-| `maxPoints` | `max-points` | `number` | `1000` | Circular buffer capacity for streaming via pushData(). |
+| `maxPoints` | `max-points` | `number` | `1000` | Circular buffer capacity for streaming via pushData(). Note: lui-line-chart and lui-area-chart override this to 500,000. |
+| `enableWebGpu` | `enable-webgpu` | `boolean` | `false` | Opt-in WebGPU detection. All charts inherit this from BaseChartElement. Only line/area charts activate ChartGPU rendering; other chart types fire `renderer-selected` but remain on Canvas. |
 
 ## Shared Methods (All 8 Charts)
 
@@ -74,11 +75,14 @@ function LineChartDemo({ data }) {
 | `pushData(point)` | `(point: unknown) => void` | Stream one data point. RAF-coalesced. **Not supported on treemap** (logs console.warn). |
 | `getChart()` | `() => EChartsType \| undefined` | Direct ECharts instance for event binding and advanced customization. |
 
+**Note:** `lui-line-chart` and `lui-area-chart` extend `pushData` with an optional `seriesIndex` parameter: `pushData(point, seriesIndex = 0)`. See individual chart skills for the full signature.
+
 ## Shared Events (All 8 Charts)
 
 | Event | Detail | Description |
 |-------|--------|-------------|
 | `ui-webgl-unavailable` | `{ reason: string }` | Fires when `enable-gl` is set but WebGL is unavailable. Chart falls back to Canvas automatically. |
+| `renderer-selected` | `{ renderer: 'webgpu' \| 'webgl' \| 'canvas' }` | Fires in `firstUpdated()` when the renderer tier is determined. All 8 charts fire this when `enable-webgpu` is set. Only line/area charts activate ChartGPU; others fall through to Canvas. |
 
 ## Shared CSS Custom Properties (All 8 Charts)
 
@@ -112,6 +116,12 @@ setInterval(() => {
   chart.pushData(Math.random() * 100);
   // Multiple pushData() calls in the same animation frame are batched automatically
 }, 100);
+```
+
+```js
+// For line-chart and area-chart only: multi-series seriesIndex support
+// chart.pushData(value, 1) routes to the second series
+// See skills/line-chart and skills/area-chart for full multi-series API
 ```
 
 Supported on: line, area, bar, pie, scatter, heatmap, candlestick.
