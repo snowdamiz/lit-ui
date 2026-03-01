@@ -50,6 +50,56 @@
 
 ---
 
+## Milestone: v9.0 — Charts System
+
+**Shipped:** 2026-03-01
+**Phases:** 10 (88-97) | **Plans:** 25
+
+### What Was Built
+
+- `@lit-ui/charts` package with `BaseChartElement` abstract class solving all 5 ECharts cross-cutting concerns before any chart was built: SSR guard, WebGL lifecycle (loseContext before dispose), ThemeBridge CSS token resolution, ResizeObserver, and circular buffer streaming
+- 8 chart components (Line, Area, Bar, Pie/Donut, Scatter/Bubble with WebGL, Heatmap, Candlestick, Treemap) each with per-chart option builders, registry files for ECharts tree-shaking (~135KB gzipped vs 400KB full), and streaming via `pushData()`
+- Dual streaming paths: native `appendData` for Line/Area (avoids `setOption` data-wipe trap); circular buffer + RAF batching for all others; Heatmap and Treemap override `pushData()` with cell-update and no-op semantics respectively
+- CLI registry for all 8 chart types, subpath exports (`@lit-ui/charts/line-chart`) for bundler tree-shaking, copy-source starter templates; complete `@lit-ui/charts` distribution parity with all other LitUI packages
+- 8 interactive docs pages with live React demos using `useRef+useEffect` for `.data` JS property assignment, PropsTable API references, CSS token tables, and bundle size guidance (DOCS-02)
+- 9 AI skill files: main skill router updated (entries 24-32), charts secondary router with full BaseChartElement API + 17 CSS tokens, plus 8 chart sub-skills each with 3+ prominent gotcha warnings (OHLC order, treemap pushData no-op, heatmap JS-only props)
+
+### What Worked
+
+- Front-loading all cross-cutting concerns in Phase 88 (BaseChartElement) meant Phases 89-95 were purely additive — no re-architecting mid-milestone
+- Research phase before planning surfaced 5 critical ECharts pitfalls (CRITICAL-01 through CRITICAL-05) that would have been painful to discover during implementation; `setOption` wipes appendData data is especially non-obvious
+- One-phase-per-chart type structure (89: Line+Area, 90: Bar, 91: Pie, etc.) gave clean isolation and enabled parallel plan execution within each phase
+- Pinning ECharts to 5.6.0 + echarts-gl 2.0.9 upfront avoided mid-milestone version compatibility issues
+- Phase 97 (skill file updates) treated as a first-class phase rather than an afterthought — resulted in comprehensive skill coverage with chart-specific gotcha warnings in multiple locations
+
+### What Was Inefficient
+
+- Phase 96 (CLI + Docs) had 4 plans but was effectively Wave 2 (docs pages) waiting on Wave 1 (subpath exports + registry) — could have been planned as a 2-wave phase for better parallelism
+- The `095-` / `096-` directory naming (with leading zero) diverged from the `88-` / `89-` convention, causing the `roadmap analyze` tool to report those phases as missing; minor but created confusing readiness output during milestone completion
+
+### Patterns Established
+
+- **BaseChartElement-first**: For any complex integration with a third-party library (ECharts, Three.js, etc.), always build the abstract base class with all cross-cutting concerns before any concrete implementation
+- **Dual streaming paths**: `appendData` for time-series (never `setOption` after streaming starts); circular buffer + RAF for all other chart types — document this boundary prominently in skill files
+- **Chart sub-skill pattern**: Defer Methods/Events/CSS tokens to a shared cross-reference skill (skills/charts/SKILL.md) rather than duplicating the 17-token table across 8 sub-skills
+- **Three-location warnings**: Critical gotcha warnings (OHLC order, heatmap JS-only props, treemap pushData no-op) placed in 3 locations: file header, Props table note, and Behavior Notes — ensures visibility regardless of how the skill is accessed
+- **loseContext() before dispose()**: Standard GPU cleanup pattern for any WebGL component — must be documented and enforced in the base class
+
+### Key Lessons
+
+1. The `setOption` vs `appendData` boundary in ECharts is a latent bug source — any time-series chart that mixes both paths will silently wipe streamed data; the correct pattern is appendData-only once streaming starts
+2. echarts-gl's `ScatterGL` series ignores per-point `symbolSize` callbacks when using the GPU path — fixed symbol size is a hard GPU limitation, not a bug; document prominently to prevent repeated investigation
+3. Treemap's `pushData()` no-op design (rather than attempting cell update) was the correct choice — the hierarchical tree structure has no meaningful "circular buffer" equivalent; force full reassignment instead
+4. OhlcBar order `[open, close, low, high]` (not the OHLC acronym order) is a long-standing ECharts quirk that produces silent wrong output if misapplied — the multi-location warning strategy was the right call
+
+### Cost Observations
+
+- Phases executed with sonnet (quality profile), yolo mode
+- 10 phases, 25 plans in 2 days
+- Notable: BaseChartElement (Phase 88) was the highest-leverage phase — ~8 plans of cross-cutting work condensed into 3 plans; subsequent chart phases were 2 plans each
+
+---
+
 ## Cross-Milestone Trends
 
 ### Process Evolution
@@ -60,6 +110,7 @@
 | v2.0 | 8 | 27 | Monorepo, SSR — architectural milestone |
 | v7.0 | 8 | 28 | TanStack integration, complex component |
 | v8.0 | 19 | 55 | Polish pass — high phase count, mechanical pattern |
+| v9.0 | 10 | 25 | Third-party integration (ECharts) — BaseChartElement-first architecture |
 
 ### Cumulative State
 
@@ -68,3 +119,4 @@
 | v1.0 | ~4,000 | 1 | 2 |
 | v7.0 | ~91,000 | 21 | 21 |
 | v8.0 | ~110,000 | 21 | 21 (all polished) |
+| v9.0 | ~116,000 | 22 | 27 (21 UI + 8 charts) |

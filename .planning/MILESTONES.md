@@ -284,3 +284,30 @@
 
 ---
 
+
+## v9.0 Charts System (Shipped: 2026-03-01)
+
+**Delivered:** Complete high-performance chart suite for LitUI — 8 chart types powered by ECharts 5.6 + ECharts GL, with WebGL rendering for 500K+ point datasets, real-time streaming via `pushData()`, CSS token theming, CLI distribution, 8 interactive docs pages, and 9 AI skill files documenting the full chart API.
+
+**Phases completed:** 88-97 (10 phases, 25 plans)
+
+**Key accomplishments:**
+
+- `@lit-ui/charts` package: `BaseChartElement` abstract Lit class solving all 5 ECharts cross-cutting concerns — SSR guard (no `window`/`document` crash in Next.js/Astro), WebGL lifecycle (`loseContext()` before dispose), ThemeBridge (CSS token resolution via `getComputedStyle`), ResizeObserver, and circular buffer streaming infrastructure
+- 8 chart components: `lui-line-chart`, `lui-area-chart`, `lui-bar-chart`, `lui-pie-chart`, `lui-scatter-chart`, `lui-heatmap-chart`, `lui-candlestick-chart`, `lui-treemap-chart` — each extending BaseChartElement with chart-specific option builders and ECharts module tree-shaking via per-chart registry files (~135KB gzipped vs 400KB full import)
+- Real-time streaming via `pushData()` with dual paths: native `appendData` for Line/Area (avoids `setOption` data-wipe trap), circular buffer (`maxPoints` configurable, RAF-batched) for all other types; Treemap and Heatmap override `pushData()` with cell-update semantics
+- CLI registry for all 8 chart types with `npx lit-ui add [chart-name]`, subpath exports (`@lit-ui/charts/line-chart`) for bundler tree-shaking, and copy-source starter templates for each chart type
+- 8 interactive docs pages with live React demos (useRef+useEffect pattern for `.data` JS property), complete property API tables, 17-entry CSS token tables (`--ui-chart-*`), and bundle size guidance (Canvas vs WebGL impact)
+- 9 AI skill files: main router skill updated (entries 24-32, routing rules 7-8) + `skills/charts/SKILL.md` secondary router with full BaseChartElement API + 8 chart sub-skills with prominent gotcha warnings (OHLC order `[open,close,low,high]`, treemap `pushData()` no-op, heatmap xCategories/yCategories JS-only)
+
+**Stats:**
+
+- 139 files changed, +22,851 / -135 lines
+- 4,336 lines TypeScript (charts package), 1,941 lines TSX (docs pages)
+- 10 phases (88-97), 25 plans, ~50 tasks
+- 2 days (2026-02-28 → 2026-03-01)
+
+**Git range:** `feat(88-01)` → `docs(97-04)`
+
+---
+

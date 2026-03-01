@@ -4,17 +4,17 @@
 
 A framework-agnostic component library built on Lit.js, following ShadCN's philosophy of beautiful defaults and CLI-driven installation. Components work natively in React, Vue, Svelte, or plain HTML because they're standard web components underneath.
 
-Now with **dual distribution** (copy-source or npm), **SSR support** via Declarative Shadow DOM, **build-time theme customization** via visual configurator, **complete form toolkit** (Input, Textarea, Select, Checkbox, Radio, Switch with group containers), **date/time components** (Calendar, Date Picker, Date Range Picker, Time Picker), **overlay/feedback primitives** (Toast, Tooltip, Popover with shared Floating UI infrastructure), **layout components** (Accordion, Tabs), **data table** (virtual scrolling, sorting, filtering, inline editing, selection, bulk actions, column customization, CSV export, expandable rows), and a **unified monochrome design system** (all 18 components polished to a consistent shadcn-quality theme with semantic dark mode cascade, complete CSS token documentation, and accurate per-component skill files).
+Now with **dual distribution** (copy-source or npm), **SSR support** via Declarative Shadow DOM, **build-time theme customization** via visual configurator, **complete form toolkit** (Input, Textarea, Select, Checkbox, Radio, Switch with group containers), **date/time components** (Calendar, Date Picker, Date Range Picker, Time Picker), **overlay/feedback primitives** (Toast, Tooltip, Popover with shared Floating UI infrastructure), **layout components** (Accordion, Tabs), **data table** (virtual scrolling, sorting, filtering, inline editing, selection, bulk actions, column customization, CSV export, expandable rows), a **unified monochrome design system** (all 18 components polished to a consistent shadcn-quality theme with semantic dark mode cascade, complete CSS token documentation, and accurate per-component skill files), and a **complete chart suite** (`@lit-ui/charts` — 8 chart types powered by ECharts + ECharts GL, WebGL rendering for 500K+ point datasets, real-time streaming, CSS token theming, CLI distribution, and full AI skill coverage).
 
 ## Core Value
 
 Developers can use polished, accessible UI components in any framework without lock-in — one component library that works everywhere.
 
-## Current State (v8.0)
+## Current State (v9.0)
 
-- ~110,000+ lines TypeScript/CSS across packages and apps (v7.0 was ~91,000; v8.0 added +36,559/-16,857)
-- Tech stack: Lit.js 3, Tailwind CSS v4, Vite, TypeScript, pnpm workspaces, colorjs.io, Floating UI, @tanstack/lit-virtual, @tanstack/lit-table, date-fns, composed-offset-position
-- 21 publishable packages: @lit-ui/core, @lit-ui/button, @lit-ui/dialog, @lit-ui/input, @lit-ui/textarea, @lit-ui/select, @lit-ui/checkbox, @lit-ui/radio, @lit-ui/switch, @lit-ui/calendar, @lit-ui/date-picker, @lit-ui/date-range-picker, @lit-ui/time-picker, @lit-ui/tooltip, @lit-ui/popover, @lit-ui/toast, @lit-ui/accordion, @lit-ui/tabs, @lit-ui/data-table, @lit-ui/ssr, lit-ui (CLI)
+- ~116,000+ lines TypeScript/CSS/TSX across packages and apps (v8.0 was ~110,000; v9.0 added +22,851/-135)
+- Tech stack: Lit.js 3, Tailwind CSS v4, Vite, TypeScript, pnpm workspaces, colorjs.io, Floating UI, @tanstack/lit-virtual, @tanstack/lit-table, date-fns, composed-offset-position, ECharts 5.6.0, echarts-gl 2.0.9
+- 22 publishable packages: @lit-ui/core, @lit-ui/button, @lit-ui/dialog, @lit-ui/input, @lit-ui/textarea, @lit-ui/select, @lit-ui/checkbox, @lit-ui/radio, @lit-ui/switch, @lit-ui/calendar, @lit-ui/date-picker, @lit-ui/date-range-picker, @lit-ui/time-picker, @lit-ui/tooltip, @lit-ui/popover, @lit-ui/toast, @lit-ui/accordion, @lit-ui/tabs, @lit-ui/data-table, @lit-ui/charts, @lit-ui/ssr, lit-ui (CLI)
 - Framework examples: Next.js App Router, Astro, Express/Node.js
 - Distribution: copy-source (CLI) or npm packages with SSR support
 - Theme customization: Visual configurator + CLI `--theme` parameter
@@ -23,6 +23,7 @@ Developers can use polished, accessible UI components in any framework without l
 - Overlay/feedback components: Tooltip (hover/focus with delay groups), Popover (click-toggle with focus management), Toast (imperative API with queue management)
 - Layout components: Accordion (single/multi-expand, CSS Grid animation, lazy mounting), Tabs (automatic/manual activation, horizontal/vertical, animated indicator, overflow scroll)
 - Data components: Data Table (100K+ row virtual scrolling, sorting, filtering, pagination, inline editing, selection, bulk actions, column customization, CSV export, expandable rows)
+- Chart components: @lit-ui/charts — BaseChartElement + 8 chart types (Line, Area, Bar, Pie/Donut, Scatter/Bubble with WebGL, Heatmap, Candlestick, Treemap) with real-time streaming, CSS token theming, and CLI distribution
 
 ## Requirements
 
@@ -97,22 +98,21 @@ Developers can use polished, accessible UI components in any framework without l
 - ✓ All 18 component default styles polished to shadcn aesthetic via semantic dark mode cascade — v8.0
 - ✓ All 18 component docs pages expanded with complete CSS token tables (double-fallback form) — v8.0
 - ✓ All 18 component skill files updated with complete CSS tokens and Behavior Notes sections — v8.0
+- ✓ @lit-ui/charts package with ECharts 5.6 + ECharts GL integration, BaseChartElement with SSR guard and WebGL lifecycle — v9.0
+- ✓ 8 chart types: Line, Area, Bar, Pie/Donut, Scatter/Bubble (WebGL 500K+ pts), Heatmap, Candlestick (OHLC), Treemap — v9.0
+- ✓ Real-time streaming via `pushData()` with appendData path for Line/Area and circular buffer for all others — v9.0
+- ✓ CLI distribution: `npx lit-ui add [chart-name]` + subpath exports for tree-shaking + starter templates — v9.0
+- ✓ CSS token theming system for charts (`--ui-chart-*` — 17 tokens for palette, grid, axis, tooltip, legend) — v9.0
+- ✓ 8 interactive docs pages with live demos, API tables, CSS token tables, and bundle size guidance — v9.0
+- ✓ 9 AI skill files: main router + charts router + 8 chart sub-skills with prominent gotcha warnings — v9.0
 
 ### Active
 
-<!-- v9.0 Charts System — building toward these -->
+<!-- v9.1+ — next milestone targets -->
 
-- [ ] @lit-ui/charts package with ECharts + ECharts GL integration
-- [ ] Line chart component with real-time streaming and WebGL rendering
-- [ ] Bar/Column chart component with grouped and stacked variants
-- [ ] Scatter/Bubble chart with WebGL for 1M+ point datasets
-- [ ] Area chart with fill and multiple series support
-- [ ] Heatmap chart component
-- [ ] Candlestick/OHLC chart for financial data
-- [ ] Pie and Donut chart components
-- [ ] Treemap chart component
-- [ ] CLI integration: `npx lit-ui add line-chart` for all chart types
-- [ ] CSS token theming system for charts (colors, grid, tooltip, legend)
+- [ ] Native `appendData` streaming for Line/Area at 1M+ continuous points without `setOption` wipeout (PERF-01)
+- [ ] Calendar heatmap mode (`mode="calendar"` on lui-heatmap-chart) (PERF-02)
+- [ ] Moving average computed column for streaming candlestick (PERF-03)
 
 ### Deferred
 
@@ -241,6 +241,17 @@ Developers can use polished, accessible UI components in any framework without l
 | Double-fallback var() form in docs/skill tables | Single var() breaks if --color-* not imported | ✓ Good — tables work in both contexts |
 | THEME-SPEC.md as authoritative token reference | Phases needed concrete spec, not abstract descriptions | ✓ Good — all 18 phases executed consistently |
 | Retain oklch literals and white values as .dark exceptions | These cannot cascade from :root through semantic tokens | ✓ Good — correct per-exception approach |
+| ECharts in dependencies (not peerDeps) for @lit-ui/charts | Heavy dep is implementation detail, not user contract | ✓ Good — zero-config install for chart users |
+| echarts-gl as optional peer dep, dynamic import only | Static top-level import crashes SSR; lazy-load on demand | ✓ Good — SSR safe, no bundle overhead without WebGL |
+| Pin ECharts to 5.6.0 | echarts-gl 2.0.9 only supports ECharts 5.x; no 3.x release | ✓ Good — stable dependency pair |
+| ThemeBridge via getComputedStyle | ECharts canvas cannot resolve CSS var() natively | ✓ Good — correct design, no runtime overhead |
+| appendData path for Line/Area only | setOption after appendData wipes streamed data (CRITICAL-03) | ✓ Good — safe boundary, well documented in skill files |
+| loseContext() before dispose() for WebGL | GPU context cleanup prevents memory leak on destroy | ✓ Good — correct WebGL lifecycle |
+| OhlcBar order [open,close,low,high] (not acronym) | ECharts candlestick series expects this specific order | — Pending — potential footgun; documented in 3 locations |
+| treemap pushData() overridden as no-op | Base circular buffer overwrites hierarchical data | ✓ Good — protected data integrity |
+| levelColors as string[][] (array of arrays) | ECharts levels[n].color expects string[] per level | ✓ Good — correct API; flat string[] silently rejected |
+| Per-chart registry files (line-registry, bar-registry…) | Tree-shakes ECharts to ~135KB vs 400KB full import | ✓ Good — significant bundle impact |
+| Multi-entry Vite config for subpath exports | createLibraryConfig wrapper hardcodes fileName, breaks entries | ✓ Good — bespoke defineConfig works correctly |
 
 ## Shipped Milestones
 
@@ -256,17 +267,7 @@ Developers can use polished, accessible UI components in any framework without l
 - **v6.0 Layout Components** (2026-02-02): Accordion, Tabs with full accessibility, animations, SSR, CLI, documentation
 - **v7.0 Data Table** (2026-02-05): Full-featured data table with virtual scrolling, sorting, filtering, inline editing, selection, bulk actions, column customization, CSV export, expandable rows
 - **v8.0 Design System Polish** (2026-02-28): Unified monochrome design system — removed hardcoded dark mode overrides from all 18 components, expanded CSS token docs (avg 3x more tokens per component), rewrote all 18 skill files with Behavior Notes sections
-
-## Current Milestone: v9.0 Charts System
-
-**Goal:** Add a complete high-performance chart suite to LitUI — all major chart types powered by ECharts + ECharts GL with WebGL rendering for millions of data points and real-time streaming.
-
-**Target features:**
-- `@lit-ui/charts` package (separate opt-in, heavy WebGL deps isolated)
-- Chart types: Line, Bar, Scatter/Bubble, Area, Heatmap, Candlestick/OHLC, Pie/Donut, Treemap
-- WebGL rendering via ECharts GL for large datasets (1M+ points) and high-frequency real-time updates
-- Same CLI install UX: `npx lit-ui add line-chart` — each chart as a standalone web component
-- CSS token theming system (chart palette, grid, tooltip, legend) consistent with existing design tokens
+- **v9.0 Charts System** (2026-03-01): `@lit-ui/charts` package with 8 chart types (ECharts 5.6 + ECharts GL), WebGL rendering for 500K+ point datasets, real-time streaming via `pushData()`, CSS token theming, CLI distribution, 8 interactive docs pages, and 9 AI skill files with chart-specific gotcha warnings
 
 ---
-*Last updated: 2026-02-28 — Milestone v9.0 started*
+*Last updated: 2026-03-01 after v9.0 milestone*
