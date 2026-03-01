@@ -95,7 +95,7 @@ type MAConfig = {
 
 ## Props
 
-For shared props (data, option, loading, enableGl, maxPoints) see `skills/charts`.
+For shared props (data, option, loading, enableGl, maxPoints, enableWebGpu, renderer) see `skills/charts`.
 
 | Prop | Attribute | Type | Default | Description |
 |------|-----------|------|---------|-------------|
@@ -103,6 +103,8 @@ For shared props (data, option, loading, enableGl, maxPoints) see `skills/charts
 | `bearColor` | `bear-color` | `string \| null` | `null` → `'#ef5350'` | Falling candle fill color. |
 | `showVolume` | `show-volume` | `boolean` | `false` | Render a volume bar panel on a secondary y-axis below the main chart. |
 | `movingAverages` | `moving-averages` | `string \| null` | `null` | JSON string of `MAConfig[]`. See data type section. |
+| `enableWebGpu` | `enable-webgpu` | `boolean` | `false` | Opt-in WebGPU rendering via ChartGPU 0.3.2. When set and WebGPU is available, renders OHLC candles on a GPU-accelerated canvas beneath ECharts. MA overlay lines, volume bars, axes, tooltip, and DataZoom slider always render in ECharts regardless of renderer. Falls back to Canvas automatically on unsupported browsers. |
+| `renderer` | — (read-only) | `'webgpu' \| 'webgl' \| 'canvas'` | `'canvas'` | Active renderer tier after `renderer-selected` fires. Read from the event, not synchronously — the async GPU probe may not have resolved at element creation time. |
 
 ## Methods
 
@@ -129,3 +131,6 @@ See `skills/charts` for all 17 shared `--ui-chart-*` tokens.
 - **showType appends MA type to legend**: Setting `showType: true` in MAConfig changes the legend label from "MA20" to "MA20 (SMA)" or "MA20 (EMA)" depending on the `type` field.
 
 - **LOOKS DONE BUT ISN'T — Changing movingAverages after streaming starts**: If you reassign the `moving-averages` attribute after `pushData()` has been called, the new MA config takes effect but the state machines rebuild from only the current `_ohlcBuffer` (which may have been trimmed). Historical MA values before the trim are lost. To get correct MA history after a config change, call `chart.data = []` first to perform a full reinit, then replay your history. The chart will appear correct for new bars immediately, so the corruption of historical MA is easy to miss.
+- **WebGPU candles only — MA/volume stay in ECharts**: When `enable-webgpu` is set and WebGPU is active, ChartGPU renders only the OHLC candle bodies and wicks. Moving average overlay lines, volume bars, axes, legend, tooltip, and DataZoom slider all render in the ECharts canvas layer above. ECharts candlestick series is set to transparent colors internally to prevent double-rendering.
+- **Bull/bear colors are init-time only on WebGPU path**: `bull-color` and `bear-color` are passed to ChartGPU at `_initWebGpuLayer()` time. If you change these attributes after chart initialization, ECharts updates its (transparent) candlestick series, but ChartGPU candle colors do not update. To apply new colors on the GPU path, recreate the chart element. (Full dynamic color wiring deferred to v10.1.)
+- **DataZoom sync works with show-volume**: When `show-volume` is true (two-grid layout), the DataZoom percent-space sync to ChartGPU's `setZoomRange()` still works correctly — both ECharts grids and the ChartGPU layer are synchronized via the same `start`/`end` percent values.
