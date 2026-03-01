@@ -196,3 +196,16 @@ Plans:
 | 94. Candlestick Chart | 2/2 | Complete    | 2026-03-01 | - |
 | 95. Treemap Chart | 2/2 | Complete    | 2026-03-01 | - |
 | 96. CLI Integration + Documentation | v9.0 | 4/4 | Complete | 2026-03-01 |
+
+### Phase 97: Update skills to include recent addition of chart system — detailed sub-skill per chart type + main router update
+
+**Goal:** AI assistants can correctly answer all questions about @lit-ui/charts — which chart to use, how to set data (JS property only), streaming with pushData(), React integration, and chart-specific pitfalls (OHLC order, treemap pushData no-op, heatmap array props) — by loading the appropriate chart sub-skill.
+**Requirements**: TBD
+**Depends on:** Phase 96
+**Plans:** 4 plans
+
+Plans:
+- [ ] 97-01-PLAN.md — Update skill/SKILL.md main router + create skill/skills/charts/SKILL.md overview
+- [ ] 97-02-PLAN.md — Create line-chart, area-chart, bar-chart sub-skills
+- [ ] 97-03-PLAN.md — Create pie-chart, scatter-chart, heatmap-chart sub-skills
+- [ ] 97-04-PLAN.md — Create candlestick-chart, treemap-chart sub-skills
