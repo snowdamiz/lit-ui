@@ -52,7 +52,7 @@ Full phase details archived to `.planning/milestones/v9.0-ROADMAP.md`
 - [x] **Phase 99: Incremental Moving Average State Machine** (3 plans) (completed 2026-03-01)
 - [x] **Phase 100: 1M+ Streaming Infrastructure for Line/Area** (3 plans) (completed 2026-03-01)
 - [x] **Phase 101: WebGPU Two-Layer Canvas for Line/Area** (N plans) (completed 2026-03-01)
-- [ ] **Phase 102: Docs + Skills Update** (N plans)
+- [ ] **Phase 102: Docs + Skills Update** (3 plans)
 
 ## Phase Details
 
@@ -125,7 +125,11 @@ Plans:
   2. The `candlestick-chart` skill file documents `MAConfig.showType`, `MAConfig.color` default token behavior, and the NaN-gap rule — including a "Looks Done But Isn't" warning that changing `movingAverages` config after streaming starts requires chart reinit
   3. The WebGPU browser support table (Chrome/Edge: yes, Firefox 141+: yes, Safari 26+: yes, fallback: Canvas) appears in the line-chart and area-chart docs pages so users can set accurate compatibility expectations
   4. The `@lit-ui/charts` bundle size guidance in docs reflects the ChartGPU 0.3.2 addition and clarifies that ChartGPU is only loaded when WebGPU is detected (dynamic import — zero overhead on unsupported browsers)
-**Plans**: TBD
+**Plans**: 3 plans
+Plans:
+- [ ] 102-01-PLAN.md — Update line-chart, area-chart, and shared charts skill files with v10.0 WebGPU + streaming API
+- [ ] 102-02-PLAN.md — Update candlestick-chart skill file with v10.0 MA features (showType, optional color, NaN-gap rule)
+- [ ] 102-03-PLAN.md — Update LineChartPage.tsx and AreaChartPage.tsx docs with WebGPU props and browser support table
 
 ## Progress
 
@@ -145,4 +149,4 @@ Plans:
 | 99. Incremental Moving Average State Machine | 3/3 | Complete    | 2026-03-01 | — |
 | 100. 1M+ Streaming Infrastructure for Line/Area | 3/3 | Complete    | 2026-03-01 | — |
 | 101. WebGPU Two-Layer Canvas for Line/Area | 3/3 | Complete    | 2026-03-01 | — |
-| 102. Docs + Skills Update | v10.0 | 0/? | Pending | — |
+| 102. Docs + Skills Update | v10.0 | 0/3 | Pending | — |
