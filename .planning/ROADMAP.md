@@ -110,7 +110,11 @@ Plans:
   2. After dragging the DataZoom slider on a WebGPU-rendered Line chart, the data series pixels align correctly with the ECharts axis tick marks — there is no horizontal or vertical offset between the WebGPU canvas layer and the ECharts canvas layer
   3. On a browser without WebGPU, the same Line chart renders correctly using the ECharts Canvas path with no visual difference to the user and no JavaScript errors in the console
   4. Destroying a chart component (removing it from the DOM) releases the GPUDevice resources — `device.destroy()` is called and the WebGPU canvas is removed — with no memory leak detectable in Chrome DevTools over 10 create/destroy cycles
-**Plans**: TBD
+**Plans**: 3 plans
+Plans:
+- [ ] 101-01-PLAN.md — Install chartgpu@0.3.2 and upgrade webgpu-device.ts to refcounted lifecycle with GPUAdapter storage
+- [ ] 101-02-PLAN.md — LuiLineChart: ChartGPU two-layer canvas with DataZoom sync and full disconnectedCallback() cleanup
+- [ ] 101-03-PLAN.md — LuiAreaChart: identical ChartGPU two-layer canvas pattern as LuiLineChart
 
 ### Phase 102: Docs + Skills Update
 **Goal**: All v10.0 capabilities are documented in the chart skill files and docs pages so that users and AI agents working with the library have accurate, complete references for the new streaming, MA, and WebGPU features
