@@ -68,6 +68,10 @@ export class LuiLineChart extends BaseChartElement {
   // WEBGPU-02: Flag set to true when WebGPU path was active — used to gate releaseGpuDevice() in cleanup.
   private _wasWebGpu = false;
 
+  // WEBGPU-02: Tracks the last flushed buffer length per series — enables incremental ChartGPU pushes.
+  // Incremental: each flush sends only new points since last flush, not the full buffer.
+  private _gpuFlushedLengths: number[] = [];
+
   // STRM-02: Line/Area charts stream 1M+ points; base default of 1000 is for buffer-mode charts.
   // Override to 500_000 — allows ~8 minutes of streaming at 1000 pts/sec before reset.
   override maxPoints = 500_000;
@@ -231,6 +235,24 @@ export class LuiLineChart extends BaseChartElement {
       { series: seriesUpdates },
       { lazyUpdate: true } as object
     );
+
+    // WEBGPU-02: Push new points to ChartGPU data layer (incremental — not full buffer replacement).
+    // appendData(seriesIndex, newPoints) accumulates internally — only send points since last flush.
+    if (this._gpuChart) {
+      this._lineBuffers.slice(0, seriesCount).forEach((buf, idx) => {
+        const lastFlushed = this._gpuFlushedLengths[idx] ?? 0;
+        const newPoints = (buf as number[]).slice(lastFlushed);
+        if (newPoints.length > 0) {
+          // ChartGPU appendData expects DataPoint[] — [x, y] tuples where x is position index.
+          // Line/area buffers hold y-values only (x is position index starting from lastFlushed).
+          const pairs = newPoints.map(
+            (v, i) => [lastFlushed + i, v] as readonly [number, number]
+          );
+          this._gpuChart!.appendData(idx, pairs);
+          this._gpuFlushedLengths[idx] = buf.length;
+        }
+      });
+    }
   }
 
   /**
@@ -251,6 +273,8 @@ export class LuiLineChart extends BaseChartElement {
     // 2. Clear all buffers and reset counter — fresh start after reinit.
     this._lineBuffers = this._lineBuffers.map(() => []);
     this._totalPoints = 0;
+    // WEBGPU-02: Reset incremental flush positions so next flush starts from index 0.
+    this._gpuFlushedLengths = [];
     // 3. Dispose current ECharts instance.
     //    Set _chart = null immediately — disconnectedCallback() guards on null.
     if (this._chart) {
@@ -262,15 +286,37 @@ export class LuiLineChart extends BaseChartElement {
   }
 
   /**
-   * Cancel component's own RAF before base class disposes the chart.
-   * Base class cancels its own _rafId but has no knowledge of _lineRafId.
-   * Failing to cancel causes a setOption call on a disposed chart instance.
+   * WEBGPU-02: Full reverse-init cleanup — cancels RAF, disconnects ChartGPU resize observer,
+   * disposes ChartGPU, releases GPU device refcount, then calls super (ECharts cleanup).
+   *
+   * Reverse-init order (Pitfall 5): undo steps in reverse order of _initWebGpuLayer().
+   * super.disconnectedCallback() is LAST — base class references this._chart which ChartGPU
+   * event listeners may hold; disposing early would cause use-after-free on those handlers.
    */
   override disconnectedCallback(): void {
+    // 1. Cancel streaming RAF — no flushes after teardown starts.
     if (this._lineRafId !== undefined) {
       cancelAnimationFrame(this._lineRafId);
       this._lineRafId = undefined;
     }
+
+    // 2. WEBGPU-02: Disconnect ChartGPU's resize observer before disposing.
+    this._gpuResizeObserver?.disconnect();
+    this._gpuResizeObserver = undefined;
+
+    // 3. WEBGPU-02: Dispose ChartGPU — releases GPU buffers + removes canvas.
+    //    Does NOT destroy the injected GPUDevice (WEBGPU-03: singleton owned by webgpu-device.ts).
+    this._gpuChart?.dispose();
+    this._gpuChart = null;
+
+    // 4. WEBGPU-02: Release refcount — device.destroy() fires when last chart disconnects.
+    //    void cast: releaseGpuDevice() is async; disconnectedCallback() is sync.
+    if (this._wasWebGpu) {
+      void releaseGpuDevice();
+    }
+
+    // 5. ECharts cleanup (base class) — disposes chart, disconnects ResizeObserver/MutationObserver.
+    //    Must be LAST — base class references this._chart which ChartGPU event listeners may hold.
     super.disconnectedCallback();
   }
 
