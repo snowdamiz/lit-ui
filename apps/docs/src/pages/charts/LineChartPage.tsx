@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { FrameworkProvider } from '../../contexts/FrameworkContext';
 import { ExampleBlock } from '../../components/ExampleBlock';
 import { PropsTable, type PropDef } from '../../components/PropsTable';
+import { PrevNextNav } from '../../components/PrevNextNav';
 import '@lit-ui/charts/line-chart';
 
 function LineChartDemo() {
@@ -207,6 +208,13 @@ export function LineChartPage() {
             </div>
           </div>
         </section>
+
+        {/* Navigation */}
+        <div className="divider-fade mb-8" />
+        <PrevNextNav
+          prev={{ title: 'Tooltip', href: '/components/tooltip' }}
+          next={{ title: 'Area Chart', href: '/charts/area-chart' }}
+        />
       </div>
     </FrameworkProvider>
   );

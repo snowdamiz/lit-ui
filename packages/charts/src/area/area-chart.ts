@@ -37,6 +37,10 @@ export class LuiAreaChart extends BaseChartElement {
   // Zoom/pan controls — DataZoomComponent already registered in canvas-core
   @property({ type: Boolean }) zoom = false;
 
+  // AREA-LABEL: Show value labels on data points. '' = no labels (default).
+  // 'top' = above each point, 'bottom' = below each point.
+  @property({ attribute: 'label-position' }) labelPosition: 'top' | 'bottom' | '' = '';
+
   protected override async _registerModules(): Promise<void> {
     // Area charts reuse the same ECharts LineChart module — no separate AreaChart in ECharts.
     // The _lineRegistered guard in line-registry.ts prevents double-registration.
@@ -46,17 +50,22 @@ export class LuiAreaChart extends BaseChartElement {
   override updated(changed: PropertyValues): void {
     super.updated(changed); // base handles this.option and this.loading
     if (!this._chart) return;
-    const areaProps = ['data', 'smooth', 'stacked', 'zoom'] as const;
+    const areaProps = ['data', 'smooth', 'stacked', 'zoom', 'labelPosition'] as const;
     if (areaProps.some((k) => changed.has(k))) {
       this._applyData();
     }
   }
 
-  private _applyData(): void {
+  protected override _applyData(): void {
     if (!this._chart || !this.data) return;
     const option = buildLineOption(
       this.data as LineChartSeries[],
-      { smooth: this.smooth, stacked: this.stacked, zoom: this.zoom },
+      {
+        smooth: this.smooth,
+        stacked: this.stacked,
+        zoom: this.zoom,
+        labelPosition: this.labelPosition || undefined,
+      },
       'area'   // triggers areaStyle + opacity 0.6 default in buildLineOption
     );
     // CRITICAL-03: Only safe before streaming starts

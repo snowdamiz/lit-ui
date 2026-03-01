@@ -15,6 +15,10 @@ export type BarOptionProps = {
   horizontal?: boolean;
   // BAR-02: Render value labels on each bar. Position adapts: 'top' vertical, 'right' horizontal.
   showLabels?: boolean;
+  // BAR-02: Label position when showLabels is true.
+  // 'top' (default) = above bar end for vertical, right end for horizontal.
+  // 'bottom' = below bar for vertical, left end for horizontal.
+  labelPosition?: 'top' | 'bottom';
   // BAR-02: Each bar gets a distinct palette color via colorBy: 'data'.
   // Best with single-series bar; multi-series results in per-bar palette cycling (expected behavior).
   colorByData?: boolean;
@@ -34,12 +38,15 @@ export function buildBarOption(
     // BAR-01: stack MUST be string 'total', never boolean.
     // stack: false or stack: undefined disables stacking; stack: true (boolean) does NOT work.
     stack: props.stacked ? 'total' : undefined,
-    // BAR-02: Value labels — position depends on orientation to avoid clipping.
-    // Pitfall: 'top' on horizontal bars clips labels outside bar bounds; 'right' places them at bar end.
+    // BAR-02: Value labels — position adapts to orientation unless overridden by labelPosition.
+    // Horizontal bars: 'top' → 'right' (bar end), 'bottom' → 'left' (bar start).
+    // Vertical bars: 'top' → 'top' (above bar), 'bottom' → 'bottom' (below bar).
     label: props.showLabels
       ? {
           show: true,
-          position: props.horizontal ? ('right' as const) : ('top' as const),
+          position: props.horizontal
+            ? (props.labelPosition === 'bottom' ? ('left' as const) : ('right' as const))
+            : ((props.labelPosition ?? 'top') as 'top' | 'bottom'),
         }
       : undefined,
     // BAR-02: colorBy: 'data' = each bar gets a distinct palette color from ThemeBridge palette.

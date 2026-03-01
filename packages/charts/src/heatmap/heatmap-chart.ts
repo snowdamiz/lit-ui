@@ -67,7 +67,7 @@ export class LuiHeatmapChart extends BaseChartElement {
     }
   }
 
-  private _applyData(): void {
+  protected override _applyData(): void {
     if (!this._chart) return;
     // Sync _cellData from this.data so pushData() cell lookups start from current state.
     this._cellData = this.data ? [...(this.data as HeatmapCell[])] : [];

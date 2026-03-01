@@ -38,7 +38,7 @@ export class LuiScatterChart extends BaseChartElement {
     }
   }
 
-  private _applyData(): void {
+  protected override _applyData(): void {
     if (!this._chart || !this.data) return;
     // SCAT-02: useGl requires BOTH enableGl set AND successful WebGL probe.
     // _webglUnavailable is protected in BaseChartElement (changed in Plan 01).

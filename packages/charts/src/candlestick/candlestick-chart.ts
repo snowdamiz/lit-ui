@@ -75,7 +75,7 @@ export class LuiCandlestickChart extends BaseChartElement {
     }
   }
 
-  private _applyData(): void {
+  protected override _applyData(): void {
     if (!this._chart) return;
     // Sync _ohlcBuffer from this.data so pushData() starts from current authoritative state.
     this._ohlcBuffer = this.data ? [...(this.data as CandlestickBarPoint[])] : [];

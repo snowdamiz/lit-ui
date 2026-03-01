@@ -295,6 +295,94 @@ function TooltipIcon() {
   )
 }
 
+function LineChartIcon() {
+  return (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 20V4" />
+      <path d="M3 20h18" />
+      <path d="M3 16l4-4 4 2 4-7 4 3" />
+    </svg>
+  )
+}
+
+function AreaChartIcon() {
+  return (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 20h18" />
+      <path d="M3 16l4-4 4 2 4-7 4 3V20H3z" fill="currentColor" fillOpacity="0.2" stroke="none" />
+      <path d="M3 16l4-4 4 2 4-7 4 3" />
+    </svg>
+  )
+}
+
+function BarChartIcon() {
+  return (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 20h18" />
+      <rect x="4" y="10" width="4" height="10" rx="0.5" fill="currentColor" stroke="none" />
+      <rect x="10" y="6" width="4" height="14" rx="0.5" fill="currentColor" stroke="none" />
+      <rect x="16" y="13" width="4" height="7" rx="0.5" fill="currentColor" stroke="none" />
+    </svg>
+  )
+}
+
+function PieChartIcon() {
+  return (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 3a9 9 0 1 0 9 9H12V3z" />
+      <path d="M12 3v9h9" />
+    </svg>
+  )
+}
+
+function ScatterChartIcon() {
+  return (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 20h18" />
+      <path d="M3 20V4" />
+      <circle cx="7" cy="17" r="1.5" fill="currentColor" stroke="none" />
+      <circle cx="10" cy="10" r="1.5" fill="currentColor" stroke="none" />
+      <circle cx="14" cy="14" r="1.5" fill="currentColor" stroke="none" />
+      <circle cx="17" cy="7" r="1.5" fill="currentColor" stroke="none" />
+    </svg>
+  )
+}
+
+function HeatmapChartIcon() {
+  return (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="3" width="7" height="7" rx="0.5" fill="currentColor" stroke="none" />
+      <rect x="12" y="3" width="9" height="7" rx="0.5" />
+      <rect x="3" y="12" width="9" height="9" rx="0.5" />
+      <rect x="14" y="12" width="7" height="9" rx="0.5" fill="currentColor" stroke="none" />
+    </svg>
+  )
+}
+
+function CandlestickChartIcon() {
+  return (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="6" y1="4" x2="6" y2="20" />
+      <rect x="4" y="7" width="4" height="8" rx="0.5" fill="currentColor" stroke="none" />
+      <line x1="12" y1="3" x2="12" y2="20" />
+      <rect x="10" y="6" width="4" height="8" rx="0.5" />
+      <line x1="18" y1="5" x2="18" y2="19" />
+      <rect x="16" y="9" width="4" height="6" rx="0.5" fill="currentColor" stroke="none" />
+    </svg>
+  )
+}
+
+function TreemapChartIcon() {
+  return (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="3" width="18" height="18" rx="1" />
+      <path d="M3 13h11" />
+      <path d="M14 3v10" />
+      <path d="M14 17h7" />
+    </svg>
+  )
+}
+
 // Map of item titles to their icons
 const iconMap: Record<string, () => JSX.Element> = {
   'Getting Started': BookIcon,
@@ -325,6 +413,14 @@ const iconMap: Record<string, () => JSX.Element> = {
   'Toast': ToastIcon,
   'Tooltip': TooltipIcon,
   'Theme Configurator': PaletteIcon,
+  'Line Chart': LineChartIcon,
+  'Area Chart': AreaChartIcon,
+  'Bar Chart': BarChartIcon,
+  'Pie Chart': PieChartIcon,
+  'Scatter Chart': ScatterChartIcon,
+  'Heatmap Chart': HeatmapChartIcon,
+  'Candlestick Chart': CandlestickChartIcon,
+  'Treemap Chart': TreemapChartIcon,
 }
 
 export function NavSection({ title, items }: NavSectionProps) {

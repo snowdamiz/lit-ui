@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { FrameworkProvider } from '../../contexts/FrameworkContext';
 import { ExampleBlock } from '../../components/ExampleBlock';
 import { PropsTable, type PropDef } from '../../components/PropsTable';
+import { PrevNextNav } from '../../components/PrevNextNav';
 import '@lit-ui/charts/pie-chart';
 
 function PieChartDemo() {
@@ -75,6 +76,12 @@ const pieChartProps: PropDef[] = [
     type: 'string',
     default: "''",
     description: 'Text shown in the center of the donut. Only rendered when inner-radius is set.',
+  },
+  {
+    name: 'label-position',
+    type: "'top' | 'bottom'",
+    default: "'top'",
+    description: "Slice label position. 'top' = outside the pie with connector lines (default). 'bottom' = inside each slice.",
   },
 ];
 
@@ -221,6 +228,13 @@ export function PieChartPage() {
             </div>
           </div>
         </section>
+
+        {/* Navigation */}
+        <div className="divider-fade mb-8" />
+        <PrevNextNav
+          prev={{ title: 'Bar Chart', href: '/charts/bar-chart' }}
+          next={{ title: 'Scatter Chart', href: '/charts/scatter-chart' }}
+        />
       </div>
     </FrameworkProvider>
   );

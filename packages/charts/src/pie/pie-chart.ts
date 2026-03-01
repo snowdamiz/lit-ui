@@ -30,6 +30,11 @@ export class LuiPieChart extends BaseChartElement {
   // PIE-02: Text displayed in the donut center hole. Only visible when innerRadius is non-zero.
   @property({ attribute: 'center-label' }) centerLabel = '';
 
+  // PIE-LABEL: Slice label position.
+  // 'top' (default) = outside the pie with connector lines.
+  // 'bottom' = inside each slice.
+  @property({ attribute: 'label-position' }) labelPosition: 'top' | 'bottom' = 'top';
+
   protected override async _registerModules(): Promise<void> {
     await registerPieModules();
   }
@@ -37,18 +42,19 @@ export class LuiPieChart extends BaseChartElement {
   override updated(changed: PropertyValues): void {
     super.updated(changed); // base handles this.option passthrough and this.loading state
     if (!this._chart) return;
-    const pieProps = ['data', 'minPercent', 'innerRadius', 'centerLabel'] as const;
+    const pieProps = ['data', 'minPercent', 'innerRadius', 'centerLabel', 'labelPosition'] as const;
     if (pieProps.some((k) => changed.has(k))) {
       this._applyData();
     }
   }
 
-  private _applyData(): void {
+  protected override _applyData(): void {
     if (!this._chart || !this.data) return;
     const option = buildPieOption(this.data as PieSlice[], {
       minPercent: this.minPercent,
       innerRadius: this.innerRadius,
       centerLabel: this.centerLabel || undefined,
+      labelPosition: this.labelPosition,
     });
     // notMerge: false — merge with any option prop overrides from the base class.
     this._chart.setOption(option, { notMerge: false });

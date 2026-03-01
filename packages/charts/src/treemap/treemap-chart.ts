@@ -44,7 +44,7 @@ export class LuiTreemapChart extends BaseChartElement {
     }
   }
 
-  private _applyData(): void {
+  protected override _applyData(): void {
     if (!this._chart) return;
     const data = this.data ? (this.data as TreemapNode[]) : [];
     const levelColors = this._parseLevelColors(this.levelColors);
@@ -53,9 +53,17 @@ export class LuiTreemapChart extends BaseChartElement {
       borderRadius: this.rounded ? 6 : 0,
       levelColors,
     });
-    // notMerge: false — preserves current drill-down state when props change (Pitfall 5).
-    // notMerge: true would reset to root view on every prop update.
-    this._chart.setOption(option, { notMerge: false });
+    // notMerge: true — replaces the entire option object so no stale series config bleeds through.
+    // However, notMerge:true alone does NOT reset the ECharts treemap internal navigation stack
+    // (the currentRoot path stored in the renderer model). A stale drill-down state from a prior
+    // interactive session persists across setOption calls because it lives outside the option object.
+    // Fix: dispatch treemapRootToNode immediately after setOption to programmatically navigate back
+    // to the root node, so the chart always opens at the root view regardless of prior interaction.
+    this._chart.setOption(option, { notMerge: true });
+    // Reset treemap navigation to root — ECharts treemap action documented at:
+    // https://echarts.apache.org/en/api.html#action.treemap.treemapRootToNode
+    // Omitting targetNode navigates to the series root (level 0).
+    this._chart.dispatchAction({ type: 'treemapRootToNode', seriesIndex: 0 });
   }
 
   /**

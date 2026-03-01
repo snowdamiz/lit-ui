@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { FrameworkProvider } from '../../contexts/FrameworkContext';
 import { ExampleBlock } from '../../components/ExampleBlock';
 import { PropsTable, type PropDef } from '../../components/PropsTable';
+import { PrevNextNav } from '../../components/PrevNextNav';
 import '@lit-ui/charts/bar-chart';
 
 function BarChartDemo() {
@@ -65,6 +66,12 @@ const barChartProps: PropDef[] = [
     type: 'boolean',
     default: 'false',
     description: 'Show value labels on each bar.',
+  },
+  {
+    name: 'label-position',
+    type: "'top' | 'bottom'",
+    default: "'top'",
+    description: "Position of value labels when show-labels is true. 'top' = above bar / at bar end (horizontal). 'bottom' = below bar / at bar start (horizontal).",
   },
   {
     name: 'color-by-data',
@@ -213,6 +220,13 @@ export function BarChartPage() {
             </div>
           </div>
         </section>
+
+        {/* Navigation */}
+        <div className="divider-fade mb-8" />
+        <PrevNextNav
+          prev={{ title: 'Area Chart', href: '/charts/area-chart' }}
+          next={{ title: 'Pie Chart', href: '/charts/pie-chart' }}
+        />
       </div>
     </FrameworkProvider>
   );

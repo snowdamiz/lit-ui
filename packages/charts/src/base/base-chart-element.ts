@@ -141,6 +141,19 @@ export abstract class BaseChartElement extends TailwindElement {
    */
   protected abstract _registerModules(): Promise<void>;
 
+  /**
+   * Called by _initChart() after the ECharts instance is ready.
+   *
+   * Concrete chart classes override this to apply any `data` (or other
+   * chart-specific properties) that were set before initialisation completed.
+   * Without this hook, properties set via JS before the first RAF fires are
+   * silently dropped because updated() returns early while this._chart is null.
+   *
+   * Default implementation is a no-op — base class has no chart-type-specific
+   * data model.
+   */
+  protected _applyData(): void {}
+
   // ---------------------------------------------------------------------------
   // Public API
   // ---------------------------------------------------------------------------
@@ -303,6 +316,13 @@ export abstract class BaseChartElement extends TailwindElement {
     // Apply any property values that arrived before chart initialisation
     if (this.option) this._chart.setOption(this.option);
     if (this.loading) this._chart.showLoading();
+
+    // Apply chart-specific data that may have been set before _initChart() ran.
+    // Concrete classes override _applyData() to convert this.data -> ECharts setOption().
+    // This is necessary because React/JS consumers often set .data synchronously after
+    // mount, before the RAF callback fires. updated() returns early while this._chart
+    // is null, so without this call that data would never reach ECharts.
+    this._applyData();
   }
 
   /**

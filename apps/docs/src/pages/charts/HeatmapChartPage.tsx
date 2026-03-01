@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { FrameworkProvider } from '../../contexts/FrameworkContext';
 import { ExampleBlock } from '../../components/ExampleBlock';
 import { PropsTable, type PropDef } from '../../components/PropsTable';
+import { PrevNextNav } from '../../components/PrevNextNav';
 import '@lit-ui/charts/heatmap-chart';
 
 function HeatmapChartDemo() {
@@ -12,21 +13,21 @@ function HeatmapChartDemo() {
       el.xCategories = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
       el.yCategories = ['Morning', 'Afternoon', 'Evening'];
       el.data = [
-        { x: 0, y: 0, value: 85 },
-        { x: 1, y: 0, value: 72 },
-        { x: 2, y: 0, value: 90 },
-        { x: 3, y: 0, value: 68 },
-        { x: 4, y: 0, value: 55 },
-        { x: 0, y: 1, value: 42 },
-        { x: 1, y: 1, value: 60 },
-        { x: 2, y: 1, value: 78 },
-        { x: 3, y: 1, value: 95 },
-        { x: 4, y: 1, value: 33 },
-        { x: 0, y: 2, value: 20 },
-        { x: 1, y: 2, value: 45 },
-        { x: 2, y: 2, value: 62 },
-        { x: 3, y: 2, value: 38 },
-        { x: 4, y: 2, value: 80 },
+        [0, 0, 85],
+        [1, 0, 72],
+        [2, 0, 90],
+        [3, 0, 68],
+        [4, 0, 55],
+        [0, 1, 42],
+        [1, 1, 60],
+        [2, 1, 78],
+        [3, 1, 95],
+        [4, 1, 33],
+        [0, 2, 20],
+        [1, 2, 45],
+        [2, 2, 62],
+        [3, 2, 38],
+        [4, 2, 80],
       ];
     }
   }, []);
@@ -36,9 +37,9 @@ function HeatmapChartDemo() {
 const heatmapChartProps: PropDef[] = [
   {
     name: 'data',
-    type: '{ x: number; y: number; value: number }[] | undefined',
+    type: '[number, number, number][] | undefined',
     default: 'undefined',
-    description: 'Heatmap cells as an array of {x, y, value} objects where x/y are integer indices into xCategories/yCategories. JS property only — cannot be set via HTML attribute.',
+    description: 'Heatmap cells as an array of [xIdx, yIdx, value] tuples where xIdx/yIdx are integer indices into xCategories/yCategories arrays. JS property only — cannot be set via HTML attribute.',
   },
   {
     name: 'x-categories',
@@ -112,9 +113,9 @@ const heatmapChartHtmlCode = `<!-- Set xCategories, yCategories, and data via Ja
   chart.xCategories = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
   chart.yCategories = ['Morning', 'Afternoon', 'Evening'];
   chart.data = [
-    { x: 0, y: 0, value: 85 },
-    { x: 1, y: 1, value: 42 },
-    { x: 2, y: 2, value: 62 },
+    [0, 0, 85],
+    [1, 1, 42],
+    [2, 2, 62],
   ];
 </script>`;
 
@@ -227,6 +228,13 @@ export function HeatmapChartPage() {
             </div>
           </div>
         </section>
+
+        {/* Navigation */}
+        <div className="divider-fade mb-8" />
+        <PrevNextNav
+          prev={{ title: 'Scatter Chart', href: '/charts/scatter-chart' }}
+          next={{ title: 'Candlestick Chart', href: '/charts/candlestick-chart' }}
+        />
       </div>
     </FrameworkProvider>
   );

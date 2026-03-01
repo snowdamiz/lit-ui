@@ -16,6 +16,10 @@ export type PieOptionProps = {
   innerRadius?: string | number;
   // PIE-02: Text displayed in the donut center hole. Only shown when innerRadius is non-zero.
   centerLabel?: string;
+  // PIE-LABEL: Slice label position.
+  // 'top' (default) = labels outside the pie with connector lines.
+  // 'bottom' = labels rendered inside each slice.
+  labelPosition?: 'top' | 'bottom';
 };
 
 /**
@@ -62,11 +66,16 @@ export function buildPieOption(
   const isDonut =
     ir !== 0 && ir !== '0%' && ir !== '0' && ir !== '' && ir !== undefined;
 
+  // PIE-LABEL: 'top' = outside with connector lines (ECharts default).
+  // 'bottom' = inside each slice (no connector lines needed).
+  const echartsLabelPosition = props.labelPosition === 'bottom' ? 'inside' : 'outside';
+
   const series: Record<string, unknown> = {
     type: 'pie',
     data: mergedSlices,
     // PIE-02: radius is an array [inner, outer] for donut; outer-only string for filled pie.
     radius: isDonut ? [ir, '70%'] : '70%',
+    label: { position: echartsLabelPosition },
     tooltip: { trigger: 'item' },
   };
 

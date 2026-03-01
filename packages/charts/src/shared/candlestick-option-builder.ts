@@ -98,12 +98,14 @@ export function buildCandlestickOption(
 
   // Build candlestick series
   // itemStyle.color = bull fill+wick, itemStyle.color0 = bear fill+wick (ECharts CandlestickItemStyleOption)
+  // barMaxWidth: 40 — prevents overly wide candles on small datasets (e.g. 5 bars on a 1200px canvas).
   const candlestickSeries = {
     name: 'Candlestick',
     type: 'candlestick',
     xAxisIndex: 0,
     yAxisIndex: 0,
     data: ohlcData,
+    barMaxWidth: 40,
     itemStyle: {
       color: bullColor,
       color0: bearColor,
@@ -145,11 +147,15 @@ export function buildCandlestickOption(
 
   if (!showVolume) {
     // Single-grid layout
+    // boundaryGap: true (category default) — adds half-interval padding so the first and last
+    // candle are not flush with the axis edges, preventing clipping of edge labels.
+    // grid.right: '8%' — reserves space so wide date labels (e.g. "2024-01-05") are not clipped
+    // at the right edge of the chart.
     return {
       tooltip,
       legend,
-      grid: [{ containLabel: true }],
-      xAxis: [{ type: 'category', data: labels, gridIndex: 0, boundaryGap: false }],
+      grid: [{ containLabel: true, right: '8%' }],
+      xAxis: [{ type: 'category', data: labels, gridIndex: 0, boundaryGap: true }],
       yAxis: [{ scale: true, gridIndex: 0 }],
       dataZoom: [
         { type: 'inside', xAxisIndex: [0] },
@@ -182,14 +188,14 @@ export function buildCandlestickOption(
         type: 'category',
         data: labels,
         gridIndex: 0,
-        boundaryGap: false,
+        boundaryGap: true,
         axisLine: { onZero: false },
       },
       {
         type: 'category',
         data: labels,
         gridIndex: 1,
-        boundaryGap: false,
+        boundaryGap: true,
         axisLine: { onZero: false },
       },
     ],

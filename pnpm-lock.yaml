@@ -32,6 +32,9 @@ importers:
       '@lit-ui/calendar':
         specifier: workspace:*
         version: link:../../packages/calendar
+      '@lit-ui/charts':
+        specifier: workspace:*
+        version: link:../../packages/charts
       '@lit-ui/checkbox':
         specifier: workspace:*
         version: link:../../packages/checkbox

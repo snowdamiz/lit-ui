@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { FrameworkProvider } from '../../contexts/FrameworkContext';
 import { ExampleBlock } from '../../components/ExampleBlock';
 import { PropsTable, type PropDef } from '../../components/PropsTable';
+import { PrevNextNav } from '../../components/PrevNextNav';
 import '@lit-ui/charts/treemap-chart';
 
 function TreemapChartDemo() {
@@ -235,6 +236,13 @@ export function TreemapChartPage() {
             </div>
           </div>
         </section>
+
+        {/* Navigation */}
+        <div className="divider-fade mb-8" />
+        <PrevNextNav
+          prev={{ title: 'Candlestick Chart', href: '/charts/candlestick-chart' }}
+          next={{ title: 'Theme Configurator', href: '/configurator' }}
+        />
       </div>
     </FrameworkProvider>
   );

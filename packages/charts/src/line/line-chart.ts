@@ -51,7 +51,7 @@ export class LuiLineChart extends BaseChartElement {
     }
   }
 
-  private _applyData(): void {
+  protected override _applyData(): void {
     if (!this._chart || !this.data) return;
     const option = buildLineOption(
       this.data as LineChartSeries[],

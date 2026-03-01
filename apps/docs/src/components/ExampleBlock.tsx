@@ -45,7 +45,7 @@ export function ExampleBlock({
             </span>
           </div>
           <div className="relative p-8 flex items-center justify-center min-h-[120px] bg-[radial-gradient(circle_at_center,rgba(0,0,0,0.02)_1px,transparent_1px)] dark:bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[length:16px_16px]">
-            <div className="relative">{preview}</div>
+            <div className="relative w-full">{preview}</div>
           </div>
         </div>
 

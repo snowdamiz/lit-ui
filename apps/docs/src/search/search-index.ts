@@ -106,6 +106,16 @@ export const searchIndex: SearchEntry[] = [
 
   // ── Components ────────────────────────────────────────────────────────
   {
+    title: 'Accordion',
+    section: 'Components',
+    href: '/components/accordion',
+    keywords:
+      'accordion expand collapse toggle panel section disclosure summary details ' +
+      'open close animated chevron icon heading level custom collapsible multi single ' +
+      'lazy content slot CSS parts lui-accordion lui-accordion-item',
+    headings: ['Examples', 'Basic Accordion', 'Multi-expand', 'Collapsible', 'Disabled', 'Custom Heading Level', 'Lazy Content', 'Accessibility', 'Custom Styling', 'API Reference', 'lui-accordion Props', 'lui-accordion-item Props', 'lui-accordion Slots', 'lui-accordion-item Slots', 'CSS Custom Properties', 'Events'],
+  },
+  {
     title: 'Button',
     section: 'Components',
     href: '/components/button',
@@ -135,6 +145,17 @@ export const searchIndex: SearchEntry[] = [
       'label description required validation disabled group aria-checked ' +
       'change event checkmark tick box square',
     headings: ['Examples', 'Basic Usage', 'With Label', 'Indeterminate', 'Disabled', 'Group', 'API Reference', 'Props', 'Events'],
+  },
+  {
+    title: 'Data Table',
+    section: 'Components',
+    href: '/components/data-table',
+    keywords:
+      'data table grid rows columns sort filter pagination selection checkbox expand ' +
+      'inline edit row actions CSV export server-side virtual scroll sticky header ' +
+      'column resize reorder responsive lui-data-table ARIA grid keyboard navigation ' +
+      'screen reader W3C APG compliance accessibility expandable rows',
+    headings: ['Examples', 'Basic Table', 'Sorting', 'Row Selection', 'Filtering', 'Pagination', 'Advanced Features', 'Column Customization', 'Inline Editing', 'Row Actions', 'Expandable Rows', 'Server-Side Data', 'CSV Export', 'API Reference', 'Properties', 'Events', 'Slots', 'CSS Custom Properties', 'Accessibility', 'ARIA Roles', 'Keyboard Navigation', 'Screen Reader Support', 'W3C APG Compliance'],
   },
   {
     title: 'Date Picker',
@@ -220,6 +241,17 @@ export const searchIndex: SearchEntry[] = [
     headings: ['Examples', 'Basic Usage', 'With Label', 'Disabled', 'Sizes', 'API Reference', 'Props', 'Events'],
   },
   {
+    title: 'Tabs',
+    section: 'Components',
+    href: '/components/tabs',
+    keywords:
+      'tabs tab panel tablist tabpanel navigation horizontal vertical orientation ' +
+      'active selected disabled lazy panel overflow scroll animated indicator ' +
+      'keyboard arrow keys manual automatic activation lui-tabs lui-tab-panel ' +
+      'change event ARIA roles accessibility',
+    headings: ['Examples', 'Basic Tabs', 'Vertical Orientation', 'Manual Activation', 'Disabled Tabs', 'Lazy Panels', 'Overflow Scroll', 'Animated Indicator', 'Accessibility', 'Custom Styling', 'API Reference', 'lui-tabs Props', 'lui-tab-panel Props', 'lui-tabs Slots', 'lui-tab-panel Slots', 'CSS Custom Properties', 'Events'],
+  },
+  {
     title: 'Textarea',
     section: 'Components',
     href: '/components/textarea',
@@ -260,6 +292,84 @@ export const searchIndex: SearchEntry[] = [
       'top bottom left right delay show hide duration offset arrow trigger ' +
       'focus accessible aria-describedby delay-group',
     headings: ['Examples', 'Basic Usage', 'Placement', 'With Arrow', 'Delay Group', 'Custom Content', 'API Reference', 'Props'],
+  },
+
+  // ── Charts ────────────────────────────────────────────────────────────
+  {
+    title: 'Line Chart',
+    section: 'Charts',
+    href: '/charts/line-chart',
+    keywords:
+      'line chart time series data visualization smooth curve interpolation zoom pan ' +
+      'DataZoom multi-series mark line threshold streaming real-time ECharts ' +
+      'lui-line-chart CSS custom properties series color',
+    headings: ['Examples', 'Basic Line Chart', 'API Reference', 'Props', 'CSS Custom Properties'],
+  },
+  {
+    title: 'Area Chart',
+    section: 'Charts',
+    href: '/charts/area-chart',
+    keywords:
+      'area chart filled area stacked smooth zoom pan streaming real-time ECharts ' +
+      'multi-series opacity gradient areaStyle lui-area-chart CSS custom properties ' +
+      'time series data visualization label position',
+    headings: ['Examples', 'Stacked Area Chart', 'API Reference', 'Props', 'CSS Custom Properties'],
+  },
+  {
+    title: 'Bar Chart',
+    section: 'Charts',
+    href: '/charts/bar-chart',
+    keywords:
+      'bar chart column chart grouped stacked horizontal vertical show labels value labels ' +
+      'color by data categories ECharts lui-bar-chart CSS custom properties ' +
+      'data visualization comparison per-bar color label position',
+    headings: ['Examples', 'Grouped Bar Chart with Labels', 'API Reference', 'Props', 'CSS Custom Properties'],
+  },
+  {
+    title: 'Pie Chart',
+    section: 'Charts',
+    href: '/charts/pie-chart',
+    keywords:
+      'pie chart donut chart inner radius center label slice merge min percent ' +
+      'proportion percentage ECharts lui-pie-chart CSS custom properties ' +
+      'data visualization label position inside outside',
+    headings: ['Examples', 'Donut Chart with Center Label', 'API Reference', 'Props', 'CSS Custom Properties'],
+  },
+  {
+    title: 'Scatter Chart',
+    section: 'Charts',
+    href: '/charts/scatter-chart',
+    keywords:
+      'scatter chart plot points XY correlation distribution bubble WebGL enable-gl ' +
+      'ECharts lui-scatter-chart CSS custom properties data visualization bundle size',
+    headings: ['Examples', 'Basic Scatter Chart', 'API Reference', 'Props', 'CSS Custom Properties', 'Bundle Size'],
+  },
+  {
+    title: 'Heatmap Chart',
+    section: 'Charts',
+    href: '/charts/heatmap-chart',
+    keywords:
+      'heatmap chart matrix grid calendar activity intensity color scale visualCalendar ' +
+      'ECharts lui-heatmap-chart CSS custom properties data visualization weekly monthly',
+    headings: ['Examples', 'Weekly Activity Heatmap', 'API Reference', 'Props', 'CSS Custom Properties'],
+  },
+  {
+    title: 'Candlestick Chart',
+    section: 'Charts',
+    href: '/charts/candlestick-chart',
+    keywords:
+      'candlestick chart OHLC open high low close financial stock trading price ' +
+      'ECharts lui-candlestick-chart CSS custom properties data visualization candle',
+    headings: ['Examples', '5-Day OHLC Candlestick', 'API Reference', 'Props', 'CSS Custom Properties'],
+  },
+  {
+    title: 'Treemap Chart',
+    section: 'Charts',
+    href: '/charts/treemap-chart',
+    keywords:
+      'treemap chart hierarchical nested rectangles proportional area category drilldown ' +
+      'ECharts lui-treemap-chart CSS custom properties data visualization product category',
+    headings: ['Examples', 'Product Category Treemap', 'API Reference', 'Props', 'CSS Custom Properties'],
   },
 
   // ── Tools ─────────────────────────────────────────────────────────────

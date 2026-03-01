@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { FrameworkProvider } from '../../contexts/FrameworkContext';
 import { ExampleBlock } from '../../components/ExampleBlock';
 import { PropsTable, type PropDef } from '../../components/PropsTable';
+import { PrevNextNav } from '../../components/PrevNextNav';
 import '@lit-ui/charts/area-chart';
 
 function AreaChartDemo() {
@@ -14,7 +15,7 @@ function AreaChartDemo() {
       ];
     }
   }, []);
-  return <lui-area-chart ref={ref as any} smooth stacked style={{ height: '300px', display: 'block' }} />;
+  return <lui-area-chart ref={ref as any} smooth stacked label-position="top" style={{ height: '300px', display: 'block' }} />;
 }
 
 const areaChartProps: PropDef[] = [
@@ -66,6 +67,12 @@ const areaChartProps: PropDef[] = [
     default: 'false',
     description: 'Stack multiple series on top of each other.',
   },
+  {
+    name: 'label-position',
+    type: "'top' | 'bottom' | ''",
+    default: "''",
+    description: "Show value labels on data points. 'top' = above each point, 'bottom' = below. Empty string disables labels.",
+  },
 ];
 
 type CSSVarDef = { name: string; default: string; description: string };
@@ -90,7 +97,7 @@ const chartCSSVars: CSSVarDef[] = [
 ];
 
 const areaChartHtmlCode = `<!-- Set data via JavaScript property (not attribute) -->
-<lui-area-chart id="chart" smooth stacked></lui-area-chart>
+<lui-area-chart id="chart" smooth stacked label-position="top"></lui-area-chart>
 <script>
   document.querySelector('#chart').data = [
     { name: 'Page Views', data: [820, 932, 901, 934, 1290, 1330, 1320] },
@@ -207,6 +214,13 @@ export function AreaChartPage() {
             </div>
           </div>
         </section>
+
+        {/* Navigation */}
+        <div className="divider-fade mb-8" />
+        <PrevNextNav
+          prev={{ title: 'Line Chart', href: '/charts/line-chart' }}
+          next={{ title: 'Bar Chart', href: '/charts/bar-chart' }}
+        />
       </div>
     </FrameworkProvider>
   );

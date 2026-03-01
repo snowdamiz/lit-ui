@@ -30,8 +30,13 @@ export class LuiBarChart extends BaseChartElement {
   // BAR-01: Horizontal orientation. Swaps xAxis/yAxis types atomically in buildBarOption.
   @property({ type: Boolean }) horizontal = false;
 
-  // BAR-02: Value labels on each bar. Position: 'top' (vertical) or 'right' (horizontal).
+  // BAR-02: Value labels on each bar.
   @property({ type: Boolean, attribute: 'show-labels' }) showLabels = false;
+
+  // BAR-02: Label position when show-labels is true.
+  // 'top' (default) = above bar / at bar end for horizontal.
+  // 'bottom' = below bar / at bar start for horizontal.
+  @property({ attribute: 'label-position' }) labelPosition: 'top' | 'bottom' = 'top';
 
   // BAR-02: Each bar receives a distinct palette color (colorBy: 'data').
   // Best with single-series bar charts. Multi-series: each bar cycles through palette per series.
@@ -44,18 +49,19 @@ export class LuiBarChart extends BaseChartElement {
   override updated(changed: PropertyValues): void {
     super.updated(changed); // base handles this.option passthrough and this.loading state
     if (!this._chart) return;
-    const barProps = ['data', 'stacked', 'horizontal', 'showLabels', 'colorByData'] as const;
+    const barProps = ['data', 'stacked', 'horizontal', 'showLabels', 'colorByData', 'labelPosition'] as const;
     if (barProps.some((k) => changed.has(k))) {
       this._applyData();
     }
   }
 
-  private _applyData(): void {
+  protected override _applyData(): void {
     if (!this._chart || !this.data) return;
     const option = buildBarOption(this.data as BarChartSeries[], {
       stacked: this.stacked,
       horizontal: this.horizontal,
       showLabels: this.showLabels,
+      labelPosition: this.labelPosition,
       colorByData: this.colorByData,
     });
     // notMerge: false — merge with any option prop overrides from the base class.

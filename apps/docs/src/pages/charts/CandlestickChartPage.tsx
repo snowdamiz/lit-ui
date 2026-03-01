@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { FrameworkProvider } from '../../contexts/FrameworkContext';
 import { ExampleBlock } from '../../components/ExampleBlock';
 import { PropsTable, type PropDef } from '../../components/PropsTable';
+import { PrevNextNav } from '../../components/PrevNextNav';
 import '@lit-ui/charts/candlestick-chart';
 
 function CandlestickChartDemo() {
@@ -10,11 +11,11 @@ function CandlestickChartDemo() {
     if (ref.current) {
       // IMPORTANT: ohlc array order is [open, close, low, high] — NOT the standard OHLC acronym order
       (ref.current as any).data = [
-        { date: '2024-01-01', ohlc: [100, 110, 95, 115] },
-        { date: '2024-01-02', ohlc: [110, 105, 102, 118] },
-        { date: '2024-01-03', ohlc: [105, 120, 103, 125] },
-        { date: '2024-01-04', ohlc: [120, 115, 112, 128] },
-        { date: '2024-01-05', ohlc: [115, 130, 113, 135] },
+        { label: '2024-01-01', ohlc: [100, 110, 95, 115] },
+        { label: '2024-01-02', ohlc: [110, 105, 102, 118] },
+        { label: '2024-01-03', ohlc: [105, 120, 103, 125] },
+        { label: '2024-01-04', ohlc: [120, 115, 112, 128] },
+        { label: '2024-01-05', ohlc: [115, 130, 113, 135] },
       ];
     }
   }, []);
@@ -26,7 +27,7 @@ const candlestickChartProps: PropDef[] = [
     name: 'data',
     type: 'OhlcBar[] | undefined',
     default: 'undefined',
-    description: "OhlcBar[] — each bar is { date: string, ohlc: [open, close, low, high] }. WARNING: ohlc array order is [open, close, low, high], NOT the standard OHLC acronym order. JS property only — cannot be set via HTML attribute.",
+    description: "CandlestickBarPoint[] — each bar is { label: string, ohlc: [open, close, low, high], volume?: number }. WARNING: ohlc array order is [open, close, low, high], NOT the standard OHLC acronym order. JS property only — cannot be set via HTML attribute.",
   },
   {
     name: 'option',
@@ -104,11 +105,11 @@ const candlestickChartHtmlCode = `<!-- Set data via JavaScript property (not att
 <lui-candlestick-chart id="chart"></lui-candlestick-chart>
 <script>
   document.querySelector('#chart').data = [
-    { date: '2024-01-01', ohlc: [100, 110, 95, 115] },
-    { date: '2024-01-02', ohlc: [110, 105, 102, 118] },
-    { date: '2024-01-03', ohlc: [105, 120, 103, 125] },
-    { date: '2024-01-04', ohlc: [120, 115, 112, 128] },
-    { date: '2024-01-05', ohlc: [115, 130, 113, 135] },
+    { label: '2024-01-01', ohlc: [100, 110, 95, 115] },
+    { label: '2024-01-02', ohlc: [110, 105, 102, 118] },
+    { label: '2024-01-03', ohlc: [105, 120, 103, 125] },
+    { label: '2024-01-04', ohlc: [120, 115, 112, 128] },
+    { label: '2024-01-05', ohlc: [115, 130, 113, 135] },
   ];
 </script>`;
 
@@ -226,6 +227,13 @@ export function CandlestickChartPage() {
             </div>
           </div>
         </section>
+
+        {/* Navigation */}
+        <div className="divider-fade mb-8" />
+        <PrevNextNav
+          prev={{ title: 'Heatmap Chart', href: '/charts/heatmap-chart' }}
+          next={{ title: 'Treemap Chart', href: '/charts/treemap-chart' }}
+        />
       </div>
     </FrameworkProvider>
   );

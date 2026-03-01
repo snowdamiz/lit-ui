@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { FrameworkProvider } from '../../contexts/FrameworkContext';
 import { ExampleBlock } from '../../components/ExampleBlock';
 import { PropsTable, type PropDef } from '../../components/PropsTable';
+import { PrevNextNav } from '../../components/PrevNextNav';
 import '@lit-ui/charts/scatter-chart';
 
 function ScatterChartDemo() {
@@ -9,16 +10,16 @@ function ScatterChartDemo() {
   useEffect(() => {
     if (ref.current) {
       (ref.current as any).data = [
-        { x: 10, y: 20 },
-        { x: 30, y: 50 },
-        { x: 15, y: 35 },
-        { x: 50, y: 80 },
-        { x: 45, y: 60 },
-        { x: 70, y: 40 },
-        { x: 25, y: 75 },
-        { x: 60, y: 90 },
-        { x: 80, y: 30 },
-        { x: 40, y: 55 },
+        [10, 20],
+        [30, 50],
+        [15, 35],
+        [50, 80],
+        [45, 60],
+        [70, 40],
+        [25, 75],
+        [60, 90],
+        [80, 30],
+        [40, 55],
       ];
     }
   }, []);
@@ -28,9 +29,9 @@ function ScatterChartDemo() {
 const scatterChartProps: PropDef[] = [
   {
     name: 'data',
-    type: '{ x: number; y: number; size?: number }[] | undefined',
+    type: '[number, number][] | [number, number, number][] | undefined',
     default: 'undefined',
-    description: 'Chart data as an array of x/y coordinate objects. JS property only — cannot be set via HTML attribute.',
+    description: 'Chart data as an array of [x, y] tuples (or [x, y, size] for bubble mode). JS property only — cannot be set via HTML attribute.',
   },
   {
     name: 'option',
@@ -89,11 +90,11 @@ const scatterChartHtmlCode = `<!-- Set data via JavaScript property (not attribu
 <lui-scatter-chart id="chart"></lui-scatter-chart>
 <script>
   document.querySelector('#chart').data = [
-    { x: 10, y: 20 },
-    { x: 30, y: 50 },
-    { x: 15, y: 35 },
-    { x: 50, y: 80 },
-    { x: 45, y: 60 },
+    [10, 20],
+    [30, 50],
+    [15, 35],
+    [50, 80],
+    [45, 60],
   ];
 </script>`;
 
@@ -275,6 +276,13 @@ export function ScatterChartPage() {
             <strong>Recommendation:</strong> Always use subpath imports (<code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">@lit-ui/charts/scatter-chart</code>) to keep bundles minimal. Only enable <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">enable-gl</code> when rendering datasets with 500,000+ points — the additional ~200KB is loaded lazily and only impacts users who trigger that path.
           </p>
         </section>
+
+        {/* Navigation */}
+        <div className="divider-fade mb-8" />
+        <PrevNextNav
+          prev={{ title: 'Pie Chart', href: '/charts/pie-chart' }}
+          next={{ title: 'Heatmap Chart', href: '/charts/heatmap-chart' }}
+        />
       </div>
     </FrameworkProvider>
   );
