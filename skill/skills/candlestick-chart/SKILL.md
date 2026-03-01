@@ -33,8 +33,12 @@ chart.data = [
 <!-- Custom bull/bear colors -->
 <lui-candlestick-chart bull-color="#00c853" bear-color="#ff1744"></lui-candlestick-chart>
 
-<!-- Moving averages (JSON string attribute) -->
+<!-- MA with explicit colors -->
 <lui-candlestick-chart moving-averages='[{"period":20,"color":"#f59e0b"},{"period":50,"color":"#8b5cf6","type":"ema"}]'></lui-candlestick-chart>
+
+<!-- MA with CSS token defaults (omit color — auto-assigned --ui-chart-color-2, -3, -4...) -->
+<lui-candlestick-chart moving-averages='[{"period":20},{"period":50,"type":"ema","showType":true}]'></lui-candlestick-chart>
+<!-- Second MA above: legend shows "MA50 (EMA)" because showType is true -->
 ```
 
 ```tsx
@@ -52,6 +56,13 @@ function CandlestickChartDemo({ data }) {
 ```js
 // Real-time streaming: append a new OHLC bar
 chart.pushData({ label: '2024-01-04', ohlc: [120, 118, 115, 125], volume: 48000 });
+```
+
+```js
+// NaN closes produce null MA gaps — they do NOT corrupt the MA window
+chart.pushData({ label: '2024-01-03', ohlc: [105, NaN, 103, 122] });
+// This bar's MA value will be null → rendered as a gap in the MA line
+// Next valid close resumes MA calculation cleanly
 ```
 
 ## Data Type
@@ -73,9 +84,10 @@ type CandlestickBarPoint = {
 };
 
 type MAConfig = {
-  period: number;        // e.g. 20 for 20-period MA
-  color: string;         // hex color for the MA line
+  period: number;        // number of bars in MA window (required)
+  color?: string;        // optional — omit to use CSS token defaults (see Behavior Notes)
   type?: 'sma' | 'ema'; // default: 'sma'
+  showType?: boolean;    // when true: legend label becomes "MA20 (EMA)" instead of "MA20"
 };
 
 // chart.data is CandlestickBarPoint[]
