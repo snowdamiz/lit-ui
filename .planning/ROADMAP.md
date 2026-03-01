@@ -134,7 +134,7 @@ Plans:
 | 96. CLI Integration + Documentation | v9.0 | 4/4 | Complete | 2026-03-01 |
 | 97. Update Chart Skills | v9.0 | 4/4 | Complete | 2026-03-01 |
 | 98. WebGPU Detector + Renderer Infrastructure | 2/2 | Complete    | 2026-03-01 | — |
-| 99. Incremental Moving Average State Machine | 3/3 | Complete   | 2026-03-01 | — |
+| 99. Incremental Moving Average State Machine | 3/3 | Complete    | 2026-03-01 | — |
 | 100. 1M+ Streaming Infrastructure for Line/Area | v10.0 | 0/? | Pending | — |
 | 101. WebGPU Two-Layer Canvas for Line/Area | v10.0 | 0/? | Pending | — |
 | 102. Docs + Skills Update | v10.0 | 0/? | Pending | — |
