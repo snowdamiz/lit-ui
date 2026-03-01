@@ -46,8 +46,8 @@ const lineChartProps: PropDef[] = [
   {
     name: 'max-points',
     type: 'number',
-    default: '1000',
-    description: 'Maximum number of points in the streaming buffer.',
+    default: '500000',
+    description: 'Maximum streaming buffer points. Line chart overrides base default from 1000 to 500,000 — at 1000 pts/sec this allows ~8 minutes before auto reset.',
   },
   {
     name: 'smooth',
@@ -66,6 +66,18 @@ const lineChartProps: PropDef[] = [
     type: 'MarkLineSpec[] | undefined',
     default: 'undefined',
     description: 'Threshold/reference lines drawn on the chart (e.g., targets, averages).',
+  },
+  {
+    name: 'enable-webgpu',
+    type: 'boolean',
+    default: 'false',
+    description: 'Opt-in WebGPU rendering via ChartGPU 0.3.2. When set and WebGPU is available (Chrome/Edge, Firefox 141+, Safari 26+), renders data pixels on a GPU-accelerated canvas layer beneath ECharts axes/tooltip. Falls back to Canvas automatically on unsupported browsers.',
+  },
+  {
+    name: 'renderer',
+    type: "'webgpu' | 'webgl' | 'canvas'",
+    default: "'canvas'",
+    description: "Read-only property — active renderer tier after the 'renderer-selected' event fires. Do NOT read synchronously before the event; the async GPU probe may not have resolved. Not a Lit @property() — does not trigger reactive updates.",
   },
 ];
 
@@ -118,7 +130,27 @@ export function LineChartPage() {
 
         {/* Tree-shaking callout */}
         <div className="mb-8 p-4 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-sm text-blue-800 dark:text-blue-200">
-          <strong>Tree-shaking tip:</strong> Import <code>@lit-ui/charts/line-chart</code> (subpath) instead of <code>@lit-ui/charts</code> to include only this chart's modules (~135KB gzipped vs 350KB+ for all charts).
+          <strong>Tree-shaking tip:</strong> Import <code>@lit-ui/charts/line-chart</code> (subpath) instead of <code>@lit-ui/charts</code> to include only this chart's modules (~135KB gzipped vs 350KB+ for all charts). ChartGPU 0.3.2 is loaded on-demand via dynamic import only when <code>enable-webgpu</code> is set AND WebGPU is available — zero additional overhead on unsupported browsers.
+        </div>
+
+        {/* WebGPU browser support */}
+        <div className="mb-8 p-4 rounded-lg bg-gray-50 dark:bg-gray-900/40 border border-gray-200 dark:border-gray-700 text-sm">
+          <strong className="block mb-3 text-gray-900 dark:text-gray-100">WebGPU browser support</strong>
+          <table className="w-full text-xs">
+            <thead>
+              <tr className="border-b border-gray-200 dark:border-gray-700">
+                <th className="text-left py-1 pr-4 text-gray-700 dark:text-gray-300">Browser</th>
+                <th className="text-left py-1 pr-4 text-gray-700 dark:text-gray-300">WebGPU</th>
+                <th className="text-left py-1 text-gray-700 dark:text-gray-300">Notes</th>
+              </tr>
+            </thead>
+            <tbody className="text-gray-600 dark:text-gray-400">
+              <tr><td className="py-1 pr-4">Chrome / Edge</td><td className="py-1 pr-4 text-green-600 dark:text-green-400">Yes</td><td className="py-1">Stable since Chrome 113</td></tr>
+              <tr><td className="py-1 pr-4">Firefox</td><td className="py-1 pr-4 text-green-600 dark:text-green-400">Yes (141+)</td><td className="py-1">Enabled by default in Firefox 141</td></tr>
+              <tr><td className="py-1 pr-4">Safari</td><td className="py-1 pr-4 text-green-600 dark:text-green-400">Yes (26+)</td><td className="py-1">Enabled by default in Safari 26</td></tr>
+              <tr><td className="py-1 pr-4">Fallback</td><td className="py-1 pr-4">Canvas</td><td className="py-1">Automatic — no user action needed</td></tr>
+            </tbody>
+          </table>
         </div>
 
         {/* Examples Section */}
