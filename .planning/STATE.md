@@ -23,9 +23,9 @@ See: .planning/PROJECT.md (updated 2026-02-28)
 ## Current Position
 
 Phase: 97 of 97 (Update Skills for Chart System)
-Plan: 2 of 4 in current phase (97-02 complete — line-chart, area-chart, bar-chart sub-skills)
-Status: Phase 97 IN PROGRESS — plans 01-02 delivered; 2 plans remain (chart sub-skills: pie/scatter/heatmap/candlestick/treemap)
-Last activity: 2026-03-01 — Completed 97-02: skill/skills/line-chart/SKILL.md + skill/skills/area-chart/SKILL.md + skill/skills/bar-chart/SKILL.md
+Plan: 3 of 4 in current phase (97-03 complete — pie-chart, scatter-chart, heatmap-chart sub-skills)
+Status: Phase 97 IN PROGRESS — plans 01-03 delivered; 1 plan remains (chart sub-skills: candlestick/treemap)
+Last activity: 2026-03-01 — Completed 97-03: skill/skills/pie-chart/SKILL.md + skill/skills/scatter-chart/SKILL.md + skill/skills/heatmap-chart/SKILL.md
 
 Progress: [██████████] 100% (v9.0 milestone, all phases complete)
 
@@ -128,6 +128,7 @@ Progress: [██████████] 100% (v9.0 milestone, all phases comp
 - Phase 96 plan 03 complete: LineChartPage.tsx + AreaChartPage.tsx + BarChartPage.tsx + PieChartPage.tsx in apps/docs/src/pages/charts/; @lit-ui/charts workspace dep added; DOCS-01 and DOCS-02 delivered
 - Phase 96 plan 04 complete: ScatterChartPage.tsx + HeatmapChartPage.tsx + CandlestickChartPage.tsx + TreemapChartPage.tsx; App.tsx all 8 chart routes; nav.ts Charts section; DOCS-01 and DOCS-02 fully complete
 - Phase 97 plan 02 complete: skill/skills/line-chart/SKILL.md (smooth/zoom/markLines, appendData warning) + skill/skills/area-chart/SKILL.md (stacked/zoom/labelPosition, appendData warning) + skill/skills/bar-chart/SKILL.md (stacked/horizontal/showLabels/colorByData, categories workaround)
+- Phase 97 plan 03 complete: skill/skills/pie-chart/SKILL.md (PieSlice type, innerRadius falsy check, donut mode props) + skill/skills/scatter-chart/SKILL.md (bubble+enable-gl fixed-size GPU limitation, ScatterPoint type) + skill/skills/heatmap-chart/SKILL.md (xCategories/yCategories JS-only, HeatmapCell integer-index, cell-update pushData)
 
 ### Roadmap Evolution
 
@@ -137,6 +138,10 @@ Progress: [██████████] 100% (v9.0 milestone, all phases comp
 - 97-02: appendData streaming warning placed in both line-chart and area-chart Behavior Notes — critical to prevent data wipe on setOption after streaming starts
 - 97-02: Chart sub-skill pattern: defer Methods/Events/CSS to skills/charts cross-reference to avoid duplicating 17-token table across 8 sub-skills
 - 97-02: bar-chart documents categories workaround via option prop — categories is not a reactive property on LuiBarChart
+- 97-03: pie-chart innerRadius falsy check documented — 0/'0'/'0%' all mean filled pie; '0' is truthy in JS but component treats as no inner radius
+- 97-03: scatter-chart bubble+enable-gl fixed size limitation placed as first Behavior Note — GPU cannot support per-point size callbacks
+- 97-03: heatmap-chart xCategories/yCategories JS-only warning placed in 3 locations (Usage header, Props table, Behavior Notes) for maximum coverage
+- 97-03: HeatmapCell integer index semantics clarified — [xIdx,yIdx,value] are positions into arrays, not category string values
 
 ### TODOs
 *None.*
@@ -185,18 +190,19 @@ Progress: [██████████] 100% (v9.0 milestone, all phases comp
 | 96 | 04 | 5min | 2 | 6 |
 | 97 | 01 | 2min | 2 | 2 |
 | 97 | 02 | 2min | 2 | 3 |
+| 97 | 03 | 2min | 2 | 3 |
 | Phase 97 P02 | 2min | 2 tasks | 3 files |
 
 ## Session Continuity
 
 ### Last Session
-- 2026-03-01: Completed 97-02 — skill/skills/line-chart/SKILL.md + skill/skills/area-chart/SKILL.md + skill/skills/bar-chart/SKILL.md created with chart-specific props, data types, React useRef+useEffect pattern, appendData streaming warnings, and categories workaround for bar chart
+- 2026-03-01: Completed 97-03 — skill/skills/pie-chart/SKILL.md + skill/skills/scatter-chart/SKILL.md + skill/skills/heatmap-chart/SKILL.md created with PieSlice/ScatterPoint/HeatmapCell data types, chart-specific props, React useRef+useEffect pattern, and critical pitfall warnings (innerRadius falsy check, bubble+enable-gl GPU limitation, xCategories JS-only)
 
 ### Stopped At
-Completed 97-02-PLAN.md
+Completed 97-03-PLAN.md
 
 ### Next Actions
-Phase 97 plan 03: remaining chart sub-skills (pie-chart, scatter-chart, heatmap-chart).
+Phase 97 plan 04: remaining chart sub-skills (candlestick-chart, treemap-chart).
 
 ### Open Questions
 *None.*
