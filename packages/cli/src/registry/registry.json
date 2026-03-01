@@ -202,6 +202,62 @@
       ],
       "dependencies": [],
       "registryDependencies": []
+    },
+    {
+      "name": "line-chart",
+      "description": "Real-time line chart with multi-series, smooth curves, zoom/pan, and streaming via pushData(). Powered by ECharts via @lit-ui/charts.",
+      "files": [{ "path": "components/charts/line-chart.ts", "type": "component" }],
+      "dependencies": ["@lit-ui/charts"],
+      "registryDependencies": []
+    },
+    {
+      "name": "area-chart",
+      "description": "Filled area chart with stacked and smooth options and streaming via pushData(). Powered by ECharts via @lit-ui/charts.",
+      "files": [{ "path": "components/charts/area-chart.ts", "type": "component" }],
+      "dependencies": ["@lit-ui/charts"],
+      "registryDependencies": []
+    },
+    {
+      "name": "bar-chart",
+      "description": "Grouped, stacked, and horizontal bar chart with value labels and streaming via pushData(). Powered by ECharts via @lit-ui/charts.",
+      "files": [{ "path": "components/charts/bar-chart.ts", "type": "component" }],
+      "dependencies": ["@lit-ui/charts"],
+      "registryDependencies": []
+    },
+    {
+      "name": "pie-chart",
+      "description": "Pie and donut chart with small-slice merging, configurable inner radius, center label, and streaming. Powered by ECharts via @lit-ui/charts.",
+      "files": [{ "path": "components/charts/pie-chart.ts", "type": "component" }],
+      "dependencies": ["@lit-ui/charts"],
+      "registryDependencies": []
+    },
+    {
+      "name": "scatter-chart",
+      "description": "Scatter and bubble chart with optional WebGL rendering for 500K+ points via enable-gl. Powered by ECharts via @lit-ui/charts.",
+      "files": [{ "path": "components/charts/scatter-chart.ts", "type": "component" }],
+      "dependencies": ["@lit-ui/charts"],
+      "registryDependencies": []
+    },
+    {
+      "name": "heatmap-chart",
+      "description": "Cartesian heatmap with configurable x/y categories, VisualMap color scale, and streaming. Powered by ECharts via @lit-ui/charts.",
+      "files": [{ "path": "components/charts/heatmap-chart.ts", "type": "component" }],
+      "dependencies": ["@lit-ui/charts"],
+      "registryDependencies": []
+    },
+    {
+      "name": "candlestick-chart",
+      "description": "OHLC candlestick chart with volume panel, SMA/EMA overlays, and streaming new bars. Powered by ECharts via @lit-ui/charts.",
+      "files": [{ "path": "components/charts/candlestick-chart.ts", "type": "component" }],
+      "dependencies": ["@lit-ui/charts"],
+      "registryDependencies": []
+    },
+    {
+      "name": "treemap-chart",
+      "description": "Hierarchical treemap with breadcrumb navigation, rounded cells, and per-level colors. Powered by ECharts via @lit-ui/charts.",
+      "files": [{ "path": "components/charts/treemap-chart.ts", "type": "component" }],
+      "dependencies": ["@lit-ui/charts"],
+      "registryDependencies": []
     }
   ]
 }

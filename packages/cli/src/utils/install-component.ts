@@ -20,6 +20,14 @@ export const componentToPackage: Record<string, string> = {
   'date-picker': '@lit-ui/date-picker',
   'date-range-picker': '@lit-ui/date-range-picker',
   'time-picker': '@lit-ui/time-picker',
+  'line-chart': '@lit-ui/charts',
+  'area-chart': '@lit-ui/charts',
+  'bar-chart': '@lit-ui/charts',
+  'pie-chart': '@lit-ui/charts',
+  'scatter-chart': '@lit-ui/charts',
+  'heatmap-chart': '@lit-ui/charts',
+  'candlestick-chart': '@lit-ui/charts',
+  'treemap-chart': '@lit-ui/charts',
 };
 
 /**
