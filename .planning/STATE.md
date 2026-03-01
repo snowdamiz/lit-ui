@@ -18,14 +18,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-01)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** v10.0 WebGPU Charts — Phase 102 docs/skills update in progress
+**Current focus:** v10.0 WebGPU Charts — Phase 103 candlestick WebGPU implementation in progress
 
 ## Current Position
 
-Phase: 102-docs-skills-update
-Plan: 03 complete — LineChartPage and AreaChartPage updated with v10.0 WebGPU docs: enable-webgpu PropDef, renderer PropDef, corrected max-points default (500000), ChartGPU dynamic-import tree-shaking note, WebGPU browser support table (Chrome/Edge/Firefox 141+/Safari 26+/Fallback Canvas). Phase 102 documentation complete.
-Status: Phase 102 complete (Plan 03 of 03 done)
-Last activity: 2026-03-01 — 102-03 complete: LineChartPage and AreaChartPage have enable-webgpu (boolean, default false), renderer (read-only, 'webgpu'|'webgl'|'canvas'), max-points corrected to 500000, ChartGPU dynamic-import note in tree-shaking callout, WebGPU browser support table
+Phase: 103-candlestick-webgpu
+Plan: 01 complete — LuiCandlestickChart WebGPU two-layer canvas: _GpuCandlestickInstance interface, _initWebGpuLayer(), _syncCoordinates(), _toGpuPoint(), incremental appendData in _flushBarUpdates(), transparent candle gate, trim reset, full disconnectedCallback cleanup.
+Status: Phase 103 in progress (Plan 01 of 03 done)
+Last activity: 2026-03-01 — 103-01 complete: candlestick-chart.ts has WebGPU rendering with ChartGPU two-layer canvas, ECharts retains axes/MA/volume/tooltip/DataZoom with transparent candles when WebGPU active
 
 ## Accumulated Context
 
@@ -66,6 +66,9 @@ Last activity: 2026-03-01 — 102-03 complete: LineChartPage and AreaChartPage h
 - v10.0 (102-01): maxPoints override (500,000) documented in sub-skill Props section header rather than shared props table which correctly shows base default of 1000
 - v10.0 (102-02): candlestick SKILL.md: MAConfig.color documented as optional; showType, NaN-gap rule, CSS token default color sequence (color-2 to color-5), and LOOKS DONE BUT ISN'T reinit warning added
 - v10.0 (102-03): max-points default corrected from 1000 to 500000 in LineChartPage and AreaChartPage docs to match Phase 100 override; renderer PropDef description explicitly warns against synchronous read before renderer-selected event
+- v10.0 (103-01): _gpuFlushedLength is a single number (not array) — candlestick is always single-series; no per-series array complexity needed unlike line/area charts
+- v10.0 (103-01): _toGpuPoint() prepends bar index to form [index, open, close, low, high] — ECharts OHLC order [open,close,low,high] preserved, index prepended as position coordinate
+- v10.0 (103-01): _wasWebGpu flag drives transparent color gate in both _applyData() and _flushBarUpdates() — both paths rebuild full ECharts option independently so both need the gate
 - v9.0: ECharts pinned to 5.6.0; echarts-gl as dynamic-import-only optional peer dep
 - v9.0: appendData/setOption strict boundary — setOption after appendData wipes streamed data (CRITICAL-03)
 - v9.0: BaseChartElement-first — all 5 cross-cutting concerns solved before any chart built
@@ -90,6 +93,7 @@ Last activity: 2026-03-01 — 102-03 complete: LineChartPage and AreaChartPage h
 
 - v9.0 complete: all 10 phases (88-97) archived to .planning/milestones/v9.0-ROADMAP.md
 - v10.0: 5 phases (98-102) — WebGPU detector, MA state machine, streaming infra, WebGPU canvas layer, docs
+- Phase 103 added: Candlestick chart WebGPU support — implement WebGPU rendering, update docs, update skill; docs page uses WebGPU by default if available
 
 ### TODOs
 *None.*
@@ -114,4 +118,4 @@ Last activity: 2026-03-01 — 102-03 complete: LineChartPage and AreaChartPage h
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-03-01 — 102-01 complete: line-chart, area-chart, and charts skill files updated with v10.0 WebGPU + streaming API (enable-webgpu, renderer-selected, pushData seriesIndex, maxPoints 500000). Phase 102 Plan 01 of 03 done.*
+*Last updated: 2026-03-01 — 103-01 complete: candlestick-chart.ts has WebGPU two-layer canvas with ChartGPU rendering OHLC candles, ECharts retaining axes/MA/volume/tooltip/DataZoom with transparent candles. Phase 103 Plan 01 of 03 done.*
