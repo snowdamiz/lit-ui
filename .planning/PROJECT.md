@@ -10,6 +10,15 @@ Now with **dual distribution** (copy-source or npm), **SSR support** via Declara
 
 Developers can use polished, accessible UI components in any framework without lock-in — one component library that works everywhere.
 
+## Current Milestone: v10.0 WebGPU Charts
+
+**Goal:** Extend the chart suite with a WebGPU rendering path (auto-detected, ECharts/WebGL fallback), 1M+ point native streaming for Line/Area, and moving average overlay for streaming candlestick.
+
+**Target features:**
+- Native `appendData` streaming for Line/Area at 1M+ continuous points without `setOption` wipeout
+- Moving average computed series for streaming candlestick charts
+- Auto-detecting WebGPU renderer for all chart types (WebGL → Canvas fallback chain)
+
 ## Current State (v9.0)
 
 - ~116,000+ lines TypeScript/CSS/TSX across packages and apps (v8.0 was ~110,000; v9.0 added +22,851/-135)
@@ -108,11 +117,15 @@ Developers can use polished, accessible UI components in any framework without l
 
 ### Active
 
-<!-- v9.1+ — next milestone targets -->
+<!-- v10.0 — current milestone targets -->
 
 - [ ] Native `appendData` streaming for Line/Area at 1M+ continuous points without `setOption` wipeout (PERF-01)
+- [ ] Moving average computed series overlay for streaming candlestick (PERF-03)
+- [ ] Auto-detecting WebGPU renderer for all chart types with WebGL → Canvas fallback chain (WEBGPU-01)
+
+### Deferred from v9.0
+
 - [ ] Calendar heatmap mode (`mode="calendar"` on lui-heatmap-chart) (PERF-02)
-- [ ] Moving average computed column for streaming candlestick (PERF-03)
 
 ### Deferred
 
@@ -270,4 +283,4 @@ Developers can use polished, accessible UI components in any framework without l
 - **v9.0 Charts System** (2026-03-01): `@lit-ui/charts` package with 8 chart types (ECharts 5.6 + ECharts GL), WebGL rendering for 500K+ point datasets, real-time streaming via `pushData()`, CSS token theming, CLI distribution, 8 interactive docs pages, and 9 AI skill files with chart-specific gotcha warnings
 
 ---
-*Last updated: 2026-03-01 after v9.0 milestone*
+*Last updated: 2026-03-01 after v10.0 milestone started*

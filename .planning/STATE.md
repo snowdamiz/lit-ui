@@ -1,14 +1,14 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.0
-milestone_name: Charts System
-status: unknown
-last_updated: "2026-03-01T07:13:04.385Z"
+milestone: v10.0
+milestone_name: WebGPU Charts
+status: defining_requirements
+last_updated: "2026-03-01T00:00:00.000Z"
 progress:
-  total_phases: 74
-  completed_phases: 74
-  total_plans: 258
-  completed_plans: 258
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
 ---
 
 # Project State: LitUI
@@ -18,14 +18,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-01)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** v9.0 Charts System complete — 22 packages, 27 components (21 UI + 8 charts), archived to .planning/milestones/
+**Current focus:** v10.0 WebGPU Charts — defining requirements
 
 ## Current Position
 
-Milestone v9.0 complete and archived. Ready for next milestone.
-Last activity: 2026-03-01 — v9.0 Charts System archived to .planning/milestones/
-
-Progress: [██████████] 100% (v9.0 milestone, all phases complete)
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-03-01 — Milestone v10.0 WebGPU Charts started
 
 ## Accumulated Context
 
@@ -50,6 +50,7 @@ Progress: [██████████] 100% (v9.0 milestone, all phases comp
 ### Roadmap Evolution
 
 - v9.0 complete: all 10 phases (88-97) archived to .planning/milestones/v9.0-ROADMAP.md
+- v10.0: phases will continue from 98
 
 ### TODOs
 *None.*
@@ -71,50 +72,6 @@ Progress: [██████████] 100% (v9.0 milestone, all phases comp
 | quick-002 | Agents skill with progressive disclosure router + global installer | 5m 25s | 2026-02-27 |
 | quick-003 | Split components skill into 18 individual per-component skills based on docs pages | - | 2026-02-27 |
 
-## Performance Metrics
-
-| Phase | Plan | Duration | Tasks | Files |
-|-------|------|----------|-------|-------|
-| 88 | 01 | 2min | 2 | 6 |
-| 88 | 02 | 2min | 2 | 2 |
-| 88 | 03 | 4min | 2 | 2 |
-| 89 | 01 | 2min | 2 | 3 |
-| 89 | 02 | 1min | 2 | 2 |
-| 90 | 01 | 1min | 2 | 2 |
-| 90 | 02 | 1min | 2 | 2 |
-| 91 | 01 | 1min | 2 | 2 |
-| 91 | 02 | 2min | 2 | 2 |
-| 92 | 01 | 4min | 2 | 4 |
-| 92 | 02 | 1min | 2 | 2 |
-| 93 | 01 | 1min | 2 | 2 |
-| 93 | 02 | 1min | 2 | 2 |
-| 94 | 01 | 2min | 2 | 2 |
-| 94 | 02 | 2min | 2 | 2 |
-| 95 | 01 | 2min | 2 | 2 |
-| 95 | 02 | 1min | 2 | 2 |
-| 96 | 01 | 1min | 2 | 2 |
-| 96 | 02 | 8min | 2 | 11 |
-| 96 | 03 | 3min | 2 | 5 |
-| 96 | 04 | 5min | 2 | 6 |
-| 97 | 01 | 2min | 2 | 2 |
-| 97 | 02 | 2min | 2 | 3 |
-| 97 | 03 | 2min | 2 | 3 |
-| 97 | 04 | 3min | 2 | 2 |
-
-## Session Continuity
-
-### Last Session
-- 2026-03-01: Completed v9.0 Charts System milestone — archived roadmap, requirements, updated PROJECT.md, RETROSPECTIVE.md, git tagged v9.0
-
-### Stopped At
-Milestone complete. Ready for next milestone.
-
-### Next Actions
-Run `/gsd:new-milestone` to start v9.1 or v10.0 planning cycle.
-
-### Open Questions
-*None.*
-
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-03-01 — 96-04 complete, all 8 chart doc pages + App.tsx routing + nav.ts Charts section; DOCS-01 and DOCS-02 fully delivered; Phase 96 and v9.0 milestone complete*
+*Last updated: 2026-03-01 — Milestone v10.0 WebGPU Charts started*
