@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Charts System
 status: unknown
-last_updated: "2026-02-28T23:40:07.673Z"
+last_updated: "2026-03-01T00:19:36Z"
 progress:
   total_phases: 70
   completed_phases: 70
@@ -18,14 +18,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-02-28)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** Phase 93 — Heatmap Chart (complete — all plans done)
+**Current focus:** Phase 94 — Candlestick Chart (plan 01 complete)
 
 ## Current Position
 
-Phase: 93 of 96 (Heatmap Chart — complete)
-Plan: 2 of 2 in current phase (93-02 complete)
-Status: Phase 93 complete — LuiHeatmapChart (lui-heatmap-chart) with pushData cell-update streaming; HEAT-01 and HEAT-02 delivered
-Last activity: 2026-02-28 — Completed 93-02: heatmap-chart.ts (LuiHeatmapChart) + index.ts Phase 93 exports
+Phase: 94 of 96 (Candlestick Chart — plan 01 complete)
+Plan: 1 of 2 in current phase (94-01 complete)
+Status: Phase 94 plan 01 complete — candlestick-option-builder.ts (types + buildCandlestickOption) + candlestick-registry.ts (registerCandlestickModules); CNDL-01, CNDL-02, CNDL-03 delivered
+Last activity: 2026-03-01 — Completed 94-01: candlestick-option-builder.ts (OhlcBar, MAConfig, CandlestickBarPoint, CandlestickOptionProps, buildCandlestickOption, _computeSMA, _computeEMA) + candlestick-registry.ts
 
 Progress: [███░░░░░░░] 27% (v9.0 milestone, 9 phases, 6 of 9 complete)
 
@@ -83,6 +83,10 @@ Progress: [███░░░░░░░] 27% (v9.0 milestone, 9 phases, 6 of 9
 - 93-02: pushData() overrides base entirely — NEVER calls super.pushData(); base _circularBuffer path bypassed for cell-update semantics
 - 93-02: disconnectedCallback() cancels _cellRafId BEFORE super.disconnectedCallback() — base disposes chart, component must cancel its own RAF first
 - 93-02: _applyData() uses notMerge:false — notMerge:true would wipe VisualMap component on each data update
+- 94-01: OhlcBar order is [open, close, low, high] — NOT OHLC acronym order; ECharts expects this specific order (documented with JSDoc warning)
+- 94-01: Bull/bear colors use ECharts-native itemStyle.color / itemStyle.color0 (NOT upColor/downColor which don't exist in ECharts)
+- 94-01: DataZoom xAxisIndex: [0, 1] in showVolume=true path synchronizes both grid panels (Pitfall 3)
+- 94-01: BarChart + LineChart registered alongside CandlestickChart — omitting either causes silent rendering failure (Pitfall 1)
 
 ### Architecture Notes
 
@@ -96,6 +100,7 @@ Progress: [███░░░░░░░] 27% (v9.0 milestone, 9 phases, 6 of 9
 - Phase 92 complete: LuiScatterChart (lui-scatter-chart) exported from @lit-ui/charts with ScatterPoint + ScatterOptionProps types; all SCAT requirements delivered
 - Phase 93 plan 01 complete: heatmap-option-builder.ts (HeatmapCell, HeatmapOptionProps, buildHeatmapOption) + heatmap-registry.ts (registerHeatmapModules with HeatmapChart + VisualMapContinuousComponent)
 - Phase 93 complete: LuiHeatmapChart (lui-heatmap-chart) exported from @lit-ui/charts with HeatmapCell + HeatmapOptionProps types; HEAT-01/HEAT-02 delivered
+- Phase 94 plan 01 complete: candlestick-option-builder.ts (OhlcBar, MAConfig, CandlestickBarPoint, CandlestickOptionProps, buildCandlestickOption) + candlestick-registry.ts (registerCandlestickModules with CandlestickChart + BarChart + LineChart)
 
 ### TODOs
 *None.*
@@ -134,21 +139,22 @@ Progress: [███░░░░░░░] 27% (v9.0 milestone, 9 phases, 6 of 9
 | 92 | 02 | 1min | 2 | 2 |
 | 93 | 01 | 1min | 2 | 2 |
 | 93 | 02 | 1min | 2 | 2 |
+| 94 | 01 | 2min | 2 | 2 |
 
 ## Session Continuity
 
 ### Last Session
-- 2026-02-28: Completed 93-02 — heatmap-chart.ts (LuiHeatmapChart with pushData cell-update override) + index.ts Phase 93 exports
+- 2026-03-01: Completed 94-01 — candlestick-option-builder.ts (types + buildCandlestickOption + SMA/EMA helpers) + candlestick-registry.ts (registerCandlestickModules)
 
 ### Stopped At
-Completed 93-02-PLAN.md
+Completed 94-01-PLAN.md
 
 ### Next Actions
-Phase 93 complete. Continue to Phase 94.
+Phase 94 plan 01 complete. Continue to Plan 02: LuiCandlestickChart component.
 
 ### Open Questions
 *None.*
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-02-28 — 93-02 complete, LuiHeatmapChart component (heatmap-chart.ts + index.ts exports), Phase 93 complete*
+*Last updated: 2026-03-01 — 94-01 complete, candlestick-option-builder.ts + candlestick-registry.ts, Phase 94 plan 01 complete*

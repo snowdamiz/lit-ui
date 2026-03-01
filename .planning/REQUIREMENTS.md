@@ -66,9 +66,9 @@ Requirements for the v9.0 Charts System milestone. Each maps to a roadmap phase.
 
 ### Candlestick Chart
 
-- [ ] **CNDL-01**: Developer can render a candlestick chart from OHLC `[open, close, low, high]` data with configurable bull/bear colors
-- [ ] **CNDL-02**: Developer can display a volume panel on a secondary axis below the candlestick chart
-- [ ] **CNDL-03**: Developer can display SMA/EMA moving average overlays via a `moving-averages` prop
+- [x] **CNDL-01**: Developer can render a candlestick chart from OHLC `[open, close, low, high]` data with configurable bull/bear colors
+- [x] **CNDL-02**: Developer can display a volume panel on a secondary axis below the candlestick chart
+- [x] **CNDL-03**: Developer can display SMA/EMA moving average overlays via a `moving-averages` prop
 - [ ] **CNDL-04**: Developer can stream new OHLC bars into a candlestick chart via `pushData()`
 
 ### Treemap Chart
@@ -150,9 +150,9 @@ Which phases cover which requirements. Populated during roadmap creation.
 | SCAT-03 | Phase 92 | Complete |
 | HEAT-01 | Phase 93 | Complete |
 | HEAT-02 | Phase 93 | Complete |
-| CNDL-01 | Phase 94 | Pending |
-| CNDL-02 | Phase 94 | Pending |
-| CNDL-03 | Phase 94 | Pending |
+| CNDL-01 | Phase 94 | Complete |
+| CNDL-02 | Phase 94 | Complete |
+| CNDL-03 | Phase 94 | Complete |
 | CNDL-04 | Phase 94 | Pending |
 | TREE-01 | Phase 95 | Pending |
 | TREE-02 | Phase 95 | Pending |

@@ -183,6 +183,6 @@ Plans:
 | 91. Pie + Donut Chart | 2/2 | Complete    | 2026-02-28 | - |
 | 92. Scatter + Bubble Chart with WebGL | 2/2 | Complete    | 2026-02-28 | - |
 | 93. Heatmap Chart | 2/2 | Complete    | 2026-02-28 | - |
-| 94. Candlestick Chart | v9.0 | 0/2 | Not started | - |
+| 94. Candlestick Chart | 1/2 | In Progress|  | - |
 | 95. Treemap Chart | v9.0 | 0/TBD | Not started | - |
 | 96. CLI Integration + Documentation | v9.0 | 0/TBD | Not started | - |
