@@ -106,7 +106,7 @@ const chartCSSVars: CSSVarDef[] = [
   { name: '--ui-chart-font-family', default: 'system-ui, sans-serif', description: 'Font family for labels and tooltips.' },
 ];
 
-const heatmapChartHtmlCode = `<!-- Set xCategories, yCategories, and data via JavaScript properties -->
+const heatmapChartHtml = `<!-- Set xCategories, yCategories, and data via JavaScript properties -->
 <lui-heatmap-chart id="chart"></lui-heatmap-chart>
 <script>
   const chart = document.querySelector('#chart');
@@ -118,6 +118,63 @@ const heatmapChartHtmlCode = `<!-- Set xCategories, yCategories, and data via Ja
     [2, 2, 62],
   ];
 </script>`;
+
+const heatmapChartReact = `import { useEffect, useRef } from 'react';
+import '@lit-ui/charts/heatmap-chart';
+
+export function MyHeatmapChart() {
+  const ref = useRef(null);
+  useEffect(() => {
+    if (ref.current) {
+      ref.current.xCategories = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+      ref.current.yCategories = ['Morning', 'Afternoon', 'Evening'];
+      ref.current.data = [
+        [0, 0, 85],
+        [1, 1, 42],
+        [2, 2, 62],
+      ];
+    }
+  }, []);
+  return <lui-heatmap-chart ref={ref} style={{ height: '300px', display: 'block' }} />;
+}`;
+
+const heatmapChartVue = `<template>
+  <lui-heatmap-chart ref="chart" style="height: 300px; display: block" />
+</template>
+
+<script setup>
+import { ref, onMounted } from 'vue';
+import '@lit-ui/charts/heatmap-chart';
+
+const chart = ref(null);
+onMounted(() => {
+  chart.value.xCategories = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+  chart.value.yCategories = ['Morning', 'Afternoon', 'Evening'];
+  chart.value.data = [
+    [0, 0, 85],
+    [1, 1, 42],
+    [2, 2, 62],
+  ];
+});
+</script>`;
+
+const heatmapChartSvelte = `<script>
+  import { onMount } from 'svelte';
+  import '@lit-ui/charts/heatmap-chart';
+
+  let chart;
+  onMount(() => {
+    chart.xCategories = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+    chart.yCategories = ['Morning', 'Afternoon', 'Evening'];
+    chart.data = [
+      [0, 0, 85],
+      [1, 1, 42],
+      [2, 2, 62],
+    ];
+  });
+</script>
+
+<lui-heatmap-chart bind:this={chart} style="height: 300px; display: block" />`;
 
 export function HeatmapChartPage() {
   return (
@@ -164,10 +221,10 @@ export function HeatmapChartPage() {
             </p>
             <ExampleBlock
               preview={<HeatmapChartDemo />}
-              html={heatmapChartHtmlCode}
-              react={heatmapChartHtmlCode}
-              vue={heatmapChartHtmlCode}
-              svelte={heatmapChartHtmlCode}
+              html={heatmapChartHtml}
+              react={heatmapChartReact}
+              vue={heatmapChartVue}
+              svelte={heatmapChartSvelte}
             />
           </section>
         </div>

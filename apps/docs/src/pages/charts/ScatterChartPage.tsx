@@ -86,7 +86,7 @@ const chartCSSVars: CSSVarDef[] = [
   { name: '--ui-chart-font-family', default: 'system-ui, sans-serif', description: 'Font family for labels and tooltips.' },
 ];
 
-const scatterChartHtmlCode = `<!-- Set data via JavaScript property (not attribute) -->
+const scatterChartHtml = `<!-- Set data via JavaScript property (not attribute) -->
 <lui-scatter-chart id="chart"></lui-scatter-chart>
 <script>
   document.querySelector('#chart').data = [
@@ -97,6 +97,63 @@ const scatterChartHtmlCode = `<!-- Set data via JavaScript property (not attribu
     [45, 60],
   ];
 </script>`;
+
+const scatterChartReact = `import { useEffect, useRef } from 'react';
+import '@lit-ui/charts/scatter-chart';
+
+export function MyScatterChart() {
+  const ref = useRef(null);
+  useEffect(() => {
+    if (ref.current) {
+      ref.current.data = [
+        [10, 20],
+        [30, 50],
+        [15, 35],
+        [50, 80],
+        [45, 60],
+      ];
+    }
+  }, []);
+  return <lui-scatter-chart ref={ref} style={{ height: '300px', display: 'block' }} />;
+}`;
+
+const scatterChartVue = `<template>
+  <lui-scatter-chart ref="chart" style="height: 300px; display: block" />
+</template>
+
+<script setup>
+import { ref, onMounted } from 'vue';
+import '@lit-ui/charts/scatter-chart';
+
+const chart = ref(null);
+onMounted(() => {
+  chart.value.data = [
+    [10, 20],
+    [30, 50],
+    [15, 35],
+    [50, 80],
+    [45, 60],
+  ];
+});
+</script>`;
+
+const scatterChartSvelte = `<script>
+  import { onMount } from 'svelte';
+  import '@lit-ui/charts/scatter-chart';
+
+  let chart;
+  onMount(() => {
+    chart.data = [
+      [10, 20],
+      [30, 50],
+      [15, 35],
+      [50, 80],
+      [45, 60],
+    ];
+  });
+</script>
+
+<lui-scatter-chart bind:this={chart} style="height: 300px; display: block" />`;
 
 export function ScatterChartPage() {
   return (
@@ -143,10 +200,10 @@ export function ScatterChartPage() {
             </p>
             <ExampleBlock
               preview={<ScatterChartDemo />}
-              html={scatterChartHtmlCode}
-              react={scatterChartHtmlCode}
-              vue={scatterChartHtmlCode}
-              svelte={scatterChartHtmlCode}
+              html={scatterChartHtml}
+              react={scatterChartReact}
+              vue={scatterChartVue}
+              svelte={scatterChartSvelte}
             />
           </section>
         </div>
