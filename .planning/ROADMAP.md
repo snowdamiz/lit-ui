@@ -68,8 +68,8 @@ Full phase details archived to `.planning/milestones/v9.0-ROADMAP.md`
   5. All chart instances on a page that support WebGPU share a single GPUDevice — the browser device count limit is not exceeded even with 10 chart instances rendered simultaneously
 **Plans**: 2 plans
 Plans:
-- [ ] 98-01-PLAN.md — Install @webgpu/types and create GPUDevice singleton module (webgpu-device.ts)
-- [ ] 98-02-PLAN.md — Add WebGPU detection to BaseChartElement and export RendererTier
+- [x] 98-01-PLAN.md — Install @webgpu/types and create GPUDevice singleton module (webgpu-device.ts)
+- [x] 98-02-PLAN.md — Add WebGPU detection to BaseChartElement and export RendererTier
 
 ### Phase 99: Incremental Moving Average State Machine
 **Goal**: Candlestick charts with MA overlays compute each new moving average value in O(1) time per streaming bar, with correct gap handling and readable legend labels
@@ -82,9 +82,9 @@ Plans:
   4. An `MAConfig` with `showType: true` and `type: 'ema'` renders the legend label as "MA20 (EMA)" rather than "MA20"
 **Plans**: 3 plans
 Plans:
-- [ ] 99-01-PLAN.md — TDD: MAStateMachine O(1) SMA/EMA state machine with NaN gap handling
-- [ ] 99-02-PLAN.md — Update MAConfig type, option builder API, and add readChartToken() to BaseChartElement
-- [ ] 99-03-PLAN.md — Wire _maStateMachines[] into LuiCandlestickChart (_applyData + _flushBarUpdates)
+- [x] 99-01-PLAN.md — TDD: MAStateMachine O(1) SMA/EMA state machine with NaN gap handling
+- [x] 99-02-PLAN.md — Update MAConfig type, option builder API, and add readChartToken() to BaseChartElement
+- [x] 99-03-PLAN.md — Wire _maStateMachines[] into LuiCandlestickChart (_applyData + _flushBarUpdates)
 
 ### Phase 100: 1M+ Streaming Infrastructure for Line/Area
 **Goal**: Line and Area charts can sustain continuous point streaming well past 1M total points without tab crashes, main-thread frame drops, or data loss at zoom-out
@@ -97,9 +97,9 @@ Plans:
   4. Zooming out on a Line chart with 1M+ streamed points renders a smooth, representative curve — not a flat line or missing segments — because LTTB decimation supplies ECharts with a high-quality 2K-point summary
 **Plans**: 3 plans
 Plans:
-- [ ] 100-01-PLAN.md — Make _initChart() protected + add sampling:lttb/large flags to buildLineOption()
-- [ ] 100-02-PLAN.md — LuiLineChart: ring-buffer pushData override with seriesIndex routing and maxPoints truncation
-- [ ] 100-03-PLAN.md — LuiAreaChart: identical ring-buffer streaming override as LuiLineChart
+- [x] 100-01-PLAN.md — Make _initChart() protected + add sampling:lttb/large flags to buildLineOption()
+- [x] 100-02-PLAN.md — LuiLineChart: ring-buffer pushData override with seriesIndex routing and maxPoints truncation
+- [x] 100-03-PLAN.md — LuiAreaChart: identical ring-buffer streaming override as LuiLineChart
 
 ### Phase 101: WebGPU Two-Layer Canvas for Line/Area
 **Goal**: Line and Area charts on WebGPU-capable browsers render their data series via a ChartGPU 0.3.2 canvas layer beneath the ECharts axes canvas, with coordinate systems kept in sync across DataZoom interactions
@@ -112,9 +112,9 @@ Plans:
   4. Destroying a chart component (removing it from the DOM) releases the GPUDevice resources — `device.destroy()` is called and the WebGPU canvas is removed — with no memory leak detectable in Chrome DevTools over 10 create/destroy cycles
 **Plans**: 3 plans
 Plans:
-- [ ] 101-01-PLAN.md — Install chartgpu@0.3.2 and upgrade webgpu-device.ts to refcounted lifecycle with GPUAdapter storage
-- [ ] 101-02-PLAN.md — LuiLineChart: ChartGPU two-layer canvas with DataZoom sync and full disconnectedCallback() cleanup
-- [ ] 101-03-PLAN.md — LuiAreaChart: identical ChartGPU two-layer canvas pattern as LuiLineChart
+- [x] 101-01-PLAN.md — Install chartgpu@0.3.2 and upgrade webgpu-device.ts to refcounted lifecycle with GPUAdapter storage
+- [x] 101-02-PLAN.md — LuiLineChart: ChartGPU two-layer canvas with DataZoom sync and full disconnectedCallback() cleanup
+- [x] 101-03-PLAN.md — LuiAreaChart: identical ChartGPU two-layer canvas pattern as LuiLineChart
 
 ### Phase 102: Docs + Skills Update
 **Goal**: All v10.0 capabilities are documented in the chart skill files and docs pages so that users and AI agents working with the library have accurate, complete references for the new streaming, MA, and WebGPU features
@@ -127,9 +127,9 @@ Plans:
   4. The `@lit-ui/charts` bundle size guidance in docs reflects the ChartGPU 0.3.2 addition and clarifies that ChartGPU is only loaded when WebGPU is detected (dynamic import — zero overhead on unsupported browsers)
 **Plans**: 3 plans
 Plans:
-- [ ] 102-01-PLAN.md — Update line-chart, area-chart, and shared charts skill files with v10.0 WebGPU + streaming API
-- [ ] 102-02-PLAN.md — Update candlestick-chart skill file with v10.0 MA features (showType, optional color, NaN-gap rule)
-- [ ] 102-03-PLAN.md — Update LineChartPage.tsx and AreaChartPage.tsx docs with WebGPU props and browser support table
+- [x] 102-01-PLAN.md — Update line-chart, area-chart, and shared charts skill files with v10.0 WebGPU + streaming API
+- [x] 102-02-PLAN.md — Update candlestick-chart skill file with v10.0 MA features (showType, optional color, NaN-gap rule)
+- [x] 102-03-PLAN.md — Update LineChartPage.tsx and AreaChartPage.tsx docs with WebGPU props and browser support table
 
 ## Progress
 
@@ -159,6 +159,17 @@ Plans:
 **Plans:** 3/3 plans complete
 
 Plans:
-- [ ] 103-01-PLAN.md — WebGPU two-layer canvas implementation in LuiCandlestickChart
-- [ ] 103-02-PLAN.md — CandlestickChartPage.tsx docs update: enable-webgpu demo, WebGPU props, browser support table
-- [ ] 103-03-PLAN.md — Skill file updates: candlestick SKILL.md WebGPU props; shared charts SKILL.md candlestick note
+- [x] 103-01-PLAN.md — WebGPU two-layer canvas implementation in LuiCandlestickChart
+- [x] 103-02-PLAN.md — CandlestickChartPage.tsx docs update: enable-webgpu demo, WebGPU props, browser support table
+- [x] 103-03-PLAN.md — Skill file updates: candlestick SKILL.md WebGPU props; shared charts SKILL.md candlestick note
+
+### Phase 104: Update code example blocks for all chart types. They are not accurate (most are displaying html for all tabs)
+
+**Goal:** Each chart docs page ExampleBlock shows idiomatic, runnable code for all 4 framework tabs (HTML, React, Vue, Svelte) — not the same HTML string repeated in every tab
+**Requirements**: (docs fix — no dedicated requirement IDs)
+**Depends on:** Phase 103
+**Plans:** 2 plans
+
+Plans:
+- [ ] 104-01-PLAN.md — Fix ExampleBlock code strings for Line, Area, Bar, and Pie chart pages
+- [ ] 104-02-PLAN.md — Fix ExampleBlock code strings for Scatter, Heatmap, Candlestick, and Treemap chart pages
