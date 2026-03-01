@@ -31,3 +31,7 @@ export type { HeatmapCell, HeatmapOptionProps } from './shared/heatmap-option-bu
 // Phase 94: Candlestick Chart
 export { LuiCandlestickChart } from './candlestick/candlestick-chart.js';
 export type { OhlcBar, MAConfig, CandlestickBarPoint, CandlestickOptionProps } from './shared/candlestick-option-builder.js';
+
+// Phase 95: Treemap Chart
+export { LuiTreemapChart } from './treemap/treemap-chart.js';
+export type { TreemapNode, TreemapOptionProps } from './shared/treemap-option-builder.js';
