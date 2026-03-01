@@ -30,7 +30,8 @@ description: >-
 3. Overlays: `<lui-dialog>`, `<lui-tooltip>`, `<lui-popover>`, `<lui-toaster>`.
 4. Layout: `<lui-accordion>`, `<lui-tabs>`.
 5. Data: `<lui-data-table>`.
-6. All form components participate in HTML forms via `ElementInternals`.
+6. Charts: `<lui-line-chart>`, `<lui-area-chart>`, `<lui-bar-chart>`, `<lui-pie-chart>`, `<lui-scatter-chart>`, `<lui-heatmap-chart>`, `<lui-candlestick-chart>`, `<lui-treemap-chart>`.
+7. All form components participate in HTML forms via `ElementInternals`.
 
 ## Available Sub-Skills
 
@@ -63,6 +64,18 @@ description: >-
 22. `skills/framework-usage` — React, Vue, Svelte, Angular, and vanilla HTML integration patterns
 23. `skills/ssr` — Server-side rendering: renderToString, hydration, isServer guards
 
+**Charts (load the specific chart skill when a chart component is mentioned):**
+
+24. `skills/charts` — Charts overview: which chart to use, shared BaseChartElement API (data, pushData, getChart, CSS tokens), React integration
+25. `skills/line-chart` — lui-line-chart: smooth, zoom, markLines, multi-series, appendData streaming
+26. `skills/area-chart` — lui-area-chart: smooth, stacked, zoom, labelPosition, appendData streaming
+27. `skills/bar-chart` — lui-bar-chart: grouped/stacked/horizontal, showLabels, colorByData, pushData streaming
+28. `skills/pie-chart` — lui-pie-chart: pie and donut mode, minPercent slice merging, innerRadius, centerLabel
+29. `skills/scatter-chart` — lui-scatter-chart: bubble mode, enable-gl WebGL for 500K+ points, pushData streaming
+30. `skills/heatmap-chart` — lui-heatmap-chart: xCategories/yCategories (JS props), colorRange, cell-update pushData
+31. `skills/candlestick-chart` — lui-candlestick-chart: OHLC [open,close,low,high] order, showVolume, movingAverages, pushData
+32. `skills/treemap-chart` — lui-treemap-chart: hierarchical data, breadcrumb, rounded, levelColors (NO pushData)
+
 ## Routing Rules
 
 1. After delivering the overview, check if the question maps to a specific sub-skill.
@@ -71,3 +84,5 @@ description: >-
 4. For cross-topic questions (e.g. "lui-select in React with dark mode"), load both the component skill and the relevant tooling skill.
 5. For CLI questions (npx lit-ui ...), load `skills/cli`.
 6. For "how do I build a component" questions, load `skills/authoring`.
+7. For any question about chart components (lui-*-chart, @lit-ui/charts, ECharts data, pushData streaming), load `skills/charts` first, then load the specific chart skill.
+8. For "which chart should I use" or "chart type selection" questions, load `skills/charts` only.
