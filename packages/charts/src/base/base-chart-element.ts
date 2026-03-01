@@ -139,6 +139,19 @@ export abstract class BaseChartElement extends TailwindElement {
   protected _webglUnavailable = false;
 
   // ---------------------------------------------------------------------------
+  // Protected accessors
+  // ---------------------------------------------------------------------------
+
+  /**
+   * MA-02: Protected CSS token reader — delegates to _themeBridge.readToken().
+   * Exposes token resolution to subclasses (e.g., LuiCandlestickChart for MA default colors)
+   * without making _themeBridge itself accessible. ThemeBridge instance stays private.
+   */
+  protected readChartToken(name: string): string {
+    return this._themeBridge.readToken(name);
+  }
+
+  // ---------------------------------------------------------------------------
   // Abstract interface (implemented by every concrete chart class)
   // ---------------------------------------------------------------------------
 
