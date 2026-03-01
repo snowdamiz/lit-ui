@@ -34,6 +34,9 @@ export function buildLineOption(
     type: 'line' as const,
     data: s.data,
     smooth: props.smooth ?? false,
+    sampling: 'lttb' as const,      // STRM-04: native LTTB decimation — activates at high point counts
+    large: true,                     // STRM-01: large dataset rendering optimization
+    largeThreshold: 2000,            // STRM-01: switch to large path above 2000 points
     // Area mode: add areaStyle with semi-transparency for readability
     areaStyle: isArea ? { opacity: props.opacity ?? 0.6 } : undefined,
     // Stacking: all series share the same group string — boolean true would NOT work (ECharts pitfall)
