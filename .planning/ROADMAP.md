@@ -49,7 +49,7 @@ Full phase details archived to `.planning/milestones/v9.0-ROADMAP.md`
 ## v10.0 WebGPU Charts (Phases 98-102)
 
 - [x] **Phase 98: WebGPU Detector + Renderer Infrastructure** (2 plans) (completed 2026-03-01)
-- [ ] **Phase 99: Incremental Moving Average State Machine** (3 plans)
+- [x] **Phase 99: Incremental Moving Average State Machine** (3 plans) (completed 2026-03-01)
 - [ ] **Phase 100: 1M+ Streaming Infrastructure for Line/Area** (N plans)
 - [ ] **Phase 101: WebGPU Two-Layer Canvas for Line/Area** (N plans)
 - [ ] **Phase 102: Docs + Skills Update** (N plans)
@@ -134,7 +134,7 @@ Plans:
 | 96. CLI Integration + Documentation | v9.0 | 4/4 | Complete | 2026-03-01 |
 | 97. Update Chart Skills | v9.0 | 4/4 | Complete | 2026-03-01 |
 | 98. WebGPU Detector + Renderer Infrastructure | 2/2 | Complete    | 2026-03-01 | — |
-| 99. Incremental Moving Average State Machine | 2/3 | In Progress|  | — |
+| 99. Incremental Moving Average State Machine | 3/3 | Complete   | 2026-03-01 | — |
 | 100. 1M+ Streaming Infrastructure for Line/Area | v10.0 | 0/? | Pending | — |
 | 101. WebGPU Two-Layer Canvas for Line/Area | v10.0 | 0/? | Pending | — |
 | 102. Docs + Skills Update | v10.0 | 0/? | Pending | — |

@@ -18,14 +18,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-01)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** v10.0 WebGPU Charts — Phase 99 Plan 03 next (MAStateMachine GREEN implementation)
+**Current focus:** v10.0 WebGPU Charts — Phase 99 Plan 04 next (if any) or Phase 100
 
 ## Current Position
 
 Phase: 99-incremental-moving-average-state-machine
-Plan: 02 complete — advancing to Plan 03
+Plan: 03 complete — all MA requirements wired
 Status: In progress
-Last activity: 2026-03-01 — 99-02 complete: MAConfig type contract expanded, readChartToken() protected accessor added to BaseChartElement
+Last activity: 2026-03-01 — 99-03 complete: MAStateMachine[] integrated into LuiCandlestickChart, O(1) incremental flush via sm.push(), CSS token MA colors via _resolveMAColors(), trim() aligned with _ohlcBuffer
 
 ## Accumulated Context
 
@@ -43,6 +43,9 @@ Last activity: 2026-03-01 — 99-02 complete: MAConfig type contract expanded, r
 - v10.0 (99-02): MAConfig.color made optional — component assigns CSS token defaults in candlestick chart update (Plan 03)
 - v10.0 (99-02): readChartToken() uses protected accessor pattern — ThemeBridge stays private, only read access exposed to subclasses
 - v10.0 (99-02): maValueArrays/resolvedMAColors in CandlestickOptionProps — streaming state machine passes pre-computed values, skipping O(n) SMA/EMA rebuilds on each tick
+- v10.0 (99-03): Default MA colors start at --ui-chart-color-2 (color-1 reserved for ECharts primary theme data)
+- v10.0 (99-03): _maStateMachines always fully rebuilt in _applyData() — atomic rebuild handles dynamic MA config count changes without state drift
+- v10.0 (99-03): trim() added to MAStateMachine — call after _ohlcBuffer.slice(-maxPoints) to keep MA value array indices aligned
 - v9.0: ECharts pinned to 5.6.0; echarts-gl as dynamic-import-only optional peer dep
 - v9.0: appendData/setOption strict boundary — setOption after appendData wipes streamed data (CRITICAL-03)
 - v9.0: BaseChartElement-first — all 5 cross-cutting concerns solved before any chart built
@@ -91,4 +94,4 @@ Last activity: 2026-03-01 — 99-02 complete: MAConfig type contract expanded, r
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-03-01 — 99-02 complete: MAConfig expanded, readChartToken() added to BaseChartElement*
+*Last updated: 2026-03-01 — 99-03 complete: MAStateMachine integrated into LuiCandlestickChart, O(1) incremental MA flush, MA-01..MA-04 all observable*
