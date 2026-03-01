@@ -57,23 +57,23 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| STRM-01 | — | Pending |
-| STRM-02 | — | Pending |
-| STRM-03 | — | Pending |
-| STRM-04 | — | Pending |
-| MA-01 | — | Pending |
-| MA-02 | — | Pending |
-| MA-03 | — | Pending |
-| MA-04 | — | Pending |
-| WEBGPU-01 | — | Pending |
-| WEBGPU-02 | — | Pending |
-| WEBGPU-03 | — | Pending |
+| STRM-01 | Phase 100 | Pending |
+| STRM-02 | Phase 100 | Pending |
+| STRM-03 | Phase 100 | Pending |
+| STRM-04 | Phase 100 | Pending |
+| MA-01 | Phase 99 | Pending |
+| MA-02 | Phase 99 | Pending |
+| MA-03 | Phase 99 | Pending |
+| MA-04 | Phase 99 | Pending |
+| WEBGPU-01 | Phase 98 | Pending |
+| WEBGPU-02 | Phase 101 | Pending |
+| WEBGPU-03 | Phase 98 | Pending |
 
 **Coverage:**
 - v10.0 requirements: 11 total
-- Mapped to phases: 0
-- Unmapped: 11 ⚠️
+- Mapped to phases: 11
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-03-01*
-*Last updated: 2026-03-01 after initial definition*
+*Last updated: 2026-03-01 after roadmap creation (v10.0 phases 98-102)*
