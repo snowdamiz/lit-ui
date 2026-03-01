@@ -173,7 +173,13 @@ Plans:
   2. Developer can import `@lit-ui/charts/line-chart` as a subpath export and their bundler tree-shakes all other chart modules out of the output
   3. Each of the 8 chart types has a docs page with an interactive live demo, complete property API table, and CSS token table
   4. Docs include a bundle size section documenting Canvas vs WebGL impact and per-chart tree-shaking sizes so developers can make informed import decisions
-**Plans**: TBD
+**Plans**: 4 plans
+
+Plans:
+- [ ] 096-01-PLAN.md — Subpath exports: multi-entry vite.config.ts + package.json exports map for all 8 charts
+- [ ] 096-02-PLAN.md — CLI registry: 8 chart registry entries + 8 templates + install-component.ts npm mappings
+- [ ] 096-03-PLAN.md — Docs pages (wave 2): LineChartPage, AreaChartPage, BarChartPage, PieChartPage + @lit-ui/charts docs dep
+- [ ] 096-04-PLAN.md — Docs pages (wave 2): ScatterChartPage, HeatmapChartPage, CandlestickChartPage, TreemapChartPage + App.tsx routes + nav.ts Charts section
 
 ## Progress
 
@@ -189,4 +195,4 @@ Plans:
 | 93. Heatmap Chart | 2/2 | Complete    | 2026-02-28 | - |
 | 94. Candlestick Chart | 2/2 | Complete    | 2026-03-01 | - |
 | 95. Treemap Chart | 2/2 | Complete    | 2026-03-01 | - |
-| 96. CLI Integration + Documentation | v9.0 | 0/TBD | Not started | - |
+| 96. CLI Integration + Documentation | v9.0 | 0/4 | Not started | - |
