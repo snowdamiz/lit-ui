@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Charts System
 status: unknown
-last_updated: "2026-03-01T00:19:36Z"
+last_updated: "2026-03-01T00:24:35.201Z"
 progress:
-  total_phases: 70
-  completed_phases: 70
-  total_plans: 246
-  completed_plans: 246
+  total_phases: 71
+  completed_phases: 71
+  total_plans: 248
+  completed_plans: 248
 ---
 
 # Project State: LitUI
@@ -18,14 +18,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-02-28)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** Phase 94 — Candlestick Chart (plan 01 complete)
+**Current focus:** Phase 94 — Candlestick Chart (complete — all 4 CNDL requirements delivered)
 
 ## Current Position
 
-Phase: 94 of 96 (Candlestick Chart — plan 01 complete)
-Plan: 1 of 2 in current phase (94-01 complete)
-Status: Phase 94 plan 01 complete — candlestick-option-builder.ts (types + buildCandlestickOption) + candlestick-registry.ts (registerCandlestickModules); CNDL-01, CNDL-02, CNDL-03 delivered
-Last activity: 2026-03-01 — Completed 94-01: candlestick-option-builder.ts (OhlcBar, MAConfig, CandlestickBarPoint, CandlestickOptionProps, buildCandlestickOption, _computeSMA, _computeEMA) + candlestick-registry.ts
+Phase: 94 of 96 (Candlestick Chart — complete)
+Plan: 2 of 2 in current phase (94-02 complete — Phase 94 done)
+Status: Phase 94 complete — LuiCandlestickChart (lui-candlestick-chart) exported from @lit-ui/charts; all CNDL-01/CNDL-02/CNDL-03/CNDL-04 requirements delivered
+Last activity: 2026-03-01 — Completed 94-02: candlestick-chart.ts (LuiCandlestickChart component) + index.ts Phase 94 exports
 
 Progress: [███░░░░░░░] 27% (v9.0 milestone, 9 phases, 6 of 9 complete)
 
@@ -87,6 +87,9 @@ Progress: [███░░░░░░░] 27% (v9.0 milestone, 9 phases, 6 of 9
 - 94-01: Bull/bear colors use ECharts-native itemStyle.color / itemStyle.color0 (NOT upColor/downColor which don't exist in ECharts)
 - 94-01: DataZoom xAxisIndex: [0, 1] in showVolume=true path synchronizes both grid panels (Pitfall 3)
 - 94-01: BarChart + LineChart registered alongside CandlestickChart — omitting either causes silent rendering failure (Pitfall 1)
+- 94-02: pushData() never calls super.pushData() — _ohlcBuffer is sole authoritative bar store; base _circularBuffer path bypassed
+- 94-02: _flushBarUpdates() uses lazyUpdate:true (not notMerge:false) — preserves DataZoom state during streaming
+- 94-02: bullColor/bearColor coerced from string|null to string|undefined via ?? undefined before passing to buildCandlestickOption
 
 ### Architecture Notes
 
@@ -101,6 +104,7 @@ Progress: [███░░░░░░░] 27% (v9.0 milestone, 9 phases, 6 of 9
 - Phase 93 plan 01 complete: heatmap-option-builder.ts (HeatmapCell, HeatmapOptionProps, buildHeatmapOption) + heatmap-registry.ts (registerHeatmapModules with HeatmapChart + VisualMapContinuousComponent)
 - Phase 93 complete: LuiHeatmapChart (lui-heatmap-chart) exported from @lit-ui/charts with HeatmapCell + HeatmapOptionProps types; HEAT-01/HEAT-02 delivered
 - Phase 94 plan 01 complete: candlestick-option-builder.ts (OhlcBar, MAConfig, CandlestickBarPoint, CandlestickOptionProps, buildCandlestickOption) + candlestick-registry.ts (registerCandlestickModules with CandlestickChart + BarChart + LineChart)
+- Phase 94 complete: LuiCandlestickChart (lui-candlestick-chart) exported from @lit-ui/charts with OhlcBar + MAConfig + CandlestickBarPoint + CandlestickOptionProps types; all CNDL requirements delivered
 
 ### TODOs
 *None.*
@@ -140,21 +144,22 @@ Progress: [███░░░░░░░] 27% (v9.0 milestone, 9 phases, 6 of 9
 | 93 | 01 | 1min | 2 | 2 |
 | 93 | 02 | 1min | 2 | 2 |
 | 94 | 01 | 2min | 2 | 2 |
+| 94 | 02 | 2min | 2 | 2 |
 
 ## Session Continuity
 
 ### Last Session
-- 2026-03-01: Completed 94-01 — candlestick-option-builder.ts (types + buildCandlestickOption + SMA/EMA helpers) + candlestick-registry.ts (registerCandlestickModules)
+- 2026-03-01: Completed 94-02 — candlestick-chart.ts (LuiCandlestickChart component with pushData override, RAF streaming, all CNDL properties) + index.ts Phase 94 exports; Phase 94 complete
 
 ### Stopped At
-Completed 94-01-PLAN.md
+Completed 94-02-PLAN.md
 
 ### Next Actions
-Phase 94 plan 01 complete. Continue to Plan 02: LuiCandlestickChart component.
+Phase 94 complete. Continue to Phase 95 (next chart phase per ROADMAP).
 
 ### Open Questions
 *None.*
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-03-01 — 94-01 complete, candlestick-option-builder.ts + candlestick-registry.ts, Phase 94 plan 01 complete*
+*Last updated: 2026-03-01 — 94-02 complete, candlestick-chart.ts + index.ts Phase 94 exports, Phase 94 complete*
