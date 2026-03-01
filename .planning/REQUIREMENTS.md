@@ -14,9 +14,9 @@
 
 ### Moving Average (Candlestick)
 
-- [ ] **MA-01**: Moving average series update in O(1) per new streaming bar using an incremental SMA/EMA state machine instead of O(n) full recompute per RAF frame
+- [x] **MA-01**: Moving average series update in O(1) per new streaming bar using an incremental SMA/EMA state machine instead of O(n) full recompute per RAF frame
 - [ ] **MA-02**: MA series automatically assign CSS token default colors (`--ui-chart-color-2` through `--ui-chart-color-5`) when `MAConfig` omits a `color`
-- [ ] **MA-03**: MA computation treats NaN closes as gaps (returns `null`, not `NaN`) to prevent NaN propagation through the SMA window and into tooltip display
+- [x] **MA-03**: MA computation treats NaN closes as gaps (returns `null`, not `NaN`) to prevent NaN propagation through the SMA window and into tooltip display
 - [ ] **MA-04**: `MAConfig` supports a `showType` boolean that appends the MA type to the legend label ("MA20 (EMA)" vs "MA20")
 
 ### WebGPU Renderer
@@ -61,9 +61,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | STRM-02 | Phase 100 | Pending |
 | STRM-03 | Phase 100 | Pending |
 | STRM-04 | Phase 100 | Pending |
-| MA-01 | Phase 99 | Pending |
+| MA-01 | Phase 99 | Complete |
 | MA-02 | Phase 99 | Pending |
-| MA-03 | Phase 99 | Pending |
+| MA-03 | Phase 99 | Complete |
 | MA-04 | Phase 99 | Pending |
 | WEBGPU-01 | Phase 98 | Complete |
 | WEBGPU-02 | Phase 101 | Pending |
