@@ -19,7 +19,7 @@ function CandlestickChartDemo() {
       ];
     }
   }, []);
-  return <lui-candlestick-chart ref={ref as any} style={{ height: '300px', display: 'block' }} />;
+  return <lui-candlestick-chart ref={ref as any} enable-webgpu style={{ height: '300px', display: 'block' }} />;
 }
 
 const candlestickChartProps: PropDef[] = [
@@ -52,6 +52,18 @@ const candlestickChartProps: PropDef[] = [
     type: 'number',
     default: '1000',
     description: 'Maximum number of candles in the streaming buffer.',
+  },
+  {
+    name: 'enable-webgpu',
+    type: 'boolean',
+    default: 'false',
+    description: 'Opt-in WebGPU rendering via ChartGPU 0.3.2. When set and WebGPU is available (Chrome/Edge, Firefox 141+, Safari 26+), renders OHLC candles on a GPU-accelerated canvas layer beneath ECharts axes/tooltip/MA overlays. Falls back to Canvas automatically on unsupported browsers. MA overlay lines and volume bars always render in ECharts regardless of renderer.',
+  },
+  {
+    name: 'renderer',
+    type: "'webgpu' | 'webgl' | 'canvas'",
+    default: "'canvas'",
+    description: "Read-only property — active renderer tier after the 'renderer-selected' event fires. Do NOT read synchronously before the event; the async GPU probe may not have resolved. Not a Lit @property() — does not trigger reactive updates.",
   },
   {
     name: 'bull-color',
@@ -132,7 +144,15 @@ export function CandlestickChartPage() {
 
         {/* Tree-shaking callout */}
         <div className="mb-8 p-4 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-sm text-blue-800 dark:text-blue-200">
-          <strong>Tree-shaking tip:</strong> Import <code>@lit-ui/charts/candlestick-chart</code> (subpath) instead of <code>@lit-ui/charts</code> to include only this chart's modules (~135KB gzipped vs 350KB+ for all charts).
+          <strong>Tree-shaking tip:</strong> Import <code>@lit-ui/charts/candlestick-chart</code> (subpath) instead of <code>@lit-ui/charts</code> to include only this chart's modules (~135KB gzipped vs 350KB+ for all charts).{' '}
+          When <code>enable-webgpu</code> is set, ChartGPU 0.3.2 is dynamically imported only when WebGPU is detected — zero additional bundle overhead on Canvas-fallback browsers.
+        </div>
+
+        {/* WebGPU Browser Support */}
+        <div className="mb-8 p-4 rounded-lg bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 text-sm text-purple-800 dark:text-purple-200">
+          <strong>WebGPU browser support:</strong> Chrome/Edge (stable), Firefox 141+ (nightly/stable as of 2025),
+          Safari 26+ (Technology Preview). Unsupported browsers automatically fall back to Canvas — no user action required.
+          Add <code>enable-webgpu</code> to the element; the chart detects support at runtime.
         </div>
 
         {/* OHLC order warning */}
