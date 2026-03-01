@@ -147,8 +147,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 94-01-PLAN.md — candlestick-option-builder.ts (OhlcBar, MAConfig, CandlestickBarPoint, CandlestickOptionProps, buildCandlestickOption, SMA/EMA helpers) + candlestick-registry.ts (registerCandlestickModules)
-- [ ] 94-02-PLAN.md — LuiCandlestickChart component with pushData override + index.ts public API exports
+- [x] 94-01-PLAN.md — candlestick-option-builder.ts (OhlcBar, MAConfig, CandlestickBarPoint, CandlestickOptionProps, buildCandlestickOption, SMA/EMA helpers) + candlestick-registry.ts (registerCandlestickModules)
+- [x] 94-02-PLAN.md — LuiCandlestickChart component with pushData override + index.ts public API exports
 
 ### Phase 95: Treemap Chart
 **Goal**: Developer can render a treemap from hierarchical data with breadcrumb navigation, rounded cells, and per-level color configuration
@@ -158,7 +158,11 @@ Plans:
   1. Developer can pass `{ name, value, children[] }` hierarchical data and see a correctly proportioned space-filling treemap
   2. Developer can click into a parent node and see breadcrumb navigation appear; developer can click breadcrumbs to navigate back up the hierarchy
   3. Developer can configure `rounded`, `breadcrumb`, and `level-colors` props and see the visual output update accordingly
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 095-01-PLAN.md — treemap-option-builder.ts (TreemapNode, TreemapOptionProps, buildTreemapOption) + treemap-registry.ts (registerTreemapModules)
+- [ ] 095-02-PLAN.md — LuiTreemapChart component + index.ts Phase 95 exports
 
 ### Phase 96: CLI Integration + Documentation
 **Goal**: Developer can install any of the 8 chart types via the CLI, import individual charts via subpath exports for tree-shaking, and reference complete interactive docs with API tables and bundle size guidance
@@ -184,5 +188,5 @@ Plans:
 | 92. Scatter + Bubble Chart with WebGL | 2/2 | Complete    | 2026-02-28 | - |
 | 93. Heatmap Chart | 2/2 | Complete    | 2026-02-28 | - |
 | 94. Candlestick Chart | 2/2 | Complete    | 2026-03-01 | - |
-| 95. Treemap Chart | v9.0 | 0/TBD | Not started | - |
+| 95. Treemap Chart | v9.0 | 0/2 | Not started | - |
 | 96. CLI Integration + Documentation | v9.0 | 0/TBD | Not started | - |
