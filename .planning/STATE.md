@@ -18,14 +18,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-01)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** v10.0 WebGPU Charts — Phase 103 candlestick WebGPU implementation in progress
+**Current focus:** v10.0 WebGPU Charts — Phase 104 fixing ExampleBlock code examples across chart docs pages
 
 ## Current Position
 
-Phase: 103-candlestick-webgpu
-Plan: 03 complete — Candlestick and shared charts skill files updated with WebGPU props, renderer documentation, and behavior notes (MA/volume ECharts split, init-time color limitation, DataZoom sync).
-Status: Phase 103 in progress (Plan 03 of 03 done)
-Last activity: 2026-03-01 — 103-03 complete: candlestick-chart SKILL.md has enable-webgpu/renderer props and 3 WebGPU behavior notes; shared charts SKILL.md updated to list candlestick in ChartGPU activation description
+Phase: 104-update-code-example-blocks-for-all-chart-types-they-are-not-accurate-most-are-displaying-html-for-all-tabs
+Plan: 01 complete — LineChartPage, AreaChartPage, BarChartPage, PieChartPage ExampleBlock props updated with per-framework code strings (HTML/React/Vue/Svelte).
+Status: Phase 104 in progress (Plan 01 of 01 done)
+Last activity: 2026-03-01 — 104-01 complete: all 4 chart pages now show idiomatic per-framework code in ExampleBlock tabs instead of repeated HTML string
 
 ## Accumulated Context
 
@@ -95,6 +95,8 @@ Last activity: 2026-03-01 — 103-03 complete: candlestick-chart SKILL.md has en
 - v9.0 complete: all 10 phases (88-97) archived to .planning/milestones/v9.0-ROADMAP.md
 - v10.0: 5 phases (98-102) — WebGPU detector, MA state machine, streaming infra, WebGPU canvas layer, docs
 - Phase 103 added: Candlestick chart WebGPU support — implement WebGPU rendering, update docs, update skill; docs page uses WebGPU by default if available
+- Phase 104 added: Update code example blocks for all chart types. They are not accurate (most are displaying html for all tabs)
+- v10.0 (104-01): ExampleBlock per-framework code strings — React uses useRef+useEffect+if(ref.current) guard, Vue uses ref()+onMounted+chart.value.data, Svelte uses let chart+onMount+bind:this; all 4 chart pages (Line/Area/Bar/Pie) updated
 
 ### TODOs
 *None.*
@@ -119,4 +121,4 @@ Last activity: 2026-03-01 — 103-03 complete: candlestick-chart SKILL.md has en
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-03-01 — 103-03 complete: candlestick-chart SKILL.md updated with enable-webgpu/renderer props and 3 WebGPU behavior notes; shared charts SKILL.md updated with candlestick in ChartGPU activation list. Phase 103 Plan 03 of 03 done.*
+*Last updated: 2026-03-01 — 104-01 complete: LineChartPage, AreaChartPage, BarChartPage, PieChartPage now have per-framework ExampleBlock code strings (HTML/React/Vue/Svelte). Phase 104 Plan 01 of 01 done.*

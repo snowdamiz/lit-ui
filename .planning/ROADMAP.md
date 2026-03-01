@@ -168,7 +168,7 @@ Plans:
 **Goal:** Each chart docs page ExampleBlock shows idiomatic, runnable code for all 4 framework tabs (HTML, React, Vue, Svelte) — not the same HTML string repeated in every tab
 **Requirements**: (docs fix — no dedicated requirement IDs)
 **Depends on:** Phase 103
-**Plans:** 2 plans
+**Plans:** 1/2 plans executed
 
 Plans:
 - [ ] 104-01-PLAN.md — Fix ExampleBlock code strings for Line, Area, Bar, and Pie chart pages
