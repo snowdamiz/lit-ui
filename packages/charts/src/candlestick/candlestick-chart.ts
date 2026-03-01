@@ -20,6 +20,11 @@ import {
   type MAConfig,
 } from '../shared/candlestick-option-builder.js';
 import { MAStateMachine } from '../shared/ma-state-machine.js';
+import {
+  getGpuDevice,
+  getGpuAdapter,
+  releaseGpuDevice,
+} from '../shared/webgpu-device.js';
 
 /**
  * Module-level helper — NOT exported.
@@ -34,6 +39,15 @@ function _parseMovingAverages(raw: string | null): MAConfig[] {
   } catch {
     return [];
   }
+}
+
+// WEBGPU: Minimal ChartGPU instance interface for candlestick — avoids hard dependency on chartgpu types.
+// Candlestick appendData uses 5-element tuples [index, open, close, low, high] (NOT [x,y] pairs).
+interface _GpuCandlestickInstance {
+  resize(): void;
+  dispose(): void;
+  setZoomRange(start: number, end: number): void;
+  appendData(seriesIndex: number, newPoints: ReadonlyArray<readonly [number, number, number, number, number]>): void;
 }
 
 export class LuiCandlestickChart extends BaseChartElement {
@@ -93,6 +107,107 @@ export class LuiCandlestickChart extends BaseChartElement {
   // The BASE CLASS cancels its own _rafId but has no knowledge of _barRafId.
   private _barRafId?: number;
 
+  // WEBGPU: ChartGPU instance — null when WebGPU unavailable or before init.
+  private _gpuChart: _GpuCandlestickInstance | null = null;
+  // WEBGPU: Separate ResizeObserver for ChartGPU — base class observer only calls this._chart.resize().
+  private _gpuResizeObserver?: ResizeObserver;
+  // WEBGPU: Flag set to true when WebGPU path was active — gates releaseGpuDevice() in cleanup.
+  private _wasWebGpu = false;
+  // WEBGPU: Tracks how many bars have been pushed to ChartGPU — enables incremental appendData.
+  // Reset to 0 after _ohlcBuffer trim (see pushData() override).
+  private _gpuFlushedLength = 0;
+
+  /**
+   * WEBGPU: Override _initChart() to layer ChartGPU beneath ECharts when WebGPU is active.
+   *
+   * Calls super._initChart() first (registers modules, inits ECharts, sets up ResizeObserver,
+   * ColorSchemeObserver, calls _applyData), then conditionally initializes the ChartGPU
+   * data layer on top when this.renderer === 'webgpu'.
+   */
+  protected override async _initChart(): Promise<void> {
+    await super._initChart();
+    if (this.renderer === 'webgpu') {
+      await this._initWebGpuLayer();
+    }
+  }
+
+  /**
+   * WEBGPU: Initialize the ChartGPU GPU-accelerated data layer beneath ECharts.
+   *
+   * Creates a host div with z-index:0 and pointer-events:none positioned absolutely
+   * inside the #chart container, then initializes ChartGPU inside it using the shared
+   * GPUDevice singleton from webgpu-device.ts.
+   */
+  private async _initWebGpuLayer(): Promise<void> {
+    const devicePromise = getGpuDevice();
+    if (!devicePromise) return;
+
+    const device = await devicePromise;
+    const adapter = getGpuAdapter();
+
+    const { ChartGPU } = await import('chartgpu');
+    const container = this.shadowRoot?.querySelector<HTMLDivElement>('#chart');
+    if (!container) return;
+
+    const gpuHost = document.createElement('div');
+    gpuHost.style.cssText =
+      'position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;';
+    container.insertBefore(gpuHost, container.firstChild);
+
+    const gpuSeries = {
+      series: [{
+        type: 'candlestick' as const,
+        data: [] as Array<readonly [number, number, number, number, number]>,
+        itemStyle: {
+          upColor: this.bullColor ?? '#26a69a',
+          downColor: this.bearColor ?? '#ef5350',
+          upBorderColor: this.bullColor ?? '#26a69a',
+          downBorderColor: this.bearColor ?? '#ef5350',
+        },
+      }],
+    };
+
+    if (!adapter) {
+      this._gpuChart = (await ChartGPU.create(gpuHost, gpuSeries)) as unknown as _GpuCandlestickInstance;
+    } else {
+      this._gpuChart = (await ChartGPU.create(gpuHost, gpuSeries, { device, adapter })) as unknown as _GpuCandlestickInstance;
+    }
+
+    this._wasWebGpu = true;
+    this._gpuResizeObserver = new ResizeObserver(() => this._gpuChart?.resize());
+    this._gpuResizeObserver.observe(container);
+
+    this._chart!.on('dataZoom', () => this._syncCoordinates());
+    this._chart!.on('rendered', () => this._syncCoordinates());
+  }
+
+  /**
+   * WEBGPU: Sync ECharts DataZoom percent-space to ChartGPU zoom range.
+   *
+   * Uses getOption().dataZoom[0].start/end (percent-space [0, 100]) which maps
+   * directly to ChartGPU.setZoomRange() without an additional pixel to percent conversion.
+   */
+  private _syncCoordinates(): void {
+    if (!this._chart || !this._gpuChart) return;
+    const option = this._chart.getOption() as Record<string, unknown>;
+    const dataZoom = (option['dataZoom'] as Array<Record<string, unknown>> | undefined)?.[0];
+    if (!dataZoom) return;
+    const start = (dataZoom['start'] as number) ?? 0;
+    const end = (dataZoom['end'] as number) ?? 100;
+    if (isNaN(start) || isNaN(end)) return;
+    this._gpuChart.setZoomRange(start, end);
+  }
+
+  // Converts CandlestickBarPoint.ohlc (ECharts [open,close,low,high]) to
+  // ChartGPU OHLCDataPointTuple [index, open, close, low, high].
+  // CRITICAL: These formats differ — do NOT pass ECharts ohlc directly to ChartGPU.
+  private _toGpuPoint(
+    bar: CandlestickBarPoint,
+    index: number
+  ): readonly [number, number, number, number, number] {
+    return [index, bar.ohlc[0], bar.ohlc[1], bar.ohlc[2], bar.ohlc[3]];
+  }
+
   protected override async _registerModules(): Promise<void> {
     await registerCandlestickModules();
   }
@@ -110,6 +225,8 @@ export class LuiCandlestickChart extends BaseChartElement {
     if (!this._chart) return;
     // Sync _ohlcBuffer from this.data so pushData() starts from current authoritative state.
     this._ohlcBuffer = this.data ? [...(this.data as CandlestickBarPoint[])] : [];
+    // WEBGPU: Full data reset — rebuild GPU data from scratch on next flush.
+    this._gpuFlushedLength = 0;
     const mas = _parseMovingAverages(this.movingAverages);
 
     // MA-01: Rebuild state machines atomically with _ohlcBuffer reset.
@@ -123,8 +240,8 @@ export class LuiCandlestickChart extends BaseChartElement {
     const resolvedMAColors = this._resolveMAColors(mas);
 
     const option = buildCandlestickOption(this._ohlcBuffer, {
-      bullColor: this.bullColor ?? undefined,
-      bearColor: this.bearColor ?? undefined,
+      bullColor: this._wasWebGpu ? 'transparent' : (this.bullColor ?? undefined),
+      bearColor: this._wasWebGpu ? 'transparent' : (this.bearColor ?? undefined),
       showVolume: this.showVolume,
       movingAverages: mas,
       maValueArrays,
@@ -152,6 +269,10 @@ export class LuiCandlestickChart extends BaseChartElement {
       this._ohlcBuffer = this._ohlcBuffer.slice(-this.maxPoints);
       // Trim MA value arrays in parallel to keep indices aligned with _ohlcBuffer.
       this._maStateMachines.forEach((sm) => sm.trim(this.maxPoints));
+      // WEBGPU: After trim, _gpuFlushedLength must reset to 0.
+      // The next _flushBarUpdates() will use _ohlcBuffer.slice(0) = full trimmed buffer
+      // and send it all to ChartGPU, keeping the GPU chart consistent.
+      this._gpuFlushedLength = 0;
     }
     // Schedule flush — coalesces multiple pushData() calls in the same RAF frame.
     if (this._barRafId === undefined) {
@@ -179,8 +300,8 @@ export class LuiCandlestickChart extends BaseChartElement {
     const resolvedMAColors = this._resolveMAColors(mas);
 
     const option = buildCandlestickOption(this._ohlcBuffer, {
-      bullColor: this.bullColor ?? undefined,
-      bearColor: this.bearColor ?? undefined,
+      bullColor: this._wasWebGpu ? 'transparent' : (this.bullColor ?? undefined),
+      bearColor: this._wasWebGpu ? 'transparent' : (this.bearColor ?? undefined),
       showVolume: this.showVolume,
       movingAverages: mas,
       maValueArrays,
@@ -188,19 +309,49 @@ export class LuiCandlestickChart extends BaseChartElement {
     });
     // lazyUpdate: true — preserves DataZoom state while batching update to next render cycle.
     this._chart.setOption(option, { lazyUpdate: true } as object);
+
+    // WEBGPU: Push incremental new bars to ChartGPU after ECharts update.
+    if (this._gpuChart) {
+      const lastFlushed = this._gpuFlushedLength;
+      const newBars = this._ohlcBuffer.slice(lastFlushed);
+      if (newBars.length > 0) {
+        const gpuPoints = newBars.map((bar, i) => this._toGpuPoint(bar, lastFlushed + i));
+        this._gpuChart.appendData(0, gpuPoints);
+        this._gpuFlushedLength = this._ohlcBuffer.length;
+      }
+    }
   }
 
   /**
-   * Cancel component's own RAF before base class disposes the chart.
-   * Base class cancels its own _rafId but has no knowledge of _barRafId.
-   * Failing to cancel causes post-disposal setOption errors.
+   * WEBGPU: Full reverse-init cleanup — cancels RAF, disconnects ChartGPU resize observer,
+   * disposes ChartGPU, releases GPU device refcount, then calls super (ECharts cleanup).
+   *
+   * Reverse-init order: undo steps in reverse order of _initWebGpuLayer().
+   * super.disconnectedCallback() is LAST — base class references this._chart which ChartGPU
+   * event listeners may hold; disposing early would cause use-after-free on those handlers.
    */
   override disconnectedCallback(): void {
-    // Cancel component's own RAF before base class disposes the chart.
+    // 1. Cancel component's own RAF — must be first (base class only cancels _rafId, not _barRafId).
     if (this._barRafId !== undefined) {
       cancelAnimationFrame(this._barRafId);
       this._barRafId = undefined;
     }
+
+    // 2. WEBGPU: Disconnect ChartGPU's resize observer before disposing.
+    this._gpuResizeObserver?.disconnect();
+    this._gpuResizeObserver = undefined;
+
+    // 3. WEBGPU: Dispose ChartGPU — releases GPU buffers + removes WebGPU canvas.
+    //    Does NOT destroy the shared GPUDevice (owned by webgpu-device.ts singleton).
+    this._gpuChart?.dispose();
+    this._gpuChart = null;
+
+    // 4. WEBGPU: Release refcount — device.destroy() fires when last chart disconnects.
+    if (this._wasWebGpu) {
+      void releaseGpuDevice();
+    }
+
+    // 5. ECharts cleanup (base class) — MUST be last.
     super.disconnectedCallback();
   }
 }
