@@ -78,9 +78,9 @@ Requirements for the v9.0 Charts System milestone. Each maps to a roadmap phase.
 
 ### CLI & Distribution
 
-- [ ] **CLI-01**: Developer can install any chart component via `npx lit-ui add [chart-name]` using the same CLI UX as other LitUI components
+- [x] **CLI-01**: Developer can install any chart component via `npx lit-ui add [chart-name]` using the same CLI UX as other LitUI components
 - [x] **CLI-02**: Developer can import individual chart types via subpath exports (`@lit-ui/charts/line-chart`) to tree-shake unused charts
-- [ ] **CLI-03**: Developer can get a working copy-source starter template for each of the 8 chart types
+- [x] **CLI-03**: Developer can get a working copy-source starter template for each of the 8 chart types
 
 ### Documentation
 
@@ -156,9 +156,9 @@ Which phases cover which requirements. Populated during roadmap creation.
 | CNDL-04 | Phase 94 | Complete |
 | TREE-01 | Phase 95 | Complete |
 | TREE-02 | Phase 95 | Complete |
-| CLI-01 | Phase 96 | Pending |
+| CLI-01 | Phase 96 | Complete |
 | CLI-02 | Phase 96 | Complete |
-| CLI-03 | Phase 96 | Pending |
+| CLI-03 | Phase 96 | Complete |
 | DOCS-01 | Phase 96 | Pending |
 | DOCS-02 | Phase 96 | Pending |
 

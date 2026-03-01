@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Charts System
 status: unknown
-last_updated: "2026-03-01T04:41:43.299Z"
+last_updated: "2026-03-01T04:43:26.215Z"
 progress:
   total_phases: 73
   completed_phases: 72
   total_plans: 254
-  completed_plans: 251
+  completed_plans: 252
 ---
 
 # Project State: LitUI
@@ -23,9 +23,9 @@ See: .planning/PROJECT.md (updated 2026-02-28)
 ## Current Position
 
 Phase: 96 of 96 (CLI Integration and Documentation — IN PROGRESS)
-Plan: 1 of 4 in current phase (96-01 complete — multi-entry Vite build + subpath exports for @lit-ui/charts)
-Status: Phase 96 plan 01 complete — CLI-02 delivered; @lit-ui/charts now supports per-chart subpath imports with tree-shaking
-Last activity: 2026-03-01 — Completed 96-01: vite.config.ts (9-key multi-entry build) + package.json (8 subpath export entries); dist/ now has 9 named JS+DTS outputs
+Plan: 2 of 4 in current phase (96-02 complete — 8 chart templates + registry entries for CLI install UX)
+Status: Phase 96 plan 02 complete — CLI-01 and CLI-03 delivered; all 8 charts installable via 'npx lit-ui add [chart-name]'
+Last activity: 2026-03-01 — Completed 96-02: 8 registry entries + 8 install-component.ts mappings + 8 template files + templates/index.ts update
 
 Progress: [████░░░░░░] 30% (v9.0 milestone, 9 phases, 6 of 9 complete)
 
@@ -99,6 +99,8 @@ Progress: [████░░░░░░] 30% (v9.0 milestone, 9 phases, 6 of 9
 - 95-02: _parseLevelColors() validates array-of-arrays with Array.isArray(entry) — rejects flat string array (Pitfall 3)
 - 96-01: Bespoke defineConfig instead of createLibraryConfig for multi-entry chart builds — wrapper hardcodes fileName:'index', breaking per-entry naming
 - 96-01: fileName field omitted from lib config — Vite uses entry keys as output filenames automatically when fileName absent
+- 96-02: All 8 chart names map to single '@lit-ui/charts' in componentToPackage — not separate packages; charts package is a single bundled deliverable
+- 96-02: Chart templates use '@lit-ui/charts/[name]' subpath imports to demonstrate tree-shaking; void trick pattern preserves custom element registration side effects
 
 ### Architecture Notes
 
@@ -117,6 +119,7 @@ Progress: [████░░░░░░] 30% (v9.0 milestone, 9 phases, 6 of 9
 - Phase 95 plan 01 complete: treemap-option-builder.ts (TreemapNode, TreemapOptionProps, buildTreemapOption) + treemap-registry.ts (registerTreemapModules with TreemapChart-only, no BreadcrumbComponent)
 - Phase 95 complete: LuiTreemapChart (lui-treemap-chart) exported from @lit-ui/charts with TreemapNode + TreemapOptionProps types; TREE-01/TREE-02 delivered
 - Phase 96 plan 01 complete: vite.config.ts (9-key multi-entry build) + package.json (8 subpath exports); @lit-ui/charts now has dist/line-chart.js through dist/treemap-chart.js with matching .d.ts; CLI-02 delivered
+- Phase 96 plan 02 complete: 8 chart entries in registry.json + 8 componentToPackage entries in install-component.ts + 8 chart template files + templates/index.ts updated; CLI-01 and CLI-03 delivered
 
 ### TODOs
 *None.*
@@ -160,21 +163,22 @@ Progress: [████░░░░░░] 30% (v9.0 milestone, 9 phases, 6 of 9
 | 95 | 01 | 2min | 2 | 2 |
 | 95 | 02 | 1min | 2 | 2 |
 | 96 | 01 | 1min | 2 | 2 |
+| 96 | 02 | 8min | 2 | 11 |
 
 ## Session Continuity
 
 ### Last Session
-- 2026-03-01: Completed 96-01 — vite.config.ts (bespoke multi-entry defineConfig, 9-key entry object) + package.json (8 subpath export entries ./line-chart through ./treemap-chart); @lit-ui/charts produces 9 JS+DTS outputs; CLI-02 delivered
+- 2026-03-01: Completed 96-02 — 8 chart registry entries (registry.json) + 8 componentToPackage entries (install-component.ts) + 8 chart template files + templates/index.ts update; CLI-01 and CLI-03 delivered; all 8 charts installable via 'npx lit-ui add [chart-name]'
 
 ### Stopped At
-Completed 096-01-PLAN.md
+Completed 096-02-PLAN.md
 
 ### Next Actions
-Phase 96 plan 01 complete. Continue to Phase 96 plan 02.
+Phase 96 plan 02 complete. Continue to Phase 96 plan 03.
 
 ### Open Questions
 *None.*
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-03-01 — 96-01 complete, vite.config.ts multi-entry build + package.json subpath exports, CLI-02 delivered*
+*Last updated: 2026-03-01 — 96-02 complete, 8 chart templates + registry entries + install-component.ts mappings, CLI-01 and CLI-03 delivered*
