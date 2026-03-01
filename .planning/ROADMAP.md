@@ -48,7 +48,7 @@ Full phase details archived to `.planning/milestones/v9.0-ROADMAP.md`
 
 ## v10.0 WebGPU Charts (Phases 98-102)
 
-- [ ] **Phase 98: WebGPU Detector + Renderer Infrastructure** (N plans)
+- [ ] **Phase 98: WebGPU Detector + Renderer Infrastructure** (2 plans)
 - [ ] **Phase 99: Incremental Moving Average State Machine** (N plans)
 - [ ] **Phase 100: 1M+ Streaming Infrastructure for Line/Area** (N plans)
 - [ ] **Phase 101: WebGPU Two-Layer Canvas for Line/Area** (N plans)
@@ -66,7 +66,10 @@ Full phase details archived to `.planning/milestones/v9.0-ROADMAP.md`
   3. Opening the same page in a browser without WebGPU silently uses Canvas without console errors or visual breakage
   4. A Next.js App Router SSR build with chart components imported completes without `navigator is not defined` or `gpu is not defined` errors
   5. All chart instances on a page that support WebGPU share a single GPUDevice — the browser device count limit is not exceeded even with 10 chart instances rendered simultaneously
-**Plans**: TBD
+**Plans**: 2 plans
+Plans:
+- [ ] 98-01-PLAN.md — Install @webgpu/types and create GPUDevice singleton module (webgpu-device.ts)
+- [ ] 98-02-PLAN.md — Add WebGPU detection to BaseChartElement and export RendererTier
 
 ### Phase 99: Incremental Moving Average State Machine
 **Goal**: Candlestick charts with MA overlays compute each new moving average value in O(1) time per streaming bar, with correct gap handling and readable legend labels
@@ -126,7 +129,7 @@ Full phase details archived to `.planning/milestones/v9.0-ROADMAP.md`
 | 95. Treemap Chart | v9.0 | 2/2 | Complete | 2026-03-01 |
 | 96. CLI Integration + Documentation | v9.0 | 4/4 | Complete | 2026-03-01 |
 | 97. Update Chart Skills | v9.0 | 4/4 | Complete | 2026-03-01 |
-| 98. WebGPU Detector + Renderer Infrastructure | v10.0 | 0/? | Pending | — |
+| 98. WebGPU Detector + Renderer Infrastructure | v10.0 | 0/2 | Pending | — |
 | 99. Incremental Moving Average State Machine | v10.0 | 0/? | Pending | — |
 | 100. 1M+ Streaming Infrastructure for Line/Area | v10.0 | 0/? | Pending | — |
 | 101. WebGPU Two-Layer Canvas for Line/Area | v10.0 | 0/? | Pending | — |
