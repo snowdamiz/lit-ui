@@ -23,9 +23,9 @@ See: .planning/PROJECT.md (updated 2026-03-01)
 ## Current Position
 
 Phase: 104-update-code-example-blocks-for-all-chart-types-they-are-not-accurate-most-are-displaying-html-for-all-tabs
-Plan: 01 complete — LineChartPage, AreaChartPage, BarChartPage, PieChartPage ExampleBlock props updated with per-framework code strings (HTML/React/Vue/Svelte).
-Status: Phase 104 in progress (Plan 01 of 01 done)
-Last activity: 2026-03-01 — 104-01 complete: all 4 chart pages now show idiomatic per-framework code in ExampleBlock tabs instead of repeated HTML string
+Plan: 02 complete — ScatterChartPage, HeatmapChartPage, CandlestickChartPage, TreemapChartPage ExampleBlock props updated with per-framework code strings (HTML/React/Vue/Svelte). Heatmap shows all 3 property assignments; Candlestick includes OHLC order warning and omits enable-webgpu; Treemap shows hierarchical children shape.
+Status: Phase 104 in progress (Plan 02 of N done)
+Last activity: 2026-03-01 — 104-02 complete: Scatter, Heatmap, Candlestick, Treemap chart pages now have 4 distinct per-framework ExampleBlock code strings
 
 ## Accumulated Context
 
@@ -97,6 +97,9 @@ Last activity: 2026-03-01 — 104-01 complete: all 4 chart pages now show idioma
 - Phase 103 added: Candlestick chart WebGPU support — implement WebGPU rendering, update docs, update skill; docs page uses WebGPU by default if available
 - Phase 104 added: Update code example blocks for all chart types. They are not accurate (most are displaying html for all tabs)
 - v10.0 (104-01): ExampleBlock per-framework code strings — React uses useRef+useEffect+if(ref.current) guard, Vue uses ref()+onMounted+chart.value.data, Svelte uses let chart+onMount+bind:this; all 4 chart pages (Line/Area/Bar/Pie) updated
+- v10.0 (104-02): Candlestick code examples omit enable-webgpu — kept clean for basic usage; WebGPU feature documented separately in props table and callout box
+- v10.0 (104-02): All 4 candlestick framework variants include the OHLC order warning comment inline
+- v10.0 (104-02): Heatmap: all 4 framework variants assign all 3 properties (xCategories, yCategories, data) — critical for chart to render
 
 ### TODOs
 *None.*
@@ -121,4 +124,4 @@ Last activity: 2026-03-01 — 104-01 complete: all 4 chart pages now show idioma
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-03-01 — 104-01 complete: LineChartPage, AreaChartPage, BarChartPage, PieChartPage now have per-framework ExampleBlock code strings (HTML/React/Vue/Svelte). Phase 104 Plan 01 of 01 done.*
+*Last updated: 2026-03-01 — 104-02 complete: ScatterChartPage, HeatmapChartPage, CandlestickChartPage, TreemapChartPage now have 4 distinct per-framework ExampleBlock code strings. Phase 104 Plan 02 done.*
