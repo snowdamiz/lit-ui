@@ -102,7 +102,7 @@ const chartCSSVars: CSSVarDef[] = [
   { name: '--ui-chart-font-family', default: 'system-ui, sans-serif', description: 'Font family for labels and tooltips.' },
 ];
 
-const lineChartHtmlCode = `<!-- Set data via JavaScript property (not attribute) -->
+const lineChartHtml = `<!-- Set data via JavaScript property (not attribute) -->
 <lui-line-chart id="chart" smooth zoom></lui-line-chart>
 <script>
   document.querySelector('#chart').data = [
@@ -110,6 +110,54 @@ const lineChartHtmlCode = `<!-- Set data via JavaScript property (not attribute)
     { name: 'Revenue', data: [60, 100, 80, 40, 50, 75, 90] },
   ];
 </script>`;
+
+const lineChartReact = `import { useEffect, useRef } from 'react';
+import '@lit-ui/charts/line-chart';
+
+export function MyLineChart() {
+  const ref = useRef(null);
+  useEffect(() => {
+    if (ref.current) {
+      ref.current.data = [
+        { name: 'Sales', data: [120, 200, 150, 80, 70, 110, 130] },
+        { name: 'Revenue', data: [60, 100, 80, 40, 50, 75, 90] },
+      ];
+    }
+  }, []);
+  return <lui-line-chart ref={ref} smooth zoom style={{ height: '300px', display: 'block' }} />;
+}`;
+
+const lineChartVue = `<template>
+  <lui-line-chart ref="chart" smooth zoom style="height: 300px; display: block" />
+</template>
+
+<script setup>
+import { ref, onMounted } from 'vue';
+import '@lit-ui/charts/line-chart';
+
+const chart = ref(null);
+onMounted(() => {
+  chart.value.data = [
+    { name: 'Sales', data: [120, 200, 150, 80, 70, 110, 130] },
+    { name: 'Revenue', data: [60, 100, 80, 40, 50, 75, 90] },
+  ];
+});
+</script>`;
+
+const lineChartSvelte = `<script>
+  import { onMount } from 'svelte';
+  import '@lit-ui/charts/line-chart';
+
+  let chart;
+  onMount(() => {
+    chart.data = [
+      { name: 'Sales', data: [120, 200, 150, 80, 70, 110, 130] },
+      { name: 'Revenue', data: [60, 100, 80, 40, 50, 75, 90] },
+    ];
+  });
+</script>
+
+<lui-line-chart bind:this={chart} smooth zoom style="height: 300px; display: block" />`;
 
 export function LineChartPage() {
   return (
@@ -176,10 +224,10 @@ export function LineChartPage() {
             </p>
             <ExampleBlock
               preview={<LineChartDemo />}
-              html={lineChartHtmlCode}
-              react={lineChartHtmlCode}
-              vue={lineChartHtmlCode}
-              svelte={lineChartHtmlCode}
+              html={lineChartHtml}
+              react={lineChartReact}
+              vue={lineChartVue}
+              svelte={lineChartSvelte}
             />
           </section>
         </div>

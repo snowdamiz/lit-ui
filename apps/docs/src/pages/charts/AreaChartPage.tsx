@@ -108,7 +108,7 @@ const chartCSSVars: CSSVarDef[] = [
   { name: '--ui-chart-font-family', default: 'system-ui, sans-serif', description: 'Font family for labels and tooltips.' },
 ];
 
-const areaChartHtmlCode = `<!-- Set data via JavaScript property (not attribute) -->
+const areaChartHtml = `<!-- Set data via JavaScript property (not attribute) -->
 <lui-area-chart id="chart" smooth stacked label-position="top"></lui-area-chart>
 <script>
   document.querySelector('#chart').data = [
@@ -116,6 +116,54 @@ const areaChartHtmlCode = `<!-- Set data via JavaScript property (not attribute)
     { name: 'Unique Visitors', data: [380, 410, 390, 450, 600, 580, 620] },
   ];
 </script>`;
+
+const areaChartReact = `import { useEffect, useRef } from 'react';
+import '@lit-ui/charts/area-chart';
+
+export function MyAreaChart() {
+  const ref = useRef(null);
+  useEffect(() => {
+    if (ref.current) {
+      ref.current.data = [
+        { name: 'Page Views', data: [820, 932, 901, 934, 1290, 1330, 1320] },
+        { name: 'Unique Visitors', data: [380, 410, 390, 450, 600, 580, 620] },
+      ];
+    }
+  }, []);
+  return <lui-area-chart ref={ref} smooth stacked label-position="top" style={{ height: '300px', display: 'block' }} />;
+}`;
+
+const areaChartVue = `<template>
+  <lui-area-chart ref="chart" smooth stacked label-position="top" style="height: 300px; display: block" />
+</template>
+
+<script setup>
+import { ref, onMounted } from 'vue';
+import '@lit-ui/charts/area-chart';
+
+const chart = ref(null);
+onMounted(() => {
+  chart.value.data = [
+    { name: 'Page Views', data: [820, 932, 901, 934, 1290, 1330, 1320] },
+    { name: 'Unique Visitors', data: [380, 410, 390, 450, 600, 580, 620] },
+  ];
+});
+</script>`;
+
+const areaChartSvelte = `<script>
+  import { onMount } from 'svelte';
+  import '@lit-ui/charts/area-chart';
+
+  let chart;
+  onMount(() => {
+    chart.data = [
+      { name: 'Page Views', data: [820, 932, 901, 934, 1290, 1330, 1320] },
+      { name: 'Unique Visitors', data: [380, 410, 390, 450, 600, 580, 620] },
+    ];
+  });
+</script>
+
+<lui-area-chart bind:this={chart} smooth stacked label-position="top" style="height: 300px; display: block" />`;
 
 export function AreaChartPage() {
   return (
@@ -182,10 +230,10 @@ export function AreaChartPage() {
             </p>
             <ExampleBlock
               preview={<AreaChartDemo />}
-              html={areaChartHtmlCode}
-              react={areaChartHtmlCode}
-              vue={areaChartHtmlCode}
-              svelte={areaChartHtmlCode}
+              html={areaChartHtml}
+              react={areaChartReact}
+              vue={areaChartVue}
+              svelte={areaChartSvelte}
             />
           </section>
         </div>
