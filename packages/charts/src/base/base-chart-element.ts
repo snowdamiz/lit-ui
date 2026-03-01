@@ -18,6 +18,7 @@ import { html, css, isServer, type PropertyValues } from 'lit';
 import { property } from 'lit/decorators.js';
 import { TailwindElement, tailwindBaseStyles, dispatchCustomEvent } from '@lit-ui/core';
 import { ThemeBridge } from './theme-bridge.js';
+import { acquireGpuDevice, type RendererTier } from '../shared/webgpu-device.js';
 
 // TYPE-ONLY imports — erased at compile time, never execute at runtime.
 // This is the ONLY safe way to reference ECharts types in an SSR context.
@@ -80,6 +81,22 @@ export abstract class BaseChartElement extends TailwindElement {
    * Triggers dynamic echarts-gl import in _maybeLoadGl().
    */
   @property({ type: Boolean, attribute: 'enable-gl' }) enableGl = false;
+
+  /**
+   * WEBGPU-01: Opt-in attribute for WebGPU rendering.
+   * When set, _detectRenderer() probes navigator.gpu during firstUpdated().
+   * Without this attribute, detection fast-paths to WebGL/Canvas with no async GPU probe.
+   * Mirrors the enable-gl opt-in pattern for echarts-gl.
+   */
+  @property({ type: Boolean, attribute: 'enable-webgpu' }) enableWebGpu = false;
+
+  /**
+   * WEBGPU-01: Active renderer tier — readable after the 'renderer-selected' event fires.
+   * Defaults to 'canvas' (safe fallback). Async detection updates this value during
+   * firstUpdated() after the GPU probe resolves. Do NOT read synchronously before the
+   * 'renderer-selected' event — the value may still be the default 'canvas'.
+   */
+  renderer: RendererTier = 'canvas';
 
   /**
    * STRM-02: Circular buffer capacity — maximum data points retained in buffer mode.
@@ -204,7 +221,8 @@ export abstract class BaseChartElement extends TailwindElement {
     if (isServer) return;
 
     await this.updateComplete;
-    await this._maybeLoadGl();
+    await this._detectRenderer();   // WEBGPU-01 + WEBGPU-03 — runs before GL load
+    await this._maybeLoadGl();      // existing WebGL path unchanged
 
     // RAF ensures :host has been painted and has non-zero dimensions
     requestAnimationFrame(() => this._initChart());
@@ -366,6 +384,52 @@ export abstract class BaseChartElement extends TailwindElement {
         { lazyUpdate: true } as object
       );
     }
+  }
+
+  /**
+   * WEBGPU-01 + WEBGPU-03: Detect the active renderer tier and fire 'renderer-selected'.
+   *
+   * Detection order:
+   * 1. If isServer or navigator unavailable → canvas/webgl fallback (SSR safety)
+   * 2. If enable-webgpu is NOT set → skip async GPU probe, use WebGL if available
+   * 3. If navigator.gpu is available AND enable-webgpu is set → probe adapter
+   * 4. If adapter acquired → call acquireGpuDevice() (WEBGPU-03 singleton) → renderer = 'webgpu'
+   * 5. If adapter null → WebGL/Canvas fallback
+   *
+   * Always dispatches 'renderer-selected' at the end regardless of the tier selected.
+   * Called from firstUpdated() before _maybeLoadGl().
+   */
+  protected async _detectRenderer(): Promise<void> {
+    // Belt-and-suspenders: isServer covers Lit SSR; typeof navigator covers other Node environments.
+    // Must check both because isServer is a compile-time Lit flag; typeof is a runtime guard.
+    if (isServer || typeof navigator === 'undefined' || !navigator.gpu) {
+      this.renderer = this._isWebGLSupported() ? 'webgl' : 'canvas';
+      dispatchCustomEvent(this, 'renderer-selected', { renderer: this.renderer });
+      return;
+    }
+
+    if (!this.enableWebGpu) {
+      // WebGPU not requested — skip the async adapter probe entirely.
+      // This avoids ~10-50ms async GPU startup overhead on charts that won't use WebGPU.
+      this.renderer = this._isWebGLSupported() ? 'webgl' : 'canvas';
+      dispatchCustomEvent(this, 'renderer-selected', { renderer: this.renderer });
+      return;
+    }
+
+    // requestAdapter() resolves to null when no GPU adapter is available.
+    // It NEVER rejects — null means no WebGPU, not an error. Always check for null.
+    const adapter = await navigator.gpu.requestAdapter();
+    if (!adapter) {
+      this.renderer = this._isWebGLSupported() ? 'webgl' : 'canvas';
+      dispatchCustomEvent(this, 'renderer-selected', { renderer: this.renderer });
+      return;
+    }
+
+    // WEBGPU-03: Acquire (or reuse) the page-scoped singleton GPUDevice.
+    // Multiple chart instances safely call this — only the first adapter is used.
+    await acquireGpuDevice(adapter);
+    this.renderer = 'webgpu';
+    dispatchCustomEvent(this, 'renderer-selected', { renderer: this.renderer });
   }
 
   /**
