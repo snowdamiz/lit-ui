@@ -353,14 +353,14 @@ declare global {
         },
         HTMLElement
       >;
-      'lui-line-chart': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
-      'lui-area-chart': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
-      'lui-bar-chart': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
-      'lui-pie-chart': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
-      'lui-scatter-chart': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
-      'lui-heatmap-chart': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
-      'lui-candlestick-chart': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
-      'lui-treemap-chart': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
+      'lui-line-chart': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement> & { smooth?: boolean; zoom?: boolean }, HTMLElement>;
+      'lui-area-chart': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement> & { smooth?: boolean; stacked?: boolean; zoom?: boolean }, HTMLElement>;
+      'lui-bar-chart': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement> & { stacked?: boolean; horizontal?: boolean; 'show-labels'?: boolean; 'color-by-data'?: boolean }, HTMLElement>;
+      'lui-pie-chart': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement> & { 'min-percent'?: number; 'inner-radius'?: string | number; 'center-label'?: string }, HTMLElement>;
+      'lui-scatter-chart': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement> & { bubble?: boolean; 'enable-gl'?: boolean }, HTMLElement>;
+      'lui-heatmap-chart': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement> & { 'x-categories'?: string; 'y-categories'?: string }, HTMLElement>;
+      'lui-candlestick-chart': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement> & { 'bull-color'?: string; 'bear-color'?: string; 'show-volume'?: boolean }, HTMLElement>;
+      'lui-treemap-chart': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement> & { breadcrumb?: boolean; rounded?: boolean }, HTMLElement>;
     }
   }
 }
