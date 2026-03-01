@@ -11,9 +11,12 @@ export type OhlcBar = [number, number, number, number]; // [open, close, low, hi
 
 export type MAConfig = {
   period: number;
-  color: string;
+  /** MA-02: Optional — component assigns default color from CSS token if omitted. */
+  color?: string;
   /** Defaults to 'sma' when not specified. */
   type?: 'sma' | 'ema';
+  /** MA-04: When true, appends type suffix to legend label — e.g., "MA20 (EMA)". */
+  showType?: boolean;
 };
 
 export type CandlestickBarPoint = {
@@ -34,6 +37,10 @@ export type CandlestickOptionProps = {
   showVolume?: boolean;
   /** Moving average overlay configs. Default: [] */
   movingAverages?: MAConfig[];
+  /** Pre-computed MA value arrays (one per MAConfig entry). When provided, skips O(n) _computeSMA/_computeEMA. */
+  maValueArrays?: (number | null)[][];
+  /** Pre-resolved MA colors (one per MAConfig entry). When provided, skips token resolution in builder. */
+  resolvedMAColors?: string[];
 };
 
 /**
@@ -74,6 +81,18 @@ function _computeEMA(closes: number[], period: number): (number | null)[] {
 }
 
 /**
+ * MA-04: Resolve the legend/series name for a moving average config.
+ * Returns "MA{period}" by default. When showType is true, appends the type suffix:
+ * "MA20 (EMA)" or "MA20 (SMA)".
+ */
+function _maLegendName(ma: MAConfig): string {
+  const base = `MA${ma.period}`;
+  if (!ma.showType) return base;
+  const typeSuffix = (ma.type ?? 'sma').toUpperCase();
+  return `${base} (${typeSuffix})`;
+}
+
+/**
  * Build an ECharts option object for a candlestick chart.
  *
  * - showVolume=false: single-grid layout with candlestick + MA overlays
@@ -91,6 +110,7 @@ export function buildCandlestickOption(
   const bearColor = props.bearColor ?? '#ef5350';
   const showVolume = props.showVolume ?? false;
   const movingAverages = props.movingAverages ?? [];
+  const { maValueArrays, resolvedMAColors } = props;
 
   // Derive labels and OHLC data arrays
   const labels = bars.map((b) => b.label);
@@ -118,30 +138,30 @@ export function buildCandlestickOption(
   // close is at ohlc index 1: [open, close, low, high]
   const closes = bars.map((b) => b.ohlc[1]);
 
-  const maSeries = movingAverages.map((ma) => {
+  const maSeries = movingAverages.map((ma, i) => {
     const computed =
-      (ma.type ?? 'sma') === 'ema'
+      (maValueArrays && maValueArrays[i]) ??
+      ((ma.type ?? 'sma') === 'ema'
         ? _computeEMA(closes, ma.period)
-        : _computeSMA(closes, ma.period);
+        : _computeSMA(closes, ma.period));
+
+    const color = (resolvedMAColors && resolvedMAColors[i]) ?? ma.color ?? '#888888';
+    const name = _maLegendName(ma);
 
     return {
-      name: `MA${ma.period}`,
+      name,
       type: 'line',
       xAxisIndex: 0,
       yAxisIndex: 0,
       data: computed,
       smooth: true,
-      lineStyle: {
-        color: ma.color,
-        width: 1.5,
-        opacity: 0.85,
-      },
+      lineStyle: { color, width: 1.5, opacity: 0.85 },
       symbol: 'none',
       tooltip: { show: true },
     };
   });
 
-  const legendData = ['Candlestick', ...movingAverages.map((m) => `MA${m.period}`)];
+  const legendData = ['Candlestick', ...movingAverages.map((m) => _maLegendName(m))];
   const tooltip = { trigger: 'axis', axisPointer: { type: 'cross' } };
   const legend = { data: legendData };
 
