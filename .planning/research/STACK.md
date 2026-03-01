@@ -1,335 +1,232 @@
-# Technology Stack: Charts System (@lit-ui/charts v9.0)
+# Stack Research
 
-**Domain:** WebGL-accelerated chart web component library
-**Researched:** 2026-02-28
-**Confidence:** HIGH (core stack), MEDIUM (echarts-gl/ECharts 6 interop)
-
----
-
-## Critical Version Decision: ECharts 5.6.0 + echarts-gl 2.0.9
-
-**Use ECharts 5.6.0, NOT ECharts 6.0.0.**
-
-ECharts 6.0.0 was released on 2024-07-30 and is the latest version on npm. However, **echarts-gl 2.0.9 only supports ECharts ^5.1.2** (peerDependencies: `"echarts": "^5.1.2"`). No echarts-gl 3.x for ECharts 6 exists as of 2026-02-28. The `ecomfe/echarts-gl` GitHub issues tracker shows community requests for ECharts 6 support, but the official repo has no announced roadmap for it. The last echarts-gl release was v2.0.8 on 2024-08-06.
-
-**Consequence:** The @lit-ui/charts package must pin ECharts 5.6.0 and echarts-gl 2.0.9 until an official echarts-gl 3.x release targets ECharts 6. This is documented as a known technical constraint so that a future upgrade path is clear.
+**Domain:** WebGPU chart rendering — adding WebGPU path, 1M+ streaming, and moving average overlay to @lit-ui/charts (v10.0)
+**Researched:** 2026-03-01
+**Confidence:** HIGH (core findings); MEDIUM (ChartGPU Shadow DOM integration)
 
 ---
 
-## Recommended Stack
+## Context: What Already Exists (Do Not Re-Research)
+
+This is an additive milestone on top of the working v9.0 stack. These are validated and must not change:
+
+| Technology | Version | Status |
+|------------|---------|--------|
+| ECharts | 5.6.0 (pinned) | In production — keep pinned, see Version Decision below |
+| echarts-gl | 2.0.9 (optional peer dep, dynamic import) | In production |
+| BaseChartElement | — | Abstract Lit base class; all 8 chart types extend it |
+| `_streamingMode = 'appendData'` | — | Line/Area use native `appendData`; all others use circular buffer |
+| ThemeBridge | — | getComputedStyle CSS token resolution |
+| Per-chart registry files | — | ~135KB gzipped via tree-shaking |
+
+---
+
+## Critical Version Decision: Keep ECharts 5.6.0 Pinned
+
+**ECharts 6.0.0 shipped July 2025 and is the current npm latest — do NOT upgrade for v10.0.**
+
+echarts-gl 2.x (latest: 2.0.8, Aug 2024) only supports ECharts `^5.1.2`. No echarts-gl 3.x targeting ECharts 6 exists as of 2026-03-01. Upgrading ECharts to 6.0 would:
+- Break the WebGL scatter path (`enable-gl` attribute, ScatterGLChart) — the component's primary 500K+ point differentiator
+- Require full visual regression of all 8 chart types (ECharts 6 changed default theme, legend position, label overflow behavior)
+- Require a separate `echarts/theme/v5.js` import to restore the previous visual baseline
+
+**Action:** Keep `echarts: "^5.6.0"` and `echarts-gl: "^2.0.9"` pinned in `packages/charts/package.json`. Create a future v11.x milestone for ECharts 6 + echarts-gl 3.x upgrade when echarts-gl publishes ECharts 6 support.
+
+---
+
+## New Stack Additions for v10.0
 
 ### Core Technologies
 
 | Technology | Version | Purpose | Why Recommended |
 |------------|---------|---------|-----------------|
-| echarts | ^5.6.0 | Chart engine — Canvas/SVG rendering, 40+ chart types, theming, streaming | Latest stable version compatible with echarts-gl 2.x. ECharts 5 provides full tree-shaking support via `echarts/core`, TypeScript built-ins, ESM, and Vite-safe bundling. 63k+ GitHub stars, Apache TLP, actively maintained. Built-in TypeScript types — no @types/echarts needed. |
-| echarts-gl | ^2.0.9 | WebGL acceleration — scatterGL, linesGL, bars3D, globeGL, surface3D | Required for 1M+ point scatter plots and real-time streaming at high frequency. peerDep: `echarts ^5.1.2`. Last published: 2024-08-06. Provides `Scatter3DChart`, `ScatterGLChart`, `LinesGLChart` via tree-shaking. Internally uses `zrender ^5.1.1` and `claygl ^1.2.1`. |
+| `navigator.gpu` (WebGPU API) | Native browser — no npm package | WebGPU tier detection in `_initChart()` | Zero-dependency feature detection. `navigator.gpu.requestAdapter()` returns `null` on unsupported browsers — clean null-check gates the entire WebGPU path. Chrome 113+, Edge 113+, Firefox 141+ (Windows/macOS), Safari 26 — approximately 85%+ desktop browser coverage as of late 2025. Mobile: Chrome Android works; iOS requires Safari/iOS 26+. Linux Firefox WebGPU still behind flag (2026-03-01). |
+| ChartGPU | 0.3.2 | WebGPU-native renderer for Line/Area at 1M+ points | Only dedicated WebGPU charting library as of 2026 (MIT, Feb 2026). 50M+ points at 60fps benchmark, native `appendData()` for streaming, supports line/area/bar/scatter/candlestick series types, device loss recovery, and canvas lifecycle management. Used as an opt-in parallel renderer for Line/Area charts when WebGPU is detected — avoids building a custom GPU renderer from scratch. |
 
 ### Supporting Libraries
 
 | Library | Version | Purpose | When to Use |
 |---------|---------|---------|-------------|
-| zrender | (bundled with echarts) | 2D canvas/SVG rendering engine underneath ECharts | Included as transitive dep; do NOT import directly |
-| claygl | (bundled with echarts-gl) | WebGL 3D rendering engine underneath echarts-gl | Included as transitive dep; do NOT import directly |
+| No new npm library for MA | — | SMA + EMA computation is already in `candlestick-option-builder.ts` | The existing `_computeSMA` and `_computeEMA` are correct but O(n). For streaming, upgrade to an O(1) circular-buffer state machine (see Implementation Notes). Pure TypeScript — no npm dependency needed. |
 
-### Development Tools
+### Development Tools (No Changes)
 
-| Tool | Purpose | Notes |
-|------|---------|-------|
-| vite | Build + dev server | Use existing `@lit-ui/vite-config` workspace package. Same Vite 7.x config used by all other packages. |
-| vite-plugin-dts | TypeScript declarations | Already used across all packages. |
-| typescript | Type checking | Project uses ^5.9.3. ECharts 5 provides built-in types — no @types/echarts. |
-| @tailwindcss/vite | Tailwind v4 Vite plugin | For theming tokens if needed; follow existing package pattern. |
-
----
-
-## Package Configuration
-
-### package.json for @lit-ui/charts
-
-```json
-{
-  "name": "@lit-ui/charts",
-  "type": "module",
-  "main": "dist/index.js",
-  "module": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
-    }
-  },
-  "sideEffects": true,
-  "dependencies": {
-    "echarts": "^5.6.0",
-    "echarts-gl": "^2.0.9"
-  },
-  "peerDependencies": {
-    "lit": "^3.0.0",
-    "@lit-ui/core": "^1.0.0"
-  },
-  "devDependencies": {
-    "@lit-ui/core": "workspace:*",
-    "@lit-ui/typescript-config": "workspace:*",
-    "@lit-ui/vite-config": "workspace:*",
-    "@tailwindcss/vite": "^4.1.18",
-    "lit": "^3.3.2",
-    "tailwindcss": "^4.1.18",
-    "typescript": "^5.9.3",
-    "vite": "^7.3.1",
-    "vite-plugin-dts": "^4.5.4"
-  }
-}
-```
-
-**Rationale for bundling echarts instead of peer dep:** ECharts is an internal implementation detail of the chart components, not a framework the user is expected to interact with directly. Users call `<lui-line-chart .data=${...}>`, not `echarts.init()`. Bundling avoids version conflicts and enables tree-shaking to happen at the @lit-ui/charts build level. This matches how TanStack Table is handled in @lit-ui/data-table.
-
-**pnpm peerDependencyRules note:** echarts-gl 2.0.9 was published before echarts 5.6.0, so its peerDep range (`^5.1.2`) will satisfy 5.6.0 — no override needed. pnpm strict mode will not flag this as unmet.
+The existing Vite 7 + TypeScript 5.9 + pnpm workspace toolchain is unchanged. No new dev tools needed.
 
 ---
 
 ## Installation
 
 ```bash
-# In packages/charts directory
-pnpm add echarts@^5.6.0 echarts-gl@^2.0.9
+# ChartGPU — add as a regular dependency to @lit-ui/charts
+# (same pattern as echarts: bundled, not a peer dep)
+pnpm add chartgpu --filter @lit-ui/charts
+```
 
-# Dev dependencies (follow existing package pattern)
-pnpm add -D lit@^3.3.2 vite@^7.3.1 typescript@^5.9.3 vite-plugin-dts@^4.5.4 @tailwindcss/vite@^4.1.18 tailwindcss@^4.1.18
+**CRITICAL: ChartGPU must use a dynamic import only — never top-level.**
+Same constraint that applies to echarts-gl. Static import crashes SSR environments (Node.js has no `navigator.gpu`):
+
+```typescript
+// CORRECT — lazy, SSR-safe, same pattern as echarts-gl
+const { ChartGPU } = await import('chartgpu');
+
+// WRONG — crashes SSR (navigator is undefined in Node.js)
+import { ChartGPU } from 'chartgpu';
 ```
 
 ---
 
-## Tree-Shaking Import Patterns
+## Implementation Notes (Per Feature)
 
-ECharts 5 requires explicit tree-shaking imports via `echarts/core`. Do NOT use `import * as echarts from 'echarts'` in production code — this imports the full ~1MB minified bundle (~300-400KB gzip). Tree-shaken per-chart builds reduce this to ~135KB gzip for typical chart sets.
+### Feature 1: WebGPU Auto-Detection + Three-Tier Renderer
 
-### Base pattern (all chart components use this)
-
-```typescript
-import * as echarts from 'echarts/core';
-import { CanvasRenderer } from 'echarts/renderers';
-import {
-  TitleComponent,
-  TooltipComponent,
-  GridComponent,
-  LegendComponent,
-  DatasetComponent,
-  TransformComponent,
-} from 'echarts/components';
-import { LabelLayout, UniversalTransition } from 'echarts/features';
-
-echarts.use([
-  CanvasRenderer,
-  TitleComponent,
-  TooltipComponent,
-  GridComponent,
-  LegendComponent,
-  DatasetComponent,
-  TransformComponent,
-  LabelLayout,
-  UniversalTransition,
-]);
-```
-
-### Per chart-type imports
+**No library needed for detection.** Use native `navigator.gpu` with null-check pattern:
 
 ```typescript
-// Line / Area charts
-import { LineChart } from 'echarts/charts';
-
-// Bar / Column charts
-import { BarChart } from 'echarts/charts';
-
-// Scatter / Bubble charts (Canvas fallback)
-import { ScatterChart } from 'echarts/charts';
-
-// Pie / Donut charts
-import { PieChart } from 'echarts/charts';
-
-// Heatmap charts
-import { HeatmapChart } from 'echarts/charts';
-
-// Candlestick / OHLC charts
-import { CandlestickChart } from 'echarts/charts';
-
-// Treemap charts
-import { TreemapChart } from 'echarts/charts';
-```
-
-### WebGL chart-type imports (echarts-gl)
-
-```typescript
-// WebGL scatter for 1M+ points
-import { ScatterGLChart } from 'echarts-gl/charts';
-
-// WebGL lines for large line datasets
-import { LinesGLChart } from 'echarts-gl/charts';
-
-// Required 3D/GL grid component
-import { Grid3DComponent } from 'echarts-gl/components';
-
-echarts.use([ScatterGLChart, LinesGLChart, Grid3DComponent]);
-```
-
-### TypeScript option typing pattern
-
-```typescript
-import type {
-  LineSeriesOption,
-  BarSeriesOption,
-  ScatterSeriesOption,
-} from 'echarts/charts';
-import type {
-  TitleComponentOption,
-  TooltipComponentOption,
-  GridComponentOption,
-  LegendComponentOption,
-} from 'echarts/components';
-import type { ComposeOption } from 'echarts/core';
-
-// Compose a narrow type for each chart component
-type LineChartOption = ComposeOption<
-  | LineSeriesOption
-  | TitleComponentOption
-  | TooltipComponentOption
-  | GridComponentOption
-  | LegendComponentOption
->;
-```
-
----
-
-## Lit.js Integration Pattern
-
-### Lifecycle mapping for Shadow DOM
-
-```typescript
-import { LitElement, html } from 'lit';
-import { customElement, property, query } from 'lit/decorators.js';
-import * as echarts from 'echarts/core';
-
-@customElement('lui-line-chart')
-export class LuiLineChart extends TailwindElement {
-  @property({ type: Array }) data: DataPoint[] = [];
-  @query('.chart-container') private _container!: HTMLDivElement;
-
-  private _chart: echarts.ECharts | null = null;
-  private _resizeObserver: ResizeObserver | null = null;
-
-  override firstUpdated(): void {
-    // echarts.init must receive a DOM element — only available after firstUpdated
-    // Shadow DOM note: pass the element directly, not document.getElementById
-    this._chart = echarts.init(this._container);
-    this._chart.setOption(this._buildOption());
-
-    // ResizeObserver on the host element — works correctly inside Shadow DOM
-    // Native ResizeObserver is sufficient; no polyfill needed for modern browsers
-    this._resizeObserver = new ResizeObserver(() => {
-      this._chart?.resize();
-    });
-    this._resizeObserver.observe(this._container);
+// In BaseChartElement or a new RendererDetector utility
+async function detectRendererTier(): Promise<'webgpu' | 'webgl' | 'canvas'> {
+  // Tier 1: WebGPU — Chrome 113+, Edge 113+, Firefox 141+, Safari 26
+  if (typeof navigator !== 'undefined' && navigator.gpu) {
+    const adapter = await navigator.gpu.requestAdapter();
+    // null adapter = no hardware WebGPU support
+    // isFallbackAdapter: always false in Chrome 136 (not yet implemented) — skip check
+    if (adapter) return 'webgpu';
   }
-
-  override updated(changed: Map<string, unknown>): void {
-    if (this._chart && changed.has('data')) {
-      this._chart.setOption(this._buildOption());
+  // Tier 2: WebGL — existing probe from _isWebGLSupported()
+  try {
+    const canvas = document.createElement('canvas');
+    if (canvas.getContext('webgl2') || canvas.getContext('webgl')) {
+      return 'webgl';
     }
-  }
-
-  override disconnectedCallback(): void {
-    super.disconnectedCallback();
-    this._resizeObserver?.disconnect();
-    this._chart?.dispose();
-    this._chart = null;
-  }
-
-  private _buildOption(): echarts.EChartsOption {
-    // build option from this.data and this properties
-    return { /* ... */ };
-  }
-
-  override render() {
-    return html`<div class="chart-container" style="width:100%;height:100%"></div>`;
-  }
+  } catch { /* ignore */ }
+  // Tier 3: Canvas — always available
+  return 'canvas';
 }
 ```
 
-**Key Shadow DOM notes:**
-- Pass the container div reference directly to `echarts.init()` — do not use `document.getElementById()` which cannot see into Shadow DOM.
-- Observe `this._container` (the inner div), not `this` (the host element), so resize events trigger on the actual chart canvas.
-- Call `this._chart.dispose()` in `disconnectedCallback` — ECharts holds a WebGL context per instance. Without disposal, WebGL contexts accumulate (browser limit: 16 concurrent).
-- `isServer` guard from TailwindElement base class: call `echarts.init` only after `firstUpdated` runs on the client. ECharts has no SSR mode — chart components should render a placeholder server-side.
+**Integration with BaseChartElement:**
+- Add `enable-webgpu` boolean attribute (consistent with existing `enable-gl` attribute pattern)
+- Call `detectRendererTier()` once in `_maybeLoadWebGPU()`, called from `firstUpdated()` before the RAF fires
+- Store result in `protected _rendererTier: 'webgpu' | 'webgl' | 'canvas' = 'canvas'`
+- Only Line and Area charts enter the ChartGPU path when `_rendererTier === 'webgpu'`
+- Dispatch `webgpu-active` custom event when WebGPU path activates (mirrors existing `webgl-unavailable` event)
 
----
+**Shadow DOM note:** `navigator.gpu.requestAdapter()` is a JavaScript call — Shadow DOM does not affect it. ChartGPU's `ChartGPU.create(container, options)` requires a real DOM container. Pass `this.shadowRoot?.querySelector('#chart')` (the existing inner `<div id="chart">`) directly. ChartGPU creates its own `<canvas>` inside the provided container — this works inside an open-mode Shadow DOM, same way ECharts does today. Confidence: MEDIUM (no explicit ChartGPU Shadow DOM docs; inferred from same DOM-container pattern used by ECharts which already works in this codebase).
 
-## WebGL Rendering Strategy
+### Feature 2: ChartGPU as Parallel Renderer for Line/Area
 
-### Tiered rendering approach
+ChartGPU is used alongside ECharts — not replacing it. Architecture:
 
-| Dataset Size | Chart Type | Renderer | Rationale |
-|---|---|---|---|
-| < 10K points | All 2D charts | Canvas (CanvasRenderer) | Default ECharts renderer, best DX |
-| 10K–500K points | Scatter, Lines | Canvas + `large: true` | ECharts progressive rendering handles this range |
-| 500K–1M+ points | Scatter, Bubble | ScatterGLChart (echarts-gl) | WebGL required; Canvas cannot sustain 60fps |
-| Real-time streaming | Line, Area | Canvas + `appendData` API | ECharts streaming API works well with Canvas |
-| 3D datasets | Globe, Surface | echarts-gl 3D components | Only use case that truly needs 3D |
+```
+BaseChartElement._initChart()
+  ↓
+  if enable-webgpu AND _rendererTier === 'webgpu' AND _streamingMode === 'appendData':
+    → _initChartGPU()    ← new path: ChartGPU instance
+  else:
+    → _initECharts()    ← existing path: ECharts instance (unchanged)
+```
 
-**Important:** ECharts Canvas renderer with `large: true` and `progressive` options handles up to ~500K points smoothly before WebGL becomes necessary. Do not force WebGL for all charts — each WebGL context consumes GPU resources and the browser limits contexts to ~16 per page.
+Only `LuiLineChart` and `LuiAreaChart` enter the ChartGPU path. All other 6 chart types (Bar, Pie, Scatter/WebGL, Heatmap, Candlestick, Treemap) continue using ECharts exclusively.
 
-### WebGL context budget
+**Disposal:** ChartGPU exposes `chart.dispose()`. Call it in `disconnectedCallback()` before `super.disconnectedCallback()` — same as the existing `_barRafId` cancellation pattern in `LuiCandlestickChart`.
 
-Each chart instance using echarts-gl consumes one WebGL context. With a 16-context browser limit:
-- Allow max ~8 simultaneous WebGL charts (leaving headroom for other page uses)
-- Canvas-rendered charts consume zero WebGL contexts — prefer Canvas when dataset size allows
-- Call `chart.dispose()` promptly when chart components are removed from DOM
+**ThemeBridge gap:** ChartGPU has its own color configuration API that does not consume ECharts theme objects. In v10.0, accept this gap — wire CSS token colors into ChartGPU's color config at init time. Full ThemeBridge integration for dark mode toggling on ChartGPU can be a v10.1 refinement.
 
----
+### Feature 3: ECharts appendData at 1M+ Points
 
-## Bundle Size Guidance
+**No ECharts upgrade needed.** ECharts 5.6.0 supports 1M+ point incremental rendering via `appendData`. Apply these specific optimizations:
 
-| Import Strategy | Approx. Size (gzip) | Use When |
-|---|---|---|
-| `import * as echarts from 'echarts'` | ~300–400 KB | Never in production |
-| Tree-shaken single chart type (e.g., line + grid + tooltip) | ~135 KB | Standard usage |
-| Tree-shaken full LitUI chart suite (all 8 chart types) | ~250–320 KB est. | Full @lit-ui/charts install |
-| echarts-gl added to above | +~200 KB est. | When WebGL scatter/lines needed |
+**TypedArray for point data (reduces GC pressure):**
 
-**Recommendation:** The @lit-ui/charts package is an opt-in heavy dep. Document the bundle size in the README so users know what they are importing. The package pattern (separate `@lit-ui/charts`, not bundled into `@lit-ui/core`) already isolates these heavy deps.
+```typescript
+// Current — plain JS array:
+this._chart.appendData({ seriesIndex: 0, data: points });
 
-Users who only need pie and bar charts can import just those chart components — Vite will tree-shake the rest at their app build time if the @lit-ui/charts package is built with `preserveModules: true` (or each chart type is a separate entry point).
+// Optimized for 1M+ — TypedArray avoids heap allocation:
+const floatData = new Float64Array(points.flatMap(([x, y]) => [x, y]));
+this._chart.appendData({ seriesIndex: 0, data: floatData });
+```
 
-**Architecture recommendation:** Consider per-chart entry points in the package exports:
-
-```json
+**Progressive rendering configuration (mandatory for 1M+ points):**
+Set on the Line/Area series option at init:
+```typescript
 {
-  "exports": {
-    ".": "./dist/index.js",
-    "./line-chart": "./dist/line-chart.js",
-    "./bar-chart": "./dist/bar-chart.js",
-    "./scatter-chart": "./dist/scatter-chart.js",
-    "./pie-chart": "./dist/pie-chart.js"
-  }
+  type: 'line',
+  progressive: 2000,
+  progressiveThreshold: 500000,
+  animation: false   // MUST be false — animations block the rendering thread at high data rates
 }
 ```
 
-This lets users import `import '@lit-ui/charts/line-chart'` and get only that chart's deps tree-shaken in their final bundle.
+Without `progressive`/`progressiveThreshold`, ECharts renders synchronously on `appendData` and blocks the main thread at ~100K+ points.
+
+**CRITICAL-03 constraint unchanged:** `setOption` must never be called after `appendData` has been used on a series. This is already enforced in BaseChartElement. Do not relax this constraint.
+
+**Important: Do NOT add `progressive` to Candlestick.** ECharts bug #13197: progressive rendering breaks grid boundary tracking when `dataZoom` is active. Candlestick always has `dataZoom` — progressive would cause visible rendering glitches on zoom.
+
+### Feature 4: Moving Average for Streaming Candlestick
+
+**No new npm library needed.** The existing `_computeSMA` and `_computeEMA` in `candlestick-option-builder.ts` are correct for batch data but are O(n) — they iterate the full close array on every flush. At 1M bars this becomes catastrophic.
+
+**Solution: O(1) per-update streaming MA state (pure TypeScript):**
+
+```typescript
+interface StreamingMAState {
+  period: number;
+  type: 'sma' | 'ema';
+  // SMA: circular window buffer of close prices
+  windowBuf: Float64Array;
+  windowIdx: number;
+  windowSum: number;
+  filledCount: number;
+  // EMA: single last-ema value (no window buffer needed)
+  lastEma: number | null;
+}
+
+// O(1) SMA update:
+function updateSMA(state: StreamingMAState, newClose: number): number | null {
+  const outgoing = state.windowBuf[state.windowIdx];
+  state.windowBuf[state.windowIdx] = newClose;
+  state.windowIdx = (state.windowIdx + 1) % state.period;
+  state.windowSum += newClose - outgoing;
+  state.filledCount = Math.min(state.filledCount + 1, state.period);
+  if (state.filledCount < state.period) return null;  // warm-up
+  return state.windowSum / state.period;
+}
+
+// O(1) EMA update:
+function updateEMA(state: StreamingMAState, newClose: number): number | null {
+  if (state.lastEma === null) {
+    // Use first close as seed until we have enough data for a proper seed
+    state.lastEma = newClose;
+    return null;  // or return seed — matches current _computeEMA warm-up behavior
+  }
+  const k = 2 / (state.period + 1);
+  state.lastEma = newClose * k + state.lastEma * (1 - k);
+  return state.lastEma;
+}
+```
+
+**Streaming MA code path is separate from batch MA.** The batch path (`buildCandlestickOption`) is unchanged — used when `this.data` is set statically. The streaming path requires:
+1. `StreamingMAState[]` stored in `LuiCandlestickChart` (one per MAConfig entry)
+2. On each `pushData()` call: update OHLC buffer AND update each MAState
+3. In `_flushBarUpdates()`: call `appendData` for both seriesIndex 0 (candlestick) AND each MA line series (seriesIndex 1+N)
+4. Change `_flushBarUpdates` to route through `appendData` for streaming mode, not `setOption`
+
+**CRITICAL-03 applies to candlestick streaming too:** Once streaming MA via `appendData` starts, `setOption` cannot rebuild the full option without wiping streamed MA data. This means changing `movingAverages` attribute after streaming starts requires a chart reinit (document this as a constraint in the skill file).
 
 ---
 
 ## Alternatives Considered
 
-| Recommended | Alternative | When to Use Alternative |
-|-------------|-------------|-------------------------|
-| ECharts 5.6.0 | ECharts 6.0.0 | Use ECharts 6 when echarts-gl 3.x is released with ECharts 6 support. Monitor [ecomfe/echarts-gl releases](https://github.com/ecomfe/echarts-gl/releases). |
-| ECharts 5.6.0 | Plotly.js + regl | Plotly is better for scientific/statistical charts (histograms, violin plots, contours). However, Plotly hits a hard 8-chart WebGL context limit and has larger full bundle (~3MB). Not web-component native. |
-| ECharts 5.6.0 | deck.gl | Use deck.gl only for geospatial (map-based) visualizations. deck.gl is not designed for standard business charts (line, bar, pie). |
-| ECharts 5.6.0 | Observable Plot | Observable Plot is SVG/Canvas only — no WebGL path. Excellent for exploratory/statistical work but not suited for 1M-point performance requirements. |
-| ECharts 5.6.0 | D3.js | D3 is a primitive — not a chart library. Building chart components on D3 requires implementing every chart type from scratch. ECharts provides chart types ready-made with theming, tooltips, and legends. |
-| ECharts 5.6.0 | Highcharts | Highcharts is commercial (requires license for non-personal use). ECharts is Apache 2.0. |
-| echarts-gl 2.0.9 | regl directly | regl is what echarts-gl uses internally. Using it directly means reimplementing all the chart-to-WebGL mapping logic. Not worth it when echarts-gl wraps it correctly. |
-| Canvas CanvasRenderer | SVGRenderer | Use SVGRenderer only when SVG export is a hard requirement (accessibility/print). Canvas is ~2-5x faster for large datasets. SVG creates one DOM element per data point — unusable at 10K+ points. |
+| Recommended | Alternative | Why Not |
+|-------------|-------------|---------|
+| ChartGPU 0.3.2 for WebGPU line/area | Raw WebGPU WGSL shaders written from scratch | ChartGPU is purpose-built, MIT licensed, handles GPU buffer management, device loss recovery, and canvas lifecycle. Writing equivalent shader code is 3–6 weeks of low-level GPU work for marginal control gain. |
+| `navigator.gpu` feature detection (no library) | wgpu-web (Rust/WASM wgpu port) | wgpu-web adds 500KB+ WASM binary, requires SharedArrayBuffer (cross-origin isolation headers), provides no charting abstractions — overhead without benefit for chart rendering. |
+| In-source O(1) MA circular buffer | `moving-averages` npm (4.0.0) | Package adds ~3KB for SMA/EMA that is already partially implemented in this codebase. The streaming O(1) version is ~30 lines of TypeScript. No justification for the additional dependency. |
+| ECharts 5.6.0 pinned | Upgrade to ECharts 6.0 | echarts-gl 2.x incompatible with ECharts 6.x — would break the `enable-gl` WebGL scatter path and require full visual regression. Separate future milestone. |
+| ChartGPU for Line/Area only (partial WebGPU) | ChartGPU for all 8 chart types | ChartGPU 0.3.2 lacks heatmap (density mode is scatter-only), treemap, and candlestick with volume panel. ECharts handles these at higher fidelity. Bounded scope reduces integration risk. |
+| ECharts appendData + TypedArray + progressive | deck.gl / Observable Plot for 1M+ Line | deck.gl is a geospatial library, not a time-series chart library. Observable Plot has no WebGPU path and no appendData streaming API. Neither integrates with ECharts' existing ThemeBridge, DataZoom, or tooltip system. |
 
 ---
 
@@ -337,41 +234,44 @@ This lets users import `import '@lit-ui/charts/line-chart'` and get only that ch
 
 | Avoid | Why | Use Instead |
 |-------|-----|-------------|
-| `import * as echarts from 'echarts'` (full import) | Imports entire ~1MB bundle including chart types you don't use | Tree-shaking via `import * as echarts from 'echarts/core'` + per-chart imports |
-| `@types/echarts` | Now a stub — ECharts 5 ships its own TypeScript types | Built-in types from `echarts` package |
-| `window.resize` event for chart resize | Doesn't fire when container resizes without window resizing (e.g., flexbox layout changes, sidebar toggle) | `ResizeObserver` on the chart container element |
-| ECharts 6.0.0 | No echarts-gl equivalent for WebGL acceleration | ECharts 5.6.0 until echarts-gl 3.x is available |
-| Multiple echarts instances with WebGL per page without disposal | Browser WebGL context limit is ~16 — contexts accumulate without `chart.dispose()` | Dispose on `disconnectedCallback`, prefer Canvas renderer for non-WebGL chart types |
-| echarts-gl for ALL chart types | WebGL context budget is finite; Canvas handles most 2D charts well | Reserve echarts-gl for scatter/lines with 500K+ points only |
-| plotly.js | 8 WebGL context hard limit, ~3MB bundle, not web-component native | ECharts for business charts |
-| chart.js | No WebGL path, weak TypeScript types, limited chart types vs ECharts | ECharts for this use case |
-| LightningChart JS / SciChart.js | Commercial licenses, high per-developer cost | ECharts (Apache 2.0) is sufficient for stated requirements |
+| `import { ChartGPU } from 'chartgpu'` at top level | `navigator.gpu` is undefined in Node.js — crashes SSR. Same failure mode as a top-level `import 'echarts-gl'`. | `await import('chartgpu')` inside `_initChartGPU()`, gated behind `isServer` guard from BaseChartElement. |
+| ECharts 6.0.0 | echarts-gl 2.0.9 only supports ECharts 5.x. Upgrading breaks the WebGL scatter path (enable-gl). | Keep ECharts 5.6.0 pinned. Create a separate v11.x milestone for ECharts 6 + echarts-gl 3.x. |
+| `progressive: true` on Candlestick series | ECharts bug #13197: progressive rendering breaks grid boundary tracking with active DataZoom. Candlestick always has DataZoom. Causes visible rendering glitches on zoom. | Do not set `progressive`/`progressiveThreshold` on CandlestickChart. Use existing `maxPoints` circular buffer for memory control. |
+| `setOption` after `appendData` streaming starts | CRITICAL-03: wipes all previously streamed data silently. Already enforced in BaseChartElement. Applies to streaming MA series (MA line series via appendData) as well. | Keep appendData and setOption paths strictly separate. Document streaming MA as a one-way mode in the skill file. |
+| `adapter.isFallbackAdapter` as primary WebGPU quality gate | Chrome 136 docs: `isFallbackAdapter` is always `false` currently — Chrome has not yet shipped software fallback adapters. Cannot reliably distinguish hardware vs. software WebGPU. | Use `requestAdapter()` returning non-null as the primary gate. If performance-critical filtering of software GPU is needed later, use `adapter.limits` to detect low-capability devices. |
+| Replacing ECharts with ChartGPU for non-Line/Area types | ChartGPU 0.3.2 does not have heatmap, treemap, or volume-panel candlestick. Replacing working ECharts code is unnecessary scope. | ChartGPU as opt-in parallel renderer for Line/Area only. |
 
 ---
 
 ## Stack Patterns by Variant
 
-**If chart needs Canvas rendering only (line, bar, area, pie, heatmap, candlestick, treemap):**
-- Import `CanvasRenderer` from `echarts/renderers`
-- Import only the specific chart type from `echarts/charts`
-- Do NOT import echarts-gl
-- Zero WebGL context usage
+**If `enable-webgpu` attribute is set AND WebGPU is available AND chart is Line or Area:**
+- Use ChartGPU instance, skip ECharts init for this chart
+- Route `pushData()` to `ChartGPU.appendData()`
+- Wire CSS token colors into ChartGPU color config at init
+- Dispatch `webgpu-active` event
 
-**If chart needs WebGL (scatter/bubble with 500K+ points, real-time lines):**
-- Import `CanvasRenderer` from `echarts/renderers` (still needed as base renderer)
-- Import `ScatterGLChart` or `LinesGLChart` from `echarts-gl/charts`
-- Call `echarts.use([ScatterGLChart, Grid3DComponent])` at module level
-- Track WebGL context usage — warn if page has >8 active WebGL charts
+**If `enable-webgpu` attribute is set AND WebGPU is NOT available:**
+- Fall through to the existing `enable-gl` / Canvas check
+- Do NOT dispatch `webgpu-active` — chart runs on ECharts as before
 
-**If user's project uses ECharts directly:**
-- Advise against sharing the ECharts instance between @lit-ui/charts internals and user code
-- @lit-ui/charts bundles echarts as a dependency — two ECharts instances on one page is fine but wastes ~135KB
-- Future: expose `echarts` instance via a property for advanced users who need direct access
+**If chart is Line or Area AND WebGPU NOT available or attribute not set:**
+- Use ECharts appendData path with TypedArray + `progressive: 2000` + `progressiveThreshold: 500000`
+- `animation: false` mandatory on the series
 
-**If SSR is required:**
-- Return a placeholder `<div class="chart-placeholder">` server-side using `isServer` guard
-- ECharts cannot render in Node.js without a DOM (no SSR mode for canvas)
-- ECharts 5.3+ offers SVG string rendering for Node.js, but this is complex to integrate with the Lit SSR pipeline — out of scope for v9.0
+**If chart is Candlestick AND `moving-averages` attribute has entries AND streaming via `pushData()`:**
+- Maintain `StreamingMAState[]` in `LuiCandlestickChart` (one per MAConfig)
+- Update MA state O(1) per bar in `pushData()`
+- Use `appendData` for both candlestick series AND MA line series in `_flushBarUpdates()`
+- Document: changing `movingAverages` attribute after streaming starts requires chart reinit
+
+**If chart is Candlestick AND `moving-averages` attribute has entries AND data set statically (no streaming):**
+- Use existing `buildCandlestickOption` batch path — `_computeSMA`/`_computeEMA` are fine for batch
+- No changes needed
+
+**If chart is Bar, Pie, Scatter (WebGL), Heatmap, Treemap:**
+- No changes from v9.0 — WebGPU path does not apply to these types
+- Circular buffer + `setOption` stays unchanged
 
 ---
 
@@ -379,37 +279,27 @@ This lets users import `import '@lit-ui/charts/line-chart'` and get only that ch
 
 | Package | Compatible With | Notes |
 |---------|-----------------|-------|
-| echarts@^5.6.0 | echarts-gl@^2.0.9 | echarts-gl peerDep is `^5.1.2` — satisfied by 5.6.0 |
-| echarts@^5.6.0 | lit@^3.3.2 | No direct dependency; echarts is DOM-agnostic |
-| echarts@^5.6.0 | vite@^7.3.1 | ECharts 5.5+ explicitly tested against Vite |
-| echarts@^5.6.0 | typescript@^5.9.3 | Built-in types; `ComposeOption` utility works with TS 5.x |
-| echarts@6.0.0 | echarts-gl@^2.0.9 | NOT compatible — do not use ECharts 6 until echarts-gl 3.x exists |
-| echarts-gl@^2.0.9 | claygl@^1.2.1 | Bundled transitive dep — do not import separately |
-| echarts-gl@^2.0.9 | zrender@^5.1.1 | Bundled transitive dep — do not import separately |
+| echarts@5.6.0 | echarts-gl@2.0.9 | Pinned pair — do not upgrade echarts independently. |
+| echarts@5.6.0 | chartgpu@0.3.2 | No shared dependency — independent renderers sharing only a DOM container. |
+| chartgpu@0.3.2 | Chrome 113+, Edge 113+, Firefox 141+, Safari 26 | Requires `navigator.gpu`. Build WebGPU detection gates usage. Linux Firefox still behind flag (2026-03-01). |
+| echarts@6.0.0 | echarts-gl@2.0.9 | NOT compatible. Do not use ECharts 6 until echarts-gl 3.x is available. |
 
 ---
 
 ## Sources
 
-### HIGH Confidence (official sources, verified)
-
-- [Apache ECharts GitHub Releases](https://github.com/apache/echarts/releases) — v6.0.0 released 2024-07-30; v5.6.0 released 2023-12-28
-- [ecomfe/echarts-gl GitHub](https://github.com/ecomfe/echarts-gl) — v2.0.9 latest; peerDep `"echarts": "^5.1.2"` confirmed from raw package.json
-- [ecomfe/echarts-gl Releases](https://github.com/ecomfe/echarts-gl/releases) — v2.0.8 released 2024-08-06; no v3.x announced
-- [ECharts Import Handbook](https://apache.github.io/echarts-handbook/en/basics/import/) — tree-shaking patterns, CanvasRenderer vs SVGRenderer, TypeScript ComposeOption
-- [ECharts 6 Upgrade Guide](https://echarts.apache.org/handbook/en/basics/release-note/v6-upgrade-guide/) — breaking changes from v5 to v6
-- [ECharts Changelog](https://echarts.apache.org/en/changelog.html) — v6 features and v5.6 features
-
-### MEDIUM Confidence (WebSearch, multiple corroborating sources)
-
-- [DEV Community: ECharts + Lit TypeScript](https://dev.to/manufac/using-apache-echarts-with-lit-and-typescript-1597) — lifecycle pattern: `firstUpdated` init, `updated` setOption, `disconnectedCallback` dispose + ResizeObserver disconnect
-- [DEV Community: ECharts bundle size optimization](https://dev.to/manufac/using-apache-echarts-with-react-and-typescript-optimizing-bundle-size-29l8) — tree-shaking reduces bundle significantly
-- [WebSearch: echarts-gl ECharts 6 support](https://github.com/ecomfe/echarts-gl/issues) — confirmed no ECharts 6 support in echarts-gl as of 2025
-- [WebSearch: ECharts bundle size](https://bundlephobia.com/package/echarts) — ~300-400KB gzip full; ~135KB gzip tree-shaken pie+title example (from official docs)
-- [@types/echarts npm stub confirmation](https://www.npmjs.com/package/@types/echarts) — stub only since ECharts 5 ships built-in types
-- [7 WebGL data viz tools 2025](https://cybergarden.au/blog/7-powerful-open-source-webgl-data-visualization-tools-2025) — competitive landscape verified
+- [ChartGPU GitHub](https://github.com/ChartGPU/ChartGPU) — API surface, appendData, version 0.3.2 (HIGH confidence — official repo, Feb 2026)
+- [ChartGPU HN thread](https://news.ycombinator.com/item?id=46693978) — 1M+ point claims, Feb 2026 release date (MEDIUM confidence — community discussion)
+- [ECharts WebGPU feature request](http://www.mail-archive.com/commits@echarts.apache.org/msg79551.html) — official maintainer confirmed no WebGPU plans for ECharts (HIGH confidence — official maintainer, Dec 2025)
+- [ECharts Features page](https://echarts.apache.org/en/feature.html) — appendData for 1M+ points, TypedArray, progressive rendering (HIGH confidence — official docs)
+- [echarts-gl releases](https://github.com/ecomfe/echarts-gl/releases) — v2.0.8 latest, ECharts 5.x only, no ECharts 6 version (HIGH confidence — official releases page)
+- [ECharts 6 upgrade guide](https://echarts.apache.org/handbook/en/basics/release-note/v6-upgrade-guide/) — breaking changes confirmed (HIGH confidence — official docs)
+- [MDN: GPU.requestAdapter()](https://developer.mozilla.org/en-US/docs/Web/API/GPU/requestAdapter) — feature detection pattern, isFallbackAdapter behavior (HIGH confidence — MDN official)
+- [web.dev: WebGPU supported in major browsers](https://web.dev/blog/webgpu-supported-major-browsers) — Chrome, Firefox 141, Safari 26 coverage as of Nov 2025 (HIGH confidence — Google/web.dev)
+- [ECharts progressive rendering + dataZoom bug #13197](https://github.com/apache/echarts/issues/13197) — DO NOT add progressive to Candlestick (MEDIUM confidence — confirmed GitHub issue)
+- [ECharts TypedArray issue #13335](https://github.com/apache/incubator-echarts/issues/13335) — TypedArray as series data (MEDIUM confidence — GitHub issue)
 
 ---
 
-*Stack research for: @lit-ui/charts — ECharts + ECharts GL web component chart library*
-*Researched: 2026-02-28*
+*Stack research for: @lit-ui/charts v10.0 WebGPU Charts milestone*
+*Researched: 2026-03-01*

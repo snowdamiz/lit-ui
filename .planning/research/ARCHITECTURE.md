@@ -1,593 +1,654 @@
-# Architecture Research: v9.0 Charts System (ECharts + Lit)
+# Architecture Research: v10.0 WebGPU Charts
 
-**Domain:** ECharts integration into Lit.js web components for @lit-ui/charts
-**Researched:** 2026-02-28
-**Confidence:** HIGH (lifecycle, Shadow DOM, SSR, option API) / MEDIUM (GL strategy)
-
----
-
-## Critical Pre-Decision: ECharts Version
-
-**Use ECharts 5.6.0, not 6.0.0.**
-
-ECharts 6.0.0 is the npm `latest` tag, but `echarts-gl@2.x` (the WebGL extension) has a peer dependency of `echarts: "^5.1.2"` and was last released August 2024 (v2.0.9). Two PRs are open as of February 2026 to fix GL compatibility with ECharts 6, but neither is merged yet.
-
-| Package | Version to use | Reason |
-|---------|----------------|--------|
-| `echarts` | `^5.6.0` | Last stable 5.x; GL-compatible |
-| `echarts-gl` | `^2.0.9` | Requires echarts ^5.1.2 |
-
-Pin ECharts 5 explicitly in the package. When echarts-gl releases a 6.x-compatible version, upgrade both together. ECharts 5's core API (`init`, `setOption`, `dispose`, `getInstanceByDom`) is unchanged in 6.x, so the upgrade path is low-risk.
+**Domain:** WebGPU rendering layer + 1M+ streaming + moving average overlay for @lit-ui/charts
+**Researched:** 2026-03-01
+**Confidence:** HIGH (ECharts internals, BaseChartElement integration, MA computation) / MEDIUM (WebGPU layering pattern, browser support)
 
 ---
 
-## System Overview
+## Scope
+
+This document is a **delta from v9.0**. It answers only what changes for the three v10.0 features:
+
+1. **WebGPU data layer** — layered canvas architecture, auto-detection, fallback chain
+2. **1M+ streaming** — bottleneck analysis, architectural changes for Line/Area
+3. **Moving average real-time update** — computation model, streaming integration
+
+It does not re-document v9.0 architecture (BaseChartElement lifecycle, SSR, ThemeBridge, registry pattern). See `.planning/research/ARCHITECTURE.md` history for that context. The existing code in `packages/charts/src/` is the authoritative v9.0 baseline.
+
+---
+
+## System Overview: v10.0 Layer Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
-│                     Consumer Application                             │
-│  <lui-line-chart .option=${...} />                                   │
-│  <lui-scatter-chart .option=${...} enable-gl />                      │
+│                      Consumer Application                            │
+│  <lui-line-chart enable-webgpu .data=${stream} />                   │
+│  <lui-candlestick-chart moving-averages='[{"period":20}]' />        │
 └───────────────────────────────┬─────────────────────────────────────┘
                                 │
 ┌───────────────────────────────▼─────────────────────────────────────┐
-│                    @lit-ui/charts Package                            │
+│                       @lit-ui/charts Package                         │
 │                                                                      │
-│  ┌──────────────┐  ┌──────────┐  ┌──────────┐  ┌──────────────┐    │
-│  │ lui-line     │  │ lui-bar  │  │lui-scatter│  │  lui-pie     │    │
-│  │ lui-area     │  │          │  │lui-bubble │  │  lui-donut   │    │
-│  └──────┬───────┘  └────┬─────┘  └─────┬────┘  └──────┬───────┘    │
-│         │               │              │              │             │
-│  ┌──────┴───────────────┴──────────────┴──────────────┴───────┐    │
-│  │                  BaseChartElement (LitElement)               │    │
-│  │  - ECharts init/dispose lifecycle                           │    │
-│  │  - ResizeObserver management                                │    │
-│  │  - Theme bridge (CSS vars → registerTheme)                  │    │
-│  │  - isServer guard (SSR no-op)                               │    │
-│  │  - option passthrough + setOption update management         │    │
-│  └─────────────────────────┬───────────────────────────────────┘    │
-│                             │                                        │
-│  ┌──────────────────────────▼─────────────────────────────────┐     │
-│  │                    echarts-registry.ts                       │     │
-│  │  - Central echarts.use([...]) registrations per chart type  │     │
-│  │  - CanvasRenderer + LabelLayout + UniversalTransition        │     │
-│  │  - Chart-specific: LineChart, BarChart, etc.                 │     │
-│  └──────────────────────────┬─────────────────────────────────┘     │
-└─────────────────────────────┼───────────────────────────────────────┘
-                              │
-         ┌────────────────────┴──────────────────┐
-         │                                        │
-┌────────▼──────────┐               ┌─────────────▼──────────┐
-│   echarts@5.6.0   │               │  echarts-gl@2.0.9       │
-│   (always loaded) │               │  (dynamic import,       │
-│                   │               │   opt-in per chart)     │
-└───────────────────┘               └────────────────────────┘
+│  ┌──────────────────────────────────────────────────────────────┐   │
+│  │  BaseChartElement (existing — v9.0)                           │   │
+│  │                                                               │   │
+│  │  #chart div (position: relative, fills :host)                 │   │
+│  │  ┌─────────────────────────────────────────────────────┐     │   │
+│  │  │  WebGPU canvas [z-index: 1, position: absolute]     │     │   │
+│  │  │  (renders data series at GPU speed)                 │     │   │
+│  │  │                           ↕ coordinated resize      │     │   │
+│  │  │  ECharts canvas [z-index: 2, position: absolute]    │     │   │
+│  │  │  (renders axes, labels, legend, tooltip, DataZoom)  │     │   │
+│  │  │  (series data area set transparent/empty)           │     │   │
+│  │  └─────────────────────────────────────────────────────┘     │   │
+│  │                                                               │   │
+│  │  NEW: _webgpuLayer?: WebGPUDataLayer                         │   │
+│  │  NEW: _renderer: 'webgpu' | 'webgl' | 'canvas'              │   │
+│  │  MOD: _initChart() — conditional layer creation              │   │
+│  │  MOD: _flushPendingData() — routes to WebGPU or ECharts      │   │
+│  │  MOD: disconnectedCallback() — destroy WebGPU device         │   │
+│  └──────────────────────────────────────────────────────────────┘   │
+│                                                                      │
+│  NEW FILES:                                                          │
+│  ┌──────────────────────┐  ┌──────────────────────────────────┐    │
+│  │ webgpu/               │  │ base/webgpu-detector.ts          │    │
+│  │   webgpu-data-layer.ts│  │ (navigator.gpu probe, sync)     │    │
+│  │   line-wgsl.ts        │  └──────────────────────────────────┘    │
+│  │   (WGSL shaders for   │                                          │
+│  │    line/area drawing) │                                          │
+│  └──────────────────────┘                                           │
+└─────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## Question 1: Lifecycle — init / dispose in Lit
+## Feature 1: WebGPU Renderer — Layer Architecture
 
-**Recommendation: init in `firstUpdated`, dispose in `disconnectedCallback`, guard with `isServer`.**
+### The Core Problem
 
-Lit's `firstUpdated()` is called once, after the component's initial render, when the shadow DOM is attached and the container `<div>` is in the real DOM. This is the correct place to call `echarts.init()`. Using `connectedCallback` directly risks firing before shadow DOM children exist; using `updated()` for init risks re-initializing on every property change.
+ECharts does not and will not support WebGPU natively. ECharts 5.x uses Canvas 2D internally; moving to WebGPU would require rewriting the entire renderer. The proposed architecture instead uses **rendering separation**:
+
+- **WebGPU canvas**: owns data series pixels (polylines, area fills, scatter points)
+- **ECharts canvas**: owns everything else (axes, grid lines, labels, legend, tooltip, DataZoom)
+
+This is the same pattern used by gpu-curtains and the WebGL-overlay-with-2D-canvas community pattern. It is a well-established, composable approach with documented implementation.
+
+### Layer Composition
+
+```
+:host shadow root
+  └── #chart div (position: relative, width: 100%, height: 100%)
+        ├── <canvas id="webgpu-canvas">   (position: absolute, inset: 0, z-index: 1)
+        │   WebGPU GPUDevice renders data series here
+        │   pointer-events: none (events pass through to ECharts layer)
+        │
+        └── <canvas id="echarts-canvas">  (position: absolute, inset: 0, z-index: 2)
+            ECharts renders: xAxis, yAxis, grid, legend, tooltip, DataZoom, markLine
+            Series color = 'transparent' for series ECharts "owns" but WebGPU renders
+            pointer-events: auto (ECharts handles mouse/touch for tooltip, zoom)
+```
+
+**Critical**: ECharts must have `series[].data = []` (or sparse placeholder) for chart types where WebGPU renders the data. ECharts is still responsible for:
+- Computing axis scales (min/max derived from data extent — passed explicitly)
+- Tooltip hit detection (ECharts can receive axisPointer events via `trigger: 'axis'`)
+- DataZoom state and pan/zoom interaction
+- Legend rendering and toggling
+
+The WebGPU layer reads the ECharts instance's axis scale to map data coordinates to canvas pixels. This is done by querying `echartsInstance.convertToPixel({ seriesIndex: 0 }, [x, y])` after ECharts has laid out its axes. When the axis scale changes (zoom/pan), the WebGPU layer re-renders with the new coordinate mapping.
+
+### Where It Lives in BaseChartElement
+
+New protected field:
 
 ```typescript
-import { LitElement, html, PropertyValues } from 'lit';
-import { isServer } from 'lit';
-import * as echarts from 'echarts/core';
-import type { ECharts } from 'echarts/core';
+// New in BaseChartElement for v10.0
+protected _webgpuLayer: WebGPUDataLayer | null = null;
+protected _activeRenderer: 'webgpu' | 'webgl' | 'canvas' = 'canvas';
+```
 
-export abstract class BaseChartElement extends LitElement {
-  private _chart?: ECharts;
-  private _resizeObserver?: ResizeObserver;
+Changes to `_initChart()`:
 
-  protected firstUpdated(_changedProps: PropertyValues): void {
-    // isServer guard: firstUpdated does not fire during SSR, but
-    // belt-and-suspenders guard prevents issues with future Lit changes.
-    if (isServer) return;
-    this._initChart();
+```typescript
+private async _initChart(): Promise<void> {
+  await this._registerModules();
+
+  // --- NEW: Probe for WebGPU before ECharts init ---
+  if (this.enableWebgpu) {
+    const detector = await WebGPUDetector.probe();
+    this._activeRenderer = detector.renderer; // 'webgpu' | 'webgl' | 'canvas'
+    dispatchCustomEvent(this, 'renderer-selected', { renderer: this._activeRenderer });
   }
 
-  private _initChart(): void {
-    const container = this.shadowRoot?.querySelector<HTMLDivElement>('#chart');
-    if (!container) return;
+  // ECharts init (unchanged)
+  const { init, getInstanceByDom } = await import('echarts/core');
+  const container = this.shadowRoot?.querySelector<HTMLDivElement>('#chart');
+  if (!container) return;
+  const existing = getInstanceByDom(container);
+  if (existing) existing.dispose();
+  const theme = this._themeBridge.buildThemeObject();
+  this._chart = init(container, theme, { renderer: 'canvas' });
 
-    // Guard: dispose stale instance if DOM was reused (e.g. moved via moveBefore())
-    const existing = echarts.getInstanceByDom(container);
-    if (existing) existing.dispose();
+  // --- NEW: Create WebGPU layer on top of ECharts canvas ---
+  if (this._activeRenderer === 'webgpu') {
+    this._webgpuLayer = await WebGPUDataLayer.create(container, this._chart);
+    // WebGPUDataLayer injects its own <canvas> inside container above ECharts canvas
+  }
 
-    this._chart = echarts.init(container, this._resolvedTheme, {
-      renderer: 'canvas',
-    });
+  // ResizeObserver syncs both layers
+  this._resizeObserver = new ResizeObserver((entries) => {
+    const { width, height } = entries[0].contentRect;
+    this._chart?.resize();
+    this._webgpuLayer?.resize(width, height);
+  });
+  this._resizeObserver.observe(container);
 
-    this._resizeObserver = new ResizeObserver(() => {
-      this._chart?.resize();
-    });
-    this._resizeObserver.observe(container);
+  // ... rest of existing init
+}
+```
 
-    // Apply initial option
-    if (this.option) {
-      this._chart.setOption(this.option);
+Changes to `disconnectedCallback()`:
+
+```typescript
+override disconnectedCallback(): void {
+  // ... existing RAF cancel, observer disconnect ...
+  this._webgpuLayer?.destroy(); // destroy GPUDevice, release GPU memory
+  this._webgpuLayer = null;
+  // ... existing ECharts loseContext + dispose ...
+}
+```
+
+### How Each Chart Type Hooks In
+
+The `_webgpuLayer` is owned by `BaseChartElement`. Concrete chart classes don't need to know about it directly, but they do need to change what they put in their ECharts option when WebGPU is active:
+
+```typescript
+// In LuiLineChart._applyData():
+protected override _applyData(): void {
+  if (!this._chart || !this.data) return;
+
+  if (this._activeRenderer === 'webgpu' && this._webgpuLayer) {
+    // Give ECharts only structure (axes, legend) — no series data
+    const scaffoldOption = buildLineScaffold(
+      this.data as LineChartSeries[],
+      { smooth: this.smooth, zoom: this.zoom, markLines: this.markLines }
+    );
+    this._chart.setOption(scaffoldOption);
+    // Feed actual data to WebGPU layer
+    this._webgpuLayer.setSeries(this.data as LineChartSeries[]);
+  } else {
+    // Existing path: ECharts renders everything
+    const option = buildLineOption(this.data as LineChartSeries[], ...);
+    this._chart.setOption(option, { notMerge: false });
+  }
+}
+```
+
+**Chart types that benefit from WebGPU**: Line, Area (continuous data series). Bar, Pie, Heatmap, Treemap — the data density rarely exceeds what Canvas can handle and WebGPU adds complexity without benefit. Candlestick at 1M candles is an edge case not in scope for v10.0. Scatter already has the WebGL (echarts-gl) path.
+
+**Recommendation**: Enable WebGPU layer only for `LuiLineChart` and `LuiAreaChart` in v10.0. All other chart types continue using the existing ECharts Canvas path even with `enable-webgpu` set.
+
+### Auto-Detection: WebGPUDetector
+
+```typescript
+// packages/charts/src/base/webgpu-detector.ts
+
+export type RendererCapability = {
+  renderer: 'webgpu' | 'webgl' | 'canvas';
+  device?: GPUDevice;        // set when renderer === 'webgpu'
+  adapter?: GPUAdapter;
+};
+
+export class WebGPUDetector {
+  static async probe(): Promise<RendererCapability> {
+    // 1. Check navigator.gpu (WebGPU API presence)
+    if (!('gpu' in navigator)) return { renderer: 'webgl' };
+
+    // 2. Request adapter — returns null if no suitable GPU
+    const adapter = await navigator.gpu.requestAdapter({ powerPreference: 'high-performance' });
+    if (!adapter) return { renderer: 'webgl' };
+
+    // 3. Request device — may throw on driver issues
+    try {
+      const device = await adapter.requestDevice();
+      return { renderer: 'webgpu', device, adapter };
+    } catch {
+      return { renderer: 'webgl' };
     }
   }
-
-  disconnectedCallback(): void {
-    super.disconnectedCallback();
-    this._resizeObserver?.disconnect();
-    this._resizeObserver = undefined;
-    this._chart?.dispose();
-    this._chart = undefined;
-  }
 }
 ```
 
-**Why `firstUpdated` over `connectedCallback`:**
-- `connectedCallback` fires before shadow DOM is rendered — `this.shadowRoot.querySelector('#chart')` returns null.
-- `firstUpdated` is Lit-specific and fires after the first `render()` call completes.
-- `updated()` is correct for re-applying options on property changes, not for init.
+Fallback chain: **WebGPU → WebGL (existing echarts-gl) → Canvas (ECharts default)**
 
-**connectedCallback move-gotcha:** If a DOM node is moved via `moveBefore()` (Chrome 133+), `disconnectedCallback` + `connectedCallback` fire but `firstUpdated` does not fire again. Guard re-init with `echarts.getInstanceByDom()` check.
+The `enable-webgpu` attribute on the element triggers the probe. Without it, the existing behavior is fully preserved.
 
----
+### Browser Support Reality (as of 2026-03-01)
 
-## Question 2: Shadow DOM — Does ECharts Need a Node Outside Shadow Root?
+WebGPU ships by default in Chrome, Edge, and Safari (as of Safari 26 / iOS 26). Firefox 141 on Windows and Firefox 145 on Apple Silicon macOS. Linux is still rolling out (Chrome 144+ on Intel Gen12+). Firefox Android is behind a flag.
 
-**No. ECharts works inside Shadow DOM when given the container div directly.**
-
-ECharts `init()` accepts any `HTMLElement` — it does not use `document.getElementById` internally. Passing `this.shadowRoot.querySelector('#chart')` works correctly.
-
-The only real issue is **width/height = 0** at init time. If the chart container has no explicit dimensions when `firstUpdated` fires, ECharts logs a warning and renders blank. Two mitigations:
-
-1. Give the host element `display: block` and `min-height` via `:host` CSS — this ensures the container has non-zero dimensions before ECharts measures it.
-2. Use `ResizeObserver` — even if the initial size is 0, the observer fires as soon as the layout is complete, triggering `resize()`.
-
-```css
-/* In BaseChartElement styles */
-:host {
-  display: block;   /* custom elements are inline by default */
-  min-height: 300px;
-}
-#chart {
-  width: 100%;
-  height: 100%;
-}
-```
-
-**Shadow DOM does NOT require a node outside the shadow root.** The canvas element is rendered inside the shadow root's `#chart` div. ECharts manages its own internal canvas creation from the provided container.
-
-**Shadow DOM CSS isolation note:** ECharts injects its own `<canvas>` and tooltip DOM. The tooltip DOM is injected as a sibling `<div>` inside the container — it stays inside the shadow root, which means global CSS cannot accidentally style it. ECharts tooltip styling must be done via the `option.tooltip.extraCssText` property or ECharts' own theme object, not via external stylesheets.
+**Confidence: MEDIUM.** Coverage is approximately 85-90% of desktop browsers. Mobile remains fragmented. The fallback chain must be robust — failing gracefully to WebGL or Canvas is not optional.
 
 ---
 
-## Question 3: Option API — Full Passthrough, Declarative Props, or Hybrid
+## Feature 2: 1M+ Streaming — Bottleneck Analysis and Architecture
 
-**Recommendation: Hybrid — full option passthrough as primary API, declarative props for cross-cutting concerns.**
+### Where Is the Bottleneck?
 
-This is the pattern used by every mature ECharts wrapper (vue-echarts, echarts-for-react). ECharts' option object is intentionally the complete API surface; building declarative props for every series type would replicate ECharts' entire documentation.
+Based on evidence from the ECharts source architecture, community benchmarks, and the GitHub issue #21075 (June 2025):
 
-### Core API Shape
+| Component | Bottleneck? | Evidence |
+|-----------|-------------|----------|
+| ECharts `appendData` internal scheduling | **YES — primary** | Bug report: 80K samples at 10fps vs 100fps expected. ECharts `streamBufferSize` default 1000, `maxTasksPerFrame` 10. |
+| ECharts Canvas 2D rendering | **YES — secondary** | Canvas 2D is fundamentally CPU-bound. Polyline with 1M segments is expensive. |
+| JS circular buffer (BaseChartElement) | **NO** | Array.push + slice is O(N) but negligible vs canvas repaint. TypedArray would improve GC. |
+| DOM/layout | **NO** | ECharts renders to a single `<canvas>` — no DOM nodes per data point. |
+| GPU (WebGPU path) | **NO** | WebGPU renders 1M instanced quads at 60fps (ChartGPU benchmark). |
+
+**Bottom line**: At 1M+ points, ECharts Canvas path is the bottleneck. It cannot hit 60fps. The WebGPU data layer is the architectural fix.
+
+### Architectural Changes for 1M+ Without Data Wipeout
+
+**Problem 1: appendData wipes on setOption**
+
+Documented in ECharts issue #12327 (fixed as closed but issue persists in practice). Any `setOption` call after `appendData` clears appended data. The current v9.0 implementation already guards against this (CRITICAL-03 in `base-chart-element.ts`). The WebGPU path sidesteps this entirely — ECharts never holds the data, so `setOption` is safe to call at any time.
+
+**Problem 2: JS heap at 1M float pairs**
+
+1M `[number, number]` pairs = 2M numbers × 8 bytes each = 16MB in a JS Array. This causes GC pressure.
+
+Fix: Use `Float32Array` for the streaming buffer. At 4 bytes per float, 1M points = 8MB, with zero GC overhead (TypedArrays are not garbage-collected per-element).
 
 ```typescript
-export abstract class BaseChartElement extends LitElement {
-  // PRIMARY: Full ECharts option passthrough
-  @property({ attribute: false })
-  option?: ECOption;
+// Replace in BaseChartElement for appendData-mode charts:
+// OLD: private _pendingData: unknown[] = [];
+// NEW:
+private _pendingDataBuffer = new Float32Array(4096); // x, y pairs (2048 points)
+private _pendingCount = 0;
 
-  // CROSS-CUTTING: Declarative props for wrapper concerns
-  @property({ type: String })
-  theme?: string;               // Named theme: 'dark' or custom registered name
-
-  @property({ type: Boolean })
-  loading = false;              // Show ECharts loading animation
-
-  @property({ attribute: false })
-  loadingOption?: object;       // Custom loading animation options
-
-  @property({ type: Boolean, attribute: 'enable-gl' })
-  enableGl = false;             // Opt-in WebGL via echarts-gl (see Q4)
-
-  @property({ type: Boolean, attribute: 'auto-resize' })
-  autoResize = true;            // Default on; disable for fixed-size charts
-
-  // ADVANCED: setOption update control
-  @property({ attribute: false })
-  updateOptions?: { notMerge?: boolean; replaceMerge?: string | string[]; silent?: boolean };
-
-  // ESCAPE HATCH: Direct ECharts instance access
-  getChart(): ECharts | undefined {
-    return this._chart;
-  }
-}
+// For _circularBuffer on streaming path:
+private _streamBuffer: Float32Array | null = null; // allocated at first pushData
 ```
 
-### Option Change Handling
+**Problem 3: ECharts appendData ceiling (~500K visible points)**
 
-When `option` changes, call `setOption` with merge semantics (ECharts default). Do NOT reinitialize — `setOption` is incremental and preserves animation state.
+ECharts progressive rendering handles incremental data but re-processes the full dataset on zoom/pan. Beyond ~500K points, interactions become sluggish even with `progressive` and `progressiveChunk` tuning.
+
+Fix: **Data decimation before ECharts**. LTTB (Largest Triangle Three Buckets) downsamples 1M points to ~2000 visually representative points for the ECharts layer. The WebGPU layer renders the full 1M. This gives:
+
+- ECharts: smooth axes, tooltip, zoom (2K points, always fast)
+- WebGPU: pixel-accurate rendering of all 1M points
 
 ```typescript
-protected updated(changedProps: PropertyValues): void {
-  if (!this._chart) return;
-  if (changedProps.has('option') && this.option) {
-    this._chart.setOption(this.option, this.updateOptions ?? {});
-  }
-  if (changedProps.has('loading')) {
-    this.loading
-      ? this._chart.showLoading('default', this.loadingOption)
-      : this._chart.hideLoading();
-  }
-}
+// New utility: packages/charts/src/shared/lttb.ts
+export function downsampleLTTB(
+  data: Float32Array, // interleaved [x0, y0, x1, y1, ...]
+  targetPoints: number
+): Float32Array { ... }
 ```
 
-**Why not full declarative props:** ECharts has ~400 configurable option fields. A declarative component API covering line series `areaStyle`, `markLine`, `markPoint`, `encode`, `dataset`, `transform` etc. would need to duplicate the entire ECharts option schema. No production wrapper does this. vue-echarts explicitly documents that the `option` prop is the primary API.
+**Problem 4: Theme update setOption conflicts with appendData**
 
-**Why not pure passthrough:** Without `loading`, `theme`, `enableGl`, and `autoResize` as props, consumers need to understand ECharts internals for tasks that the wrapper should handle. The hybrid is the right balance.
+The existing `_applyThemeUpdate()` in BaseChartElement calls `setOption` with color updates on dark mode toggle. In appendData mode, this wipes data. v9.0 docs warn this is "safe" because it passes only `{ color: [...] }` without series keys. However, the ECharts issue discussion suggests this is fragile.
 
----
+Fix with WebGPU path: irrelevant — ECharts has no series data to wipe. Fix for Canvas path: test explicitly that `{ color: [...] }` setOption does not trigger appendData wipe in ECharts 5.6.0.
 
-## Question 4: echarts-gl WebGL — Loading Strategy
-
-**Recommendation: Opt-in per chart instance via `enable-gl` attribute + dynamic import.**
-
-echarts-gl's unpackaged size is ~7MB. Importing it unconditionally would add significant weight to every page that uses any chart. The correct strategy is a prop-gated dynamic import.
-
-### Strategy
-
-```typescript
-// In BaseChartElement, before echarts.init():
-private async _maybeLoadGl(): Promise<void> {
-  if (!this.enableGl) return;
-  // Dynamic import — bundler creates a separate chunk
-  await import('echarts-gl');
-  // echarts-gl registers itself with echarts via side-effects on import
-}
-
-protected async firstUpdated(_changedProps: PropertyValues): Promise<void> {
-  if (isServer) return;
-  await this._maybeLoadGl();
-  this._initChart();
-}
-```
-
-The `import('echarts-gl')` is a side-effect import — echarts-gl registers its chart types and components with the global ECharts instance automatically on load. No explicit `echarts.use([...])` call is needed for GL components.
-
-### Which Charts Need GL
-
-| Chart Type | `enable-gl` Required? | Reason |
-|------------|----------------------|--------|
-| `lui-line` | No | 2D canvas is sufficient |
-| `lui-bar` | No | 2D canvas is sufficient |
-| `lui-area` | No | 2D canvas is sufficient |
-| `lui-pie` / `lui-donut` | No | 2D canvas is sufficient |
-| `lui-heatmap` | No | 2D heatmap works without GL |
-| `lui-candlestick` | No | Standard 2D chart |
-| `lui-treemap` | No | Standard 2D chart |
-| `lui-scatter` / `lui-bubble` | Optional | Enable for 1M+ points (`scatter3D`) |
-
-For `lui-scatter`, `enable-gl` activates the `scatter3D` series type instead of `scatter`. The component should fall back to 2D `scatter` when GL is not loaded, or throw a clear error if the consumer passes a `scatter3D` option without `enable-gl`.
-
-**Bundle size guidance for consumers:**
-```
-echarts (5.x, tree-shaken):    ~200–400KB gzip (varies by chart types registered)
-echarts-gl (2.0.9, full):      ~7MB unpacked / ~2MB gzip (loaded only on demand)
-```
-
----
-
-## Question 5: SSR — Pattern for Charts That Cannot Render Server-Side
-
-**Recommendation: Render a sized placeholder div server-side; initialize ECharts only on the client in `firstUpdated`.**
-
-ECharts requires real DOM, `canvas`, and `ResizeObserver` — none exist in the `@lit-labs/ssr` Node.js environment. Charts must not attempt any ECharts API during SSR.
-
-### Why This Works Without Hydration Mismatch
-
-Lit's `firstUpdated()` lifecycle hook **does not fire during SSR**. It is a client-only hook that runs after the component's first browser render. This means no explicit `isServer` guard is needed inside `firstUpdated` — however, one should be added defensively for future Lit version changes.
-
-The server renders the same static HTML the client would render for the container — an empty `<div id="chart">`. ECharts then imperatively fills that div with a canvas on the client. Since ECharts' canvas is not part of Lit's declarative template, there is no Lit hydration mismatch.
-
-### SSR Implementation Pattern
-
-```typescript
-render() {
-  // Both server and client render identical markup.
-  // ECharts content is imperatively added inside #chart after firstUpdated.
-  return html`
-    <div id="chart" part="chart"></div>
-  `;
-}
-
-protected firstUpdated(_changedProps: PropertyValues): void {
-  // This hook never fires on the server.
-  // isServer guard is belt-and-suspenders.
-  if (isServer) return;
-  this._initChart();
-}
-```
-
-### Declarative Shadow DOM Compatibility
-
-This approach is compatible with `@lit-labs/ssr` Declarative Shadow DOM output. The server outputs:
-
-```html
-<lui-line-chart>
-  <template shadowrootmode="open">
-    <div id="chart" part="chart"></div>
-    <!-- Constructable stylesheets injected inline for SSR mode -->
-  </template>
-</lui-line-chart>
-```
-
-When the browser parses this, the shadow root is pre-attached. Lit's hydration (`@lit-labs/ssr-client/lit-element-hydrate-support.js`) recognizes the pre-existing shadow root. `firstUpdated` fires, and ECharts init proceeds normally.
-
-### SSR ECharts Option (Advanced — Not Recommended for v9.0)
-
-ECharts 5.3+ supports `{ ssr: true, renderer: 'svg' }` init for generating static SVG strings server-side. This is a valid pattern for above-the-fold charts requiring fast first-contentful-paint (FCP). It is complex to implement (requires a Node.js build step, SVG serialization, and client re-hydration). Skip for v9.0 — the placeholder pattern is sufficient and matches how every other LitUI component handles SSR (form components skip DOM work, calendar skips interaction setup, etc.).
-
----
-
-## Question 6: Build Order for 8 Chart Types
-
-Build shared infrastructure first, then chart types ordered by simplicity and re-use of shared patterns.
-
-### Build Order
+### New Streaming Flow (WebGPU Path)
 
 ```
-Phase 1: BaseChartElement + Package Scaffolding  ← blocks everything
-    |
-Phase 2: ThemeBridge (CSS vars → ECharts theme)  ← needed before visual polish
-    |
-Phase 3: lui-line + lui-area (simplest, highest demand)
-    |
-Phase 4: lui-bar (grouped/stacked variants)
-    |
-Phase 5: lui-pie + lui-donut (polar/arc, different option shape)
-    |
-Phase 6: lui-scatter + lui-bubble (GL opt-in path proven here)
-    |
-Phase 7: lui-heatmap (coordinate system differs from previous)
-    |
-Phase 8: lui-candlestick (financial, specialized axis)
-    |
-Phase 9: lui-treemap (hierarchical data, no axes)
-    |
-Phase 10: CLI integration + docs
-```
-
-### Rationale Per Phase
-
-**Phase 1 — BaseChartElement + Package Scaffolding (Foundation)**
-All chart components extend this. Build first. Includes:
-- `BaseChartElement` extending `TailwindElement` (same as all other @lit-ui/x packages)
-- `echarts/core` + `CanvasRenderer` import, `echarts.use()` pattern
-- `firstUpdated` init, `disconnectedCallback` dispose, `ResizeObserver` management
-- `option` prop, `loading` prop, `theme` prop, `enableGl` prop
-- `getChart()` escape hatch
-- `@lit-ui/charts` package.json with `echarts ^5.6.0` and `echarts-gl ^2.0.9` as peer/optional deps
-- Shared CSS: `:host { display: block; min-height: 300px; }` pattern
-
-**Phase 2 — ThemeBridge (CSS vars → ECharts registerTheme)**
-Before any chart looks correct. The ThemeBridge reads `getComputedStyle()` on the host element for `--ui-chart-*` tokens and calls `echarts.registerTheme('lit-ui', ...)`. This runs in `firstUpdated` before `echarts.init()`. The theme name `'lit-ui'` is passed as the second argument to `echarts.init(container, 'lit-ui')`.
-
-**Phase 3 — lui-line, lui-area (simplest 2D)**
-- Use `echarts/core` + `LineChart` + `GridComponent` + `TooltipComponent` + `LegendComponent`
-- `lui-area` is a line chart with `option.series[].areaStyle` — share the same component class with an `area` boolean attribute, or make it a subclass. Separate components (`<lui-line-chart>`, `<lui-area-chart>`) is cleaner for consumers.
-- Establishes the full component pattern all subsequent charts follow.
-
-**Phase 4 — lui-bar**
-- Register `BarChart`
-- Add `stacked` and `horizontal` boolean attributes (map to `option.series[].stack` and `option.yAxis/xAxis` swap)
-- Grouped bars need no extra API — consumers control series configuration.
-
-**Phase 5 — lui-pie, lui-donut**
-- Register `PieChart`
-- No Cartesian grid — different coordinate system from previous charts
-- `lui-donut` = `lui-pie` with `option.series[].radius: ['40%', '70%']` — expose as `inner-radius` attribute
-- Validate this works correctly with ThemeBridge (polar vs. Cartesian color application differs).
-
-**Phase 6 — lui-scatter, lui-bubble (GL path)**
-- Register `ScatterChart`
-- This is where `enableGl` + dynamic `import('echarts-gl')` is implemented and tested.
-- `lui-bubble` = scatter with `symbolSize` mapped from data dimension.
-- Proves the GL lazy-load path before proceeding.
-
-**Phase 7 — lui-heatmap**
-- Register `HeatmapChart` + `VisualMapComponent`
-- Cartesian heatmap (x/y axis + value) differs from calendar heatmap — implement Cartesian first.
-- New VisualMap component registration not previously needed.
-
-**Phase 8 — lui-candlestick**
-- Register `CandlestickChart` + `DataZoomComponent`
-- Most specialized data format (OHLC array per item).
-- DataZoom component for pan/zoom is specific to financial charts.
-
-**Phase 9 — lui-treemap**
-- Register `TreemapChart`
-- Hierarchical/nested data shape unlike all previous charts.
-- No axes — pure space-filling layout.
-
-**Phase 10 — CLI + Docs**
-- CLI registry entries for all 8 chart types (`npx lit-ui add line-chart`)
-- Copy-source templates (charts are complex enough that starter shells are valuable)
-- Documentation pages with interactive demos
-- CSS token reference (`--ui-chart-*` complete table)
-
----
-
-## Package Structure
-
-```
-packages/charts/
-├── src/
-│   ├── base/
-│   │   ├── base-chart-element.ts      # BaseChartElement (LitElement subclass)
-│   │   └── theme-bridge.ts            # CSS vars → echarts registerTheme
-│   ├── registry/
-│   │   ├── canvas-core.ts             # echarts.use([CanvasRenderer, ...shared...])
-│   │   ├── line-registry.ts           # echarts.use([LineChart, GridComponent, ...])
-│   │   ├── bar-registry.ts            # echarts.use([BarChart, ...])
-│   │   └── ... (one per chart type)
-│   ├── line/
-│   │   └── lui-line-chart.ts
-│   ├── area/
-│   │   └── lui-area-chart.ts
-│   ├── bar/
-│   │   └── lui-bar-chart.ts
-│   ├── pie/
-│   │   └── lui-pie-chart.ts
-│   ├── donut/
-│   │   └── lui-donut-chart.ts
-│   ├── scatter/
-│   │   └── lui-scatter-chart.ts       # enableGl → dynamic import('echarts-gl')
-│   ├── heatmap/
-│   │   └── lui-heatmap-chart.ts
-│   ├── candlestick/
-│   │   └── lui-candlestick-chart.ts
-│   ├── treemap/
-│   │   └── lui-treemap-chart.ts
-│   └── index.ts                       # Re-exports all components
-├── package.json                       # peerDeps: lit, @lit-ui/core, echarts@^5.6.0
-└── tsconfig.json
-```
-
-### Structure Rationale
-
-- **`base/`**: Shared lifecycle and theme logic — every chart extends `BaseChartElement`.
-- **`registry/`**: Centralized `echarts.use()` calls. Each chart type imports its own registry file which registers only the ECharts components it needs (tree-shaking). All share `canvas-core.ts` (CanvasRenderer + universal features).
-- **`src/[type]/`**: One folder per chart component, matching the pattern of other @lit-ui packages.
-- **`echarts-gl` is not registered in any registry file** — it is always loaded via dynamic `import('echarts-gl')` gated on `enableGl`.
-
----
-
-## Data Flow: option Property → ECharts Instance
-
-```
-Consumer sets .option = { series: [...], xAxis: {...}, ... }
+pushData([x, y]) called by consumer
     │
     ▼
-Lit reactive property setter fires
+BaseChartElement._pendingData.push(point)    (existing RAF coalescing)
     │
-    ▼ (next microtask)
-Lit calls updated(changedProps)
+    ▼  RAF fires (_flushPendingData)
     │
-    ├─ changedProps.has('option')? → this._chart.setOption(this.option, this.updateOptions)
-    │     ECharts merges new option with existing state (incremental update)
-    │     Animations play for changed data points
+    ├── _activeRenderer === 'webgpu'?
+    │       │
+    │       ▼
+    │   _webgpuLayer.appendPoints(pendingPoints)     [GPU buffer update]
+    │   _circularBuffer.push(pendingPoints)           [JS buffer for decimation]
+    │   IF _circularBuffer.length > DECIMATION_THRESHOLD:
+    │       decimated = downsampleLTTB(_circularBuffer, 2000)
+    │       _chart.setOption({ series: [{ data: decimated }] })  [safe: not appendData]
     │
-    └─ changedProps.has('loading')? → showLoading() / hideLoading()
+    └── _activeRenderer === 'canvas'?
+            │
+            ▼
+        (existing appendData or circular-buffer path)
 ```
 
-**Key behavior**: `setOption` is incremental by default. Passing a new series array updates the series without removing unchanged axes, grid, or legend. To do a full replace, consumer passes `updateOptions: { notMerge: true }` or the component detects structural changes and applies `notMerge` automatically (not recommended — keep it simple, let consumer control).
+---
+
+## Feature 3: Moving Average Real-Time Update
+
+### Current State (v9.0)
+
+Moving averages are **fully implemented** in `candlestick-option-builder.ts`. `_computeSMA` and `_computeEMA` process the full `_ohlcBuffer` on every `_flushBarUpdates()` call. This works correctly for static data and for moderate streaming rates.
+
+**The v10.0 problem**: At high streaming rates, recomputing MA over the full buffer on every flush is O(N) per flush. For SMA(20) over 50K bars, that is 50K multiplications every animation frame.
+
+### What Needs to Change
+
+**For SMA**: Sliding window sum. Maintain a running sum of the last `period` closes. On each new bar, add new close, subtract the oldest close from the window. O(1) per tick.
+
+**For EMA**: Already O(1) per tick by nature. `ema[i] = close[i] * k + ema[i-1] * (1 - k)`. Only the previous EMA value and new close are needed. No full-buffer recomputation required.
+
+The fix is an **incremental MA state object** maintained by `LuiCandlestickChart`:
+
+```typescript
+// packages/charts/src/candlestick/incremental-ma.ts
+
+export type MAState = {
+  period: number;
+  type: 'sma' | 'ema';
+  k: number;           // EMA: 2/(period+1)
+  window: number[];    // SMA: circular buffer of last `period` closes
+  windowSum: number;   // SMA: running sum for O(1) update
+  lastEMA: number | null; // EMA: previous value
+  values: (number | null)[];  // full output array (parallel to _ohlcBuffer)
+};
+
+export function createMAState(config: MAConfig): MAState { ... }
+
+// Called once per new bar (O(1)):
+export function updateMAState(state: MAState, newClose: number): number | null { ... }
+```
+
+### Where It Lives: Property vs Computed Series
+
+**Answer: computed ECharts series injected via `buildCandlestickOption`** — same as today.
+
+Do NOT add a separate computed property on `LuiCandlestickChart`. The MA data is already expressed as ECharts `line` series in the option object. The only change is switching from full recomputation to incremental state update.
+
+The `_ohlcBuffer` in `LuiCandlestickChart` remains the authoritative data store. The MA states are computed in parallel and reset when `_applyData()` is called (i.e., when `this.data` changes).
+
+### Updated `LuiCandlestickChart` Design
+
+```typescript
+// New private field:
+private _maStates: MAState[] = [];
+
+// Initialize/reset when data changes:
+protected override _applyData(): void {
+  this._ohlcBuffer = this.data ? [...(this.data as CandlestickBarPoint[])] : [];
+  const maConfigs = _parseMovingAverages(this.movingAverages);
+
+  // Reset MA states and compute from scratch on full data set
+  this._maStates = maConfigs.map(c => {
+    const state = createMAState(c);
+    for (const bar of this._ohlcBuffer) {
+      updateMAState(state, bar.ohlc[1]); // ohlc[1] = close
+    }
+    return state;
+  });
+
+  this._renderWithMA();
+}
+
+// Incremental update during streaming:
+override pushData(point: unknown): void {
+  const bar = point as CandlestickBarPoint;
+  this._ohlcBuffer.push(bar);
+  if (this._ohlcBuffer.length > this.maxPoints) {
+    this._ohlcBuffer = this._ohlcBuffer.slice(-this.maxPoints);
+    // Full recompute required after trim (window state is invalid after trim)
+    this._resetMAStates();
+  } else {
+    // Incremental: O(1) per new bar
+    for (const state of this._maStates) {
+      updateMAState(state, bar.ohlc[1]);
+    }
+  }
+  // Schedule flush (existing RAF coalescing)
+  if (this._barRafId === undefined) {
+    this._barRafId = requestAnimationFrame(() => {
+      this._renderWithMA();
+      this._barRafId = undefined;
+    });
+  }
+}
+
+private _renderWithMA(): void {
+  if (!this._chart) return;
+  const maSeriesData = this._maStates.map(s => s.values);
+  // buildCandlestickOption accepts pre-computed MA data (avoids internal recomputation)
+  const option = buildCandlestickOptionWithPrecomputedMA(this._ohlcBuffer, {
+    bullColor: this.bullColor ?? undefined,
+    bearColor: this.bearColor ?? undefined,
+    showVolume: this.showVolume,
+    maSeriesData,
+    maConfigs: _parseMovingAverages(this.movingAverages),
+  });
+  this._chart.setOption(option, { lazyUpdate: true } as object);
+}
+```
+
+**Trim handling**: When the buffer is trimmed to `maxPoints`, the sliding window state is corrupted (the oldest values in the window no longer exist). Full recompute from the trimmed buffer is required. This is an O(maxPoints) operation, but it only happens once every `maxPoints` bars — amortized cost is acceptable.
 
 ---
 
-## Integration Points with Existing LitUI
+## New Components and Classes
 
-| Existing Infrastructure | How Charts Use It |
-|-------------------------|-------------------|
-| `TailwindElement` | `BaseChartElement extends TailwindElement` — dual-mode styling (SSR inline CSS, client constructable stylesheets) |
-| `isServer` guard | `firstUpdated` guard prevents any ECharts API on server |
-| `--ui-[component]-*` CSS token pattern | `--ui-chart-*` tokens read by ThemeBridge and passed to `echarts.registerTheme()` |
-| `:host-context(.dark)` pattern | ThemeBridge re-reads CSS vars and calls `echarts.registerTheme()` + re-initializes chart when `prefers-color-scheme` or `.dark` class changes |
-| pnpm workspaces + lockstep versioning | `@lit-ui/charts` follows same versioning as all other packages |
-| `dispatchCustomEvent` | Chart events (`ui-chart-click`, `ui-chart-ready`, `ui-chart-datazoom`) follow `ui-*` naming |
-| CLI registry pattern | Each chart type gets an entry in CLI registry; copy-source templates are chart-specific |
+| Component | Type | Location | Purpose |
+|-----------|------|----------|---------|
+| `WebGPUDetector` | New class | `base/webgpu-detector.ts` | Probe navigator.gpu, request adapter/device, return capability |
+| `WebGPUDataLayer` | New class | `webgpu/webgpu-data-layer.ts` | Own WebGPU canvas, GPUDevice, render pipeline for line/area data |
+| `downsampleLTTB` | New function | `shared/lttb.ts` | LTTB decimation for ECharts axis scaffold at 1M+ points |
+| `MAState`, `createMAState`, `updateMAState` | New types/fns | `candlestick/incremental-ma.ts` | O(1) incremental SMA/EMA update per streaming bar |
+| WGSL shaders | New files | `webgpu/shaders/` | Vertex/fragment shaders for line and area rendering |
 
 ---
 
-## New vs Modified Components
+## Existing Classes That Change
 
-### New Components (to be created in @lit-ui/charts)
+| Class | Change | Scope |
+|-------|--------|-------|
+| `BaseChartElement` | Add `_webgpuLayer`, `_activeRenderer`, `enable-webgpu` prop; modify `_initChart()`, `_flushPendingData()`, `disconnectedCallback()` | Core infrastructure |
+| `LuiLineChart` | Add WebGPU-path branch in `_applyData()` using scaffold option builder | Line-specific |
+| `LuiAreaChart` | Same as `LuiLineChart` | Area-specific |
+| `LuiCandlestickChart` | Add `_maStates`, replace full recompute with `updateMAState()`, add `_resetMAStates()` on buffer trim | Candlestick-specific |
+| `buildCandlestickOption` (option builder) | Add `buildCandlestickOptionWithPrecomputedMA()` variant OR accept pre-computed `maSeriesData` param | Shared builder |
 
-| Component | Tag | Notes |
-|-----------|-----|-------|
-| `BaseChartElement` | (abstract, not a custom element) | Shared lifecycle base |
-| ThemeBridge | (utility class) | CSS vars → ECharts theme |
-| `LuiLineChart` | `<lui-line-chart>` | Line series |
-| `LuiAreaChart` | `<lui-area-chart>` | Line + areaStyle |
-| `LuiBarChart` | `<lui-bar-chart>` | Bar, stacked, horizontal |
-| `LuiPieChart` | `<lui-pie-chart>` | Pie |
-| `LuiDonutChart` | `<lui-donut-chart>` | Pie with inner-radius |
-| `LuiScatterChart` | `<lui-scatter-chart>` | Scatter; enableGl → Scatter3D |
-| `LuiHeatmapChart` | `<lui-heatmap-chart>` | Cartesian heatmap |
-| `LuiCandlestickChart` | `<lui-candlestick-chart>` | OHLC financial |
-| `LuiTreemapChart` | `<lui-treemap-chart>` | Hierarchical treemap |
-
-### Existing Components (not modified)
-
-No existing @lit-ui components require modification. Charts are fully isolated in a new package.
-
-### New Package
-
-`@lit-ui/charts` is a new package alongside existing `@lit-ui/button`, `@lit-ui/data-table`, etc. It is opt-in heavy (ECharts + optional echarts-gl) and should never be included in a meta-package that auto-imports all components.
+**Classes that do NOT change**: `LuiBarChart`, `LuiPieChart`, `LuiScatterChart`, `LuiHeatmapChart`, `LuiTreemapChart`, `ThemeBridge`, `registerCanvasCore`, all registry files.
 
 ---
 
-## Anti-Patterns to Avoid
+## Recommended Build Order
 
-### Anti-Pattern 1: Calling echarts.init() in connectedCallback
+Build order is constrained by three dependency chains:
 
-**What:** `connectedCallback() { this._chart = echarts.init(this.querySelector('#chart')); }`
-**Why bad:** Shadow DOM children do not exist yet when `connectedCallback` fires. `querySelector` returns null, ECharts init fails silently or throws.
-**Instead:** Init in `firstUpdated()` — shadow DOM is guaranteed to be rendered.
+1. **WebGPU detection must exist before any WebGPU layer code**
+2. **WebGPUDataLayer requires GPUDevice from detector**
+3. **Incremental MA update is self-contained and has no WebGPU dependency**
 
-### Anti-Pattern 2: Reinitializing on Every option Change
+```
+PHASE A: WebGPU Detector + Fallback Chain
+  └── WebGPUDetector.probe() with navigator.gpu → adapter → device → fallback
+  └── enable-webgpu property on BaseChartElement
+  └── _activeRenderer state + renderer-selected event
+  └── Unit test: detector returns correct renderer in Chrome/Firefox/Safari
 
-**What:** `updated(props) { if (props.has('option')) { this._chart.dispose(); this._chart = echarts.init(...); } }`
-**Why bad:** Destroys animation state, causes flicker, expensive DOM operation on every data update.
-**Instead:** Use `this._chart.setOption(newOption)` — ECharts merges incrementally and animates the diff.
+PHASE B: Incremental MA (independent of A)
+  └── MAState type + createMAState() + updateMAState()
+  └── _maStates in LuiCandlestickChart
+  └── pushData() incremental update + trim-triggered full recompute
+  └── buildCandlestickOption change to accept pre-computed MA data
+  └── Unit test: SMA(3) over [10,11,12,13,14] matches known values
 
-### Anti-Pattern 3: Importing All of echarts + echarts-gl Unconditionally
+PHASE C: LTTB Decimation (independent of A and B)
+  └── downsampleLTTB() utility
+  └── Unit test: 1M random points → 2000 output, preserves extremes
 
-**What:** `import * as echarts from 'echarts'; import 'echarts-gl';` at the top of base-chart-element.ts
-**Why bad:** Every page using any chart downloads the full ~7MB GL bundle, even pages with only a pie chart.
-**Instead:** Tree-shake ECharts with `echarts/core` + per-chart `echarts.use([...])`. Dynamic `import('echarts-gl')` gated on `enableGl`.
+PHASE D: WebGPUDataLayer (requires A and C)
+  └── WebGPU canvas injection into #chart container
+  └── GPURenderPipeline for line chart (instanced quad per segment)
+  └── appendPoints() for streaming data intake
+  └── resize() sync with ECharts ResizeObserver
+  └── coordinate mapping via echartsInstance.convertToPixel()
+  └── destroy() — GPUDevice.destroy() + canvas removal
 
-### Anti-Pattern 4: Global CSS for ECharts Tooltip
+PHASE E: BaseChartElement + Line/Area Integration (requires A, C, D)
+  └── Modify _initChart() to call WebGPUDataLayer.create() when webgpu active
+  └── Modify _flushPendingData() to route to WebGPU layer
+  └── buildLineScaffold() — option variant without series data (axes only)
+  └── LuiLineChart._applyData() WebGPU branch
+  └── LuiAreaChart._applyData() WebGPU branch
+  └── ResizeObserver sync of both layers
 
-**What:** Adding `.echarts-tooltip { ... }` to the host app's global stylesheet.
-**Why bad:** ECharts tooltip is injected inside the shadow root. Global CSS cannot pierce shadow DOM. The styles are silently ignored.
-**Instead:** Use `option.tooltip.extraCssText` for inline styles, or the ECharts theme object's `tooltip` key for structured styling. Expose `--ui-chart-tooltip-*` tokens and map them in ThemeBridge.
+PHASE F: Documentation + Skill File Updates
+  └── Update charts skill file with enable-webgpu attribute
+  └── Update line-chart and area-chart skill files
+  └── Update candlestick-chart skill file with incremental MA note
+  └── Bundle size guidance (WebGPU layer adds ~Xkb)
+```
 
-### Anti-Pattern 5: Not Disposing on disconnectedCallback
+**Critical path**: A → D → E. Phase B and C can be built in parallel with A. Phase F follows everything.
 
-**What:** Forgetting to call `this._chart.dispose()` when the component is removed.
-**Why bad:** ECharts instances maintain internal timers, event listeners, and WebGL contexts. Accumulated leaks cause page slowdown and crashes on long-running dashboards. Chrome heap snapshots show instances surviving after DOM removal if only `dispose()` is called without nulling the reference.
-**Instead:** `this._chart.dispose(); this._chart = undefined;` + `this._resizeObserver.disconnect(); this._resizeObserver = undefined;`
+---
 
-### Anti-Pattern 6: Skipping the isServer Guard
+## Data Flow
 
-**What:** Allowing `echarts.init()` to run during SSR.
-**Why bad:** `@lit-labs/ssr` runs in Node.js. `canvas`, `ResizeObserver`, and `HTMLElement.getBoundingClientRect` do not exist. The import itself may fail depending on the ECharts build.
-**Instead:** The `firstUpdated` hook never fires during SSR, so the guard is implicit. Add an explicit `if (isServer) return;` check as safety net.
+### WebGPU Streaming Flow (Line/Area)
+
+```
+consumer: chart.pushData([timestamp, value])
+    │
+    ▼
+BaseChartElement._pendingData.push(point)
+    │  (RAF coalescing — multiple calls per frame batched)
+    ▼
+_flushPendingData() [RAF callback]
+    │
+    ├── _activeRenderer === 'webgpu'
+    │       │
+    │       ├── _webgpuLayer.appendPoints(newPoints)
+    │       │       GPUQueue.writeBuffer() → GPU memory
+    │       │       requestAnimationFrame (WebGPU render pass)
+    │       │
+    │       └── _circularBuffer.push(newPoints)
+    │               IF length > 10000:
+    │                   decimated = downsampleLTTB(buffer, 2000)
+    │                   _chart.setOption({ series: [{ data: decimated }] })
+    │                   [ECharts only gets decimated data — safe setOption, no appendData]
+    │
+    └── _activeRenderer === 'canvas'
+            │
+            └── (existing appendData path — unchanged)
+```
+
+### Moving Average Streaming Flow (Candlestick)
+
+```
+consumer: chart.pushData({ label, ohlc: [o,c,l,h], volume })
+    │
+    ▼
+LuiCandlestickChart.pushData() override
+    │
+    ├── _ohlcBuffer.push(bar)
+    │
+    ├── FOR EACH _maState:
+    │       updateMAState(state, bar.ohlc[1])   // O(1)
+    │       state.values.push(newMAValue)
+    │
+    ├── IF _ohlcBuffer.length > maxPoints:
+    │       trim buffer
+    │       _resetMAStates()  // full recompute from trimmed buffer — O(maxPoints)
+    │
+    └── scheduleFlush() [RAF]
+            │
+            ▼
+        _renderWithMA()
+            │
+            └── buildCandlestickOptionWithPrecomputedMA()
+                    _chart.setOption(option, { lazyUpdate: true })
+```
+
+---
+
+## Integration Points
+
+### External Integration
+
+| Integration | Pattern | Notes |
+|-------------|---------|-------|
+| WebGPU API | `navigator.gpu.requestAdapter()` async probe | Must be inside `firstUpdated()` — never at module load (crashes SSR) |
+| ECharts coordinate API | `echartsInstance.convertToPixel()` | Used by WebGPU layer to map data coords to canvas pixels after axis layout |
+| ECharts DataZoom events | `echartsInstance.on('datazoom', handler)` | WebGPU layer re-renders on zoom/pan to match ECharts axis viewport |
+
+### Internal Boundaries
+
+| Boundary | Communication | Notes |
+|----------|---------------|-------|
+| `BaseChartElement` ↔ `WebGPUDataLayer` | Direct method calls (`appendPoints`, `resize`, `destroy`) | WebGPUDataLayer is owned by BaseChartElement, not a Lit element |
+| `WebGPUDataLayer` ↔ ECharts | `convertToPixel` read-only | WebGPU reads axis mapping from ECharts; never writes to ECharts |
+| `LuiCandlestickChart` ↔ `MAState` | Direct import, no events | Incremental MA is a pure computation helper, no side effects |
+| `_flushPendingData` ↔ `WebGPUDataLayer` | `_webgpuLayer.appendPoints()` | Only called inside RAF callback — no concurrent access |
+
+---
+
+## Anti-Patterns
+
+### Anti-Pattern 1: Running WebGPU Probe at Module Load
+
+**What:** `const capability = await WebGPUDetector.probe()` at the top level of `base-chart-element.ts`
+**Why bad:** Module execution happens during SSR import. `navigator.gpu` does not exist in Node.js, crashing the SSR environment.
+**Instead:** Run probe inside `firstUpdated()`, guarded by `isServer`. This matches the existing pattern for `echarts.init()`.
+
+### Anti-Pattern 2: Letting ECharts Hold 1M Points in appendData Mode
+
+**What:** Keeping the existing `appendData` path for Line/Area after WebGPU is enabled, letting ECharts accumulate 1M points.
+**Why bad:** ECharts' Canvas 2D renderer re-paints the entire polyline on every update. At 1M points, each RAF is a 30-100ms Canvas operation. Interaction (zoom/pan) becomes unusable.
+**Instead:** Route data to WebGPU layer. ECharts gets only decimated scaffold data (2K points) for axis computation. ECharts remains fast; WebGPU renders the full dataset at GPU speed.
+
+### Anti-Pattern 3: Full MA Recomputation on Every Streaming Flush
+
+**What:** Calling the existing `_computeSMA` / `_computeEMA` over the full `_ohlcBuffer` array on every `_flushBarUpdates()` call.
+**Why bad:** O(N * M) where N = buffer size, M = number of MA configs. At 50K bars with 3 MA lines, each RAF does 150K floating-point operations before even calling `setOption`.
+**Instead:** Maintain `MAState` per config. Each new bar costs O(1) per MA. Full recompute only on buffer trim.
+
+### Anti-Pattern 4: Creating a New GPUDevice Per Chart Instance
+
+**What:** `WebGPUDataLayer.create()` calls `navigator.gpu.requestAdapter()` + `adapter.requestDevice()` each time.
+**Why bad:** Browsers limit concurrent WebGPU devices (similar to WebGL context limit of ~16). Each `requestDevice()` call also has async overhead (~50ms).
+**Instead:** Share a single `GPUDevice` across all chart instances on the page via a module-level singleton. The pattern used by ChartGPU: `{ adapter, device }` shared across instances. Individual chart render pipelines are separate, but the device is reused.
+
+### Anti-Pattern 5: Using WebGPU Without Axes Fallback for Non-Data Content
+
+**What:** Replacing ECharts entirely with WebGPU for all rendering including axes, labels, and tooltips.
+**Why bad:** Rendering text and UI controls in WebGPU requires significant custom code (text atlas, font rasterization, event hit detection). ECharts provides all of this battle-tested.
+**Instead:** Keep the layered canvas architecture. ECharts renders UI; WebGPU renders data pixels.
 
 ---
 
 ## Scaling Considerations
 
-| Concern | Approach |
-|---------|----------|
-| Many charts on one page | Each chart is an independent ECharts instance. Memory grows linearly. For dashboards with 10+ charts, consider lazy rendering (IntersectionObserver to defer init until chart enters viewport). |
-| Real-time streaming (1K updates/sec) | Use `setOption` with `lazyUpdate: true` to batch redraws. ECharts defers rendering until the next frame. Do not recreate the option object on each update — mutate the data array and call `setOption({ series: [{ data: newData }] })`. |
-| 1M+ data points | Use `enableGl` to activate echarts-gl's WebGL renderer (scatter3D). For 2D charts at 1M points, use `echarts/features` `LargeScaleFeature` and `series.large: true` (Canvas boost mode). |
-| SSR with fast FCP needed | Not in scope for v9.0. ECharts 5 SSR mode (`ssr: true`, `renderer: 'svg'`, `renderToSVGString()`) is available if future requirements demand it. |
+| Concern | At 100K points | At 1M points | At 10M points |
+|---------|----------------|--------------|---------------|
+| ECharts Canvas path | Fine (~60fps) | Sluggish (<15fps) | Unusable (<1fps) |
+| WebGPU data layer | Fine (trivial) | Fine (~60fps) | May need LTTB + level-of-detail |
+| JS heap (typed array) | ~0.4MB | ~4MB | ~40MB — watch GC |
+| MA computation (O(1)/tick) | Negligible | Negligible | Negligible |
+| Decimation (LTTB) | Not needed | 1M→2K in <10ms | Consider wasm |
 
 ---
 
 ## Sources
 
-- [Using Apache ECharts with Lit and TypeScript (DEV Community)](https://dev.to/manufac/using-apache-echarts-with-lit-and-typescript-1597) — HIGH confidence, direct Lit+ECharts implementation pattern
-- [GitHub: cherie-xf/lit-echarts](https://github.com/cherie-xf/lit-echarts) — MEDIUM confidence, existing Lit ECharts wrapper
-- [Apache ECharts SSR Handbook](https://apache.github.io/echarts-handbook/en/how-to/cross-platform/server/) — HIGH confidence, official docs
-- [Apache ECharts Import Handbook](https://apache.github.io/echarts-handbook/en/basics/import/) — HIGH confidence, official tree-shaking docs
-- [Apache ECharts v6 Migration Guide](https://echarts.apache.org/handbook/en/basics/release-note/v6-upgrade-guide/) — HIGH confidence, official docs
-- [GitHub: ecomfe/echarts-gl](https://github.com/ecomfe/echarts-gl) — HIGH confidence, official repo — confirmed v2.x only supports ECharts 5.x
-- [GitHub: ecomfe/vue-echarts](https://github.com/ecomfe/vue-echarts) — HIGH confidence, reference implementation for option API design
-- [ECharts Memory Leak from Dispose (Medium)](https://medium.com/@kelvinausoftware/memory-leak-from-echarts-occurs-if-not-properly-disposed-7050c5d93028) — MEDIUM confidence, documents dispose + null pattern
-- [Lit SSR Client Usage](https://lit.dev/docs/ssr/client-usage/) — HIGH confidence, official Lit SSR docs
-- [echarts-gl npm metadata](https://www.npmjs.com/package/echarts-gl) — HIGH confidence, confirmed v2.0.9, peerDep echarts ^5.1.2
+- [ECharts appendData vs setOption conflict (GitHub #12327)](https://github.com/apache/echarts/issues/12327) — HIGH confidence, confirms data wipe on setOption after appendData
+- [ECharts real-time performance bug (GitHub #21075)](https://github.com/apache/echarts/issues/21075) — MEDIUM confidence, 80K samples at 10fps ceiling
+- [ECharts streaming and scheduling (DeepWiki)](https://deepwiki.com/apache/echarts/2.4-streaming-and-scheduling) — MEDIUM confidence, internal scheduler documented
+- [ECharts features page — TypedArray, appendData](https://echarts.apache.org/en/feature.html) — HIGH confidence, official docs
+- [WebGPU with Canvas 2D sync pattern (GitHub Gist, Greggman)](https://gist.github.com/greggman/6eddf8a75ca99ba4533f75ffa624c5ea) — HIGH confidence, canonical two-canvas pattern
+- [WebGL text + Canvas 2D overlay (WebGL2Fundamentals)](https://webgl2fundamentals.org/webgl/lessons/webgl-text-canvas2d.html) — HIGH confidence, established layering pattern
+- [WebGPU browser support — all major browsers (web.dev)](https://web.dev/blog/webgpu-supported-major-browsers) — HIGH confidence, official announcement
+- [WebGPU browser support (caniuse)](https://caniuse.com/webgpu) — HIGH confidence, current compatibility table
+- [MDN: navigator.gpu.requestAdapter()](https://developer.mozilla.org/en-US/docs/Web/API/GPU/requestAdapter) — HIGH confidence, official API docs
+- [ChartGPU — WebGPU charting library (HN)](https://news.ycombinator.com/item?id=46693978) — MEDIUM confidence, real-world 1M+ WebGPU chart implementation
+- [ChartGPU GitHub](https://github.com/ChartGPU/ChartGPU) — MEDIUM confidence, architecture reference for WebGPU chart rendering
+- [EMA incremental formula reference](https://medium.com/@elinneon/real-time-calculation-of-exponential-moving-averages-with-boost-accumulators-in-c-8b462c086476) — MEDIUM confidence, O(1) EMA pattern
 
 ---
 
-*Architecture research for: @lit-ui/charts — ECharts + Lit.js web components*
-*Researched: 2026-02-28*
+*Architecture research for: @lit-ui/charts v10.0 — WebGPU rendering layer, 1M+ streaming, incremental MA*
+*Researched: 2026-03-01*

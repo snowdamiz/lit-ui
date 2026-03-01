@@ -1,492 +1,435 @@
-# Pitfalls Research: v9.0 Charts System
+# Pitfalls Research: v10.0 WebGPU Charts
 
-**Domain:** ECharts + ECharts GL chart components in Lit.js 3 Shadow DOM web component library
-**Researched:** 2026-02-28
-**Confidence:** HIGH (verified against Apache ECharts GitHub issues, Lit docs, ECharts handbook, MDN WebGL specs, and multiple community reports)
+**Domain:** Adding WebGPU rendering path, 1M+ streaming, and moving average overlay to an existing ECharts 5.6 + Lit 3 web component system
+**Researched:** 2026-03-01
+**Confidence:** HIGH (verified against MDN WebGPU specs, toji.dev WebGPU best practices, gpuweb/gpuweb Implementation Status wiki, Apache ECharts GitHub issues, and MDN typed array docs)
 
 ---
 
 ## Critical Pitfalls
 
-Mistakes that cause broken rendering, complete rewrites, or production crashes.
+Mistakes that cause broken rendering, production crashes, or architectural rewrites.
 
 ---
 
-### CRITICAL-01: Initializing ECharts Before the Shadow DOM Container Has Layout Dimensions
+### CRITICAL-01: WebGPU SSR Crash — `navigator.gpu` Referenced Without `isServer` Guard
 
 **What goes wrong:**
-`echarts.init()` is called in `connectedCallback()` or the body of `firstUpdated()` before the container div in the shadow root has received browser layout. ECharts reads `container.clientWidth` and `container.clientHeight` at init time — if both are 0, ECharts logs `"Can't get DOM width or height"` and silently renders an empty chart. The chart never draws even after data is set via `setOption`.
+Any module that references `navigator.gpu`, `GPUDevice`, or calls `navigator.gpu.requestAdapter()` at import time or in a non-guarded code path will throw `TypeError: Cannot read properties of undefined (reading 'requestAdapter')` during SSR. Node.js has no `navigator.gpu`. The @lit-labs/ssr environment provides no WebGPU shim. The crash happens at module load, before any component lifecycle fires, killing the entire Next.js or Astro SSR render pipeline.
 
 **Why it happens:**
-Lit's `firstUpdated()` fires after the initial render microtask resolves, but microtasks resolve before the browser performs layout and paint. The shadow root's container element exists in the DOM but has no measured dimensions yet. Developers assume `firstUpdated` means "the DOM is ready" — it means the shadow DOM is rendered into the document, not that layout has completed.
+Developers familiar with the existing `isServer` guard for ECharts (CRITICAL-04 from v9.0) may write the WebGPU detection in a shared utility module or in a class field initializer rather than inside a guarded lifecycle method. Class field initializers run at construction time, and Lit constructs element classes on the server during SSR for declarative shadow DOM registration — before `firstUpdated` is ever reached.
 
 **How to avoid:**
-Wrap the `echarts.init()` call inside `requestAnimationFrame` after awaiting `updateComplete`. This defers until after the browser's next layout/paint cycle, guaranteeing real dimensions:
+Follow the exact same three-layer defense established for ECharts in v9.0, applied to WebGPU:
+
+1. Never reference `navigator.gpu` outside of a function body guarded by `isServer` or `typeof navigator !== 'undefined'`.
+2. Put all WebGPU initialization inside `firstUpdated()`, which never fires during SSR.
+3. Add a belt-and-suspenders `isServer` return at the top of the WebGPU init path:
 
 ```typescript
-async firstUpdated() {
-  await this.updateComplete;
-  requestAnimationFrame(() => {
-    const container = this.shadowRoot!.querySelector<HTMLDivElement>('#chart')!;
-    this._chart = echarts.init(container, null, { renderer: 'canvas' });
-    this._chart.setOption(this._buildOption());
-  });
+import { isServer } from 'lit';
+
+private async _initWebGPU(): Promise<void> {
+  if (isServer) return; // SSR guard — navigator.gpu does not exist in Node.js
+  if (!navigator.gpu) {
+    this._webgpuUnavailable = true;
+    return;
+  }
+  const adapter = await navigator.gpu.requestAdapter();
+  // ...
 }
 ```
 
-Also ensure the container has explicit CSS dimensions before init. Use a CSS custom property with a fallback:
+4. In `_registerModules()` or any base-class method that may run in a mixed SSR+hydration context, wrap the WebGPU probe in a `typeof navigator !== 'undefined'` check as a secondary guard.
+
+**Warning signs:**
+- Next.js App Router build fails with `TypeError: Cannot read properties of undefined (reading 'gpu')`
+- Astro static build crashes on chart import
+- Error stack trace points to a class field or module-level expression, not a lifecycle method
+
+**Phase to address:** Phase 1 of the WebGPU milestone (WebGPU renderer integration) — the SSR guard must be the foundation before any WebGPU code path is written.
+
+---
+
+### CRITICAL-02: Reusing a Consumed GPUAdapter After Device Loss
+
+**What goes wrong:**
+A `GPUAdapter` becomes "consumed" after `requestDevice()` is called once on it. A WebGPU device loss event fires (`device.lost` resolves). The recovery code calls `consumedAdapter.requestDevice()` again on the same adapter instance. The browser returns a `GPUDevice` that is already lost — it resolves immediately as a lost device. The chart appears to recover but all WebGPU calls silently fail. The fallback to ECharts canvas is never triggered because the device is technically "created."
+
+**Why it happens:**
+The spec language around adapter consumption is not prominent in most WebGPU tutorials. Developers cache the adapter reference (e.g., `this._gpuAdapter = adapter`) and reuse it across reconnect/recovery cycles. Chrome's implementation returns an already-lost device from a consumed adapter with no thrown exception, creating a silent failure mode that is difficult to detect in testing.
+
+**How to avoid:**
+Never store the `GPUAdapter` reference past the initial `requestDevice()` call. On device loss recovery, always start from `navigator.gpu.requestAdapter()`:
+
+```typescript
+// WRONG — reuses consumed adapter
+const device = await this._gpuAdapter.requestDevice(); // returns lost device
+
+// CORRECT — fresh adapter on every recovery
+const freshAdapter = await navigator.gpu.requestAdapter();
+if (!freshAdapter) {
+  this._fallbackToECharts();
+  return;
+}
+const device = await freshAdapter.requestDevice();
+```
+
+Additionally, `requestAdapter()` can return `null` after repeated GPU process crashes (Chrome enforces a two-crashes-in-two-minutes limit before blocking further adapter requests). Handle `null` explicitly — do not assume it returns an adapter.
+
+**Warning signs:**
+- Chart appears to reinitialize after device loss but renders nothing
+- `device.lost` resolves immediately after "recovery"
+- No console error on recovery path but chart is blank
+- Reproduces in Chrome DevTools WebGPU device simulation
+
+**Phase to address:** Phase 1 (WebGPU renderer) — device loss handling must be designed at the same time as initial device acquisition, not added later.
+
+---
+
+### CRITICAL-03: Two Canvas Elements Sharing a Container — ECharts Canvas Blocks WebGPU Pointer Events
+
+**What goes wrong:**
+The WebGPU layer is a separate `<canvas>` element positioned behind the ECharts canvas. ECharts creates its own canvas and appends it to the chart container div. The ECharts canvas sits on top of the WebGPU canvas in the stacking order. `pointer-events` on the ECharts canvas intercepts all mouse/touch events, so the WebGPU layer never receives them. More critically: ECharts internally calls `canvas.getContext('2d')` on its canvas. If the same `<canvas>` element is used for both WebGPU and ECharts, `getContext` for one will fail — a canvas element can only hold one context type at a time. Calling `getContext('webgpu')` and then `getContext('2d')` on the same canvas element returns `null` for the second call.
+
+**Why it happens:**
+The natural instinct is to use the existing ECharts `#chart` container div and let both ECharts and WebGPU share a canvas. ECharts owns its canvas — it creates and manages it internally. There is no ECharts API to inject an existing canvas as the WebGPU render target for the chart internals.
+
+**How to avoid:**
+Use two separate `<canvas>` elements in the shadow root with explicit z-index layering:
 
 ```css
-:host {
-  display: block;
-  width: 100%;
-  height: var(--ui-chart-height, 300px);
+/* WebGPU canvas below ECharts canvas */
+#webgpu-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none; /* events pass through to ECharts layer above */
 }
-#chart {
-  width: 100%;
-  height: 100%;
+#echarts-container {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: transparent; /* ECharts canvas must be transparent for WebGPU to show through */
 }
 ```
 
-**Warning signs:**
-- Empty chart on first render but data is present
-- Chart renders correctly after browser resize
-- Console shows `"Can't get dom width or height"`
-- Chart works in Storybook but not in production (different layout timing)
+The ECharts canvas must have `background: transparent` (not the default white). Pass `{ backgroundColor: 'transparent' }` to `echarts.init()` theme or `setOption`.
 
-**Phase to address:** Phase 1 (Chart base component / `@lit-ui/charts` package setup)
+The WebGPU canvas must receive `pointer-events: none` — all interactive events are handled by ECharts' layer since ECharts controls the axis/tooltip coordinate system.
+
+**Warning signs:**
+- Blank WebGPU canvas despite successful device creation
+- ECharts tooltips work but WebGPU layer never renders visible content
+- Console error: `Failed to execute 'getContext' on 'HTMLCanvasElement': canvas already has context`
+- Stacking of canvases looks correct in DevTools Elements panel but render is wrong
+
+**Phase to address:** Phase 1 (WebGPU renderer integration) — the two-canvas architecture must be the initial design, not a retrofit.
 
 ---
 
-### CRITICAL-02: ECharts GL Context Exhaustion — "Too Many Active WebGL Contexts"
+### CRITICAL-04: Coordinate System Mismatch Between WebGPU Layer and ECharts Canvas Layer
 
 **What goes wrong:**
-Browsers enforce a hard limit of approximately 16 simultaneous WebGL contexts per page (exact limit varies by browser/driver). Each ECharts GL chart (`scatterGL`, `linesGL`, WebGL renderer) allocates at least one WebGL context per `zlevel`. When the page has more than ~12–16 GL charts simultaneously, or when charts are repeatedly created and destroyed without proper cleanup, the browser starts dropping the oldest contexts with `"WARNING: Too many active WebGL contexts. Oldest context will be lost."` — affected charts show a blank canvas or a frown icon.
+Data points rendered by WebGPU (e.g., a 1M-point line rendered in a GPU shader) visually misalign with ECharts-rendered elements (axes, tooltip crosshair, zoom window). The WebGPU layer renders at pixel coordinate (400, 200) while ECharts would place the same data point at (402, 198). At small datasets the error is imperceptible, but at 1M points the accumulated floating-point rounding diverges visibly. Pan/zoom operations via ECharts DataZoom update the ECharts axis range but the WebGPU shader still renders the old viewport — the two layers diverge completely during interaction.
 
 **Why it happens:**
-`chart.dispose()` alone does NOT fully release the WebGL context. The GPU memory and the WebGL context object itself can remain referenced until the garbage collector runs, which the browser may not do promptly. Each new chart created after hitting the limit causes the browser to forcibly destroy the oldest context on the page, corrupting any chart that was still using it.
+ECharts maintains its own internal coordinate transform chain: data domain → axis scale → grid pixel space → canvas pixel space. This transform includes grid padding, axis tick offsets, boundary gaps, and device pixel ratio scaling. The WebGPU shader knows none of this — it receives raw data values and must apply the same transform independently. Any discrepancy (floating-point accumulation, different DPR handling, different boundary gap assumptions) produces visible misalignment.
 
 **How to avoid:**
-Before calling `chart.dispose()` in `disconnectedCallback()`, explicitly release the WebGL context using the `WEBGL_lose_context` extension:
+The WebGPU layer must not compute its own data-to-pixel transform independently. Instead, it must read the transform from ECharts at render time via `chart.convertToPixel()`:
 
 ```typescript
-disconnectedCallback() {
-  super.disconnectedCallback();
-  if (this._chart) {
-    // Release WebGL context before dispose — dispose() alone is insufficient
-    const canvases = this._chart.getDom().getElementsByTagName('canvas');
-    for (const canvas of Array.from(canvases)) {
-      const gl = canvas.getContext('webgl') || canvas.getContext('webgl2');
-      gl?.getExtension('WEBGL_lose_context')?.loseContext();
-    }
-    this._chart.dispose();
-    this._chart = null;
-  }
-  this._resizeObserver?.disconnect();
-}
+// Extract the current axis transform from ECharts BEFORE rendering the WebGPU frame
+const pixelOrigin = this._chart.convertToPixel({ seriesIndex: 0 }, [dataMinX, dataMinY]);
+const pixelEnd = this._chart.convertToPixel({ seriesIndex: 0 }, [dataMaxX, dataMaxY]);
+// Pass pixelOrigin, pixelEnd, and canvas dimensions to WebGPU shader as uniforms
 ```
 
-Additionally, in dashboards with many GL charts, limit simultaneous GL charts to 8–10 and document this as a constraint in the component API.
+The WebGPU shader then applies a linear transform: `screenX = (dataX - dataMinX) / (dataMaxX - dataMinX) * (pixelEnd[0] - pixelOrigin[0]) + pixelOrigin[0]`.
 
-**Warning signs:**
-- Multiple chart components on the same page (dashboards)
-- SPA navigation that mounts/unmounts chart pages
-- `echarts-gl` `scatterGL` or `linesGL` series in use
-- Console shows "Too many active WebGL contexts" warning
-
-**Phase to address:** Phase 1 (base component) — disposal pattern must be established before any GL chart is built. Phase 2 or 3 (first GL chart) — verify with explicit context release.
-
----
-
-### CRITICAL-03: `appendData` + `setOption` Data Wipeout
-
-**What goes wrong:**
-A streaming chart uses `appendData()` to incrementally add data points. At some point, any call to `setOption()` — even to update a title, legend, color, or a completely unrelated option — silently clears all data previously loaded via `appendData`. The chart goes blank. This is a confirmed ECharts bug reported since v4.6.0 (GitHub Issue #12327) that has not been resolved as of ECharts 5.x.
-
-**Why it happens:**
-`setOption` performs a full diff-and-replace of the series data by design. When it detects that the new option has no explicit `data` field on a series that previously used `appendData`, it treats this as "remove all data." The two data-loading APIs (`appendData` and `setOption`) are architecturally incompatible for concurrent use on the same series.
-
-**How to avoid:**
-Choose one data loading strategy per chart component and never mix them:
-
-- **For real-time streaming charts (line, scatter GL):** Use `appendData()` exclusively. Never call `setOption()` after the initial configuration. Store the full option at init time and do not update it during streaming. If chart options need to change during streaming (e.g., axis range, colors), `dispose()` and reinitialize the chart from scratch.
-
-- **For charts with periodic full data replacement (bar, heatmap, pie):** Use `setOption({ notMerge: false })` exclusively. Never use `appendData`.
-
-- **Architectural pattern:** Set the initial ECharts option once at component creation with all structural options (axes, grid, series config). After that, if streaming, use only `appendData`. Separate "structural update" from "data update."
-
-**Warning signs:**
-- Line/scatter chart clears during updates
-- Streaming data disappears after style changes
-- `setOption` called anywhere after `appendData` has run
-
-**Phase to address:** Phase 2 (Line Chart with real-time streaming) — establish the boundary before building any streaming chart.
-
----
-
-### CRITICAL-04: ECharts Crashes During SSR with `@lit-labs/ssr`
-
-**What goes wrong:**
-The existing LitUI library uses `@lit-labs/ssr` for server-side rendering. When a chart component is imported and rendered on the server, ECharts immediately throws `ReferenceError: window is not defined` during module evaluation — not during `echarts.init()`, but at import time, because ECharts probes `window` for environment detection when the module is first loaded. This crashes the entire SSR render pipeline for Next.js App Router and Astro users.
-
-**Why it happens:**
-ECharts accesses `window` and `document` at module evaluation time (confirmed in GitHub Issue #20475). Unlike most browser libraries that gate browser API access behind function calls, ECharts runs detection code at the module level. Node.js has no `window` object, so importing echarts in a Node.js process throws immediately.
-
-**How to avoid:**
-Apply a three-layer defense:
-
-1. **Dynamic import in Lit lifecycle:** Never statically import `echarts` or `echarts-gl` at the top of a chart component module. Use dynamic `import()` inside `firstUpdated()` or a client-only lifecycle method:
+This transform must be recomputed on every ECharts DataZoom event and on every chart resize. Register for ECharts events:
 
 ```typescript
-// WRONG — crashes SSR at module evaluation
-import * as echarts from 'echarts/core';
-
-// CORRECT — deferred to browser
-async firstUpdated() {
-  await this.updateComplete;
-  const { init } = await import('echarts/core');
-  // ... rest of init
-}
+this._chart.on('dataZoom', () => this._syncWebGPUTransform());
+this._chart.on('rendered', () => this._syncWebGPUTransform());
 ```
 
-2. **`isServer` guard from LitUI core:** Wrap any ECharts-related logic (consistent with the project's existing `isServer` guard pattern):
-
-```typescript
-import { isServer } from '@lit-labs/ssr/lib/is-server.js';
-
-connectedCallback() {
-  super.connectedCallback();
-  if (isServer) return; // Skip all chart init on server
-}
-```
-
-3. **Render a static placeholder during SSR:** In `render()`, detect server-side context and return a sized `<div>` placeholder with a `<slot>` for a static image fallback. This gives SSR something to render without importing ECharts.
+Also handle device pixel ratio: WebGPU canvas width/height must be set to `container.clientWidth * devicePixelRatio`, and the CSS size must be `clientWidth`. ECharts handles DPR internally — verify both layers use the same DPR scale.
 
 **Warning signs:**
-- Next.js App Router build fails with `window is not defined`
-- Astro build crashes on chart component import
-- Works in client-only apps but fails in SSR builds
+- Data points render in correct relative order but at slightly wrong pixel positions
+- Misalignment gets worse after zoom/pan operations
+- Alignment is correct at zoom level 100% but wrong when zoomed in
+- Visual ghosting where WebGPU points appear slightly offset from ECharts reference lines
 
-**Phase to address:** Phase 1 (package setup) — the dynamic import pattern must be the foundation before any chart is built. Add SSR test in the existing Express/Node.js SSR example.
+**Phase to address:** Phase 1 (WebGPU renderer) — the coordinate synchronization mechanism must be implemented at the same time as the first data render, not after visual testing reveals misalignment.
 
 ---
 
-### CRITICAL-05: Shadow DOM Event Retargeting Breaks ECharts Pointer Hit Detection
+### CRITICAL-05: `appendData` Heap Growth Has No Native ECharts Truncation — Must Be Managed Externally
 
 **What goes wrong:**
-ECharts' internal rendering engine (ZRender) calculates which chart element the user clicked on using `event.target` and the canvas's bounding rect. Inside a Shadow DOM, browser event retargeting changes `event.target` from the canvas element to the shadow host custom element. ZRender then calculates pointer coordinates relative to the wrong element, causing tooltip, click, and brush interactions to fire on wrong data points or not fire at all.
+At 1M+ points, `appendData` accumulates data in ECharts' internal data store indefinitely. ECharts has no `removeData()` API and no maximum-points option for the `appendData` path. After 30 minutes of streaming at 1000 points/second, ECharts holds 1.8M internal data objects. The browser tab's heap exceeds 2GB. Chrome kills the tab with "Aw, Snap." The streaming chart that was designed to run continuously cannot survive a single work session.
 
 **Why it happens:**
-When a composed event (click, mousemove, pointerdown) crosses a shadow boundary, the browser retargets `event.target` to the shadow host (`<lui-line-chart>`) to preserve encapsulation. ZRender uses `event.target.getBoundingClientRect()` internally for coordinate calculation. The shadow host and the canvas are the same size, but the canvas may have a different offsetParent, causing subtly wrong coordinates in certain layout contexts.
+`appendData` is documented for large initial data loads, not continuous unbounded streaming. The ECharts internal data model stores each appended point as a JS object in its `dataStore` — not as a typed array. At 1M points, this is ~800MB of heap (1M × ~800 bytes per ECharts data item). The existing `maxPoints` property on `BaseChartElement` uses a circular buffer for `'buffer'` mode — but it does NOT apply to `'appendData'` mode. The `pushData()` → `appendData()` path in `_flushPendingData()` has no truncation logic.
 
 **How to avoid:**
-This is primarily a ZRender/ECharts issue, but it manifests specifically in Shadow DOM contexts. The mitigation for v9.0 is:
+The `appendData` path in `BaseChartElement._flushPendingData()` must be extended with a periodic truncation strategy. The clean solution: maintain a separate TypeScript-side data array (a pre-allocated ring buffer), and when it exceeds `maxPoints`, call `chart.clear()` + `setOption` with the windowed data to reset ECharts' internal store, then resume `appendData`. This is a planned full-reset cycle rather than a continuous append:
 
-1. **Ensure the canvas fills the shadow host 1:1:** Keep the `#chart` container at `position: absolute; inset: 0;` inside `:host { display: block; position: relative; }`. This makes the shadow host and canvas bounding rects identical, eliminating coordinate discrepancy.
+```typescript
+// Pseudo-pattern for bounded appendData streaming
+if (this._totalAppended > this.maxPoints) {
+  // Reset cycle: clear ECharts internal store, reinit with current window
+  this._chart.clear();
+  this._chart.setOption(this._buildInitOption()); // structural option only, no data
+  this._chart.appendData({ seriesIndex: 0, data: this._ringBuffer.snapshot() });
+  this._totalAppended = this._ringBuffer.length;
+} else {
+  this._chart.appendData({ seriesIndex: 0, data: points });
+  this._totalAppended += points.length;
+}
+```
 
-2. **Do not use `position: fixed` or complex nesting** for chart containers in shadow roots — this is what causes the bounding rect mismatch.
-
-3. **Test tooltip/click events early in Phase 1.** If events are wrong, the fix is layout-level, not a code patch.
-
-4. **Note:** standard pointer events (`click`, `mousemove`) have `composed: true` and do cross the shadow boundary — the issue is retargeting the hit-test element, not event propagation itself.
+The TypeScript-side ring buffer itself should be a pre-allocated `Float32Array` (or `Float64Array` for timestamp precision), not a plain JS array, to avoid the GC pressure that makes the main thread pause during streaming.
 
 **Warning signs:**
-- Tooltip shows wrong data on hover
-- Click events fire on adjacent data points
-- Interaction issues only when chart is inside shadow DOM, not in a plain div
+- Chrome Task Manager shows the chart tab's memory growing continuously over time
+- Flame chart shows GC pauses increasing in duration as session extends
+- Tab crashes after extended streaming with "Out of Memory" or "Aw, Snap"
+- `performance.memory.usedJSHeapSize` trending upward with no plateau
 
-**Phase to address:** Phase 1 (base component) — verify event hit-testing works before building any interactive chart.
+**Phase to address:** Phase 1 (1M+ streaming) — the memory management strategy must be the foundation of the streaming architecture, not an afterthought when a memory alert fires.
 
 ---
 
 ## High-Severity Pitfalls
 
-Mistakes that cause significant bugs, performance failures, or developer experience problems.
+Mistakes that cause significant bugs, DX problems, or performance failures.
 
 ---
 
-### HIGH-01: `window.resize` Instead of `ResizeObserver` for Chart Resizing
+### HIGH-01: WebGPU Browser Coverage Is ~65% — Fallback Chain Must Be First-Class
 
 **What goes wrong:**
-Chart is initialized at 600px wide. Parent container is resized by CSS or JavaScript to 400px. The chart remains at 600px — it does not resize. `chart.resize()` is never called because the resize only affects the shadow root container, not the browser window.
+The WebGPU renderer is developed and tested in Chrome 113+ on macOS. It is shipped as the default renderer for all chart types. Users on Firefox 140 (WebGPU not yet stable on that version), Safari iOS 25, or any Linux Chrome without a discrete GPU get blank charts with no error. The `webgpu-unavailable` event fires, but the host application has no handler because the developer assumed WebGPU was universally available.
 
 **Why it happens:**
-`window.addEventListener('resize', ...)` only fires when the browser viewport changes. Container-level resizing (caused by flex/grid layout changes, parent resizes, panel collapses) does not trigger window resize. Developers familiar with older charting libraries (Chart.js pre-3.0, ECharts without ResizeObserver) use window resize as a default.
+As of March 2026, WebGPU is available in Chrome/Edge 113+ (desktop), Firefox 141+ (Windows only), Firefox 145+ (macOS Apple Silicon only), and Safari 26 (requires macOS Tahoe / iOS 26 — new OS versions not yet widely deployed). Real-world coverage is approximately 65% of browsers. Safari on iOS 25 and earlier has no WebGPU support. Firefox on Linux and Android is behind a flag. Any deployment that assumes WebGPU as a baseline will fail for 35% of users.
 
 **How to avoid:**
-Use native `ResizeObserver` on the shadow root's chart container. Do NOT use `window.resize` or polyfill-based observers (`@juggle/resize-observer` — polyfills only observe main document mutations, not shadow root mutations):
+The fallback chain must be: WebGPU → WebGL (echarts-gl) → Canvas (ECharts default). The auto-detection and graceful degradation must be unconditional — not opt-in. The `enable-webgpu` attribute should be advisory, not a gate. The component must probe availability and fall through automatically:
 
 ```typescript
-private _resizeObserver?: ResizeObserver;
-
-firstUpdated() {
-  // ... echarts.init() ...
-  const container = this.shadowRoot!.querySelector('#chart')!;
-  this._resizeObserver = new ResizeObserver(() => {
-    this._chart?.resize();
-  });
-  this._resizeObserver.observe(container);
-}
-
-disconnectedCallback() {
-  super.disconnectedCallback();
-  this._resizeObserver?.disconnect();
-  this._resizeObserver = undefined;
-}
-```
-
-**Warning signs:**
-- Chart overflows its container after layout changes
-- Chart correct on initial render but wrong size after tab/panel changes
-- Resize only works on browser window drag
-
-**Phase to address:** Phase 1 (base component) — build this into the base `LitChartElement` class so all chart types inherit correct resize behavior.
-
----
-
-### HIGH-02: Bundle Contamination — Importing `echarts-gl` into the Main LitUI Bundle
-
-**What goes wrong:**
-`import 'echarts-gl'` or `import { ScatterGLChart } from 'echarts-gl'` appears at the top of any chart component. Any user who installs `@lit-ui/charts` and imports even a simple line chart also downloads the full ECharts GL package (~1.5–2MB minified, ~500–600KB gzipped) even if they never use a WebGL chart. This makes the charts package unusable for projects with bundle size budgets.
-
-**Why it happens:**
-Tree-shaking does not eliminate ECharts GL. Unlike the base `echarts` package which has proper tree-shakeable subpath exports (`echarts/core`, `echarts/charts`, `echarts/components`), `echarts-gl` does not support the same granular tree-shaking and must be imported as a whole. Any static top-level import of `echarts-gl` loads the entire library unconditionally.
-
-**How to avoid:**
-Use dynamic imports at the component level for all GL-dependent chart types. GL charts (`ScatterGL`, `LinesGL`, `Bar3D`) must be separate component classes from their 2D counterparts:
-
-```typescript
-// lui-scatter-gl.ts — ONLY imports echarts-gl, dynamically
-async firstUpdated() {
-  await this.updateComplete;
-  // Dynamically import both echarts and echarts-gl
-  const [{ init, use }, { ScatterGLChart }, { CanvasRenderer }] = await Promise.all([
-    import('echarts/core'),
-    import('echarts-gl/charts'),
-    import('echarts/renderers'),
-  ]);
-  use([ScatterGLChart, CanvasRenderer]);
-  // ... init chart
-}
-```
-
-Additionally, in the package's `package.json`, list `echarts-gl` as an optional peer dependency (not a regular dependency), so users who only need 2D charts don't install it at all:
-
-```json
-{
-  "peerDependencies": {
-    "echarts": ">=5.3.0",
-    "echarts-gl": ">=2.0.0"
-  },
-  "peerDependenciesMeta": {
-    "echarts-gl": { "optional": true }
+private async _detectRenderer(): Promise<'webgpu' | 'webgl' | 'canvas'> {
+  if (isServer) return 'canvas';
+  if (navigator.gpu) {
+    const adapter = await navigator.gpu.requestAdapter();
+    if (adapter) return 'webgpu';
   }
+  if (this._isWebGLSupported()) return 'webgl';
+  return 'canvas';
 }
 ```
 
-**Warning signs:**
-- Bundle analyzer shows `echarts-gl` in the initial chunk
-- `npx lit-ui add line-chart` installs echarts-gl as a dependency
-- Any non-GL chart component file has a static `import ... from 'echarts-gl'`
+Document in the skill file and API table that WebGPU is used automatically when available and that `canvas` is always the final fallback.
 
-**Phase to address:** Phase 1 (package setup) — the package.json peer dependency structure must be correct before any GL chart is built.
+**Warning signs:**
+- Blank charts reported from Linux or older Safari users
+- `webgpu-unavailable` event fires but no fallback rendering appears
+- CI tests pass (Chrome-based headless) but production reports failures on Firefox/Safari
+
+**Phase to address:** Phase 1 (WebGPU renderer) — the fallback detection must be the first thing written, before any WebGPU rendering code.
 
 ---
 
-### HIGH-03: Real-Time Update Rate Exceeding ECharts Render Capacity
+### HIGH-02: GPUDevice Loss During Rendering — Lost Event Must Be `.then()` Not `await`
 
 **What goes wrong:**
-A streaming line chart connected to a WebSocket receives data at 50ms intervals (20 updates/second). `setOption()` is called on every message. The chart renders at only 3–5fps, appears to freeze, accumulates a backlog of pending updates, and eventually locks the browser's main thread.
+The WebGPU device loss handler is written as `await device.lost`. This line blocks the initialization function indefinitely in the normal case where the device never fails. If `_initWebGPU()` is `async` and the developer writes `await device.lost` after initialization, the function hangs forever in the "awaiting device loss" state, consuming a microtask queue entry for the lifetime of the page.
+
+In the actual device loss scenario: a GPU process crash occurs (e.g., Chrome's 10-second GPU watchdog fires, or another tab consumes all GPU memory). The `device.lost` promise resolves. If the recovery code tries to reinitialize by calling `_initWebGPU()` recursively, and that function also `await`s `device.lost` on the new device, a chain of nested `await`s accumulates — each level holding memory and preventing GC of the previous device.
 
 **Why it happens:**
-ECharts `setOption()` is a synchronous operation that performs a full diff of the chart state, recomputes layouts, and schedules a re-render. Calling it at 20Hz on a line chart with 10,000 points consumes ~10–30ms per call — far more than the 50ms update interval. The main thread is never free to process the render queue.
-
-Additionally, ECharts internally batches renders using `requestAnimationFrame` (max ~60fps), so calling `setOption` at 20Hz with animations enabled means each update triggers an animated transition that won't complete before the next update arrives.
+`device.lost` is a Promise, and the natural Async/Await reflex is to `await` it. The MDN documentation contains the correct pattern (`.then()` callback), but developers skim past the note that says "probably don't want to `await` on it."
 
 **How to avoid:**
-1. **Disable ECharts animations for real-time streaming:**
-   ```typescript
-   this._chart.setOption({
-     animation: false,
-     animationDuration: 0,
-   });
-   ```
-
-2. **Batch incoming data and call `setOption` (or `appendData`) at most once per animation frame using RAF coalescing:**
-   ```typescript
-   private _pendingData: [number, number][] = [];
-   private _rafId?: number;
-
-   onMessage(point: [number, number]) {
-     this._pendingData.push(point);
-     if (this._rafId === undefined) {
-       this._rafId = requestAnimationFrame(() => {
-         this._flush();
-         this._rafId = undefined;
-       });
-     }
-   }
-
-   private _flush() {
-     if (!this._pendingData.length) return;
-     // appendData with accumulated points
-     this._chart?.appendData({ seriesIndex: 0, data: this._pendingData });
-     this._pendingData = [];
-   }
-   ```
-
-3. **Use `TypedArray` (`Float32Array`) for data in appendData** — reduces garbage collection pressure compared to plain JS arrays.
-
-4. **Cap displayed data window:** For a streaming line chart showing the last N seconds, maintain a circular buffer and only render a bounded dataset rather than accumulating all points indefinitely.
-
-**Warning signs:**
-- Chart update rate appears much lower than incoming data rate
-- `setOption` calls visible in flame chart consuming main thread
-- Browser tab becomes unresponsive during streaming
-- `requestAnimationFrame` callbacks queuing behind each other
-
-**Phase to address:** Phase 2 (Line Chart) — streaming architecture must be established at the first real-time chart.
-
----
-
-### HIGH-04: ECharts Memory Leak — `dispose()` Without `null` Assignment
-
-**What goes wrong:**
-`chart.dispose()` is called in `disconnectedCallback()`, but the component property `this._chart` retains the reference to the disposed ECharts instance. Chrome heap snapshots show ECharts instance objects accumulating in memory, each holding references to DOM nodes (the chart container divs from previous shadow roots), keeping them alive even after disconnection. Memory grows on every SPA navigation.
-
-**Why it happens:**
-`chart.dispose()` cleans up internal ECharts state and removes canvas elements but does not release the JavaScript reference to the ECharts instance object itself. The instance object has closures and internal references that keep a subgraph of objects alive. The Lit component property `this._chart` is the remaining root reference preventing GC.
-
-**How to avoid:**
-Always `null` the reference immediately after `dispose()`:
+Always handle device loss with a non-blocking `.then()` callback attached immediately after device creation:
 
 ```typescript
-disconnectedCallback() {
-  super.disconnectedCallback();
-  this._resizeObserver?.disconnect();
-  this._resizeObserver = undefined;
-  if (this._chart) {
-    this._chart.dispose();
-    this._chart = null; // REQUIRED — dispose() alone leaves the reference alive
+const device = await adapter.requestDevice();
+
+// CORRECT: non-blocking
+device.lost.then((info) => {
+  this._gpuDevice = null;
+  if (info.reason !== 'destroyed') {
+    // Transient loss — attempt recovery with a fresh adapter
+    this._initWebGPU(); // does NOT await device.lost recursively
+  } else {
+    // Intentional destroy — fall back to ECharts canvas
+    this._fallbackToECharts();
   }
-}
-```
-
-Also null the reference in error recovery paths and component property setters.
-
-**Warning signs:**
-- Memory profiler shows ECharts instances accumulating across route navigations
-- `echarts.getInstanceByDom(container)` returns an instance after disconnect
-- Component count in memory grows unbounded
-
-**Phase to address:** Phase 1 (base component) — establish the disposal pattern in the base class so all chart types inherit it correctly.
-
----
-
-### HIGH-05: CSS Custom Properties Not Resolved When Building ECharts Theme Object
-
-**What goes wrong:**
-The LitUI design system uses `--ui-*` CSS custom properties for all theming (colors, radius, spacing). A developer tries to use these tokens directly in the ECharts option object:
-
-```typescript
-// BROKEN — ECharts canvas does not resolve CSS variables
-this._chart.setOption({
-  color: ['var(--ui-color-primary)', 'var(--ui-color-secondary)'],
 });
+
+// WRONG: blocks forever in normal operation
+await device.lost; // DO NOT DO THIS
 ```
-
-The chart renders with `var(--ui-color-primary)` as a literal string color, which is invalid CSS for a canvas context. Canvas `fillStyle` does not evaluate CSS custom properties. ECharts silently ignores invalid colors and falls back to its own defaults.
-
-**Why it happens:**
-ECharts renders to a `<canvas>` element. The Canvas 2D API resolves colors at draw time using the browser's CSS parser, but CSS custom properties are not evaluated by the canvas context — only by the CSS cascade. The ECharts team has explicitly declined to add native CSS variable support, stating they want to keep the API platform-independent. (GitHub Issue #16044)
-
-**How to avoid:**
-Read resolved CSS custom property values before building the ECharts option. Use `getComputedStyle` on the host element, which is inside the shadow DOM and can access inherited `--ui-*` values:
-
-```typescript
-private _readToken(name: string, fallback: string): string {
-  return (
-    getComputedStyle(this).getPropertyValue(name).trim() || fallback
-  );
-}
-
-private _buildTheme() {
-  return {
-    color: [
-      this._readToken('--ui-color-primary', '#3b82f6'),
-      this._readToken('--ui-color-secondary', '#8b5cf6'),
-      this._readToken('--ui-color-success', '#10b981'),
-      this._readToken('--ui-color-warning', '#f59e0b'),
-      this._readToken('--ui-color-danger', '#ef4444'),
-    ],
-    textStyle: {
-      color: this._readToken('--ui-color-foreground', '#0f172a'),
-      fontFamily: this._readToken('--ui-font-sans', 'system-ui'),
-    },
-  };
-}
-```
-
-Call `_buildTheme()` inside `firstUpdated()` (after the element is in the DOM and can see inherited CSS), and rebuild when the host document switches dark/light mode.
-
-For dark mode support: `setOption` must be called again when `.dark` class toggles on the document root. Observe this with a `MutationObserver` on `document.documentElement`.
 
 **Warning signs:**
-- Chart colors don't match the rest of the design system
-- Chart colors are ECharts defaults (blue, orange, green) not `--ui-*` values
-- `var(--ui-...)` visible as literal text in a canvas debugger
+- WebGPU initialization function never resolves in normal operation (hung promise)
+- Memory profiler shows previous GPUDevice objects not being collected
+- Recovery loop creates increasing numbers of "awaiting device loss" microtask entries
 
-**Phase to address:** Phase 1 (base component) — establish the `_readToken` / `_buildTheme` pattern before any chart uses color tokens.
+**Phase to address:** Phase 1 (WebGPU renderer) — establish the `.then()` pattern immediately when first writing device acquisition.
 
 ---
 
-### HIGH-06: WebGL Not Available — No Fallback to 2D Canvas
+### HIGH-03: Plain JS Array as Streaming Ring Buffer — GC Pauses at 1M Points
 
 **What goes wrong:**
-A user runs a WebGL chart on a corporate machine with GPU acceleration disabled (common in enterprise environments, VMs, and some mobile browsers). `echarts-gl` silently fails to initialize or logs a cryptic WebGL error. The chart renders as a blank space with no error message to the user.
+The streaming ring buffer is implemented as a plain JavaScript `Array`: `this._ringBuffer: number[] = []`. At 1M entries, each `number` in a JS Array is a boxed V8 SMI or heap number object. The GC must scan and potentially move these ~8MB of boxed values on every major collection. At streaming rates of 1000 points/second, major GCs fire every 60–120 seconds and pause the main thread for 200–500ms — visible as a periodic chart freeze with no data update for half a second.
 
 **Why it happens:**
-ECharts GL assumes WebGL is available and does not provide automatic fallback. In environments where WebGL is blocked (corporate proxy, hardware acceleration disabled, headless browser), `canvas.getContext('webgl')` returns `null` and ECharts GL throws or silently no-ops.
+Plain JS arrays are the idiomatic choice. The GC impact is invisible at 10K or 100K points but becomes the dominant source of main-thread jank at 1M+ points. The existing `_circularBuffer` in `BaseChartElement` is `unknown[]` — correct for the small datasets it was designed for, but wrong for 1M-point streaming.
 
 **How to avoid:**
-Implement WebGL feature detection before initializing any GL chart, and provide a graceful fallback:
+The 1M-point streaming ring buffer must be a pre-allocated `Float32Array` (for values) or `Float64Array` (for timestamps where millisecond precision is needed). Allocate once at initialization with the maximum size:
 
 ```typescript
-private _isWebGLSupported(): boolean {
-  if (typeof window === 'undefined') return false;
-  try {
-    const canvas = document.createElement('canvas');
-    return !!(
-      canvas.getContext('webgl2') ||
-      canvas.getContext('webgl') ||
-      canvas.getContext('experimental-webgl')
-    );
-  } catch {
-    return false;
-  }
-}
+// Pre-allocate at maxPoints capacity — no GC pressure from element boxing
+private _xBuffer = new Float64Array(this.maxPoints); // timestamps
+private _yBuffer = new Float32Array(this.maxPoints); // values
+private _writeHead = 0;
+private _totalWritten = 0;
 
-async firstUpdated() {
-  await this.updateComplete;
-  requestAnimationFrame(async () => {
-    if (!this._isWebGLSupported()) {
-      this._webglUnavailable = true;
-      this.requestUpdate();
-      return;
-    }
-    // Proceed with echarts-gl init
+// Write to ring: O(1), no allocation
+private _writePoint(x: number, y: number): void {
+  const idx = this._writeHead % this.maxPoints;
+  this._xBuffer[idx] = x;
+  this._yBuffer[idx] = y;
+  this._writeHead++;
+  this._totalWritten++;
+}
+```
+
+For the ECharts `appendData` API, a temporary typed array can be constructed from the ring buffer snapshot for the flush — this one allocation per RAF frame is acceptable; it is the continuous per-point boxing that causes GC pauses.
+
+**Warning signs:**
+- Chrome DevTools Performance tab shows periodic GC events > 100ms during streaming
+- `requestAnimationFrame` callback duration spikes at regular intervals (every 60–120s)
+- Heap snapshot shows millions of `HeapNumber` objects
+- Jank is reproducible only after streaming has run for several minutes
+
+**Phase to address:** Phase 1 (1M+ streaming) — the typed array ring buffer must be the initial implementation, not a performance fix applied later.
+
+---
+
+### HIGH-04: Moving Average Off-By-One at Stream Start — Warm-Up Window Outputs Incorrect Values
+
+**What goes wrong:**
+The `_computeSMA` function in `candlestick-option-builder.ts` correctly returns `null` for indices `0..period-2`. However, when MA is computed on a streaming ring buffer that wraps around (after the buffer has exceeded `maxPoints` and been truncated), the "first" data point in the visible window is actually index `N - maxPoints` in the historical stream — it already has a valid warm-up history. The MA function receives a sliced array starting at the wrong index, treats the first `period-1` entries as warm-up, and outputs `null` for them even though valid MA values could be computed from the preceding data that was truncated.
+
+The reverse error also occurs: on initial stream start with fewer than `period` points, the MA function must return `null` — but if the warm-up is not handled, dividing a partial sum by `period` returns a small wrong value rather than `null`.
+
+**Why it happens:**
+Both `_computeSMA` and `_computeEMA` in the existing implementation are correct for batch/static computation over a complete array. They are written as pure functions that receive the full closes array and return a result per index. When called on a ring buffer snapshot that starts mid-stream, the function has no context about which entries are "first" in historical time versus first in the current snapshot array.
+
+**How to avoid:**
+Two separate concerns must be handled:
+
+1. **Initial warm-up:** The existing `null` return for `i < period - 1` is correct and must not be changed. ECharts line series handles `null` values as gaps — the MA line simply starts after the warm-up period.
+
+2. **Ring buffer truncation continuity:** When the streaming buffer truncates old data, pre-seed the MA calculation with the last `period - 1` values from the discarded window before the truncation point. These seed values are not rendered but ensure the first visible MA value is correct. Store them in a `_maSeedBuffer: Map<period, number[]>` on the chart component.
+
+For EMA specifically: the EMA seed (the SMA of the first `period` values) must be carried across truncation boundaries. The current `_computeEMA` recalculates from scratch on every call — correct for static data, wrong for streamed data with truncation.
+
+**Warning signs:**
+- MA line starts late or shows a flat segment at the beginning of each truncation cycle
+- EMA values reset to wrong levels after the ring buffer wraps
+- MA line has a visible discontinuity (gap then restart) at `maxPoints` boundary
+- Unit test: compute MA on 2× `maxPoints` points in two halves — the second half MA values should be continuous with the first half
+
+**Phase to address:** Phase 2 (moving average overlay) — the seed-carry mechanism must be part of the initial MA implementation for streaming charts, not added after a bug report.
+
+---
+
+### HIGH-05: ECharts `setOption` for Theme Updates Wipes `appendData` Stream Data in WebGPU Mode
+
+**What goes wrong:**
+This is CRITICAL-03 from v9.0 re-manifesting in a new context. The `_applyThemeUpdate()` method in `BaseChartElement` calls `this._chart.setOption(colorUpdate)` when the dark mode class changes. In v9.0, this was safe because the color update only touches the `color` array, not `series.data`. In v10.0, if the chart has active `appendData` streaming AND a WebGPU render layer, the theme update `setOption` call still clears the ECharts internal data store — even though ECharts is now only rendering axes, tooltip, and DataZoom UI (not the actual data points, which are rendered by WebGPU). The axes and tooltip disappear momentarily (ECharts data wipeout) while the WebGPU layer is unaffected.
+
+**Why it happens:**
+The existing `_applyThemeUpdate()` was designed when ECharts owned all the data. In v10.0, ECharts may own only the chrome (axes, tooltip) while WebGPU owns the data rendering. But ECharts still has an internal series with `appendData`-loaded data for tooltip hit-testing and coordinate transforms. A `setOption` call without explicit series data resets that internal series.
+
+**How to avoid:**
+The `_applyThemeUpdate()` path must be aware of streaming mode. When `_streamingMode === 'appendData'` and WebGPU is active, the theme update must NOT call `setOption` on the ECharts series. Instead, only the non-series options (color palette, axis line colors, label styles) should be updated via `setOption` with explicit `replaceMerge: []` to prevent series data merge behavior:
+
+```typescript
+private _applyThemeUpdate(): void {
+  if (!this._chart) return;
+  const update = this._themeBridge.buildColorUpdate();
+  // CRITICAL-03 guard: if appendData is active, use replaceMerge to prevent
+  // series data wipeout. 'series' is not in replaceMerge, so series data is preserved.
+  const mergeOpts = this._streamingMode === 'appendData'
+    ? { replaceMerge: ['color'] }
+    : undefined;
+  this._chart.setOption(update, mergeOpts as object);
+}
+```
+
+**Warning signs:**
+- Axes and tooltip disappear momentarily on dark mode toggle during streaming
+- After dark/light toggle, chart requires a pushData call to restore axis visibility
+- ECharts internal series shows zero data after theme update despite active streaming
+
+**Phase to address:** Phase 1 (WebGPU renderer + streaming integration) — the theme update path must be reviewed as part of the streaming/WebGPU integration, not treated as unchanged from v9.0.
+
+---
+
+### HIGH-06: WebGPU Canvas Not Resized in Sync With ECharts Canvas on ResizeObserver
+
+**What goes wrong:**
+The existing `ResizeObserver` in `BaseChartElement` calls `this._chart.resize()` when the container changes size. This correctly resizes the ECharts canvas. The WebGPU canvas (a separate `<canvas>` element) is positioned `inset: 0` via CSS, so its CSS size updates automatically — but its `canvas.width` and `canvas.height` attributes (which control the actual render resolution) are not updated. WebGPU renders at the old resolution and scales up/down to fill the new CSS size, producing blurry or distorted points. After resize, the coordinate transform between ECharts and WebGPU diverges (see CRITICAL-04).
+
+**Why it happens:**
+CSS `position: absolute; inset: 0` automatically resizes the CSS layout box but does not update `canvas.width`/`canvas.height`. WebGPU renders to the resolution specified by these attributes — they must be manually set when the container size changes. This is a well-known canvas pitfall that applies to WebGL and WebGPU alike.
+
+**How to avoid:**
+Extend the `ResizeObserver` callback to also resize the WebGPU canvas:
+
+```typescript
+this._resizeObserver = new ResizeObserver(() => {
+  this._chart?.resize(); // ECharts canvas
+  this._resizeWebGPUCanvas(); // WebGPU canvas
+  this._syncWebGPUTransform(); // Re-sync coordinate transform (CRITICAL-04)
+});
+
+private _resizeWebGPUCanvas(): void {
+  if (!this._webgpuCanvas || !this._gpuContext) return;
+  const dpr = window.devicePixelRatio ?? 1;
+  const w = this._webgpuCanvas.clientWidth * dpr;
+  const h = this._webgpuCanvas.clientHeight * dpr;
+  this._webgpuCanvas.width = w;
+  this._webgpuCanvas.height = h;
+  this._gpuContext.configure({
+    device: this._gpuDevice!,
+    format: navigator.gpu.getPreferredCanvasFormat(),
+    alphaMode: 'premultiplied',
   });
 }
 ```
 
-Render a fallback message or a 2D chart equivalent when `_webglUnavailable` is true. Expose a `webgl-unavailable` custom event so the host application can handle it.
+Note: `configure()` must be called again after resizing because the swap chain format may need to be re-established. This is a WebGPU-specific requirement that has no WebGL equivalent.
 
 **Warning signs:**
-- Blank chart space in enterprise/VM environments
-- No console error shown to user
-- Works in Chrome/Firefox dev machines but not in QA environment
+- WebGPU layer appears blurry or blocky after browser window resize
+- ECharts layer is sharp after resize, WebGPU layer is not
+- High-DPR displays (Retina) show consistently lower-resolution WebGPU layer
+- Coordinate sync works at initial render but breaks after resize
 
-**Phase to address:** Phase 3 or whichever phase introduces the first GL chart (Scatter GL).
+**Phase to address:** Phase 1 (WebGPU renderer) — WebGPU canvas resize must be built into the ResizeObserver callback alongside the existing ECharts resize.
 
 ---
 
@@ -496,146 +439,175 @@ Mistakes that cause technical debt, DX problems, or non-obvious bugs.
 
 ---
 
-### MEDIUM-01: Using `notMerge: true` on Every `setOption` Call
+### MEDIUM-01: EMA Seed Value Recomputed From Scratch on Every `_flushBarUpdates` Call
 
 **What goes wrong:**
-The developer sets `notMerge: true` on every `setOption` call to ensure a "clean" update. This causes ECharts to destroy and recreate every chart element on each update — axes, legend, grid, tooltip, series — rather than diffing. The smooth update animations stop working. CPU usage spikes on each update. Canvas flickers on fast updates.
+`_computeEMA` in `candlestick-option-builder.ts` is called on every `_flushBarUpdates()` invocation with the full `_ohlcBuffer` array. For a 1000-point buffer with a 20-period EMA, this is O(N) computation every RAF frame (~16ms budget). At flush rates near 60fps with rapid data ingestion, this EMA recomputation alone can consume 2–3ms per frame. With multiple EMA overlays (e.g., EMA9, EMA21, EMA50), the cost multiplies. At 500K points (the intended candlestick buffer size for streaming), this becomes visibly expensive.
 
 **Why it happens:**
-`notMerge: true` is found in many ECharts code snippets and tutorials as a safe default. Developers use it to avoid stale option merging without understanding the performance cost.
+The current implementation is stateless and pure — correct for static rendering, but not optimal for streaming. Each full recomputation discards the previous EMA state and recalculates from the seed.
 
 **How to avoid:**
-Use `notMerge: false` (the default) for most updates. Use `notMerge: true` only when fundamentally changing the chart type or removing series. For data updates, let ECharts' diff engine handle transitions. For option structure changes, `notMerge: true` is appropriate exactly once during a reconfiguration, not as a runtime default.
+Cache the last computed EMA value for each period and apply the incremental formula for new points only:
 
-**Phase to address:** Phase 2+ (all chart update paths)
+```typescript
+// Incremental EMA: only compute for new bars since last flush
+// ema[i] = close[i] * k + ema[i-1] * (1 - k)
+// Store: this._emaState: Map<period, { lastEma: number, lastIndex: number }>
+```
+
+This reduces EMA update cost from O(N) to O(new_bars_since_last_flush) — typically 1–5 bars per RAF frame.
+
+**Warning signs:**
+- Candlestick chart FPS drops with multiple MA overlays enabled
+- Chrome DevTools flame chart shows `_computeEMA` taking > 1ms per frame
+- Adding each additional MA period linearly increases frame time
+
+**Phase to address:** Phase 2 (moving average overlay) — build incremental EMA from the start; retrofitting requires interface changes to the option builder.
 
 ---
 
-### MEDIUM-02: Initializing Multiple ECharts Instances with the Same Container DOM Element
+### MEDIUM-02: DataView vs Float32Array — Wrong Type for Interleaved Vertex Data
 
 **What goes wrong:**
-A chart component is disconnected and reconnected to the DOM (e.g., by moving it in the document, or via framework keyed list reconciliation). On reconnect, `firstUpdated` is called again and `echarts.init()` is called on a container that still has an ECharts instance attached (from the previous connection). ECharts throws `"Already have an echarts instance"` and the chart does not reinitialize.
+A `DataView` is used to write interleaved vertex data (x, y, timestamp, value) to a WebGPU buffer because `DataView` allows mixed types. At 1M points with a 4-float-per-vertex layout (16 bytes/vertex = 16MB), writing via `DataView.setFloat32()` is 5–10× slower than writing the same data as a `Float32Array` view over the same `ArrayBuffer`. The buffer upload takes 80–120ms instead of 8–12ms, causing a visible frame stall during stream initialization.
 
 **Why it happens:**
-`firstUpdated` in Lit runs only once per component lifetime — but if the component is moved in the DOM (not disconnected/reconnected as a new element), `connectedCallback` fires without `firstUpdated`. If `echarts.init()` is called in `connectedCallback` without checking for an existing instance, the double-init error occurs.
+`DataView` is the natural choice when dealing with heterogeneous data (mixed int/float), and many WebGPU tutorial examples use it for clarity. The performance difference is not obvious from reading the code.
 
 **How to avoid:**
-Always check for an existing ECharts instance before calling `init()`:
+For homogeneous float vertex data (which covers 95% of chart data shapes), use a `Float32Array` directly:
 
 ```typescript
-connectedCallback() {
-  super.connectedCallback();
-  if (this._chart && !this._chart.isDisposed()) {
-    // Chart already initialized — just call resize in case dimensions changed
-    this._chart.resize();
-    return;
-  }
+// Preferred: Float32Array for homogeneous float vertex data
+const vertices = new Float32Array(pointCount * 2); // x, y pairs
+for (let i = 0; i < pointCount; i++) {
+  vertices[i * 2] = xValues[i];
+  vertices[i * 2 + 1] = yValues[i];
 }
+device.queue.writeBuffer(vertexBuffer, 0, vertices);
+
+// Use DataView only when mixing float32 and uint32 in the same struct
+// (e.g., RGBA packed into uint32 alongside float positions)
 ```
 
-Or, use `echarts.getInstanceByDom(container)` and dispose before reinitializing:
+For timestamp data specifically: timestamps in Unix milliseconds exceed the safe range of `Float32Array` (max ~16.7M, but timestamps are ~1.7T). Use `Float64Array` for timestamps or normalize to `Float32Array` offsets from a base epoch.
 
-```typescript
-const existing = echarts.getInstanceByDom(container);
-if (existing) existing.dispose();
-this._chart = echarts.init(container, ...);
-```
+**Warning signs:**
+- Buffer upload in DevTools shows unexpectedly high CPU time
+- `DataView.setFloat32` visible in flame chart at vertex upload time
+- Initial render takes 2–3 render frames instead of 1
 
-**Phase to address:** Phase 1 (base component) — guard this in the base class.
+**Phase to address:** Phase 1 (WebGPU renderer) — the vertex format decision drives the buffer upload architecture.
 
 ---
 
-### MEDIUM-03: `appendData` Is Incompatible with `dataset`
+### MEDIUM-03: Safari WebGPU Device Loss on Specific Pipeline Configurations
 
 **What goes wrong:**
-A developer reads the ECharts handbook chapter on `dataset` for efficient data sharing across series. They implement a streaming chart using `dataset` for data management, then try to use `appendData` to incrementally add points. `appendData` silently does nothing when a series is bound to a `dataset` — it only works with inline series `data` arrays.
+A render pipeline that works correctly in Chrome and Firefox causes an immediate device loss (`destroyed` reason) on Safari 26. The error surfaces as `device.lost` resolving with no validation message — Safari's WebGPU backend triggers an internal assertion without reporting which pipeline configuration caused the failure. The chart falls back to ECharts canvas correctly (per HIGH-01), but the WebGPU path is effectively unusable on Safari for that configuration.
 
 **Why it happens:**
-ECharts documentation for `appendData` and `dataset` is in separate handbook sections. The incompatibility is noted in a footnote of the `appendData` docs: "Note: Streaming cannot be used with datasets."
+As of Safari 26 beta (March 2026), there are known bugs in Safari's WebGPU backend where specific bind group layouts or render pass configurations trigger internal failures (see imgui WebGPU issue #9103). Safari's implementation is newer and less battle-tested than Chrome's Dawn-based implementation. Some features that are spec-compliant and Chrome-working are not yet stable in Safari's backend.
 
 **How to avoid:**
-For any chart that needs streaming, use inline `series.data` arrays (not `dataset`). Reserve `dataset` for static or fully-replaced charts (bar, pie, heatmap). Document this constraint in the streaming chart API.
+Keep WebGPU pipeline configurations conservative for the initial implementation:
+- Use only `f32` (not `f16`) in shaders — `shader-f16` is an optional feature that Safari may not support
+- Avoid depth/stencil attachments unless explicitly needed (chart overlays don't need them)
+- Request only `requiredFeatures: []` (baseline features) at `requestDevice()` time
+- Test the `device.lost` recovery path explicitly against Safari 26 by simulating loss in Chrome DevTools, as Safari provides no debug message
 
-**Phase to address:** Phase 2 (Line Chart) — streaming architecture decision.
+Document Safari 26 as "beta-supported" (not stable) in the component API until Safari's implementation matures.
+
+**Warning signs:**
+- Chart works in Chrome but shows blank WebGPU canvas in Safari
+- `device.lost` resolves with `reason: 'destroyed'` on Safari immediately after init
+- No validation error in Safari console (Safari suppresses the message)
+- Same shader/pipeline works in Chrome and Firefox but not Safari
+
+**Phase to address:** Phase 1 (WebGPU renderer) — Safari compatibility testing should be part of the initial renderer implementation, not a post-launch discovery.
 
 ---
 
-### MEDIUM-04: Dark Mode Theme Not Rebuilt on Document Class Change
+### MEDIUM-04: Moving Average NaN Propagation Silently Breaks Chart Legend
 
 **What goes wrong:**
-ECharts theme is built from `--ui-*` CSS tokens at component init time. User toggles dark mode on the page (`.dark` class added to `<html>`). All other LitUI components update via `:host-context(.dark)` CSS. The chart does not update because ECharts themes are JavaScript objects passed to the chart at init — CSS cascade changes do not propagate into the canvas.
+The MA series in `candlestick-option-builder.ts` returns `null` (not `NaN`) for warm-up indices — this is correct, as ECharts renders `null` as a gap in line series. However, if input data contains `NaN` values (e.g., a missing close price in a partial streaming bar), `_computeSMA` propagates `NaN` through the sliding window: `NaN + validValue = NaN`, so the entire window starting from the first `NaN` close produces `NaN` MA values. ECharts renders `NaN` differently from `null` — depending on ECharts version, `NaN` may render as a line connecting to zero, or as a gap, or cause the legend tooltip to display "NaN" instead of a number.
 
 **Why it happens:**
-Unlike HTML elements styled via CSS, ECharts draws to a canvas using JavaScript-resolved color values. Once the theme object is built and passed to ECharts, changing the CSS tokens has no effect unless the chart is explicitly told to re-read them.
+`_computeSMA` uses `slice.reduce((sum, v) => sum + v, 0) / period`. If any value in the slice is `NaN`, the sum becomes `NaN` and propagates. Streaming data may contain `NaN` when a bar is partially formed (close price not yet available) or when upstream data has missing values.
 
 **How to avoid:**
-Observe `document.documentElement` for class mutations and rebuild the theme on dark/light toggle:
+Filter `NaN` explicitly in the MA computation and treat it as a gap:
 
 ```typescript
-private _colorSchemeObserver?: MutationObserver;
-
-firstUpdated() {
-  // ... chart init ...
-  this._colorSchemeObserver = new MutationObserver(() => {
-    this._applyTheme(); // Re-read --ui-* tokens and call setOption with new colors
+function _computeSMA(closes: number[], period: number): (number | null)[] {
+  return closes.map((_, i) => {
+    if (i < period - 1) return null;
+    const slice = closes.slice(i - period + 1, i + 1);
+    const valid = slice.filter(v => !isNaN(v) && isFinite(v));
+    if (valid.length < period) return null; // insufficient valid values
+    return valid.reduce((sum, v) => sum + v, 0) / period;
   });
-  this._colorSchemeObserver.observe(document.documentElement, {
-    attributes: true,
-    attributeFilter: ['class'],
-  });
-}
-
-disconnectedCallback() {
-  super.disconnectedCallback();
-  this._colorSchemeObserver?.disconnect();
-  // ...
 }
 ```
 
-**Phase to address:** Phase 1 (base component) or Phase 5 (CSS token theming system phase).
+For EMA: if the seed SMA computation encounters a `NaN` close, the entire EMA for that period should return `null` until a clean window is established.
 
----
+**Warning signs:**
+- MA legend tooltip shows "NaN" instead of a numeric value
+- MA line drops to zero briefly then recovers after a bad data point
+- Chart displays correctly with clean data but breaks when data has gaps or missing prices
 
-### MEDIUM-05: `echarts-gl` `scatterGL` Cannot Be Tree-Shaken
-
-**What goes wrong:**
-A developer follows ECharts' tree-shaking guide and imports only `LineChart`, `BarChart`, `CanvasRenderer` from `echarts/charts` and `echarts/renderers`. This produces a correctly minimized bundle for 2D charts. They then add `scatterGL` from `echarts-gl`. Unlike base ECharts, `echarts-gl` does not expose subpath exports for individual chart types — importing `echarts-gl/charts` for just `ScatterGLChart` pulls in the entire `echarts-gl` module including all 3D primitives, globe, and bar3D.
-
-**How to avoid:**
-Accept this limitation. Isolate `echarts-gl` entirely to GL-specific component files (never imported by 2D chart components), use dynamic `import()` to lazy-load the GL module, and list `echarts-gl` as an optional peer dependency. The GL bundle will always be ~500–600KB gzipped for any GL chart — there is no granular tree-shaking available as of early 2026.
-
-**Phase to address:** Phase 1 (package architecture decision) — document this constraint explicitly.
+**Phase to address:** Phase 2 (moving average overlay) — NaN handling must be part of the initial MA implementation; it is not obvious from static test data.
 
 ---
 
 ## Performance Traps
 
-Patterns that work at small scale but degrade severely with larger datasets or higher update frequencies.
+Patterns that work at small scale but fail as data grows.
 
 | Trap | Symptoms | Prevention | When It Breaks |
 |------|----------|------------|----------------|
-| Plain JS arrays for streaming data | GC pauses during rapid updates, stuttering | Use `Float32Array`/`Int32Array` for appendData | > 10,000 points / > 10 updates/sec |
-| `setOption` on every incoming data event | Main thread lock, <5fps chart updates | Batch with RAF coalescing, call at most 1× per frame | > 5 updates/sec |
-| ResizeObserver without debounce | Multiple resize calls per drag pixel | Not critical for ECharts (resize is cheap), but add 16ms debounce if triggering redraws elsewhere | Continuous resize drag |
-| Multiple GL charts on same page without context limits | "Too many WebGL contexts" warning, charts go blank | Cap at 8 simultaneous GL chart instances, explicit loseContext on dispose | > 12 GL charts visible simultaneously |
-| `animation: true` (default) on streaming charts | Transitions pile up behind real-time data, visible lag | Set `animation: false` at chart init for any streaming chart type | > 5 updates/sec with animations |
-| Loading full `echarts` (not tree-shaken) in each chart component | All chart types download 1MB+ even if user only uses one | Use `echarts/core` + selective imports + `echarts.use()` in every chart file | Always — this is a baseline requirement |
-| `notMerge: true` as default `setOption` flag | CPU spike per update, animation disabled | Use `notMerge: false` (default); only use `true` for structural chart reconfiguration | Any update faster than ~2 seconds |
+| Plain `number[]` ring buffer for 1M+ points | GC pauses 200–500ms every 60–120s | Pre-allocate `Float32Array`/`Float64Array` at `maxPoints` capacity | > 100K points in buffer |
+| Calling `_computeSMA`/`_computeEMA` on full buffer per RAF | MA computation takes > 1ms per frame; multiplies with number of MA overlays | Incremental EMA with cached state; only compute new bars | > 10K bars in buffer with multiple MA periods |
+| `appendData` with no truncation strategy | Heap grows to 1–2GB+ after 20–30 minutes of 1000pts/sec streaming | Periodic clear+reset cycle at `maxPoints` boundary (CRITICAL-05) | > 300K accumulated points via appendData |
+| WebGPU buffer uploaded per `pushData` call | GPU stall on buffer write each point | Batch writes in RAF flush; write typed array once per frame | > 100 pushData calls/sec |
+| ECharts and WebGPU coordinate sync only at init | Misalignment after DataZoom pan/zoom; permanent divergence after resize | Sync on every `rendered`, `dataZoom`, and `ResizeObserver` event | First pan/zoom interaction |
+| `DataView` for homogeneous float vertex data | Buffer upload 5–10× slower than `Float32Array` | Use `Float32Array` directly for float-only vertex data | > 10K vertices uploaded per frame |
+| Shader compilation blocking first render | Visible stall on chart first show | Compile pipelines eagerly in `_initWebGPU` before first data arrives | Every initial page load with WebGPU |
 
 ---
 
 ## Integration Gotchas
 
-Common mistakes when connecting to external systems.
+Common mistakes when adding these features to the existing system.
 
 | Integration | Common Mistake | Correct Approach |
 |-------------|----------------|------------------|
-| SSR frameworks (Next.js, Astro) | Static import of `echarts` at module top level | Dynamic `import()` inside `firstUpdated()` with `isServer` guard |
-| CSS token system (`--ui-*`) | Passing `var(--ui-...)` strings directly to ECharts | `getComputedStyle(this).getPropertyValue('--ui-...')` to resolve values before passing to ECharts |
-| Dark mode toggle | Build theme once at init, never update | MutationObserver on `document.documentElement` class, rebuild theme on change |
-| WebSocket streaming | Call `setOption` on every message | Batch in RAF queue; use `appendData` for line/scatter series |
-| SPA navigation (Vue Router, React Router) | `dispose()` without nulling reference, no `loseContext()` | Full cleanup: `loseContext()` → `dispose()` → `null` → `observer.disconnect()` |
-| CLI `npx lit-ui add scatter-gl` | Installing `echarts-gl` as a regular dependency for 2D-only users | Make `echarts-gl` an optional peer dependency in `@lit-ui/charts` |
+| `navigator.gpu` in Lit SSR | Referencing `navigator.gpu` outside `isServer` guard | Wrap all WebGPU access in `isServer` guard, initialize only in `firstUpdated()` |
+| GPUAdapter recovery | Reusing `this._gpuAdapter` after device loss | Always call `navigator.gpu.requestAdapter()` fresh; never store adapter past `requestDevice()` |
+| ECharts + WebGPU dual-canvas | Using same `<canvas>` for both contexts | Two separate canvas elements; WebGPU below (`z-index: 0`), ECharts above (`z-index: 1`) |
+| DataZoom coordinate sync | Computing WebGPU transform once at init | Re-read ECharts `convertToPixel()` on every `dataZoom` and `rendered` event |
+| appendData + dark mode toggle | `_applyThemeUpdate()` `setOption` call wiping appendData stream data | Use `replaceMerge` to prevent series data merge on theme-only `setOption` calls |
+| ResizeObserver + WebGPU canvas | CSS resize updates layout but not `canvas.width`/`canvas.height` | Manually update WebGPU canvas attributes in ResizeObserver; call `configure()` again after resize |
+| Moving average on ring buffer | Recomputing full MA from buffer snapshot | Carry warm-up seed values across truncation boundaries; use incremental EMA state |
+| ECharts appendData unbounded | Assuming appendData respects `maxPoints` | Manage truncation externally: periodic `chart.clear()` + `setOption` + re-append from ring buffer |
+
+---
+
+## Technical Debt Patterns
+
+Shortcuts that seem reasonable but create long-term problems.
+
+| Shortcut | Immediate Benefit | Long-term Cost | When Acceptable |
+|----------|-------------------|----------------|-----------------|
+| Skip WebGPU canvas resize handling | Simpler initial implementation | Blurry WebGPU layer on resize; coordinate mismatch after resize | Never — resize is a day-1 user action |
+| Plain JS array for streaming ring buffer | Less code; familiar pattern | GC pauses at 1M points; tab crash at 1M+ points | Never for 1M-point streaming target |
+| Full `_computeEMA` recalculation per flush | Stateless, easy to test | O(N) CPU per frame; chart drops below 60fps with large buffers | Only for initial MA proof-of-concept, must be fixed before shipping |
+| Skip `device.lost` handler | Simpler initial code | Silent chart freeze on GPU process crash; no recovery path | Never — device loss is a real user scenario |
+| Ignore `requestAdapter()` returning `null` | No additional error handling | Unhandled rejection crash when GPU is unavailable | Never — null return is a documented, real outcome |
+| Use `setOption` to pass coordinate hints to WebGPU | Avoids custom state management | Triggers CRITICAL-05 (appendData wipeout) if streaming is active | Never while streaming is active |
 
 ---
 
@@ -643,15 +615,17 @@ Common mistakes when connecting to external systems.
 
 Things that appear complete but are missing critical pieces.
 
-- [ ] **Chart renders:** Verify it also renders correctly when the host container has `display: none` → `display: block` transition (common with tab panels). ECharts may have zero-dimension on first render if inside a hidden panel.
-- [ ] **Real-time chart:** Verify WebSocket disconnect and reconnect does not accumulate duplicate ECharts instances or unbounded memory growth.
-- [ ] **Dark mode:** Verify chart colors actually change when `.dark` is toggled on `<html>`, not just CSS-styled elements around the chart.
-- [ ] **SSR build:** Verify `npm run build` for the Next.js App Router example does not crash with `window is not defined` after adding any chart component.
-- [ ] **Multiple charts on page:** Verify 10 GL charts on a single page show no "too many WebGL contexts" warning and all render correctly.
-- [ ] **Dispose on unmount:** Verify memory profiler shows no chart instance or canvas element accumulation after 10 mount/unmount cycles.
-- [ ] **CSS token theming:** Verify `getPropertyValue` returns a non-empty string — in copy-source mode, `--ui-color-primary` may not be defined if the user hasn't imported the token system. All `_readToken` calls need a non-empty fallback value.
-- [ ] **Chart resize in tab panel:** Verify chart calls `resize()` when a hidden tab becomes visible. Lit's tab component dispatches a custom `tab-changed` event — the chart component should listen and call `this._chart?.resize()`.
-- [ ] **appendData max data cap:** Verify the streaming chart does not grow unbounded in memory — implement a max-points cap and rolling window.
+- [ ] **WebGPU renderer:** Verify it falls back to ECharts canvas silently on Safari iOS 25, Firefox Linux, and Chrome with `--disable-gpu` flag.
+- [ ] **WebGPU renderer:** Verify `device.lost` handler fires during recovery and a new adapter+device is requested (not reused), and the ECharts canvas fallback is activated if recovery fails.
+- [ ] **1M+ streaming:** Verify the tab's heap size plateaus after 10 minutes of 1000 pts/sec streaming — it must not grow continuously.
+- [ ] **1M+ streaming:** Verify the GC profile shows no individual GC pause > 50ms during streaming (indicates GC is scanning boxed JS objects, not typed arrays).
+- [ ] **Moving average:** Verify MA line output is identical whether computed in one batch or in two halves (stream truncation continuity test).
+- [ ] **Moving average:** Verify `NaN` in the close price does not produce `NaN` in the MA series (input validation test).
+- [ ] **Coordinate sync:** Verify WebGPU points align with ECharts axis ticks after zoom-in, zoom-out, and pan (not just at initial zoom level).
+- [ ] **Coordinate sync:** Verify alignment is correct on Retina/HiDPI displays (DPR != 1).
+- [ ] **SSR guard:** Verify `npm run build` for the Next.js App Router example passes without `navigator is not defined` or `Cannot read properties of undefined (reading 'gpu')` after adding any v10.0 component.
+- [ ] **Theme update:** Verify dark mode toggle during active streaming does not clear the ECharts axis/DataZoom state.
+- [ ] **Canvas z-index:** Verify the ECharts tooltip fires correctly when the WebGPU canvas is in the stacking order below ECharts (pointer-events must not be blocked).
 
 ---
 
@@ -661,15 +635,16 @@ When pitfalls occur despite prevention, how to recover.
 
 | Pitfall | Recovery Cost | Recovery Steps |
 |---------|---------------|----------------|
-| CRITICAL-01: Zero-dimension init | LOW | Add `requestAnimationFrame` wrapper around `echarts.init()`. Redeploy. |
-| CRITICAL-02: WebGL context exhaustion | MEDIUM | Add `loseContext()` before `dispose()` in all GL chart components. Test in isolation then with full dashboard. |
-| CRITICAL-03: appendData + setOption wipeout | HIGH | Audit all `setOption` calls in streaming chart components. Split into "init setOption" (once) and "data update via appendData" (streaming). Possible architectural rewrite of streaming chart. |
-| CRITICAL-04: SSR crash | MEDIUM | Convert all ECharts imports to dynamic `import()` in lifecycle methods. Add `isServer` guard. Add SSR test to CI. |
-| CRITICAL-05: Shadow DOM event offset | LOW-MEDIUM | Fix host element layout to `position: relative; display: block` with chart container `position: absolute; inset: 0`. Verify bounding rects match. |
-| HIGH-01: window.resize instead of ResizeObserver | LOW | Replace `window.addEventListener('resize', ...)` with `ResizeObserver` on container. Clean up in disconnect. |
-| HIGH-02: Bundle contamination from echarts-gl | HIGH | Move all GL chart components to dynamic imports. Update package.json to optional peer dependency. Requires restructuring component module graph. |
-| HIGH-05: CSS tokens not resolving | LOW | Add `getComputedStyle` resolution step. Add non-empty fallbacks to all token reads. |
-| MEDIUM-04: Dark mode not updating | LOW | Add MutationObserver on documentElement. Rebuild theme on class change. |
+| CRITICAL-01: SSR crash from navigator.gpu | LOW | Add `isServer` guard before navigator.gpu reference; move to `firstUpdated()`. Redeploy. |
+| CRITICAL-02: Consumed GPUAdapter on recovery | LOW | Remove `this._gpuAdapter` field; call `requestAdapter()` inline on each init/recovery. |
+| CRITICAL-03: Dual-canvas context conflict | HIGH | Refactor shadow root template to two separate canvas elements; update all WebGPU+ECharts init code. Requires re-testing full coordinate sync. |
+| CRITICAL-04: Coordinate mismatch | MEDIUM | Add `convertToPixel()` sync on `dataZoom` and `rendered` events; audit DPR handling in both layers. |
+| CRITICAL-05: appendData heap growth | HIGH | Add external truncation cycle (clear + setOption + re-append at maxPoints); add typed array ring buffer. Requires redesign of streaming data path. |
+| HIGH-02: `await device.lost` blocking | LOW | Replace `await device.lost` with `.then()` callback. Easy fix but requires verifying recovery path. |
+| HIGH-03: Plain JS array GC pauses | MEDIUM | Refactor ring buffer from `number[]` to pre-allocated `Float32Array`/`Float64Array`. Requires updating all write and read paths. |
+| HIGH-04: Moving average off-by-one on truncation | MEDIUM | Add seed-carry state to MA computation; add truncation continuity unit test. |
+| HIGH-05: Theme update wipes stream data | LOW | Add `replaceMerge` option to `_applyThemeUpdate()` when `_streamingMode === 'appendData'`. |
+| HIGH-06: WebGPU canvas not resized | LOW | Extend ResizeObserver callback with canvas attribute update and `configure()` call. |
 
 ---
 
@@ -679,45 +654,42 @@ How roadmap phases should address these pitfalls.
 
 | Pitfall | Prevention Phase | Verification |
 |---------|------------------|--------------|
-| CRITICAL-01: Zero-dimension init | Phase 1 (base component) | Automated test: render chart in hidden container, show, verify dimensions |
-| CRITICAL-02: WebGL context exhaustion | Phase 1 (disposal pattern) + Phase 3 (first GL chart) | Manual test: 15 GL chart instances on one page, verify zero warnings |
-| CRITICAL-03: appendData + setOption wipeout | Phase 2 (Line Chart streaming) | Unit test: appendData, then setOption(title), verify data not cleared |
-| CRITICAL-04: SSR crash | Phase 1 (package setup) | CI: add chart import to Next.js App Router example, verify build |
-| CRITICAL-05: Shadow DOM event hit-test | Phase 1 (base component) | Manual test: click data points in shadow DOM, verify correct tooltip |
-| HIGH-01: ResizeObserver | Phase 1 (base component) | Manual test: resize container via CSS, verify chart resizes |
-| HIGH-02: Bundle contamination | Phase 1 (package structure) | Bundle analyzer: verify echarts-gl absent from line-chart chunk |
-| HIGH-03: Update rate overload | Phase 2 (streaming architecture) | Performance test: 50ms interval, verify 60fps chart rendering |
-| HIGH-04: Dispose memory leak | Phase 1 (base component) | Memory profiler: 10 mount/unmount cycles, verify no instance growth |
-| HIGH-05: CSS tokens not resolving | Phase 1 (base component) + Phase 5 (theming) | Visual test: verify chart colors match `--ui-color-primary` |
-| HIGH-06: WebGL not available fallback | Phase 3 (first GL chart) | Test with hardware acceleration disabled, verify fallback renders |
-| MEDIUM-01: notMerge: true default | Phase 2+ (chart updates) | Code review: search for `notMerge: true` in update call paths |
-| MEDIUM-02: Double-init on reconnect | Phase 1 (base component) | Test: move chart element in DOM, verify no double-init error |
-| MEDIUM-04: Dark mode not updating | Phase 5 (theming) | Manual test: toggle dark mode, verify chart colors change |
-| MEDIUM-05: echarts-gl tree-shaking | Phase 1 (package architecture) | Bundle analyzer: verify GL code absent from 2D chart bundles |
+| CRITICAL-01: SSR crash navigator.gpu | Phase 1 (WebGPU renderer) | CI: Next.js App Router build must pass with v10.0 chart component imported |
+| CRITICAL-02: Consumed GPUAdapter | Phase 1 (WebGPU renderer) | Manual test: DevTools WebGPU device loss simulation; verify clean recovery |
+| CRITICAL-03: Dual-canvas context conflict | Phase 1 (WebGPU renderer) | Visual test: both layers render simultaneously with no `getContext` error |
+| CRITICAL-04: Coordinate mismatch | Phase 1 (WebGPU renderer) | Visual test: data points align with axis ticks at 3 zoom levels + after pan |
+| CRITICAL-05: appendData heap growth | Phase 1 (1M+ streaming) | Memory test: 10-minute stream at 1000 pts/sec, verify heap plateaus |
+| HIGH-01: WebGPU fallback chain | Phase 1 (WebGPU renderer) | Test: disable WebGPU in Chrome flags, verify ECharts canvas renders |
+| HIGH-02: device.lost await pattern | Phase 1 (WebGPU renderer) | Code review: search for `await device.lost` — must not appear anywhere |
+| HIGH-03: Plain JS array GC pauses | Phase 1 (1M+ streaming) | GC profile: no pause > 50ms after 5 minutes of 1000 pts/sec streaming |
+| HIGH-04: Moving average off-by-one | Phase 2 (MA overlay) | Unit test: MA(20) on 2000 pts in 2 batches of 1000 matches MA(20) on full 2000 pts |
+| HIGH-05: Theme update wipes stream | Phase 1 (WebGPU renderer + streaming integration) | Manual: toggle dark mode during active streaming; verify axes remain |
+| HIGH-06: WebGPU canvas resize | Phase 1 (WebGPU renderer) | Test: resize browser window during streaming; verify WebGPU layer remains sharp |
+| MEDIUM-01: O(N) EMA per flush | Phase 2 (MA overlay) | Performance: measure `_computeEMA` call duration with 10K bar buffer + 3 MA overlays |
+| MEDIUM-02: DataView vs Float32Array | Phase 1 (WebGPU renderer) | Code review: vertex buffer writes must use typed array views, not DataView |
+| MEDIUM-03: Safari pipeline device loss | Phase 1 (WebGPU renderer) | Test on Safari 26 beta; verify graceful canvas fallback with no uncaught rejection |
+| MEDIUM-04: NaN in MA computation | Phase 2 (MA overlay) | Unit test: `_computeSMA` with NaN input returns null, not NaN, for affected window |
 
 ---
 
 ## Sources
 
-- [Apache ECharts GitHub Issue #12327](https://github.com/apache/echarts/issues/12327) — `setOption` clears data after `appendData`
-- [Apache ECharts GitHub Issue #20475](https://github.com/apache/echarts/issues/20475) — `window is not defined` in Next.js SSR
-- [Apache ECharts GitHub Issue #16044](https://github.com/apache/echarts/issues/16044) — CSS variables not supported natively
-- [Apache ECharts GitHub Issue #18312](https://github.com/apache/echarts/issues/18312) — Real-time updates performance regression in ECharts 5
-- [ECharts GL GitHub Issue #253](https://github.com/ecomfe/echarts-gl/issues/253) — Too many active WebGL contexts, loseContext workaround
-- [ECharts GL GitHub Issue #439](https://github.com/ecomfe/echarts-gl/issues/439) — Shared WebGL context solution proposal
-- [Apache ECharts Handbook — Import (Tree Shaking)](https://apache.github.io/echarts-handbook/en/basics/import/)
-- [Apache ECharts Handbook — Server-Side Rendering](https://apache.github.io/echarts-handbook/en/how-to/cross-platform/server/)
-- [Apache ECharts Handbook — Dynamic Data](https://apache.github.io/echarts-handbook/en/how-to/data/dynamic-data/)
-- [Apache ECharts Handbook — Chart Container and Size](https://apache.github.io/echarts-handbook/en/concepts/chart-size/)
-- [DEV Community — Using Apache ECharts with Lit and TypeScript](https://dev.to/manufac/using-apache-echarts-with-lit-and-typescript-1597)
-- [Medium — Memory Leak from ECharts if Not Properly Disposed](https://medium.com/@kelvinausoftware/memory-leak-from-echarts-occurs-if-not-properly-disposed-7050c5d93028)
-- [GitHub vue-echarts Issue #613](https://github.com/ecomfe/vue-echarts/issues/613) — Chart does not render in Shadow DOM
-- [Lit GitHub Issue #3770](https://github.com/lit/lit/issues/3770) — `window is not defined` in SSR with Lit
-- [Khronos WebGL Wiki — Handling Context Lost](https://www.khronos.org/webgl/wiki/HandlingContextLost)
-- [MDN — webglcontextlost event](https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/webglcontextlost_event)
-- [MDN — ResizeObserver](https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver)
-- [ECharts Design Token Discussion](https://github.com/apache/echarts/issues/20202)
+- [gpuweb/gpuweb Implementation Status Wiki](https://github.com/gpuweb/gpuweb/wiki/Implementation-Status) — WebGPU browser support matrix, March 2026
+- [MDN — GPUDevice.lost](https://developer.mozilla.org/en-US/docs/Web/API/GPUDevice/lost) — device loss promise API and GPUDeviceLostInfo
+- [toji.dev — WebGPU Device Loss Best Practices](https://toji.dev/webgpu-best-practices/device-loss.html) — authoritative recovery patterns, adapter consumption behavior
+- [gpuweb/gpuweb — Error Handling Design](https://github.com/gpuweb/gpuweb/blob/main/design/ErrorHandling.md) — spec-level error handling design
+- [MDN — GPUCanvasContext](https://developer.mozilla.org/en-US/docs/Web/API/GPUCanvasContext) — one-context-per-canvas rule, configure() requirements
+- [gpuweb/gpuweb — Coordinate Systems Issue #416](https://github.com/gpuweb/gpuweb/issues/416) — Y-axis orientation and NDC handedness
+- [Apache ECharts GitHub Issue #12327](https://github.com/apache/echarts/issues/12327) — setOption clears appendData data
+- [Apache ECharts GitHub Issue #20751](https://github.com/apache/echarts/issues/20751) — memory leak in ECharts 5.6 (filed Feb 2025)
+- [MDN — TypedArray](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray) — ArrayBuffer memory model, GC characteristics
+- [web.dev — WebGPU Supported in Major Browsers](https://web.dev/blog/webgpu-supported-major-browsers) — browser support announcement
+- [ocornut/imgui Issue #9103](https://github.com/ocornut/imgui/issues/9103) — Safari 26 WebGPU device lost bug on specific render passes
+- [Lit SSR Server Usage](https://lit.dev/docs/ssr/server-usage/) — isServer guard patterns
+- [MDN — Optimizing Canvas](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Optimizing_canvas) — multi-canvas layering with z-index
+- [MQL5 — Ring Buffer for Sliding Window MA](https://www.mql5.com/en/articles/3047) — ring buffer implementation for streaming MA
+- [esphome/issues #2119](https://github.com/esphome/issues/issues/2119) — NaN propagation in sliding window filters
 
 ---
-*Pitfalls research for: ECharts + ECharts GL in Lit.js 3 Shadow DOM component library (v9.0 Charts System)*
-*Researched: 2026-02-28*
+*Pitfalls research for: WebGPU rendering path, 1M+ streaming, and moving average overlay added to existing @lit-ui/charts (v10.0 WebGPU Charts milestone)*
+*Researched: 2026-03-01*
