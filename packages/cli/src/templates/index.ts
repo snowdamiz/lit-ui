@@ -29,6 +29,14 @@ export { ACCORDION_TEMPLATE } from './accordion.js';
 export { ACCORDION_ITEM_TEMPLATE } from './accordion-item.js';
 export { TABS_TEMPLATE } from './tabs.js';
 export { TAB_PANEL_TEMPLATE } from './tab-panel.js';
+export { LINE_CHART_TEMPLATE } from './line-chart.js';
+export { AREA_CHART_TEMPLATE } from './area-chart.js';
+export { BAR_CHART_TEMPLATE } from './bar-chart.js';
+export { PIE_CHART_TEMPLATE } from './pie-chart.js';
+export { SCATTER_CHART_TEMPLATE } from './scatter-chart.js';
+export { HEATMAP_CHART_TEMPLATE } from './heatmap-chart.js';
+export { CANDLESTICK_CHART_TEMPLATE } from './candlestick-chart.js';
+export { TREEMAP_CHART_TEMPLATE } from './treemap-chart.js';
 
 import { BUTTON_TEMPLATE } from './button.js';
 import { DATA_TABLE_TEMPLATE } from './data-table.js';
@@ -54,6 +62,14 @@ import { ACCORDION_TEMPLATE } from './accordion.js';
 import { ACCORDION_ITEM_TEMPLATE } from './accordion-item.js';
 import { TABS_TEMPLATE } from './tabs.js';
 import { TAB_PANEL_TEMPLATE } from './tab-panel.js';
+import { LINE_CHART_TEMPLATE } from './line-chart.js';
+import { AREA_CHART_TEMPLATE } from './area-chart.js';
+import { BAR_CHART_TEMPLATE } from './bar-chart.js';
+import { PIE_CHART_TEMPLATE } from './pie-chart.js';
+import { SCATTER_CHART_TEMPLATE } from './scatter-chart.js';
+import { HEATMAP_CHART_TEMPLATE } from './heatmap-chart.js';
+import { CANDLESTICK_CHART_TEMPLATE } from './candlestick-chart.js';
+import { TREEMAP_CHART_TEMPLATE } from './treemap-chart.js';
 
 export const COMPONENT_TEMPLATES: Record<string, string> = {
   button: BUTTON_TEMPLATE,
@@ -80,6 +96,14 @@ export const COMPONENT_TEMPLATES: Record<string, string> = {
   'accordion/accordion-item': ACCORDION_ITEM_TEMPLATE,
   tabs: TABS_TEMPLATE,
   'tabs/tab-panel': TAB_PANEL_TEMPLATE,
+  'line-chart': LINE_CHART_TEMPLATE,
+  'area-chart': AREA_CHART_TEMPLATE,
+  'bar-chart': BAR_CHART_TEMPLATE,
+  'pie-chart': PIE_CHART_TEMPLATE,
+  'scatter-chart': SCATTER_CHART_TEMPLATE,
+  'heatmap-chart': HEATMAP_CHART_TEMPLATE,
+  'candlestick-chart': CANDLESTICK_CHART_TEMPLATE,
+  'treemap-chart': TREEMAP_CHART_TEMPLATE,
 };
 
 /**
