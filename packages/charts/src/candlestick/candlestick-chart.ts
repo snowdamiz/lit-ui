@@ -41,12 +41,26 @@ function _parseMovingAverages(raw: string | null): MAConfig[] {
   }
 }
 
+// WEBGPU: Minimal ThemeConfig shape — mirrors chartgpu ThemeConfig without importing the type.
+// All fields required because ChartGPU's runtime theme resolver defaults missing fields to
+// the dark theme; partial overrides silently lose light-mode axis colors.
+interface _GpuThemeConfig {
+  readonly backgroundColor: string;
+  readonly textColor: string;
+  readonly axisLineColor: string;
+  readonly axisTickColor: string;
+  readonly gridLineColor: string;
+  readonly colorPalette: string[];
+  readonly fontFamily: string;
+  readonly fontSize: number;
+}
+
 // WEBGPU: Minimal ChartGPU instance interface for candlestick — avoids hard dependency on chartgpu types.
 // Candlestick appendData uses 5-element tuples [index, open, close, low, high] (NOT [x,y] pairs).
 interface _GpuCandlestickInstance {
   resize(): void;
   dispose(): void;
-  setOption(options: { theme?: 'dark' | 'light' }): void;
+  setOption(options: { theme?: 'dark' | 'light' | _GpuThemeConfig }): void;
   setZoomRange(start: number, end: number): void;
   appendData(seriesIndex: number, newPoints: ReadonlyArray<readonly [number, number, number, number, number]>): void;
 }
@@ -136,6 +150,44 @@ export class LuiCandlestickChart extends BaseChartElement {
   }
 
   /**
+   * WEBGPU: Build a ChartGPU ThemeConfig that matches the page background exactly.
+   *
+   * ChartGPU's WebGPU canvas uses alphaMode:"opaque" (hardcoded), so true transparency is
+   * unavailable. Reading document.body's computed backgroundColor returns a resolved rgb()
+   * value ChartGPU can parse, making the canvas blend with the page background.
+   *
+   * All fields are explicit: ChartGPU's runtime resolver falls back to the dark theme for
+   * any missing field in a custom ThemeConfig, which would break light-mode axis colors.
+   */
+  private _buildGpuTheme(isDark: boolean): _GpuThemeConfig {
+    // getComputedStyle returns a resolved rgb() string, safe for ChartGPU's color parser.
+    const bgColor = getComputedStyle(document.body).backgroundColor || (isDark ? '#000000' : '#ffffff');
+    const fontFamily =
+      'system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"';
+    return isDark
+      ? {
+          backgroundColor: bgColor,
+          textColor: '#e0e0e0',
+          axisLineColor: 'rgba(224,224,224,0.35)',
+          axisTickColor: 'rgba(224,224,224,0.55)',
+          gridLineColor: 'rgba(255,255,255,0.1)',
+          colorPalette: ['#00E5FF', '#FF2D95', '#B026FF', '#00F5A0', '#FFD300', '#FF6B00', '#4D5BFF', '#FF3D3D'],
+          fontFamily,
+          fontSize: 12,
+        }
+      : {
+          backgroundColor: bgColor,
+          textColor: '#333333',
+          axisLineColor: 'rgba(0,0,0,0.35)',
+          axisTickColor: 'rgba(0,0,0,0.55)',
+          gridLineColor: 'rgba(0,0,0,0.1)',
+          colorPalette: ['#1F77B4', '#FF7F0E', '#2CA02C', '#D62728', '#9467BD', '#8C564B', '#E377C2', '#17BECF'],
+          fontFamily,
+          fontSize: 12,
+        };
+  }
+
+  /**
    * WEBGPU: Initialize the ChartGPU GPU-accelerated data layer beneath ECharts.
    *
    * Creates a host div with z-index:0 and pointer-events:none positioned absolutely
@@ -158,12 +210,15 @@ export class LuiCandlestickChart extends BaseChartElement {
       'position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;';
     container.insertBefore(gpuHost, container.firstChild);
 
-    // WEBGPU: Detect initial theme — ChartGPU defaults to 'dark' if not specified.
-    // Must be read at create time; theme updates are handled by _applyGpuTheme().
+    // WEBGPU: Detect initial theme — build a custom ThemeConfig so the canvas background
+    // matches the page. ChartGPU's built-in themes use fixed hex backgrounds (#1a1a2e / #fff)
+    // that don't match the docs palette. alphaMode:"opaque" is hardcoded in ChartGPU, so
+    // true transparency is unavailable; reading document.body's computed backgroundColor
+    // gives a resolved rgb() value the canvas clears to, making it visually seamless.
     const isDark = document.documentElement.classList.contains('dark');
 
     const gpuSeries = {
-      theme: isDark ? 'dark' as const : 'light' as const,
+      theme: this._buildGpuTheme(isDark),
       series: [{
         type: 'candlestick' as const,
         data: [] as Array<readonly [number, number, number, number, number]>,
@@ -191,7 +246,7 @@ export class LuiCandlestickChart extends BaseChartElement {
     // theme state and must be updated separately via setOption({ theme }).
     this._gpuColorSchemeObserver = new MutationObserver(() => {
       const isDarkNow = document.documentElement.classList.contains('dark');
-      this._gpuChart?.setOption({ theme: isDarkNow ? 'dark' : 'light' });
+      this._gpuChart?.setOption({ theme: this._buildGpuTheme(isDarkNow) });
     });
     this._gpuColorSchemeObserver.observe(document.documentElement, {
       attributes: true,
