@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Charts System
 status: unknown
-last_updated: "2026-03-01T00:28:43.252Z"
+last_updated: "2026-03-01T03:55:00Z"
 progress:
   total_phases: 71
   completed_phases: 71
@@ -18,14 +18,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-02-28)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** Phase 94 — Candlestick Chart (complete — all 4 CNDL requirements delivered)
+**Current focus:** Phase 95 — Treemap Chart (in progress — 95-01 complete: option builder + registry)
 
 ## Current Position
 
-Phase: 94 of 96 (Candlestick Chart — complete)
-Plan: 2 of 2 in current phase (94-02 complete — Phase 94 done)
-Status: Phase 94 complete — LuiCandlestickChart (lui-candlestick-chart) exported from @lit-ui/charts; all CNDL-01/CNDL-02/CNDL-03/CNDL-04 requirements delivered
-Last activity: 2026-03-01 — Completed 94-02: candlestick-chart.ts (LuiCandlestickChart component) + index.ts Phase 94 exports
+Phase: 95 of 96 (Treemap Chart — in progress)
+Plan: 1 of 2 in current phase (95-01 complete — treemap-option-builder.ts + treemap-registry.ts)
+Status: Phase 95 plan 01 complete — TreemapNode, TreemapOptionProps, buildTreemapOption, registerTreemapModules delivered; TREE-01/TREE-02 domain layer ready
+Last activity: 2026-03-01 — Completed 95-01: treemap-option-builder.ts (types + buildTreemapOption) + treemap-registry.ts (registerTreemapModules with TreemapChart-only registration)
 
 Progress: [███░░░░░░░] 27% (v9.0 milestone, 9 phases, 6 of 9 complete)
 
@@ -90,6 +90,10 @@ Progress: [███░░░░░░░] 27% (v9.0 milestone, 9 phases, 6 of 9
 - 94-02: pushData() never calls super.pushData() — _ohlcBuffer is sole authoritative bar store; base _circularBuffer path bypassed
 - 94-02: _flushBarUpdates() uses lazyUpdate:true (not notMerge:false) — preserves DataZoom state during streaming
 - 94-02: bullColor/bearColor coerced from string|null to string|undefined via ?? undefined before passing to buildCandlestickOption
+- 95-01: height '90%' (not calc()) used when breadcrumb shown — ECharts layout cannot resolve CSS calc()
+- 95-01: Only TreemapChart in use([TreemapChart]) — BreadcrumbComponent does not exist in echarts/components; breadcrumb is built into TreemapChart
+- 95-01: levelColors uses string[][] — per-level color arrays matching ECharts levels[n].color: string[] format; flat string[] would fail silently
+- 95-01: borderRadius decremented by depth Math.max(0, borderRadius - i) — inner levels get smaller radius
 
 ### Architecture Notes
 
@@ -105,6 +109,7 @@ Progress: [███░░░░░░░] 27% (v9.0 milestone, 9 phases, 6 of 9
 - Phase 93 complete: LuiHeatmapChart (lui-heatmap-chart) exported from @lit-ui/charts with HeatmapCell + HeatmapOptionProps types; HEAT-01/HEAT-02 delivered
 - Phase 94 plan 01 complete: candlestick-option-builder.ts (OhlcBar, MAConfig, CandlestickBarPoint, CandlestickOptionProps, buildCandlestickOption) + candlestick-registry.ts (registerCandlestickModules with CandlestickChart + BarChart + LineChart)
 - Phase 94 complete: LuiCandlestickChart (lui-candlestick-chart) exported from @lit-ui/charts with OhlcBar + MAConfig + CandlestickBarPoint + CandlestickOptionProps types; all CNDL requirements delivered
+- Phase 95 plan 01 complete: treemap-option-builder.ts (TreemapNode, TreemapOptionProps, buildTreemapOption) + treemap-registry.ts (registerTreemapModules with TreemapChart-only, no BreadcrumbComponent)
 
 ### TODOs
 *None.*
@@ -145,21 +150,22 @@ Progress: [███░░░░░░░] 27% (v9.0 milestone, 9 phases, 6 of 9
 | 93 | 02 | 1min | 2 | 2 |
 | 94 | 01 | 2min | 2 | 2 |
 | 94 | 02 | 2min | 2 | 2 |
+| 95 | 01 | 2min | 2 | 2 |
 
 ## Session Continuity
 
 ### Last Session
-- 2026-03-01: Completed 94-02 — candlestick-chart.ts (LuiCandlestickChart component with pushData override, RAF streaming, all CNDL properties) + index.ts Phase 94 exports; Phase 94 complete
+- 2026-03-01: Completed 95-01 — treemap-option-builder.ts (TreemapNode, TreemapOptionProps, buildTreemapOption with breadcrumb/levelColors/borderRadius support) + treemap-registry.ts (registerTreemapModules, TreemapChart-only registration, double-registration guard); Phase 95 plan 01 complete
 
 ### Stopped At
-Completed 94-02-PLAN.md
+Completed 095-01-PLAN.md
 
 ### Next Actions
-Phase 94 complete. Continue to Phase 95 (next chart phase per ROADMAP).
+Phase 95 plan 01 complete. Continue to Phase 95 plan 02 (LuiTreemapChart component + index.ts exports).
 
 ### Open Questions
 *None.*
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-03-01 — 94-02 complete, candlestick-chart.ts + index.ts Phase 94 exports, Phase 94 complete*
+*Last updated: 2026-03-01 — 95-01 complete, treemap-option-builder.ts + treemap-registry.ts, Phase 95 plan 01 complete*

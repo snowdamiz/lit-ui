@@ -161,7 +161,7 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 095-01-PLAN.md — treemap-option-builder.ts (TreemapNode, TreemapOptionProps, buildTreemapOption) + treemap-registry.ts (registerTreemapModules)
+- [x] 095-01-PLAN.md — treemap-option-builder.ts (TreemapNode, TreemapOptionProps, buildTreemapOption) + treemap-registry.ts (registerTreemapModules)
 - [ ] 095-02-PLAN.md — LuiTreemapChart component + index.ts Phase 95 exports
 
 ### Phase 96: CLI Integration + Documentation
@@ -188,5 +188,5 @@ Plans:
 | 92. Scatter + Bubble Chart with WebGL | 2/2 | Complete    | 2026-02-28 | - |
 | 93. Heatmap Chart | 2/2 | Complete    | 2026-02-28 | - |
 | 94. Candlestick Chart | 2/2 | Complete    | 2026-03-01 | - |
-| 95. Treemap Chart | v9.0 | 0/2 | Not started | - |
+| 95. Treemap Chart | v9.0 | 1/2 | In progress | - |
 | 96. CLI Integration + Documentation | v9.0 | 0/TBD | Not started | - |
