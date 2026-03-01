@@ -106,7 +106,7 @@ const chartCSSVars: CSSVarDef[] = [
   { name: '--ui-chart-font-family', default: 'system-ui, sans-serif', description: 'Font family for labels and tooltips.' },
 ];
 
-const pieChartHtmlCode = `<!-- Set data via JavaScript property (not attribute) -->
+const pieChartHtml = `<!-- Set data via JavaScript property (not attribute) -->
 <!-- Donut mode: add inner-radius and optional center-label -->
 <lui-pie-chart id="chart" inner-radius="40%" center-label="Total"></lui-pie-chart>
 <script>
@@ -118,6 +118,63 @@ const pieChartHtmlCode = `<!-- Set data via JavaScript property (not attribute) 
     { name: 'Other', value: 5 },
   ];
 </script>`;
+
+const pieChartReact = `import { useEffect, useRef } from 'react';
+import '@lit-ui/charts/pie-chart';
+
+export function MyPieChart() {
+  const ref = useRef(null);
+  useEffect(() => {
+    if (ref.current) {
+      ref.current.data = [
+        { name: 'Electronics', value: 42 },
+        { name: 'Clothing', value: 25 },
+        { name: 'Food', value: 18 },
+        { name: 'Sports', value: 10 },
+        { name: 'Other', value: 5 },
+      ];
+    }
+  }, []);
+  return <lui-pie-chart ref={ref} inner-radius="40%" center-label="Total" style={{ height: '300px', display: 'block' }} />;
+}`;
+
+const pieChartVue = `<template>
+  <lui-pie-chart ref="chart" inner-radius="40%" center-label="Total" style="height: 300px; display: block" />
+</template>
+
+<script setup>
+import { ref, onMounted } from 'vue';
+import '@lit-ui/charts/pie-chart';
+
+const chart = ref(null);
+onMounted(() => {
+  chart.value.data = [
+    { name: 'Electronics', value: 42 },
+    { name: 'Clothing', value: 25 },
+    { name: 'Food', value: 18 },
+    { name: 'Sports', value: 10 },
+    { name: 'Other', value: 5 },
+  ];
+});
+</script>`;
+
+const pieChartSvelte = `<script>
+  import { onMount } from 'svelte';
+  import '@lit-ui/charts/pie-chart';
+
+  let chart;
+  onMount(() => {
+    chart.data = [
+      { name: 'Electronics', value: 42 },
+      { name: 'Clothing', value: 25 },
+      { name: 'Food', value: 18 },
+      { name: 'Sports', value: 10 },
+      { name: 'Other', value: 5 },
+    ];
+  });
+</script>
+
+<lui-pie-chart bind:this={chart} inner-radius="40%" center-label="Total" style="height: 300px; display: block" />`;
 
 export function PieChartPage() {
   return (
@@ -164,10 +221,10 @@ export function PieChartPage() {
             </p>
             <ExampleBlock
               preview={<PieChartDemo />}
-              html={pieChartHtmlCode}
-              react={pieChartHtmlCode}
-              vue={pieChartHtmlCode}
-              svelte={pieChartHtmlCode}
+              html={pieChartHtml}
+              react={pieChartReact}
+              vue={pieChartVue}
+              svelte={pieChartSvelte}
             />
           </section>
         </div>

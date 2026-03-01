@@ -102,7 +102,7 @@ const chartCSSVars: CSSVarDef[] = [
   { name: '--ui-chart-font-family', default: 'system-ui, sans-serif', description: 'Font family for labels and tooltips.' },
 ];
 
-const barChartHtmlCode = `<!-- Set data via JavaScript property (not attribute) -->
+const barChartHtml = `<!-- Set data via JavaScript property (not attribute) -->
 <lui-bar-chart id="chart" show-labels></lui-bar-chart>
 <script>
   document.querySelector('#chart').data = [
@@ -110,6 +110,54 @@ const barChartHtmlCode = `<!-- Set data via JavaScript property (not attribute) 
     { name: 'Product B', data: [60, 100, 80, 140], categories: ['Q1', 'Q2', 'Q3', 'Q4'] },
   ];
 </script>`;
+
+const barChartReact = `import { useEffect, useRef } from 'react';
+import '@lit-ui/charts/bar-chart';
+
+export function MyBarChart() {
+  const ref = useRef(null);
+  useEffect(() => {
+    if (ref.current) {
+      ref.current.data = [
+        { name: 'Product A', data: [120, 200, 150, 80], categories: ['Q1', 'Q2', 'Q3', 'Q4'] },
+        { name: 'Product B', data: [60, 100, 80, 140], categories: ['Q1', 'Q2', 'Q3', 'Q4'] },
+      ];
+    }
+  }, []);
+  return <lui-bar-chart ref={ref} show-labels style={{ height: '300px', display: 'block' }} />;
+}`;
+
+const barChartVue = `<template>
+  <lui-bar-chart ref="chart" show-labels style="height: 300px; display: block" />
+</template>
+
+<script setup>
+import { ref, onMounted } from 'vue';
+import '@lit-ui/charts/bar-chart';
+
+const chart = ref(null);
+onMounted(() => {
+  chart.value.data = [
+    { name: 'Product A', data: [120, 200, 150, 80], categories: ['Q1', 'Q2', 'Q3', 'Q4'] },
+    { name: 'Product B', data: [60, 100, 80, 140], categories: ['Q1', 'Q2', 'Q3', 'Q4'] },
+  ];
+});
+</script>`;
+
+const barChartSvelte = `<script>
+  import { onMount } from 'svelte';
+  import '@lit-ui/charts/bar-chart';
+
+  let chart;
+  onMount(() => {
+    chart.data = [
+      { name: 'Product A', data: [120, 200, 150, 80], categories: ['Q1', 'Q2', 'Q3', 'Q4'] },
+      { name: 'Product B', data: [60, 100, 80, 140], categories: ['Q1', 'Q2', 'Q3', 'Q4'] },
+    ];
+  });
+</script>
+
+<lui-bar-chart bind:this={chart} show-labels style="height: 300px; display: block" />`;
 
 export function BarChartPage() {
   return (
@@ -156,10 +204,10 @@ export function BarChartPage() {
             </p>
             <ExampleBlock
               preview={<BarChartDemo />}
-              html={barChartHtmlCode}
-              react={barChartHtmlCode}
-              vue={barChartHtmlCode}
-              svelte={barChartHtmlCode}
+              html={barChartHtml}
+              react={barChartReact}
+              vue={barChartVue}
+              svelte={barChartSvelte}
             />
           </section>
         </div>
