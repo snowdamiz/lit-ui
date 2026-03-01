@@ -10,7 +10,7 @@
 - [ ] **STRM-01**: User can stream 1M+ continuous points to Line/Area charts using TypedArray (Float32Array/Float64Array) ring buffers and progressive rendering config without main-thread frame drops
 - [ ] **STRM-02**: Line/Area charts automatically prevent heap crashes during long streaming sessions by implementing an external clear+reset+re-append truncation cycle at `maxPoints`
 - [ ] **STRM-03**: User can push data to a specific series via `pushData(point, seriesIndex?)` — not just the hardcoded first series
-- [ ] **STRM-04**: Line/Area charts apply `sampling: 'lttb'` for high-quality zoom-out rendering without manual decimation
+- [x] **STRM-04**: Line/Area charts apply `sampling: 'lttb'` for high-quality zoom-out rendering without manual decimation
 
 ### Moving Average (Candlestick)
 
@@ -60,7 +60,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | STRM-01 | Phase 100 | Pending |
 | STRM-02 | Phase 100 | Pending |
 | STRM-03 | Phase 100 | Pending |
-| STRM-04 | Phase 100 | Pending |
+| STRM-04 | Phase 100 | Complete |
 | MA-01 | Phase 99 | Complete |
 | MA-02 | Phase 99 | Complete |
 | MA-03 | Phase 99 | Complete |

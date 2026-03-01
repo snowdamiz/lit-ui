@@ -18,14 +18,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-01)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** v10.0 WebGPU Charts — Phase 99 Plan 04 next (if any) or Phase 100
+**Current focus:** v10.0 WebGPU Charts — Phase 100 Plan 02 next
 
 ## Current Position
 
-Phase: 99-incremental-moving-average-state-machine
-Plan: 03 complete — all MA requirements wired
+Phase: 100-1m-streaming-infrastructure-for-line-area
+Plan: 01 complete — _initChart() protected, LTTB + large flags in buildLineOption()
 Status: In progress
-Last activity: 2026-03-01 — 99-03 complete: MAStateMachine[] integrated into LuiCandlestickChart, O(1) incremental flush via sm.push(), CSS token MA colors via _resolveMAColors(), trim() aligned with _ohlcBuffer
+Last activity: 2026-03-01 — 100-01 complete: BaseChartElement._initChart() made protected, buildLineOption() adds sampling:'lttb', large:true, largeThreshold:2000 per series (STRM-04)
 
 ## Accumulated Context
 
@@ -46,6 +46,9 @@ Last activity: 2026-03-01 — 99-03 complete: MAStateMachine[] integrated into L
 - v10.0 (99-03): Default MA colors start at --ui-chart-color-2 (color-1 reserved for ECharts primary theme data)
 - v10.0 (99-03): _maStateMachines always fully rebuilt in _applyData() — atomic rebuild handles dynamic MA config count changes without state drift
 - v10.0 (99-03): trim() added to MAStateMachine — call after _ohlcBuffer.slice(-maxPoints) to keep MA value array indices aligned
+- v10.0 (100-01): _initChart() made protected (not private) — consistent with _detectRenderer() pattern; enables _triggerReset() in Plans 02/03
+- v10.0 (100-01): sampling:'lttb' as const required — ECharts type demands literal, TypeScript would widen to string without as const
+- v10.0 (100-01): largeThreshold:2000 — below 2000 points large mode is skipped; zero overhead on small datasets
 - v9.0: ECharts pinned to 5.6.0; echarts-gl as dynamic-import-only optional peer dep
 - v9.0: appendData/setOption strict boundary — setOption after appendData wipes streamed data (CRITICAL-03)
 - v9.0: BaseChartElement-first — all 5 cross-cutting concerns solved before any chart built
@@ -94,4 +97,4 @@ Last activity: 2026-03-01 — 99-03 complete: MAStateMachine[] integrated into L
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-03-01 — 99-03 complete: MAStateMachine integrated into LuiCandlestickChart, O(1) incremental MA flush, MA-01..MA-04 all observable*
+*Last updated: 2026-03-01 — 100-01 complete: BaseChartElement._initChart() protected, buildLineOption() LTTB+large flags, STRM-04 satisfied*
