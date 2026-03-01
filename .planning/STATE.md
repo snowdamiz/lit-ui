@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Charts System
 status: unknown
-last_updated: "2026-03-01T06:51:50.548Z"
+last_updated: "2026-03-01T07:05:00.000Z"
 progress:
   total_phases: 74
-  completed_phases: 73
+  completed_phases: 74
   total_plans: 258
-  completed_plans: 256
+  completed_plans: 258
 ---
 
 # Project State: LitUI
@@ -18,14 +18,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-02-28)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** Phase 96 complete — v9.0 milestone delivered (all 8 chart types: built, CLI-integrated, documented)
+**Current focus:** Phase 97 complete — all 8 chart type sub-skills delivered (charts router + line/area/bar + pie/scatter/heatmap + candlestick/treemap)
 
 ## Current Position
 
 Phase: 97 of 97 (Update Skills for Chart System)
-Plan: 3 of 4 in current phase (97-03 complete — pie-chart, scatter-chart, heatmap-chart sub-skills)
-Status: Phase 97 IN PROGRESS — plans 01-03 delivered; 1 plan remains (chart sub-skills: candlestick/treemap)
-Last activity: 2026-03-01 — Completed 97-03: skill/skills/pie-chart/SKILL.md + skill/skills/scatter-chart/SKILL.md + skill/skills/heatmap-chart/SKILL.md
+Plan: 4 of 4 in current phase (97-04 complete — candlestick-chart, treemap-chart sub-skills)
+Status: Phase 97 COMPLETE — all 4 plans delivered; all chart sub-skills complete
+Last activity: 2026-03-01 — Completed 97-04: skill/skills/candlestick-chart/SKILL.md + skill/skills/treemap-chart/SKILL.md
 
 Progress: [██████████] 100% (v9.0 milestone, all phases complete)
 
@@ -129,6 +129,7 @@ Progress: [██████████] 100% (v9.0 milestone, all phases comp
 - Phase 96 plan 04 complete: ScatterChartPage.tsx + HeatmapChartPage.tsx + CandlestickChartPage.tsx + TreemapChartPage.tsx; App.tsx all 8 chart routes; nav.ts Charts section; DOCS-01 and DOCS-02 fully complete
 - Phase 97 plan 02 complete: skill/skills/line-chart/SKILL.md (smooth/zoom/markLines, appendData warning) + skill/skills/area-chart/SKILL.md (stacked/zoom/labelPosition, appendData warning) + skill/skills/bar-chart/SKILL.md (stacked/horizontal/showLabels/colorByData, categories workaround)
 - Phase 97 plan 03 complete: skill/skills/pie-chart/SKILL.md (PieSlice type, innerRadius falsy check, donut mode props) + skill/skills/scatter-chart/SKILL.md (bubble+enable-gl fixed-size GPU limitation, ScatterPoint type) + skill/skills/heatmap-chart/SKILL.md (xCategories/yCategories JS-only, HeatmapCell integer-index, cell-update pushData)
+- Phase 97 plan 04 complete: skill/skills/candlestick-chart/SKILL.md (OHLC order [open,close,low,high] CRITICAL warning, OhlcBar/MAConfig types, showVolume/movingAverages props) + skill/skills/treemap-chart/SKILL.md (pushData() NOT SUPPORTED, TreemapNode type, levelColors array-of-arrays requirement)
 
 ### Roadmap Evolution
 
@@ -142,6 +143,9 @@ Progress: [██████████] 100% (v9.0 milestone, all phases comp
 - 97-03: scatter-chart bubble+enable-gl fixed size limitation placed as first Behavior Note — GPU cannot support per-point size callbacks
 - 97-03: heatmap-chart xCategories/yCategories JS-only warning placed in 3 locations (Usage header, Props table, Behavior Notes) for maximum coverage
 - 97-03: HeatmapCell integer index semantics clarified — [xIdx,yIdx,value] are positions into arrays, not category string values
+- 97-04: candlestick OHLC order [open,close,low,high] CRITICAL warning at top of file — ECharts order diverges from OHLC acronym, produces silent visual failures
+- 97-04: treemap pushData() NOT SUPPORTED notice at top of file — console.warn no-op to protect hierarchical data; reassign .data instead
+- 97-04: levelColors array-of-arrays (string[][]) requirement documented — flat string[] silently rejected, no colors applied
 
 ### TODOs
 *None.*
@@ -191,18 +195,18 @@ Progress: [██████████] 100% (v9.0 milestone, all phases comp
 | 97 | 01 | 2min | 2 | 2 |
 | 97 | 02 | 2min | 2 | 3 |
 | 97 | 03 | 2min | 2 | 3 |
-| Phase 97 P02 | 2min | 2 tasks | 3 files |
+| 97 | 04 | 3min | 2 | 2 |
 
 ## Session Continuity
 
 ### Last Session
-- 2026-03-01: Completed 97-03 — skill/skills/pie-chart/SKILL.md + skill/skills/scatter-chart/SKILL.md + skill/skills/heatmap-chart/SKILL.md created with PieSlice/ScatterPoint/HeatmapCell data types, chart-specific props, React useRef+useEffect pattern, and critical pitfall warnings (innerRadius falsy check, bubble+enable-gl GPU limitation, xCategories JS-only)
+- 2026-03-01: Completed 97-04 — skill/skills/candlestick-chart/SKILL.md + skill/skills/treemap-chart/SKILL.md created with OHLC order CRITICAL warning, OhlcBar/CandlestickBarPoint/MAConfig types, pushData() NOT SUPPORTED notice, TreemapNode type, levelColors array-of-arrays requirement
 
 ### Stopped At
-Completed 97-03-PLAN.md
+Completed 97-04-PLAN.md — Phase 97 COMPLETE
 
 ### Next Actions
-Phase 97 plan 04: remaining chart sub-skills (candlestick-chart, treemap-chart).
+Phase 97 complete. All chart sub-skills delivered. v9.0 milestone fully documented.
 
 ### Open Questions
 *None.*
