@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Charts System
 status: unknown
-last_updated: "2026-03-01T05:17:06.044Z"
+last_updated: "2026-03-01T06:51:50.548Z"
 progress:
-  total_phases: 73
+  total_phases: 74
   completed_phases: 73
-  total_plans: 254
-  completed_plans: 254
+  total_plans: 258
+  completed_plans: 256
 ---
 
 # Project State: LitUI
@@ -23,9 +23,9 @@ See: .planning/PROJECT.md (updated 2026-02-28)
 ## Current Position
 
 Phase: 97 of 97 (Update Skills for Chart System)
-Plan: 1 of 4 in current phase (97-01 complete — main router + charts overview skill)
-Status: Phase 97 IN PROGRESS — plan 01 delivered; 3 plans remain (chart sub-skills)
-Last activity: 2026-03-01 — Completed 97-01: skill/SKILL.md chart entries + skill/skills/charts/SKILL.md secondary router
+Plan: 2 of 4 in current phase (97-02 complete — line-chart, area-chart, bar-chart sub-skills)
+Status: Phase 97 IN PROGRESS — plans 01-02 delivered; 2 plans remain (chart sub-skills: pie/scatter/heatmap/candlestick/treemap)
+Last activity: 2026-03-01 — Completed 97-02: skill/skills/line-chart/SKILL.md + skill/skills/area-chart/SKILL.md + skill/skills/bar-chart/SKILL.md
 
 Progress: [██████████] 100% (v9.0 milestone, all phases complete)
 
@@ -127,12 +127,16 @@ Progress: [██████████] 100% (v9.0 milestone, all phases comp
 - Phase 96 plan 02 complete: 8 chart entries in registry.json + 8 componentToPackage entries in install-component.ts + 8 chart template files + templates/index.ts updated; CLI-01 and CLI-03 delivered
 - Phase 96 plan 03 complete: LineChartPage.tsx + AreaChartPage.tsx + BarChartPage.tsx + PieChartPage.tsx in apps/docs/src/pages/charts/; @lit-ui/charts workspace dep added; DOCS-01 and DOCS-02 delivered
 - Phase 96 plan 04 complete: ScatterChartPage.tsx + HeatmapChartPage.tsx + CandlestickChartPage.tsx + TreemapChartPage.tsx; App.tsx all 8 chart routes; nav.ts Charts section; DOCS-01 and DOCS-02 fully complete
+- Phase 97 plan 02 complete: skill/skills/line-chart/SKILL.md (smooth/zoom/markLines, appendData warning) + skill/skills/area-chart/SKILL.md (stacked/zoom/labelPosition, appendData warning) + skill/skills/bar-chart/SKILL.md (stacked/horizontal/showLabels/colorByData, categories workaround)
 
 ### Roadmap Evolution
 
 - Phase 97 added: update skills to include recent addition of chart system. There should be a detailed sub skill for each chart type and main router skill needs to be updated too
 - 97-01: skills/charts is secondary router — always loaded first for chart questions before specific chart sub-skills
 - 97-01: Chart entries 24-32 in Available Sub-Skills use new "Charts" section header separate from existing tooling section
+- 97-02: appendData streaming warning placed in both line-chart and area-chart Behavior Notes — critical to prevent data wipe on setOption after streaming starts
+- 97-02: Chart sub-skill pattern: defer Methods/Events/CSS to skills/charts cross-reference to avoid duplicating 17-token table across 8 sub-skills
+- 97-02: bar-chart documents categories workaround via option prop — categories is not a reactive property on LuiBarChart
 
 ### TODOs
 *None.*
@@ -180,17 +184,19 @@ Progress: [██████████] 100% (v9.0 milestone, all phases comp
 | 96 | 03 | 3min | 2 | 5 |
 | 96 | 04 | 5min | 2 | 6 |
 | 97 | 01 | 2min | 2 | 2 |
+| 97 | 02 | 2min | 2 | 3 |
+| Phase 97 P02 | 2min | 2 tasks | 3 files |
 
 ## Session Continuity
 
 ### Last Session
-- 2026-03-01: Completed 97-01 — skill/SKILL.md updated with chart entries (Component Overview item 6, sub-skills 24-32, routing rules 7-8); skill/skills/charts/SKILL.md created with shared BaseChartElement API, all 17 CSS tokens, React integration, streaming guide, secondary routing
+- 2026-03-01: Completed 97-02 — skill/skills/line-chart/SKILL.md + skill/skills/area-chart/SKILL.md + skill/skills/bar-chart/SKILL.md created with chart-specific props, data types, React useRef+useEffect pattern, appendData streaming warnings, and categories workaround for bar chart
 
 ### Stopped At
-Completed 97-01-PLAN.md
+Completed 97-02-PLAN.md
 
 ### Next Actions
-Phase 97 plan 02: individual chart sub-skills (line-chart, area-chart, bar-chart, pie-chart).
+Phase 97 plan 03: remaining chart sub-skills (pie-chart, scatter-chart, heatmap-chart).
 
 ### Open Questions
 *None.*

@@ -202,7 +202,7 @@ Plans:
 **Goal:** AI assistants can correctly answer all questions about @lit-ui/charts — which chart to use, how to set data (JS property only), streaming with pushData(), React integration, and chart-specific pitfalls (OHLC order, treemap pushData no-op, heatmap array props) — by loading the appropriate chart sub-skill.
 **Requirements**: TBD
 **Depends on:** Phase 96
-**Plans:** 1/4 plans executed
+**Plans:** 2/4 plans executed
 
 Plans:
 - [ ] 97-01-PLAN.md — Update skill/SKILL.md main router + create skill/skills/charts/SKILL.md overview
