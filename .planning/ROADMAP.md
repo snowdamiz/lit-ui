@@ -144,5 +144,5 @@ Plans:
 | 98. WebGPU Detector + Renderer Infrastructure | 2/2 | Complete    | 2026-03-01 | — |
 | 99. Incremental Moving Average State Machine | 3/3 | Complete    | 2026-03-01 | — |
 | 100. 1M+ Streaming Infrastructure for Line/Area | 3/3 | Complete    | 2026-03-01 | — |
-| 101. WebGPU Two-Layer Canvas for Line/Area | 1/3 | In Progress|  | — |
+| 101. WebGPU Two-Layer Canvas for Line/Area | 2/3 | In Progress|  | — |
 | 102. Docs + Skills Update | v10.0 | 0/? | Pending | — |

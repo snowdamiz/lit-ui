@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: WebGPU Charts
 status: unknown
-last_updated: "2026-03-01T19:13:38Z"
+last_updated: "2026-03-01T19:19:49Z"
 progress:
   total_phases: 67
   completed_phases: 67
@@ -23,9 +23,9 @@ See: .planning/PROJECT.md (updated 2026-03-01)
 ## Current Position
 
 Phase: 101-webgpu-two-layer-canvas-for-line-area
-Plan: 01 complete — chartgpu@0.3.2 installed; webgpu-device.ts upgraded from Phase 98 stub to refcounted lifecycle with adapter storage and real device.destroy() teardown (WEBGPU-02).
-Status: In progress (Plan 02 next)
-Last activity: 2026-03-01 — 101-01 complete: chartgpu@0.3.2 runtime dep added; acquireGpuDevice increments refcount every call; releaseGpuDevice async with device.destroy() at zero; getGpuAdapter() new export for ChartGPU.create() context
+Plan: 02 complete — LuiLineChart WebGPU two-layer canvas: _initWebGpuLayer() creates ChartGPU beneath ECharts; DataZoom percent-space coord sync; incremental appendData streaming; full reverse-init disconnectedCallback() teardown (WEBGPU-02).
+Status: In progress (Plan 03 next — area chart)
+Last activity: 2026-03-01 — 101-02 complete: LuiLineChart has _gpuChart, _gpuResizeObserver, _wasWebGpu, _gpuFlushedLengths; _initChart() override; _initWebGpuLayer() with { device, adapter } shared context; _syncCoordinates(); incremental appendData(seriesIndex, pairs) in _flushLineUpdates(); full reverse-init disconnectedCallback()
 
 ## Accumulated Context
 
@@ -56,6 +56,10 @@ Last activity: 2026-03-01 — 101-01 complete: chartgpu@0.3.2 runtime dep added;
 - v10.0 (101-01): chartgpu@0.3.2 in dependencies (not devDependencies) — runtime dep dynamically imported in Plans 02/03
 - v10.0 (101-01): releaseGpuDevice() changed to async Promise<void> — device.destroy() requires awaiting device promise; callers use void releaseGpuDevice() fire-and-forget from disconnectedCallback()
 - v10.0 (101-01): getGpuAdapter() new export — Plans 02/03 pass { adapter, device } to ChartGPU.create() for shared-device context; _adapter nulled after device.destroy() to prevent stale reference
+- v10.0 (101-02): _GpuChartInstance local interface matches real ChartGPU 0.3.2 API: appendData(seriesIndex, newPoints) — plan spec had wrong single-arg signature; corrected after tsc error
+- v10.0 (101-02): ChartGPUCreateContext.adapter is required (not optional) in 0.3.2 — null guard added; standalone ChartGPU.create() fallback when adapter unavailable
+- v10.0 (101-02): Incremental appendData tracking via _gpuFlushedLengths[] per series — x-index starts from lastFlushed, reset to [] in _triggerReset()
+- v10.0 (101-02): disconnectedCallback() reverse-init order: RAF cancel → gpuResizeObserver.disconnect → gpuChart.dispose → void releaseGpuDevice() → super
 - v9.0: ECharts pinned to 5.6.0; echarts-gl as dynamic-import-only optional peer dep
 - v9.0: appendData/setOption strict boundary — setOption after appendData wipes streamed data (CRITICAL-03)
 - v9.0: BaseChartElement-first — all 5 cross-cutting concerns solved before any chart built
@@ -104,4 +108,4 @@ Last activity: 2026-03-01 — 101-01 complete: chartgpu@0.3.2 runtime dep added;
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-03-01 — 101-01 complete: chartgpu@0.3.2 installed; webgpu-device.ts refcounted lifecycle with getGpuAdapter() (WEBGPU-02 lifecycle satisfied)*
+*Last updated: 2026-03-01 — 101-02 complete: LuiLineChart WebGPU two-layer canvas (WEBGPU-02 line chart SC1-4 satisfied)*
