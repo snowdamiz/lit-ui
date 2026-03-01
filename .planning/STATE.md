@@ -121,7 +121,8 @@ Last activity: 2026-03-01 — 104-02 complete: Scatter, Heatmap, Candlestick, Tr
 | quick-001 | Cmd+K command palette with full-text search | 2m 55s | 2026-02-02 |
 | quick-002 | Agents skill with progressive disclosure router + global installer | 5m 25s | 2026-02-27 |
 | quick-003 | Split components skill into 18 individual per-component skills based on docs pages | - | 2026-02-27 |
+| quick-004 | Deploy latest changes to npm — publish @lit-ui/charts@1.0.0 | 2m 54s | 2026-03-01 |
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-03-01 — 104-02 complete: ScatterChartPage, HeatmapChartPage, CandlestickChartPage, TreemapChartPage now have 4 distinct per-framework ExampleBlock code strings. Phase 104 Plan 02 done.*
+*Last updated: 2026-03-01 — quick-004 complete: @lit-ui/charts@1.0.0 published to npm for the first time via changeset.*
