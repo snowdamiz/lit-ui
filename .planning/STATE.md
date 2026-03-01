@@ -22,10 +22,10 @@ See: .planning/PROJECT.md (updated 2026-02-28)
 
 ## Current Position
 
-Phase: 96 of 96 (CLI Integration and Documentation — COMPLETE)
-Plan: 4 of 4 in current phase (96-04 complete — all 8 chart docs pages + routing + nav + bundle size guidance)
-Status: Phase 96 COMPLETE — all 4 plans delivered; DOCS-01 and DOCS-02 complete; v9.0 milestone achieved
-Last activity: 2026-03-01 — Completed 96-04: ScatterChartPage.tsx, HeatmapChartPage.tsx, CandlestickChartPage.tsx, TreemapChartPage.tsx + App.tsx routing + nav.ts Charts section
+Phase: 97 of 97 (Update Skills for Chart System)
+Plan: 1 of 4 in current phase (97-01 complete — main router + charts overview skill)
+Status: Phase 97 IN PROGRESS — plan 01 delivered; 3 plans remain (chart sub-skills)
+Last activity: 2026-03-01 — Completed 97-01: skill/SKILL.md chart entries + skill/skills/charts/SKILL.md secondary router
 
 Progress: [██████████] 100% (v9.0 milestone, all phases complete)
 
@@ -128,6 +128,12 @@ Progress: [██████████] 100% (v9.0 milestone, all phases comp
 - Phase 96 plan 03 complete: LineChartPage.tsx + AreaChartPage.tsx + BarChartPage.tsx + PieChartPage.tsx in apps/docs/src/pages/charts/; @lit-ui/charts workspace dep added; DOCS-01 and DOCS-02 delivered
 - Phase 96 plan 04 complete: ScatterChartPage.tsx + HeatmapChartPage.tsx + CandlestickChartPage.tsx + TreemapChartPage.tsx; App.tsx all 8 chart routes; nav.ts Charts section; DOCS-01 and DOCS-02 fully complete
 
+### Roadmap Evolution
+
+- Phase 97 added: update skills to include recent addition of chart system. There should be a detailed sub skill for each chart type and main router skill needs to be updated too
+- 97-01: skills/charts is secondary router — always loaded first for chart questions before specific chart sub-skills
+- 97-01: Chart entries 24-32 in Available Sub-Skills use new "Charts" section header separate from existing tooling section
+
 ### TODOs
 *None.*
 
@@ -173,17 +179,18 @@ Progress: [██████████] 100% (v9.0 milestone, all phases comp
 | 96 | 02 | 8min | 2 | 11 |
 | 96 | 03 | 3min | 2 | 5 |
 | 96 | 04 | 5min | 2 | 6 |
+| 97 | 01 | 2min | 2 | 2 |
 
 ## Session Continuity
 
 ### Last Session
-- 2026-03-01: Completed 96-04 — ScatterChartPage.tsx, HeatmapChartPage.tsx, CandlestickChartPage.tsx, TreemapChartPage.tsx created; App.tsx wired with all 8 chart routes; nav.ts Charts section added; Phase 96 and v9.0 milestone complete
+- 2026-03-01: Completed 97-01 — skill/SKILL.md updated with chart entries (Component Overview item 6, sub-skills 24-32, routing rules 7-8); skill/skills/charts/SKILL.md created with shared BaseChartElement API, all 17 CSS tokens, React integration, streaming guide, secondary routing
 
 ### Stopped At
-Completed 096-04-PLAN.md
+Completed 97-01-PLAN.md
 
 ### Next Actions
-Phase 96 complete. v9.0 milestone delivered. All 8 chart types built, CLI-integrated, and documented.
+Phase 97 plan 02: individual chart sub-skills (line-chart, area-chart, bar-chart, pie-chart).
 
 ### Open Questions
 *None.*
