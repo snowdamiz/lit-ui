@@ -18,14 +18,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-01)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** v10.0 WebGPU Charts — Phase 100 Plan 02 next
+**Current focus:** v10.0 WebGPU Charts — Phase 100 complete, Phase 101 (WebGPU canvas layer) next
 
 ## Current Position
 
 Phase: 100-1m-streaming-infrastructure-for-line-area
-Plan: 01 complete — _initChart() protected, LTTB + large flags in buildLineOption()
-Status: In progress
-Last activity: 2026-03-01 — 100-01 complete: BaseChartElement._initChart() made protected, buildLineOption() adds sampling:'lttb', large:true, largeThreshold:2000 per series (STRM-04)
+Plan: 02 complete — LuiLineChart/LuiAreaChart streaming override with per-series ring buffers, RAF coalescing, Float32Array flush, dispose+reinit truncation (STRM-01/02/03)
+Status: Phase complete
+Last activity: 2026-03-01 — 100-02 complete: pushData() override with _lineBuffers, _lineRafId, _totalPoints, _flushLineUpdates (Float32Array), _triggerReset, disconnectedCallback on LuiLineChart and LuiAreaChart
 
 ## Accumulated Context
 
@@ -49,6 +49,9 @@ Last activity: 2026-03-01 — 100-01 complete: BaseChartElement._initChart() mad
 - v10.0 (100-01): _initChart() made protected (not private) — consistent with _detectRenderer() pattern; enables _triggerReset() in Plans 02/03
 - v10.0 (100-01): sampling:'lttb' as const required — ECharts type demands literal, TypeScript would widen to string without as const
 - v10.0 (100-01): largeThreshold:2000 — below 2000 points large mode is skipped; zero overhead on small datasets
+- v10.0 (100-02): maxPoints = 500_000 override on LuiLineChart/LuiAreaChart — base default of 1000 is for circular-buffer charts; 500k allows ~8 min at 1000 pts/sec before dispose+reinit
+- v10.0 (100-02): new Float32Array(buf as number[]) for scalar numeric points — line/area xAxis is category (position-indexed), pushData receives numeric y-values only; no .flat() needed
+- v10.0 (100-02): slice(0, seriesCount) guard in _flushLineUpdates() prevents setOption errors when multi-series pushData arrives before _applyData() registers all ECharts series
 - v9.0: ECharts pinned to 5.6.0; echarts-gl as dynamic-import-only optional peer dep
 - v9.0: appendData/setOption strict boundary — setOption after appendData wipes streamed data (CRITICAL-03)
 - v9.0: BaseChartElement-first — all 5 cross-cutting concerns solved before any chart built
@@ -59,7 +62,7 @@ Last activity: 2026-03-01 — 100-01 complete: BaseChartElement._initChart() mad
 ### Architecture Notes
 
 - v9.0: @lit-ui/charts — 22nd package, 8 chart components, ECharts 5.6 + echarts-gl 2.0.9, BaseChartElement abstract base
-- v9.0: appendData for Line/Area (streaming); circular buffer for Bar/Pie/Scatter/Heatmap/Candlestick; no-op for Treemap
+- v9.0/v10.0: Line/Area use per-series ring buffers + RAF coalescing + Float32Array flush (replaced appendData path in 100-02); circular buffer for Bar/Pie/Scatter/Heatmap/Candlestick; no-op for Treemap
 - v9.0: ThemeBridge resolves CSS tokens via getComputedStyle (ECharts canvas cannot read var() natively)
 - v9.0: Per-chart registry files tree-shake ECharts to ~135KB gzipped; full import is ~400KB
 - v9.0: 9 AI skill files — main router (entries 24-32) + skills/charts router + 8 chart sub-skills
@@ -97,4 +100,4 @@ Last activity: 2026-03-01 — 100-01 complete: BaseChartElement._initChart() mad
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-03-01 — 100-01 complete: BaseChartElement._initChart() protected, buildLineOption() LTTB+large flags, STRM-04 satisfied*
+*Last updated: 2026-03-01 — 100-02 complete: LuiLineChart/LuiAreaChart streaming override, STRM-01/02/03 satisfied; Phase 100 complete*
