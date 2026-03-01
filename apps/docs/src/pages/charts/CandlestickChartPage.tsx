@@ -112,7 +112,7 @@ const chartCSSVars: CSSVarDef[] = [
   { name: '--ui-chart-font-family', default: 'system-ui, sans-serif', description: 'Font family for labels and tooltips.' },
 ];
 
-const candlestickChartHtmlCode = `<!-- Set data via JavaScript property (not attribute) -->
+const candlestickChartHtml = `<!-- Set data via JavaScript property (not attribute) -->
 <!-- IMPORTANT: ohlc order is [open, close, low, high] — NOT OHLC acronym order -->
 <lui-candlestick-chart id="chart"></lui-candlestick-chart>
 <script>
@@ -124,6 +124,66 @@ const candlestickChartHtmlCode = `<!-- Set data via JavaScript property (not att
     { label: '2024-01-05', ohlc: [115, 130, 113, 135] },
   ];
 </script>`;
+
+const candlestickChartReact = `import { useEffect, useRef } from 'react';
+import '@lit-ui/charts/candlestick-chart';
+
+export function MyCandlestickChart() {
+  const ref = useRef(null);
+  useEffect(() => {
+    if (ref.current) {
+      // IMPORTANT: ohlc order is [open, close, low, high] — NOT OHLC acronym order
+      ref.current.data = [
+        { label: '2024-01-01', ohlc: [100, 110, 95, 115] },
+        { label: '2024-01-02', ohlc: [110, 105, 102, 118] },
+        { label: '2024-01-03', ohlc: [105, 120, 103, 125] },
+        { label: '2024-01-04', ohlc: [120, 115, 112, 128] },
+        { label: '2024-01-05', ohlc: [115, 130, 113, 135] },
+      ];
+    }
+  }, []);
+  return <lui-candlestick-chart ref={ref} style={{ height: '300px', display: 'block' }} />;
+}`;
+
+const candlestickChartVue = `<template>
+  <lui-candlestick-chart ref="chart" style="height: 300px; display: block" />
+</template>
+
+<script setup>
+import { ref, onMounted } from 'vue';
+import '@lit-ui/charts/candlestick-chart';
+
+const chart = ref(null);
+onMounted(() => {
+  // IMPORTANT: ohlc order is [open, close, low, high] — NOT OHLC acronym order
+  chart.value.data = [
+    { label: '2024-01-01', ohlc: [100, 110, 95, 115] },
+    { label: '2024-01-02', ohlc: [110, 105, 102, 118] },
+    { label: '2024-01-03', ohlc: [105, 120, 103, 125] },
+    { label: '2024-01-04', ohlc: [120, 115, 112, 128] },
+    { label: '2024-01-05', ohlc: [115, 130, 113, 135] },
+  ];
+});
+</script>`;
+
+const candlestickChartSvelte = `<script>
+  import { onMount } from 'svelte';
+  import '@lit-ui/charts/candlestick-chart';
+
+  let chart;
+  onMount(() => {
+    // IMPORTANT: ohlc order is [open, close, low, high] — NOT OHLC acronym order
+    chart.data = [
+      { label: '2024-01-01', ohlc: [100, 110, 95, 115] },
+      { label: '2024-01-02', ohlc: [110, 105, 102, 118] },
+      { label: '2024-01-03', ohlc: [105, 120, 103, 125] },
+      { label: '2024-01-04', ohlc: [120, 115, 112, 128] },
+      { label: '2024-01-05', ohlc: [115, 130, 113, 135] },
+    ];
+  });
+</script>
+
+<lui-candlestick-chart bind:this={chart} style="height: 300px; display: block" />`;
 
 export function CandlestickChartPage() {
   return (
@@ -183,10 +243,10 @@ export function CandlestickChartPage() {
             </p>
             <ExampleBlock
               preview={<CandlestickChartDemo />}
-              html={candlestickChartHtmlCode}
-              react={candlestickChartHtmlCode}
-              vue={candlestickChartHtmlCode}
-              svelte={candlestickChartHtmlCode}
+              html={candlestickChartHtml}
+              react={candlestickChartReact}
+              vue={candlestickChartVue}
+              svelte={candlestickChartSvelte}
             />
           </section>
         </div>

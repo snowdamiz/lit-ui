@@ -104,7 +104,7 @@ const chartCSSVars: CSSVarDef[] = [
   { name: '--ui-chart-font-family', default: 'system-ui, sans-serif', description: 'Font family for labels and tooltips.' },
 ];
 
-const treemapChartHtmlCode = `<!-- Set data via JavaScript property (not attribute) -->
+const treemapChartHtml = `<!-- Set data via JavaScript property (not attribute) -->
 <lui-treemap-chart id="chart" breadcrumb></lui-treemap-chart>
 <script>
   document.querySelector('#chart').data = [
@@ -126,6 +126,96 @@ const treemapChartHtmlCode = `<!-- Set data via JavaScript property (not attribu
     },
   ];
 </script>`;
+
+const treemapChartReact = `import { useEffect, useRef } from 'react';
+import '@lit-ui/charts/treemap-chart';
+
+export function MyTreemapChart() {
+  const ref = useRef(null);
+  useEffect(() => {
+    if (ref.current) {
+      ref.current.data = [
+        {
+          name: 'Electronics',
+          value: 42,
+          children: [
+            { name: 'Phones', value: 25 },
+            { name: 'Laptops', value: 17 },
+          ],
+        },
+        {
+          name: 'Clothing',
+          value: 28,
+          children: [
+            { name: 'Shirts', value: 15 },
+            { name: 'Pants', value: 13 },
+          ],
+        },
+      ];
+    }
+  }, []);
+  return <lui-treemap-chart ref={ref} breadcrumb style={{ height: '300px', display: 'block' }} />;
+}`;
+
+const treemapChartVue = `<template>
+  <lui-treemap-chart ref="chart" breadcrumb style="height: 300px; display: block" />
+</template>
+
+<script setup>
+import { ref, onMounted } from 'vue';
+import '@lit-ui/charts/treemap-chart';
+
+const chart = ref(null);
+onMounted(() => {
+  chart.value.data = [
+    {
+      name: 'Electronics',
+      value: 42,
+      children: [
+        { name: 'Phones', value: 25 },
+        { name: 'Laptops', value: 17 },
+      ],
+    },
+    {
+      name: 'Clothing',
+      value: 28,
+      children: [
+        { name: 'Shirts', value: 15 },
+        { name: 'Pants', value: 13 },
+      ],
+    },
+  ];
+});
+</script>`;
+
+const treemapChartSvelte = `<script>
+  import { onMount } from 'svelte';
+  import '@lit-ui/charts/treemap-chart';
+
+  let chart;
+  onMount(() => {
+    chart.data = [
+      {
+        name: 'Electronics',
+        value: 42,
+        children: [
+          { name: 'Phones', value: 25 },
+          { name: 'Laptops', value: 17 },
+        ],
+      },
+      {
+        name: 'Clothing',
+        value: 28,
+        children: [
+          { name: 'Shirts', value: 15 },
+          { name: 'Pants', value: 13 },
+        ],
+      },
+    ];
+  });
+</script>
+
+<lui-treemap-chart bind:this={chart} breadcrumb style="height: 300px; display: block" />`;
 
 export function TreemapChartPage() {
   return (
@@ -172,10 +262,10 @@ export function TreemapChartPage() {
             </p>
             <ExampleBlock
               preview={<TreemapChartDemo />}
-              html={treemapChartHtmlCode}
-              react={treemapChartHtmlCode}
-              vue={treemapChartHtmlCode}
-              svelte={treemapChartHtmlCode}
+              html={treemapChartHtml}
+              react={treemapChartReact}
+              vue={treemapChartVue}
+              svelte={treemapChartSvelte}
             />
           </section>
         </div>
