@@ -40,7 +40,7 @@ Phases 1-87 are archived. See:
 - [x] **Phase 92: Scatter + Bubble Chart with WebGL** - Scatter/Bubble with enable-gl WebGL path for 500K+ point datasets (completed 2026-02-28)
 - [x] **Phase 93: Heatmap Chart** - Cartesian heatmap with VisualMap color scale and streaming (completed 2026-02-28)
 - [x] **Phase 94: Candlestick Chart** - OHLC candlestick with volume panel, moving averages, and streaming (completed 2026-03-01)
-- [ ] **Phase 95: Treemap Chart** - Hierarchical treemap with breadcrumb navigation and per-level colors
+- [x] **Phase 95: Treemap Chart** - Hierarchical treemap with breadcrumb navigation and per-level colors
 - [ ] **Phase 96: CLI Integration + Documentation** - CLI registry for all 8 chart types, subpath exports, copy-source templates, docs with demos and API tables
 
 ## Phase Details
@@ -162,7 +162,7 @@ Plans:
 
 Plans:
 - [x] 095-01-PLAN.md — treemap-option-builder.ts (TreemapNode, TreemapOptionProps, buildTreemapOption) + treemap-registry.ts (registerTreemapModules)
-- [ ] 095-02-PLAN.md — LuiTreemapChart component + index.ts Phase 95 exports
+- [x] 095-02-PLAN.md — LuiTreemapChart component + index.ts Phase 95 exports
 
 ### Phase 96: CLI Integration + Documentation
 **Goal**: Developer can install any of the 8 chart types via the CLI, import individual charts via subpath exports for tree-shaking, and reference complete interactive docs with API tables and bundle size guidance
@@ -188,5 +188,5 @@ Plans:
 | 92. Scatter + Bubble Chart with WebGL | 2/2 | Complete    | 2026-02-28 | - |
 | 93. Heatmap Chart | 2/2 | Complete    | 2026-02-28 | - |
 | 94. Candlestick Chart | 2/2 | Complete    | 2026-03-01 | - |
-| 95. Treemap Chart | v9.0 | 1/2 | In progress | - |
+| 95. Treemap Chart | 2/2 | Complete    | 2026-03-01 | - |
 | 96. CLI Integration + Documentation | v9.0 | 0/TBD | Not started | - |

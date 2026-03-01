@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Charts System
 status: unknown
-last_updated: "2026-03-01T03:55:00Z"
+last_updated: "2026-03-01T03:58:50.059Z"
 progress:
-  total_phases: 71
-  completed_phases: 71
-  total_plans: 248
-  completed_plans: 248
+  total_phases: 72
+  completed_phases: 72
+  total_plans: 250
+  completed_plans: 250
 ---
 
 # Project State: LitUI
@@ -18,14 +18,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-02-28)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** Phase 95 — Treemap Chart (in progress — 95-01 complete: option builder + registry)
+**Current focus:** Phase 96 — next phase (Phase 95 complete: LuiTreemapChart + all exports delivered)
 
 ## Current Position
 
-Phase: 95 of 96 (Treemap Chart — in progress)
-Plan: 1 of 2 in current phase (95-01 complete — treemap-option-builder.ts + treemap-registry.ts)
-Status: Phase 95 plan 01 complete — TreemapNode, TreemapOptionProps, buildTreemapOption, registerTreemapModules delivered; TREE-01/TREE-02 domain layer ready
-Last activity: 2026-03-01 — Completed 95-01: treemap-option-builder.ts (types + buildTreemapOption) + treemap-registry.ts (registerTreemapModules with TreemapChart-only registration)
+Phase: 95 of 96 (Treemap Chart — COMPLETE)
+Plan: 2 of 2 in current phase (95-02 complete — LuiTreemapChart component + index.ts Phase 95 exports)
+Status: Phase 95 complete — TREE-01 and TREE-02 fully delivered; LuiTreemapChart, TreemapNode, TreemapOptionProps all exported from @lit-ui/charts
+Last activity: 2026-03-01 — Completed 95-02: treemap-chart.ts (LuiTreemapChart with breadcrumb/rounded/level-colors) + index.ts (Phase 95 export block); Phase 95 complete
 
 Progress: [███░░░░░░░] 27% (v9.0 milestone, 9 phases, 6 of 9 complete)
 
@@ -94,6 +94,9 @@ Progress: [███░░░░░░░] 27% (v9.0 milestone, 9 phases, 6 of 9
 - 95-01: Only TreemapChart in use([TreemapChart]) — BreadcrumbComponent does not exist in echarts/components; breadcrumb is built into TreemapChart
 - 95-01: levelColors uses string[][] — per-level color arrays matching ECharts levels[n].color: string[] format; flat string[] would fail silently
 - 95-01: borderRadius decremented by depth Math.max(0, borderRadius - i) — inner levels get smaller radius
+- 95-02: notMerge: false in _applyData() preserves drill-down state when props change (Pitfall 5)
+- 95-02: pushData() overridden with console.warn no-op — prevents base class circular-buffer from overwriting hierarchical data (Pitfall 4)
+- 95-02: _parseLevelColors() validates array-of-arrays with Array.isArray(entry) — rejects flat string array (Pitfall 3)
 
 ### Architecture Notes
 
@@ -110,6 +113,7 @@ Progress: [███░░░░░░░] 27% (v9.0 milestone, 9 phases, 6 of 9
 - Phase 94 plan 01 complete: candlestick-option-builder.ts (OhlcBar, MAConfig, CandlestickBarPoint, CandlestickOptionProps, buildCandlestickOption) + candlestick-registry.ts (registerCandlestickModules with CandlestickChart + BarChart + LineChart)
 - Phase 94 complete: LuiCandlestickChart (lui-candlestick-chart) exported from @lit-ui/charts with OhlcBar + MAConfig + CandlestickBarPoint + CandlestickOptionProps types; all CNDL requirements delivered
 - Phase 95 plan 01 complete: treemap-option-builder.ts (TreemapNode, TreemapOptionProps, buildTreemapOption) + treemap-registry.ts (registerTreemapModules with TreemapChart-only, no BreadcrumbComponent)
+- Phase 95 complete: LuiTreemapChart (lui-treemap-chart) exported from @lit-ui/charts with TreemapNode + TreemapOptionProps types; TREE-01/TREE-02 delivered
 
 ### TODOs
 *None.*
@@ -151,21 +155,22 @@ Progress: [███░░░░░░░] 27% (v9.0 milestone, 9 phases, 6 of 9
 | 94 | 01 | 2min | 2 | 2 |
 | 94 | 02 | 2min | 2 | 2 |
 | 95 | 01 | 2min | 2 | 2 |
+| 95 | 02 | 1min | 2 | 2 |
 
 ## Session Continuity
 
 ### Last Session
-- 2026-03-01: Completed 95-01 — treemap-option-builder.ts (TreemapNode, TreemapOptionProps, buildTreemapOption with breadcrumb/levelColors/borderRadius support) + treemap-registry.ts (registerTreemapModules, TreemapChart-only registration, double-registration guard); Phase 95 plan 01 complete
+- 2026-03-01: Completed 95-02 — treemap-chart.ts (LuiTreemapChart with breadcrumb/rounded/level-colors props, pushData no-op, _parseLevelColors validation) + index.ts (Phase 95 export block); Phase 95 fully complete
 
 ### Stopped At
-Completed 095-01-PLAN.md
+Completed 095-02-PLAN.md
 
 ### Next Actions
-Phase 95 plan 01 complete. Continue to Phase 95 plan 02 (LuiTreemapChart component + index.ts exports).
+Phase 95 complete. Continue to Phase 96.
 
 ### Open Questions
 *None.*
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-03-01 — 95-01 complete, treemap-option-builder.ts + treemap-registry.ts, Phase 95 plan 01 complete*
+*Last updated: 2026-03-01 — 95-02 complete, LuiTreemapChart + index.ts Phase 95 exports, Phase 95 fully complete*
