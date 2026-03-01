@@ -1,0 +1,114 @@
+---
+name: lit-ui-candlestick-chart
+description: >-
+  How to use <lui-candlestick-chart> — OHLC data order, bull/bear colors, volume panel, moving averages, streaming.
+---
+
+# Candlestick Chart
+
+Financial OHLC candlestick chart built on ECharts. Supports configurable bull/bear colors, optional volume panel on a secondary axis, SMA/EMA moving average overlays, and streaming new bars via pushData().
+
+**CRITICAL:** ECharts candlestick data order is `[open, close, low, high]` — NOT the OHLC acronym order `[open, high, low, close]`. Using the wrong order produces silently incorrect candlesticks (wicks in the wrong position, colors reversed).
+
+## Usage
+
+**Important:** `data` and `option` are JS properties — not HTML attributes.
+
+```js
+import '@lit-ui/charts/candlestick-chart';
+
+const chart = document.querySelector('lui-candlestick-chart');
+chart.data = [
+  // [open, close, low, high] — NOT [open, high, low, close]!
+  { label: '2024-01-01', ohlc: [100, 110, 95, 115], volume: 50000 },
+  { label: '2024-01-02', ohlc: [110, 105, 102, 112], volume: 45000 },
+  { label: '2024-01-03', ohlc: [105, 120, 103, 122], volume: 62000 },
+];
+```
+
+```html
+<!-- Show volume panel -->
+<lui-candlestick-chart show-volume></lui-candlestick-chart>
+
+<!-- Custom bull/bear colors -->
+<lui-candlestick-chart bull-color="#00c853" bear-color="#ff1744"></lui-candlestick-chart>
+
+<!-- Moving averages (JSON string attribute) -->
+<lui-candlestick-chart moving-averages='[{"period":20,"color":"#f59e0b"},{"period":50,"color":"#8b5cf6","type":"ema"}]'></lui-candlestick-chart>
+```
+
+```tsx
+// React
+import { useRef, useEffect } from 'react';
+function CandlestickChartDemo({ data }) {
+  const ref = useRef(null);
+  useEffect(() => {
+    if (ref.current) ref.current.data = data;
+  }, [data]);
+  return <lui-candlestick-chart ref={ref} show-volume />;
+}
+```
+
+```js
+// Real-time streaming: append a new OHLC bar
+chart.pushData({ label: '2024-01-04', ohlc: [120, 118, 115, 125], volume: 48000 });
+```
+
+## Data Type
+
+```ts
+// WARNING: ECharts order is [open, close, low, high]
+// NOT the OHLC acronym order [open, high, low, close]
+type OhlcBar = [
+  open: number,
+  close: number,  // ← second position, not fourth
+  low: number,
+  high: number    // ← fourth position, not second
+];
+
+type CandlestickBarPoint = {
+  label: string;     // x-axis label — typically a date string
+  ohlc: OhlcBar;     // [open, close, low, high]
+  volume?: number;   // required if show-volume is set
+};
+
+type MAConfig = {
+  period: number;        // e.g. 20 for 20-period MA
+  color: string;         // hex color for the MA line
+  type?: 'sma' | 'ema'; // default: 'sma'
+};
+
+// chart.data is CandlestickBarPoint[]
+```
+
+## Props
+
+For shared props (data, option, loading, enableGl, maxPoints) see `skills/charts`.
+
+| Prop | Attribute | Type | Default | Description |
+|------|-----------|------|---------|-------------|
+| `bullColor` | `bull-color` | `string \| null` | `null` → `'#26a69a'` | Rising candle fill color. |
+| `bearColor` | `bear-color` | `string \| null` | `null` → `'#ef5350'` | Falling candle fill color. |
+| `showVolume` | `show-volume` | `boolean` | `false` | Render a volume bar panel on a secondary y-axis below the main chart. |
+| `movingAverages` | `moving-averages` | `string \| null` | `null` | JSON string of `MAConfig[]`. See data type section. |
+
+## Methods
+
+See `skills/charts` for `getChart()`. `pushData()` is overridden — see below.
+
+| Method | Signature | Description |
+|--------|-----------|-------------|
+| `pushData(point)` | `(point: CandlestickBarPoint) => void` | Append a new OHLC bar. Uses `lazyUpdate: true` to preserve DataZoom state. |
+
+## CSS Custom Properties
+
+See `skills/charts` for all 17 shared `--ui-chart-*` tokens.
+
+## Behavior Notes
+
+- **OHLC order is [open, close, low, high]**: ECharts expects this order, NOT the OHLC acronym `[open, high, low, close]`. Wrong order produces silently incorrect candlesticks — no error is thrown.
+- **JS property required**: `data` and `option` must be set as JS properties.
+- **movingAverages as JSON string**: The `moving-averages` attribute accepts a JSON string (not a JS object). Pass it as `'[{"period":20,"color":"#f59e0b"}]'`. In JavaScript, use `JSON.stringify(maConfigs)`.
+- **volume required for show-volume**: When `show-volume` is set, each data point should include a `volume` field. Points without volume will render as 0-height bars.
+- **DataZoom synchronization**: When `show-volume` is true, DataZoom controls both the main and volume panels simultaneously.
+- **pushData uses lazyUpdate**: Streaming preserves DataZoom scroll position (unlike `setOption` which resets it).
