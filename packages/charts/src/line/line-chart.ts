@@ -281,6 +281,17 @@ export class LuiLineChart extends BaseChartElement {
       this._chart.dispose();
       this._chart = null;
     }
+    // 3b. Clean up ChartGPU layer before reinit — prevents GPU canvas leak and stale
+    //     refcount when WebGPU streaming crosses the maxPoints boundary (STRM-02, WEBGPU-03).
+    //     Same pattern as disconnectedCallback(); _wasWebGpu reset so _initChart() can re-set it.
+    this._gpuResizeObserver?.disconnect();
+    this._gpuResizeObserver = undefined;
+    this._gpuChart?.dispose();
+    this._gpuChart = null;
+    if (this._wasWebGpu) {
+      void releaseGpuDevice();
+      this._wasWebGpu = false;
+    }
     // 4. Reinit in next frame — _initChart() awaits _registerModules() internally.
     requestAnimationFrame(() => this._initChart());
   }

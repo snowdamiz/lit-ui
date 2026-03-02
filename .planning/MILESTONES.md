@@ -311,3 +311,29 @@
 
 ---
 
+
+## v10.0 WebGPU Charts (Shipped: 2026-03-02)
+
+**Delivered:** WebGPU two-layer canvas rendering for Line/Area/Candlestick charts enabling 1M+ point streaming at 60fps, plus O(1) incremental moving average state machine for Candlestick overlays, complete docs and skills coverage, and GPU canvas leak fix in the streaming reset path.
+
+**Phases completed:** 98-104 (7 phases, 19 plans)
+
+**Key accomplishments:**
+
+- WebGPU detector on all 8 chart types via `_detectRenderer()` — SSR-safe, shared GPUDevice singleton with refcounted lifecycle across all chart instances
+- O(1) incremental SMA/EMA state machine (MAStateMachine) for Candlestick MA overlays — NaN-gap handling, CSS token default colors, showType legend suffix
+- 1M+ streaming ring buffer for Line/Area with Float32Array per series, LTTB sampling for zoom-out quality, and dispose+reinit `_triggerReset()` at maxPoints=500,000
+- ChartGPU 0.3.2 two-layer canvas for Line/Area — WebGPU canvas (data pixels) beneath ECharts canvas (axes/tooltip/DataZoom) with percent-space setZoomRange sync
+- Candlestick WebGPU rendering — 5-tuple OHLC ChartGPU appendData, transparent ECharts layer guard, reverse-init cleanup matching line/area pattern
+- Full docs and skill file coverage: WebGPU props, browser support table, MA config docs, per-framework ExampleBlock code for all 8 chart types (HTML/React/Vue/Svelte)
+
+**Stats:**
+
+- 7 phases, 19 plans
+- 11 files changed in @lit-ui/charts, 1,327 insertions (+43 deletions)
+- 3,789 LOC TypeScript in packages/charts/src
+- 1 day (2026-03-01)
+- Git range: `feat(98-01)` → `feat(104-02)`
+
+---
+

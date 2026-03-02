@@ -1,14 +1,14 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.0
+milestone: v10.0
 milestone_name: WebGPU Charts
-status: unknown
-last_updated: "2026-03-01T21:33:00Z"
+status: complete
+last_updated: "2026-03-02T00:00:00Z"
 progress:
-  total_phases: 71
-  completed_phases: 71
-  total_plans: 252
-  completed_plans: 252
+  total_phases: 104
+  completed_phases: 104
+  total_plans: 271
+  completed_plans: 271
 ---
 
 # Project State: LitUI
@@ -18,14 +18,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-01)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** v10.0 WebGPU Charts — Phase 104 fixing ExampleBlock code examples across chart docs pages
+**Current focus:** v10.0 shipped — planning next milestone with `/gsd:new-milestone`
 
 ## Current Position
 
-Phase: 104-update-code-example-blocks-for-all-chart-types-they-are-not-accurate-most-are-displaying-html-for-all-tabs
-Plan: 02 complete — ScatterChartPage, HeatmapChartPage, CandlestickChartPage, TreemapChartPage ExampleBlock props updated with per-framework code strings (HTML/React/Vue/Svelte). Heatmap shows all 3 property assignments; Candlestick includes OHLC order warning and omits enable-webgpu; Treemap shows hierarchical children shape.
-Status: Phase 104 in progress (Plan 02 of N done)
-Last activity: 2026-03-02 - Completed quick task 6: All the charts in dark mode have chart lines that are way too bright. Improve this.
+Phase: v10.0 complete
+Plan: all 19 plans shipped
+Status: Milestone archived — v10.0 WebGPU Charts complete
+Last activity: 2026-03-02 - v10.0 milestone archived: WebGPU two-layer canvas (Line/Area/Candlestick), 1M+ streaming ring buffers, O(1) MA state machine, full docs + skill coverage
 
 ## Accumulated Context
 
@@ -138,4 +138,4 @@ Last activity: 2026-03-02 - Completed quick task 6: All the charts in dark mode 
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-03-01 — quick-006 complete: 16 --ui-chart-* CSS token overrides added in .dark block; chart series now use muted -400 Tailwind shades on dark backgrounds.*
+*Last updated: 2026-03-02 — v10.0 WebGPU Charts milestone complete. All decisions logged in PROJECT.md. Context cleared for next milestone.*

@@ -263,6 +263,16 @@ export class LuiAreaChart extends BaseChartElement {
       this._chart.dispose();
       this._chart = null;
     }
+    // Clean up ChartGPU layer before reinit — prevents GPU canvas leak and stale
+    // refcount when WebGPU streaming crosses the maxPoints boundary (STRM-02, WEBGPU-03).
+    this._gpuResizeObserver?.disconnect();
+    this._gpuResizeObserver = undefined;
+    this._gpuChart?.dispose();
+    this._gpuChart = null;
+    if (this._wasWebGpu) {
+      void releaseGpuDevice();
+      this._wasWebGpu = false;
+    }
     requestAnimationFrame(() => this._initChart());
   }
 

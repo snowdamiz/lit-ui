@@ -100,6 +100,55 @@
 
 ---
 
+## Milestone: v10.0 — WebGPU Charts
+
+**Shipped:** 2026-03-02
+**Phases:** 7 (98-104) | **Plans:** 19
+
+### What Was Built
+
+- WebGPU detection in all 8 chart types via `_detectRenderer()` — SSR-safe (`isServer + typeof navigator`), dispatches `renderer-selected` event; refcounted `GPUDevice` singleton shared across all instances to respect browser device count limits
+- O(1) incremental SMA/EMA state machine (`MAStateMachine`) for Candlestick MA overlays — ring-buffer SMA (O(1) push) with warm-up accumulator for EMA, NaN-gap returns null to prevent propagation, CSS token default colors `--ui-chart-color-2..5`, `showType` legend suffix
+- 1M+ point streaming for Line/Area — Float32Array ring buffers with per-series routing, `sampling:'lttb'` for zoom-out quality, RAF coalescing via `_flushLineUpdates()`, dispose+reinit `_triggerReset()` at 500K `maxPoints`
+- ChartGPU 0.3.2 two-layer canvas for Line/Area — WebGPU canvas at z-index:0 (data pixels), ECharts canvas at z-index:1 (axes/tooltip/DataZoom); percent-space `setZoomRange()` for coordinate sync; full `disconnectedCallback()` cleanup with refcount decrement
+- Candlestick WebGPU — 5-tuple OHLC `appendData([index, open, close, low, high])`, `_wasWebGpu` transparent-color gate on ECharts candles, `_gpuFlushedLength` incremental tracking; reverse-init disconnect order identical to line/area
+- ExampleBlock code for all 8 chart types (HTML/React/Vue/Svelte) — React uses `useRef+useEffect+if(ref.current)`, Vue uses `ref()+onMounted+chart.value.data`, Svelte uses `let chart+onMount+bind:this`
+- Gap fixed post-audit: `_triggerReset()` GPU cleanup added to `line-chart.ts` and `area-chart.ts` — prevents canvas leak and stale refcount on streaming reset (STRM-02, WEBGPU-03)
+
+### What Worked
+
+- Research-first approach for Phase 101 surfaced the ChartGPU `appendData(seriesIndex, pairs)` 2-tuple signature mismatch before implementation committed to the wrong API — saved significant rework
+- Making `_detectRenderer()` and `_initChart()` protected in the base class gave Phase 101/103 subclasses clean extensibility without duplicating detection logic
+- Keeping all WebGPU state fields (`_gpuChart`, `_gpuResizeObserver`, `_wasWebGpu`, `_gpuFlushedLengths`) in the concrete chart classes (not BaseChartElement) kept the base class clean and phase-isolated
+- Triple-slash directive for `@webgpu/types` in `webgpu-device.ts` scoped ambient WebGPU types to one file without polluting the base tsconfig — elegant minimal approach
+
+### What Was Inefficient
+
+- The `_triggerReset()` GPU cleanup gap slipped through phase verification and was only caught by the cross-phase integration audit — the integration checker was valuable; running it before milestone completion rather than after would have prevented the gap reaching archive stage
+- Phase 104 (ExampleBlock code) was added late and could have been planned as part of Phase 102 (Docs) since both touched docs pages — the split created minor context duplication
+
+### Patterns Established
+
+- **GPU cleanup order**: For any component with both ECharts and a GPU canvas layer, reverse-init cleanup order must be: RAF cancel → GPU resize observer disconnect → GPU chart dispose → releaseGpuDevice → super — and this same order must be applied in both `disconnectedCallback()` and any `_triggerReset()` path
+- **`_wasWebGpu` gate pattern**: When WebGPU renders pixels, ECharts must be told to use transparent colors for those data series — use a `_wasWebGpu` boolean set in `_initWebGpuLayer()` and reset in `_triggerReset()` to gate both `_applyData()` and `_flush*()` paths
+- **Percent-space DataZoom sync**: Use ECharts `getOption().dataZoom[0].start/end` + ChartGPU `setZoomRange(start, end)` for GPU/ECharts coordinate alignment — avoids `convertToPixel()` Shadow DOM offsetParent issues
+- **Cross-phase integration audit is mandatory**: Phase-level verification passes are not sufficient to catch gaps that span two phases (e.g. a disposal path added in Phase 100 that doesn't account for GPU state added in Phase 101) — run the integration checker before milestone completion
+
+### Key Lessons
+
+1. The `GPUDevice` browser count limit (typically 4-8) is a hard constraint that shapes the entire architecture — singleton with refcounting is not optional; any implementation that acquires devices per-chart-instance will silently fail at 5+ charts
+2. ChartGPU's `appendData` signature must be validated against the actual installed version's TypeScript types before planning — the method signature changed between 0.3.x patch versions
+3. ECharts `sampling:'lttb'` is zero-config for 1M+ streaming quality — add it to every Line/Area chart option builder from day one; `large:true` + `largeThreshold:2000` pairs with it to control when the WebGL path activates
+4. The O(1) vs O(n) MA computation framing was correct — but the real performance win was avoiding the rebuild on every RAF tick, not just per-bar; the `_flushBarUpdates()` incremental path was the key design decision
+
+### Cost Observations
+
+- Phases executed with sonnet (quality profile), yolo mode
+- 7 phases, 19 plans in 1 day
+- Notable: Phase 98 (WebGPU detection) and Phase 99 (MAStateMachine) were independent of each other and Phase 100 — true parallel execution opportunity; executed sequentially here but could have parallelized in future similar milestones
+
+---
+
 ## Cross-Milestone Trends
 
 ### Process Evolution
@@ -111,6 +160,7 @@
 | v7.0 | 8 | 28 | TanStack integration, complex component |
 | v8.0 | 19 | 55 | Polish pass — high phase count, mechanical pattern |
 | v9.0 | 10 | 25 | Third-party integration (ECharts) — BaseChartElement-first architecture |
+| v10.0 | 7 | 19 | WebGPU two-layer canvas — GPU singleton, refcounted lifecycle, cross-phase integration audit caught critical gap |
 
 ### Cumulative State
 
@@ -120,3 +170,4 @@
 | v7.0 | ~91,000 | 21 | 21 |
 | v8.0 | ~110,000 | 21 | 21 (all polished) |
 | v9.0 | ~116,000 | 22 | 27 (21 UI + 8 charts) |
+| v10.0 | ~117,000 | 22 | 27 (WebGPU + 1M+ streaming added to 3 charts) |

@@ -4,25 +4,16 @@
 
 A framework-agnostic component library built on Lit.js, following ShadCN's philosophy of beautiful defaults and CLI-driven installation. Components work natively in React, Vue, Svelte, or plain HTML because they're standard web components underneath.
 
-Now with **dual distribution** (copy-source or npm), **SSR support** via Declarative Shadow DOM, **build-time theme customization** via visual configurator, **complete form toolkit** (Input, Textarea, Select, Checkbox, Radio, Switch with group containers), **date/time components** (Calendar, Date Picker, Date Range Picker, Time Picker), **overlay/feedback primitives** (Toast, Tooltip, Popover with shared Floating UI infrastructure), **layout components** (Accordion, Tabs), **data table** (virtual scrolling, sorting, filtering, inline editing, selection, bulk actions, column customization, CSV export, expandable rows), a **unified monochrome design system** (all 18 components polished to a consistent shadcn-quality theme with semantic dark mode cascade, complete CSS token documentation, and accurate per-component skill files), and a **complete chart suite** (`@lit-ui/charts` — 8 chart types powered by ECharts + ECharts GL, WebGL rendering for 500K+ point datasets, real-time streaming, CSS token theming, CLI distribution, and full AI skill coverage).
+Now with **dual distribution** (copy-source or npm), **SSR support** via Declarative Shadow DOM, **build-time theme customization** via visual configurator, **complete form toolkit** (Input, Textarea, Select, Checkbox, Radio, Switch with group containers), **date/time components** (Calendar, Date Picker, Date Range Picker, Time Picker), **overlay/feedback primitives** (Toast, Tooltip, Popover with shared Floating UI infrastructure), **layout components** (Accordion, Tabs), **data table** (virtual scrolling, sorting, filtering, inline editing, selection, bulk actions, column customization, CSV export, expandable rows), a **unified monochrome design system** (all 18 components polished to a consistent shadcn-quality theme with semantic dark mode cascade, complete CSS token documentation, and accurate per-component skill files), and a **complete high-performance chart suite** (`@lit-ui/charts` — 8 chart types powered by ECharts + ECharts GL, **WebGPU two-layer canvas** for Line/Area/Candlestick (auto-detected, WebGL → Canvas fallback), **1M+ point streaming** with Float32Array ring buffers and LTTB decimation, **O(1) incremental moving average overlays** (SMA/EMA) for Candlestick, shared GPUDevice singleton, CSS token theming, CLI distribution, and full AI skill coverage).
 
 ## Core Value
 
 Developers can use polished, accessible UI components in any framework without lock-in — one component library that works everywhere.
 
-## Current Milestone: v10.0 WebGPU Charts
+## Current State (v10.0)
 
-**Goal:** Extend the chart suite with a WebGPU rendering path (auto-detected, ECharts/WebGL fallback), 1M+ point native streaming for Line/Area, and moving average overlay for streaming candlestick.
-
-**Target features:**
-- Native `appendData` streaming for Line/Area at 1M+ continuous points without `setOption` wipeout
-- Moving average computed series for streaming candlestick charts
-- Auto-detecting WebGPU renderer for all chart types (WebGL → Canvas fallback chain)
-
-## Current State (v9.0)
-
-- ~116,000+ lines TypeScript/CSS/TSX across packages and apps (v8.0 was ~110,000; v9.0 added +22,851/-135)
-- Tech stack: Lit.js 3, Tailwind CSS v4, Vite, TypeScript, pnpm workspaces, colorjs.io, Floating UI, @tanstack/lit-virtual, @tanstack/lit-table, date-fns, composed-offset-position, ECharts 5.6.0, echarts-gl 2.0.9
+- ~117,000+ lines TypeScript/CSS/TSX across packages and apps (v10.0 added +1,327/-43 in @lit-ui/charts)
+- Tech stack: Lit.js 3, Tailwind CSS v4, Vite, TypeScript, pnpm workspaces, colorjs.io, Floating UI, @tanstack/lit-virtual, @tanstack/lit-table, date-fns, composed-offset-position, ECharts 5.6.0, echarts-gl 2.0.9, chartgpu@0.3.2, @webgpu/types 0.1.67
 - 22 publishable packages: @lit-ui/core, @lit-ui/button, @lit-ui/dialog, @lit-ui/input, @lit-ui/textarea, @lit-ui/select, @lit-ui/checkbox, @lit-ui/radio, @lit-ui/switch, @lit-ui/calendar, @lit-ui/date-picker, @lit-ui/date-range-picker, @lit-ui/time-picker, @lit-ui/tooltip, @lit-ui/popover, @lit-ui/toast, @lit-ui/accordion, @lit-ui/tabs, @lit-ui/data-table, @lit-ui/charts, @lit-ui/ssr, lit-ui (CLI)
 - Framework examples: Next.js App Router, Astro, Express/Node.js
 - Distribution: copy-source (CLI) or npm packages with SSR support
@@ -32,7 +23,7 @@ Developers can use polished, accessible UI components in any framework without l
 - Overlay/feedback components: Tooltip (hover/focus with delay groups), Popover (click-toggle with focus management), Toast (imperative API with queue management)
 - Layout components: Accordion (single/multi-expand, CSS Grid animation, lazy mounting), Tabs (automatic/manual activation, horizontal/vertical, animated indicator, overflow scroll)
 - Data components: Data Table (100K+ row virtual scrolling, sorting, filtering, pagination, inline editing, selection, bulk actions, column customization, CSV export, expandable rows)
-- Chart components: @lit-ui/charts — BaseChartElement + 8 chart types (Line, Area, Bar, Pie/Donut, Scatter/Bubble with WebGL, Heatmap, Candlestick, Treemap) with real-time streaming, CSS token theming, and CLI distribution
+- Chart components: @lit-ui/charts — BaseChartElement + 8 chart types (Line, Area, Bar, Pie/Donut, Scatter/Bubble with WebGL, Heatmap, Candlestick, Treemap) with WebGPU two-layer canvas (Line/Area/Candlestick; auto-detect, WebGL→Canvas fallback), 1M+ point Float32Array streaming with LTTB, O(1) SMA/EMA moving average overlays for Candlestick, shared GPUDevice singleton, CSS token theming, and CLI distribution
 
 ## Requirements
 
@@ -109,6 +100,11 @@ Developers can use polished, accessible UI components in any framework without l
 - ✓ All 18 component skill files updated with complete CSS tokens and Behavior Notes sections — v8.0
 - ✓ Auto-detecting WebGPU renderer for all chart types with WebGL → Canvas fallback chain (WEBGPU-01) — v10.0
 - ✓ GPUDevice singleton shared across all chart instances via webgpu-device.ts (WEBGPU-03) — v10.0
+- ✓ 1M+ continuous streaming for Line/Area via Float32Array ring buffers, LTTB decimation, maxPoints dispose+reinit (STRM-01, STRM-02, STRM-03, STRM-04) — v10.0
+- ✓ O(1) incremental SMA/EMA state machine for Candlestick MA overlays — NaN gaps, CSS token colors, showType legend suffix (MA-01, MA-02, MA-03, MA-04) — v10.0
+- ✓ WebGPU two-layer canvas for Line/Area (ChartGPU 0.3.2, percent-space DataZoom sync, full disconnect cleanup) (WEBGPU-02) — v10.0
+- ✓ Candlestick WebGPU rendering with 5-tuple OHLC appendData, transparent ECharts guard, and MA overlays on ECharts layer (WEBGPU-CNDL-01, WEBGPU-CNDL-02) — v10.0
+- ✓ Per-framework ExampleBlock code strings for all 8 chart types (HTML/React/Vue/Svelte) — v10.0
 - ✓ @lit-ui/charts package with ECharts 5.6 + ECharts GL integration, BaseChartElement with SSR guard and WebGL lifecycle — v9.0
 - ✓ 8 chart types: Line, Area, Bar, Pie/Donut, Scatter/Bubble (WebGL 500K+ pts), Heatmap, Candlestick (OHLC), Treemap — v9.0
 - ✓ Real-time streaming via `pushData()` with appendData path for Line/Area and circular buffer for all others — v9.0
@@ -119,15 +115,7 @@ Developers can use polished, accessible UI components in any framework without l
 
 ### Active
 
-<!-- v10.0 — current milestone targets -->
-
-- [ ] Native `appendData` streaming for Line/Area at 1M+ continuous points without `setOption` wipeout (PERF-01)
-- [ ] Moving average computed series overlay for streaming candlestick (PERF-03)
-- [ ] WebGPU two-layer canvas for Line/Area on WebGPU browsers (WEBGPU-02)
-
-### Deferred from v9.0
-
-- [ ] Calendar heatmap mode (`mode="calendar"` on lui-heatmap-chart) (PERF-02)
+- [ ] Calendar heatmap mode (`mode="calendar"` on lui-heatmap-chart) — deferred from v9.0 (PERF-02)
 
 ### Deferred
 
@@ -271,6 +259,13 @@ Developers can use polished, accessible UI components in any framework without l
 | levelColors as string[][] (array of arrays) | ECharts levels[n].color expects string[] per level | ✓ Good — correct API; flat string[] silently rejected |
 | Per-chart registry files (line-registry, bar-registry…) | Tree-shakes ECharts to ~135KB vs 400KB full import | ✓ Good — significant bundle impact |
 | Multi-entry Vite config for subpath exports | createLibraryConfig wrapper hardcodes fileName, breaks entries | ✓ Good — bespoke defineConfig works correctly |
+| MAStateMachine O(n) reset / O(1) push ring-buffer approach | Full rebuild on _applyData() is safe; incremental O(1) push per RAF bar is the performance win | ✓ Good — handles dynamic MA config count changes without state drift |
+| `_maStateMachines` always fully rebuilt in `_applyData()` | Atomic rebuild prevents state drift on MA config count changes (e.g. adding/removing overlay) | ✓ Good — simpler than incremental reconciliation |
+| Float32Array TypedArray ring buffers for streaming Line/Area | ECharts setOption with TypedArray skips JSON stringify overhead; lazyUpdate coalesces per RAF | ✓ Good — enables 1M+ points without GC pressure |
+| `_triggerReset()` uses dispose+reinit (not chart.clear()) | chart.clear() leaves ECharts 5.6 residue; dispose+_initChart() is clean full-reset | ✓ Good — safe boundary for 500K-point streaming reset |
+| ChartGPU 0.3.2 `appendData(seriesIndex, pairs)` takes 2-tuple pairs | Phase 101 plan spec had wrong single-arg signature; corrected after tsc error | ✓ Good — documented in SUMMARY 101-02 |
+| Percent-space setZoomRange() for DataZoom sync (not convertToPixel()) | setZoomRange is architecturally cleaner; convertToPixel() has Shadow DOM offsetParent issues | ✓ Good — no cross-origin coordinate issues |
+| `_wasWebGpu` flag drives transparent color gate | Both _applyData() and _flushBarUpdates() rebuild full ECharts option independently — both need the gate | ✓ Good — prevents double-rendering of data pixels |
 
 ## Shipped Milestones
 
@@ -287,6 +282,7 @@ Developers can use polished, accessible UI components in any framework without l
 - **v7.0 Data Table** (2026-02-05): Full-featured data table with virtual scrolling, sorting, filtering, inline editing, selection, bulk actions, column customization, CSV export, expandable rows
 - **v8.0 Design System Polish** (2026-02-28): Unified monochrome design system — removed hardcoded dark mode overrides from all 18 components, expanded CSS token docs (avg 3x more tokens per component), rewrote all 18 skill files with Behavior Notes sections
 - **v9.0 Charts System** (2026-03-01): `@lit-ui/charts` package with 8 chart types (ECharts 5.6 + ECharts GL), WebGL rendering for 500K+ point datasets, real-time streaming via `pushData()`, CSS token theming, CLI distribution, 8 interactive docs pages, and 9 AI skill files with chart-specific gotcha warnings
+- **v10.0 WebGPU Charts** (2026-03-02): WebGPU two-layer canvas for Line/Area/Candlestick (ChartGPU 0.3.2, auto-detected, shared GPUDevice singleton), 1M+ point streaming with Float32Array ring buffers + LTTB decimation + dispose+reinit at maxPoints, O(1) incremental SMA/EMA moving average state machine for Candlestick, per-framework ExampleBlock code for all 8 chart types, and complete docs/skill coverage
 
 ---
-*Last updated: 2026-03-01 after Phase 98*
+*Last updated: 2026-03-02 after v10.0 milestone*
