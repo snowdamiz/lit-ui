@@ -65,10 +65,10 @@ Full phase details archived to `.planning/milestones/v10.0-ROADMAP.md`
   2. JetBrains Mono TTF is bundled in `scripts/fonts/` and registered via `GlobalFonts.registerFromPath()` using an absolute path derived from `import.meta.url`
   3. Monospace invariant check passes: `ctx.measureText('i').width === ctx.measureText('W').width` confirms font loaded correctly (not silently falling back to system sans-serif)
   4. Two-pass layout skeleton renders a 50-line sample PNG with correct dimensions — probe canvas measures height, final canvas is created at exact computed height
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 105-01: TBD
+- [ ] 105-01-PLAN.md — Install @napi-rs/canvas, bundle JetBrains Mono TTF, write and run four-assertion validation script
 
 ### Phase 106: XML Compiler
 **Goal**: Developer can compile all skill files into a single, well-structured XML knowledge document
@@ -126,7 +126,7 @@ Plans:
 | 102. Docs + Skills Update | v10.0 | 3/3 | Complete | 2026-03-01 |
 | 103. Candlestick WebGPU + Docs + Skills | v10.0 | 3/3 | Complete | 2026-03-01 |
 | 104. Update Code Example Blocks | v10.0 | 2/2 | Complete | 2026-03-01 |
-| 105. Canvas/Font Foundation | v10.1 | 0/TBD | Not started | - |
+| 105. Canvas/Font Foundation | v10.1 | 0/1 | Not started | - |
 | 106. XML Compiler | v10.1 | 0/TBD | Not started | - |
 | 107. PNG Renderer | v10.1 | 0/TBD | Not started | - |
 | 108. Wiring & Distribution | v10.1 | 0/TBD | Not started | - |
