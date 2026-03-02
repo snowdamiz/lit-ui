@@ -1,654 +1,421 @@
-# Architecture Research: v10.0 WebGPU Charts
+# Architecture Research
 
-**Domain:** WebGPU rendering layer + 1M+ streaming + moving average overlay for @lit-ui/charts
+**Domain:** XML knowledge compiler + programmatic image renderer for LitUI component skill files
 **Researched:** 2026-03-01
-**Confidence:** HIGH (ECharts internals, BaseChartElement integration, MA computation) / MEDIUM (WebGPU layering pattern, browser support)
+**Confidence:** HIGH
 
 ---
 
-## Scope
+## Standard Architecture
 
-This document is a **delta from v9.0**. It answers only what changes for the three v10.0 features:
+### System Overview
 
-1. **WebGPU data layer** — layered canvas architecture, auto-detection, fallback chain
-2. **1M+ streaming** — bottleneck analysis, architectural changes for Line/Area
-3. **Moving average real-time update** — computation model, streaming integration
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    Source Layer (existing, untouched)            │
+│                                                                   │
+│  skill/SKILL.md                  (6KB router skill)              │
+│  skill/skills/*/SKILL.md         (32 sub-skills, ~218KB total)   │
+│                                                                   │
+│  packages/cli/skill/             <- CLI-bundled mirror of skill/  │
+└────────────────────────┬────────────────────────────────────────┘
+                         │  read at compile time
+┌────────────────────────▼────────────────────────────────────────┐
+│                    Compiler (new)                                 │
+│                                                                   │
+│  scripts/compile-knowledge.ts                                     │
+│  - Walk skill/ tree recursively (fs.readdir { recursive: true }) │
+│  - Sort paths for deterministic output                           │
+│  - Strip YAML frontmatter (---\n...\n---\n) from each file       │
+│  - Wrap each file in <skill name="…"> … </skill>                 │
+│  - Write skill/lit-ui-knowledge.xml                              │
+└────────────────────────┬────────────────────────────────────────┘
+                         │  read by renderer
+┌────────────────────────▼────────────────────────────────────────┐
+│                    Renderer (new)                                 │
+│                                                                   │
+│  scripts/render-knowledge-image.ts                                │
+│  - Read skill/lit-ui-knowledge.xml                               │
+│  - Split into lines (no word-wrap needed: monospace, condensed)  │
+│  - Derive canvas height = lines.length * LINE_HEIGHT             │
+│  - createCanvas(1500, height) via node-canvas                    │
+│  - fillRect white, fillText each line at 8pt Courier New         │
+│  - Write skill/lit-ui-knowledge.png                              │
+└─────────────────────────────────────────────────────────────────┘
+```
 
-It does not re-document v9.0 architecture (BaseChartElement lifecycle, SSR, ThemeBridge, registry pattern). See `.planning/research/ARCHITECTURE.md` history for that context. The existing code in `packages/charts/src/` is the authoritative v9.0 baseline.
+### Component Responsibilities
+
+| Component | Responsibility | Implementation |
+|-----------|----------------|----------------|
+| `skill/SKILL.md` | Router skill — auto-loads for all lit-ui questions | Existing Markdown, not modified |
+| `skill/skills/*/SKILL.md` | Per-component/tooling skill files (32 files) | Existing Markdown, read-only sources |
+| `scripts/compile-knowledge.ts` | Aggregate all skill files into one XML document | New Node.js/TypeScript script |
+| `skill/lit-ui-knowledge.xml` | Structured XML of all knowledge — intermediate artifact | New generated file, git-committed |
+| `scripts/render-knowledge-image.ts` | Convert XML text to condensed PNG image | New Node.js/TypeScript script |
+| `skill/lit-ui-knowledge.png` | Final output: the knowledge reference image | New generated file, git-committed |
+| `package.json` (root) | Two new scripts wiring the pipeline | Modified — three new entries |
 
 ---
 
-## System Overview: v10.0 Layer Architecture
+## Recommended Project Structure
 
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│                      Consumer Application                            │
-│  <lui-line-chart enable-webgpu .data=${stream} />                   │
-│  <lui-candlestick-chart moving-averages='[{"period":20}]' />        │
-└───────────────────────────────┬─────────────────────────────────────┘
-                                │
-┌───────────────────────────────▼─────────────────────────────────────┐
-│                       @lit-ui/charts Package                         │
-│                                                                      │
-│  ┌──────────────────────────────────────────────────────────────┐   │
-│  │  BaseChartElement (existing — v9.0)                           │   │
-│  │                                                               │   │
-│  │  #chart div (position: relative, fills :host)                 │   │
-│  │  ┌─────────────────────────────────────────────────────┐     │   │
-│  │  │  WebGPU canvas [z-index: 1, position: absolute]     │     │   │
-│  │  │  (renders data series at GPU speed)                 │     │   │
-│  │  │                           ↕ coordinated resize      │     │   │
-│  │  │  ECharts canvas [z-index: 2, position: absolute]    │     │   │
-│  │  │  (renders axes, labels, legend, tooltip, DataZoom)  │     │   │
-│  │  │  (series data area set transparent/empty)           │     │   │
-│  │  └─────────────────────────────────────────────────────┘     │   │
-│  │                                                               │   │
-│  │  NEW: _webgpuLayer?: WebGPUDataLayer                         │   │
-│  │  NEW: _renderer: 'webgpu' | 'webgl' | 'canvas'              │   │
-│  │  MOD: _initChart() — conditional layer creation              │   │
-│  │  MOD: _flushPendingData() — routes to WebGPU or ECharts      │   │
-│  │  MOD: disconnectedCallback() — destroy WebGPU device         │   │
-│  └──────────────────────────────────────────────────────────────┘   │
-│                                                                      │
-│  NEW FILES:                                                          │
-│  ┌──────────────────────┐  ┌──────────────────────────────────┐    │
-│  │ webgpu/               │  │ base/webgpu-detector.ts          │    │
-│  │   webgpu-data-layer.ts│  │ (navigator.gpu probe, sync)     │    │
-│  │   line-wgsl.ts        │  └──────────────────────────────────┘    │
-│  │   (WGSL shaders for   │                                          │
-│  │    line/area drawing) │                                          │
-│  └──────────────────────┘                                           │
-└─────────────────────────────────────────────────────────────────────┘
+lit-components/
+├── skill/                          # existing — source of truth
+│   ├── SKILL.md                    # router skill (existing, untouched)
+│   ├── skills/                     # sub-skills (existing, untouched)
+│   │   ├── button/SKILL.md
+│   │   ├── charts/SKILL.md
+│   │   └── ... (30 more)
+│   ├── lit-ui-knowledge.xml        # NEW — generated, git-committed
+│   └── lit-ui-knowledge.png        # NEW — generated, git-committed
+├── scripts/
+│   ├── install-skill.mjs           # existing developer tool
+│   ├── compile-knowledge.ts        # NEW — XML compiler
+│   └── render-knowledge-image.ts   # NEW — image renderer
+└── package.json                    # MODIFIED — new scripts entries
 ```
+
+### Structure Rationale
+
+- **`scripts/` for both scripts:** The `scripts/` directory already exists and holds `install-skill.mjs`, which is a maintenance tool with the same shape: no user-facing CLI, run by developers only. Placing `compile-knowledge.ts` and `render-knowledge-image.ts` here follows that established pattern.
+- **Output in `skill/`:** The milestone spec explicitly requires output saved to `skill/`. The XML intermediate also lives there to make the pipeline transparent and inspectable. Both artifacts should be git-committed so the skill installer (`scripts/install-skill.mjs`) and the CLI's `injectOverviewSkills()` automatically include them in every injected skill tree — no extra build step needed by consumers.
+- **No new workspace package:** These are developer scripts, not published library code. Adding them inside `packages/cli/src/` or a new workspace package would add unnecessary build indirection. Plain TypeScript scripts in `scripts/` run directly via `node --experimental-strip-types` (available in the installed Node.js v25.3.0 without any extra flags).
+- **Two separate scripts instead of one combined pipeline:** Separation makes each step independently runnable, testable, and inspectable. The XML intermediate is a meaningful artifact on its own — AI tools can read XML directly; the image is for tools that accept image context attachments.
 
 ---
 
-## Feature 1: WebGPU Renderer — Layer Architecture
+## Architectural Patterns
 
-### The Core Problem
+### Pattern 1: Walk-and-Compile
 
-ECharts does not and will not support WebGPU natively. ECharts 5.x uses Canvas 2D internally; moving to WebGPU would require rewriting the entire renderer. The proposed architecture instead uses **rendering separation**:
+**What:** The compiler walks `skill/` recursively using `fs.readdir({ recursive: true })`, collects every file ending in `SKILL.md`, sorts them for deterministic output, strips the YAML frontmatter block, and wraps each file's content in a named XML element.
 
-- **WebGPU canvas**: owns data series pixels (polylines, area fills, scatter points)
-- **ECharts canvas**: owns everything else (axes, grid lines, labels, legend, tooltip, DataZoom)
+**When to use:** Aggregating N independent flat files into one structured document. Avoids hardcoding the file list — new skill files added in future milestones automatically appear in the XML with zero maintenance cost.
 
-This is the same pattern used by gpu-curtains and the WebGL-overlay-with-2D-canvas community pattern. It is a well-established, composable approach with documented implementation.
+**Trade-offs:** Recursive directory walk is slightly slower than a hardcoded list but trivially fast for 33 files. The recursive approach is the only maintenance-free option.
 
-### Layer Composition
-
-```
-:host shadow root
-  └── #chart div (position: relative, width: 100%, height: 100%)
-        ├── <canvas id="webgpu-canvas">   (position: absolute, inset: 0, z-index: 1)
-        │   WebGPU GPUDevice renders data series here
-        │   pointer-events: none (events pass through to ECharts layer)
-        │
-        └── <canvas id="echarts-canvas">  (position: absolute, inset: 0, z-index: 2)
-            ECharts renders: xAxis, yAxis, grid, legend, tooltip, DataZoom, markLine
-            Series color = 'transparent' for series ECharts "owns" but WebGPU renders
-            pointer-events: auto (ECharts handles mouse/touch for tooltip, zoom)
-```
-
-**Critical**: ECharts must have `series[].data = []` (or sparse placeholder) for chart types where WebGPU renders the data. ECharts is still responsible for:
-- Computing axis scales (min/max derived from data extent — passed explicitly)
-- Tooltip hit detection (ECharts can receive axisPointer events via `trigger: 'axis'`)
-- DataZoom state and pan/zoom interaction
-- Legend rendering and toggling
-
-The WebGPU layer reads the ECharts instance's axis scale to map data coordinates to canvas pixels. This is done by querying `echartsInstance.convertToPixel({ seriesIndex: 0 }, [x, y])` after ECharts has laid out its axes. When the axis scale changes (zoom/pan), the WebGPU layer re-renders with the new coordinate mapping.
-
-### Where It Lives in BaseChartElement
-
-New protected field:
-
+**Example:**
 ```typescript
-// New in BaseChartElement for v10.0
-protected _webgpuLayer: WebGPUDataLayer | null = null;
-protected _activeRenderer: 'webgpu' | 'webgl' | 'canvas' = 'canvas';
-```
+// scripts/compile-knowledge.ts (sketch)
+import { readdir, readFile, writeFile } from 'node:fs/promises';
+import { join, relative } from 'node:path';
 
-Changes to `_initChart()`:
+const SKILL_DIR = join(import.meta.dirname, '..', 'skill');
 
-```typescript
-private async _initChart(): Promise<void> {
-  await this._registerModules();
-
-  // --- NEW: Probe for WebGPU before ECharts init ---
-  if (this.enableWebgpu) {
-    const detector = await WebGPUDetector.probe();
-    this._activeRenderer = detector.renderer; // 'webgpu' | 'webgl' | 'canvas'
-    dispatchCustomEvent(this, 'renderer-selected', { renderer: this._activeRenderer });
-  }
-
-  // ECharts init (unchanged)
-  const { init, getInstanceByDom } = await import('echarts/core');
-  const container = this.shadowRoot?.querySelector<HTMLDivElement>('#chart');
-  if (!container) return;
-  const existing = getInstanceByDom(container);
-  if (existing) existing.dispose();
-  const theme = this._themeBridge.buildThemeObject();
-  this._chart = init(container, theme, { renderer: 'canvas' });
-
-  // --- NEW: Create WebGPU layer on top of ECharts canvas ---
-  if (this._activeRenderer === 'webgpu') {
-    this._webgpuLayer = await WebGPUDataLayer.create(container, this._chart);
-    // WebGPUDataLayer injects its own <canvas> inside container above ECharts canvas
-  }
-
-  // ResizeObserver syncs both layers
-  this._resizeObserver = new ResizeObserver((entries) => {
-    const { width, height } = entries[0].contentRect;
-    this._chart?.resize();
-    this._webgpuLayer?.resize(width, height);
-  });
-  this._resizeObserver.observe(container);
-
-  // ... rest of existing init
+async function collectSkillFiles(dir: string): Promise<string[]> {
+  const entries = await readdir(dir, { recursive: true });
+  return (entries as string[])
+    .filter((e) => e.endsWith('SKILL.md'))
+    .map((e) => join(dir, e))
+    .sort(); // sort for deterministic XML output
 }
-```
 
-Changes to `disconnectedCallback()`:
-
-```typescript
-override disconnectedCallback(): void {
-  // ... existing RAF cancel, observer disconnect ...
-  this._webgpuLayer?.destroy(); // destroy GPUDevice, release GPU memory
-  this._webgpuLayer = null;
-  // ... existing ECharts loseContext + dispose ...
+function stripFrontmatter(content: string): string {
+  return content.replace(/^---\n[\s\S]*?\n---\n/, '').trim();
 }
-```
 
-### How Each Chart Type Hooks In
-
-The `_webgpuLayer` is owned by `BaseChartElement`. Concrete chart classes don't need to know about it directly, but they do need to change what they put in their ECharts option when WebGPU is active:
-
-```typescript
-// In LuiLineChart._applyData():
-protected override _applyData(): void {
-  if (!this._chart || !this.data) return;
-
-  if (this._activeRenderer === 'webgpu' && this._webgpuLayer) {
-    // Give ECharts only structure (axes, legend) — no series data
-    const scaffoldOption = buildLineScaffold(
-      this.data as LineChartSeries[],
-      { smooth: this.smooth, zoom: this.zoom, markLines: this.markLines }
-    );
-    this._chart.setOption(scaffoldOption);
-    // Feed actual data to WebGPU layer
-    this._webgpuLayer.setSeries(this.data as LineChartSeries[]);
-  } else {
-    // Existing path: ECharts renders everything
-    const option = buildLineOption(this.data as LineChartSeries[], ...);
-    this._chart.setOption(option, { notMerge: false });
-  }
+function xmlEscape(s: string): string {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
+
+function toSkillName(filePath: string): string {
+  const rel = relative(SKILL_DIR, filePath);
+  if (rel === 'SKILL.md') return 'root';
+  // "skills/button/SKILL.md" => "button"
+  return rel.split('/')[1];
+}
+
+const files = await collectSkillFiles(SKILL_DIR);
+const blocks = await Promise.all(
+  files.map(async (f) => {
+    const raw = await readFile(f, 'utf8');
+    const content = xmlEscape(stripFrontmatter(raw));
+    const name = toSkillName(f);
+    return `<skill name="${name}">\n${content}\n</skill>`;
+  })
+);
+
+const xml = [
+  '<?xml version="1.0" encoding="UTF-8"?>',
+  '<lit-ui-knowledge>',
+  ...blocks,
+  '</lit-ui-knowledge>',
+].join('\n') + '\n';
+
+await writeFile(join(SKILL_DIR, 'lit-ui-knowledge.xml'), xml, 'utf8');
+console.log(`Wrote ${files.length} skill files to skill/lit-ui-knowledge.xml`);
 ```
 
-**Chart types that benefit from WebGPU**: Line, Area (continuous data series). Bar, Pie, Heatmap, Treemap — the data density rarely exceeds what Canvas can handle and WebGPU adds complexity without benefit. Candlestick at 1M candles is an edge case not in scope for v10.0. Scatter already has the WebGL (echarts-gl) path.
+### Pattern 2: Fixed-Width Canvas Text Rendering
 
-**Recommendation**: Enable WebGPU layer only for `LuiLineChart` and `LuiAreaChart` in v10.0. All other chart types continue using the existing ECharts Canvas path even with `enable-webgpu` set.
+**What:** The renderer creates a `node-canvas` Canvas with a fixed width of 1500px and a computed height based on line count. It renders every line of the XML using `fillText()` at 8pt Courier New, producing a white-background PNG.
 
-### Auto-Detection: WebGPUDetector
+**When to use:** When text layout is known at render time and no word-wrap is required (monospace condensed output). This avoids complex text-flow engines and keeps the renderer dependency-free except for `canvas`.
 
+**Trade-offs:** No word-wrap means lines that exceed 1500px are clipped at the right edge. The compiler should include a truncation/splitting step for any line exceeding ~220 characters (approximately the 1500px budget at 8pt Courier New, ~6.8px/char). For current skill file content (mostly Markdown prose and code), lines rarely exceed this limit.
+
+**Example:**
 ```typescript
-// packages/charts/src/base/webgpu-detector.ts
+// scripts/render-knowledge-image.ts (sketch)
+import { createCanvas } from 'canvas';
+import { readFile, writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
 
-export type RendererCapability = {
-  renderer: 'webgpu' | 'webgl' | 'canvas';
-  device?: GPUDevice;        // set when renderer === 'webgpu'
-  adapter?: GPUAdapter;
-};
+const FONT_SIZE_PT = 8;
+const LINE_HEIGHT_PX = 10;  // tight: no extra leading for condensed output
+const MAX_WIDTH = 1500;
+const PADDING = 4;           // px top and left margin
 
-export class WebGPUDetector {
-  static async probe(): Promise<RendererCapability> {
-    // 1. Check navigator.gpu (WebGPU API presence)
-    if (!('gpu' in navigator)) return { renderer: 'webgl' };
+const SKILL_DIR = join(import.meta.dirname, '..', 'skill');
+const xml = await readFile(join(SKILL_DIR, 'lit-ui-knowledge.xml'), 'utf8');
+const lines = xml.split('\n');
 
-    // 2. Request adapter — returns null if no suitable GPU
-    const adapter = await navigator.gpu.requestAdapter({ powerPreference: 'high-performance' });
-    if (!adapter) return { renderer: 'webgl' };
+const height = lines.length * LINE_HEIGHT_PX + PADDING * 2;
+const canvas = createCanvas(MAX_WIDTH, height);
+const ctx = canvas.getContext('2d');
 
-    // 3. Request device — may throw on driver issues
-    try {
-      const device = await adapter.requestDevice();
-      return { renderer: 'webgpu', device, adapter };
-    } catch {
-      return { renderer: 'webgl' };
-    }
+// White background
+ctx.fillStyle = '#ffffff';
+ctx.fillRect(0, 0, MAX_WIDTH, height);
+
+// Render text
+ctx.fillStyle = '#000000';
+ctx.font = `${FONT_SIZE_PT}pt "Courier New"`;
+for (let i = 0; i < lines.length; i++) {
+  const y = PADDING + (i + 1) * LINE_HEIGHT_PX;
+  ctx.fillText(lines[i], PADDING, y);
+}
+
+const buffer = canvas.toBuffer('image/png');
+await writeFile(join(SKILL_DIR, 'lit-ui-knowledge.png'), buffer);
+console.log(`Rendered ${lines.length} lines to skill/lit-ui-knowledge.png`);
+```
+
+### Pattern 3: Root package.json Script Wiring
+
+**What:** Three new script entries in the root `package.json` connect the pipeline. They use `node --experimental-strip-types` to run TypeScript files directly — no `tsx` installation needed, since Node.js v25.3.0 supports TypeScript type stripping natively.
+
+**When to use:** Developer-facing scripts that need to run once to regenerate artifacts. Wire as named `scripts` entries for discoverability. Do NOT wire into the `build` script — image generation is a maintainer operation, not part of package compilation.
+
+**Example:**
+```json
+{
+  "scripts": {
+    "knowledge:compile": "node --experimental-strip-types scripts/compile-knowledge.ts",
+    "knowledge:render": "node --experimental-strip-types scripts/render-knowledge-image.ts",
+    "knowledge:build": "pnpm knowledge:compile && pnpm knowledge:render"
   }
 }
 ```
-
-Fallback chain: **WebGPU → WebGL (existing echarts-gl) → Canvas (ECharts default)**
-
-The `enable-webgpu` attribute on the element triggers the probe. Without it, the existing behavior is fully preserved.
-
-### Browser Support Reality (as of 2026-03-01)
-
-WebGPU ships by default in Chrome, Edge, and Safari (as of Safari 26 / iOS 26). Firefox 141 on Windows and Firefox 145 on Apple Silicon macOS. Linux is still rolling out (Chrome 144+ on Intel Gen12+). Firefox Android is behind a flag.
-
-**Confidence: MEDIUM.** Coverage is approximately 85-90% of desktop browsers. Mobile remains fragmented. The fallback chain must be robust — failing gracefully to WebGL or Canvas is not optional.
-
----
-
-## Feature 2: 1M+ Streaming — Bottleneck Analysis and Architecture
-
-### Where Is the Bottleneck?
-
-Based on evidence from the ECharts source architecture, community benchmarks, and the GitHub issue #21075 (June 2025):
-
-| Component | Bottleneck? | Evidence |
-|-----------|-------------|----------|
-| ECharts `appendData` internal scheduling | **YES — primary** | Bug report: 80K samples at 10fps vs 100fps expected. ECharts `streamBufferSize` default 1000, `maxTasksPerFrame` 10. |
-| ECharts Canvas 2D rendering | **YES — secondary** | Canvas 2D is fundamentally CPU-bound. Polyline with 1M segments is expensive. |
-| JS circular buffer (BaseChartElement) | **NO** | Array.push + slice is O(N) but negligible vs canvas repaint. TypedArray would improve GC. |
-| DOM/layout | **NO** | ECharts renders to a single `<canvas>` — no DOM nodes per data point. |
-| GPU (WebGPU path) | **NO** | WebGPU renders 1M instanced quads at 60fps (ChartGPU benchmark). |
-
-**Bottom line**: At 1M+ points, ECharts Canvas path is the bottleneck. It cannot hit 60fps. The WebGPU data layer is the architectural fix.
-
-### Architectural Changes for 1M+ Without Data Wipeout
-
-**Problem 1: appendData wipes on setOption**
-
-Documented in ECharts issue #12327 (fixed as closed but issue persists in practice). Any `setOption` call after `appendData` clears appended data. The current v9.0 implementation already guards against this (CRITICAL-03 in `base-chart-element.ts`). The WebGPU path sidesteps this entirely — ECharts never holds the data, so `setOption` is safe to call at any time.
-
-**Problem 2: JS heap at 1M float pairs**
-
-1M `[number, number]` pairs = 2M numbers × 8 bytes each = 16MB in a JS Array. This causes GC pressure.
-
-Fix: Use `Float32Array` for the streaming buffer. At 4 bytes per float, 1M points = 8MB, with zero GC overhead (TypedArrays are not garbage-collected per-element).
-
-```typescript
-// Replace in BaseChartElement for appendData-mode charts:
-// OLD: private _pendingData: unknown[] = [];
-// NEW:
-private _pendingDataBuffer = new Float32Array(4096); // x, y pairs (2048 points)
-private _pendingCount = 0;
-
-// For _circularBuffer on streaming path:
-private _streamBuffer: Float32Array | null = null; // allocated at first pushData
-```
-
-**Problem 3: ECharts appendData ceiling (~500K visible points)**
-
-ECharts progressive rendering handles incremental data but re-processes the full dataset on zoom/pan. Beyond ~500K points, interactions become sluggish even with `progressive` and `progressiveChunk` tuning.
-
-Fix: **Data decimation before ECharts**. LTTB (Largest Triangle Three Buckets) downsamples 1M points to ~2000 visually representative points for the ECharts layer. The WebGPU layer renders the full 1M. This gives:
-
-- ECharts: smooth axes, tooltip, zoom (2K points, always fast)
-- WebGPU: pixel-accurate rendering of all 1M points
-
-```typescript
-// New utility: packages/charts/src/shared/lttb.ts
-export function downsampleLTTB(
-  data: Float32Array, // interleaved [x0, y0, x1, y1, ...]
-  targetPoints: number
-): Float32Array { ... }
-```
-
-**Problem 4: Theme update setOption conflicts with appendData**
-
-The existing `_applyThemeUpdate()` in BaseChartElement calls `setOption` with color updates on dark mode toggle. In appendData mode, this wipes data. v9.0 docs warn this is "safe" because it passes only `{ color: [...] }` without series keys. However, the ECharts issue discussion suggests this is fragile.
-
-Fix with WebGPU path: irrelevant — ECharts has no series data to wipe. Fix for Canvas path: test explicitly that `{ color: [...] }` setOption does not trigger appendData wipe in ECharts 5.6.0.
-
-### New Streaming Flow (WebGPU Path)
-
-```
-pushData([x, y]) called by consumer
-    │
-    ▼
-BaseChartElement._pendingData.push(point)    (existing RAF coalescing)
-    │
-    ▼  RAF fires (_flushPendingData)
-    │
-    ├── _activeRenderer === 'webgpu'?
-    │       │
-    │       ▼
-    │   _webgpuLayer.appendPoints(pendingPoints)     [GPU buffer update]
-    │   _circularBuffer.push(pendingPoints)           [JS buffer for decimation]
-    │   IF _circularBuffer.length > DECIMATION_THRESHOLD:
-    │       decimated = downsampleLTTB(_circularBuffer, 2000)
-    │       _chart.setOption({ series: [{ data: decimated }] })  [safe: not appendData]
-    │
-    └── _activeRenderer === 'canvas'?
-            │
-            ▼
-        (existing appendData or circular-buffer path)
-```
-
----
-
-## Feature 3: Moving Average Real-Time Update
-
-### Current State (v9.0)
-
-Moving averages are **fully implemented** in `candlestick-option-builder.ts`. `_computeSMA` and `_computeEMA` process the full `_ohlcBuffer` on every `_flushBarUpdates()` call. This works correctly for static data and for moderate streaming rates.
-
-**The v10.0 problem**: At high streaming rates, recomputing MA over the full buffer on every flush is O(N) per flush. For SMA(20) over 50K bars, that is 50K multiplications every animation frame.
-
-### What Needs to Change
-
-**For SMA**: Sliding window sum. Maintain a running sum of the last `period` closes. On each new bar, add new close, subtract the oldest close from the window. O(1) per tick.
-
-**For EMA**: Already O(1) per tick by nature. `ema[i] = close[i] * k + ema[i-1] * (1 - k)`. Only the previous EMA value and new close are needed. No full-buffer recomputation required.
-
-The fix is an **incremental MA state object** maintained by `LuiCandlestickChart`:
-
-```typescript
-// packages/charts/src/candlestick/incremental-ma.ts
-
-export type MAState = {
-  period: number;
-  type: 'sma' | 'ema';
-  k: number;           // EMA: 2/(period+1)
-  window: number[];    // SMA: circular buffer of last `period` closes
-  windowSum: number;   // SMA: running sum for O(1) update
-  lastEMA: number | null; // EMA: previous value
-  values: (number | null)[];  // full output array (parallel to _ohlcBuffer)
-};
-
-export function createMAState(config: MAConfig): MAState { ... }
-
-// Called once per new bar (O(1)):
-export function updateMAState(state: MAState, newClose: number): number | null { ... }
-```
-
-### Where It Lives: Property vs Computed Series
-
-**Answer: computed ECharts series injected via `buildCandlestickOption`** — same as today.
-
-Do NOT add a separate computed property on `LuiCandlestickChart`. The MA data is already expressed as ECharts `line` series in the option object. The only change is switching from full recomputation to incremental state update.
-
-The `_ohlcBuffer` in `LuiCandlestickChart` remains the authoritative data store. The MA states are computed in parallel and reset when `_applyData()` is called (i.e., when `this.data` changes).
-
-### Updated `LuiCandlestickChart` Design
-
-```typescript
-// New private field:
-private _maStates: MAState[] = [];
-
-// Initialize/reset when data changes:
-protected override _applyData(): void {
-  this._ohlcBuffer = this.data ? [...(this.data as CandlestickBarPoint[])] : [];
-  const maConfigs = _parseMovingAverages(this.movingAverages);
-
-  // Reset MA states and compute from scratch on full data set
-  this._maStates = maConfigs.map(c => {
-    const state = createMAState(c);
-    for (const bar of this._ohlcBuffer) {
-      updateMAState(state, bar.ohlc[1]); // ohlc[1] = close
-    }
-    return state;
-  });
-
-  this._renderWithMA();
-}
-
-// Incremental update during streaming:
-override pushData(point: unknown): void {
-  const bar = point as CandlestickBarPoint;
-  this._ohlcBuffer.push(bar);
-  if (this._ohlcBuffer.length > this.maxPoints) {
-    this._ohlcBuffer = this._ohlcBuffer.slice(-this.maxPoints);
-    // Full recompute required after trim (window state is invalid after trim)
-    this._resetMAStates();
-  } else {
-    // Incremental: O(1) per new bar
-    for (const state of this._maStates) {
-      updateMAState(state, bar.ohlc[1]);
-    }
-  }
-  // Schedule flush (existing RAF coalescing)
-  if (this._barRafId === undefined) {
-    this._barRafId = requestAnimationFrame(() => {
-      this._renderWithMA();
-      this._barRafId = undefined;
-    });
-  }
-}
-
-private _renderWithMA(): void {
-  if (!this._chart) return;
-  const maSeriesData = this._maStates.map(s => s.values);
-  // buildCandlestickOption accepts pre-computed MA data (avoids internal recomputation)
-  const option = buildCandlestickOptionWithPrecomputedMA(this._ohlcBuffer, {
-    bullColor: this.bullColor ?? undefined,
-    bearColor: this.bearColor ?? undefined,
-    showVolume: this.showVolume,
-    maSeriesData,
-    maConfigs: _parseMovingAverages(this.movingAverages),
-  });
-  this._chart.setOption(option, { lazyUpdate: true } as object);
-}
-```
-
-**Trim handling**: When the buffer is trimmed to `maxPoints`, the sliding window state is corrupted (the oldest values in the window no longer exist). Full recompute from the trimmed buffer is required. This is an O(maxPoints) operation, but it only happens once every `maxPoints` bars — amortized cost is acceptable.
-
----
-
-## New Components and Classes
-
-| Component | Type | Location | Purpose |
-|-----------|------|----------|---------|
-| `WebGPUDetector` | New class | `base/webgpu-detector.ts` | Probe navigator.gpu, request adapter/device, return capability |
-| `WebGPUDataLayer` | New class | `webgpu/webgpu-data-layer.ts` | Own WebGPU canvas, GPUDevice, render pipeline for line/area data |
-| `downsampleLTTB` | New function | `shared/lttb.ts` | LTTB decimation for ECharts axis scaffold at 1M+ points |
-| `MAState`, `createMAState`, `updateMAState` | New types/fns | `candlestick/incremental-ma.ts` | O(1) incremental SMA/EMA update per streaming bar |
-| WGSL shaders | New files | `webgpu/shaders/` | Vertex/fragment shaders for line and area rendering |
-
----
-
-## Existing Classes That Change
-
-| Class | Change | Scope |
-|-------|--------|-------|
-| `BaseChartElement` | Add `_webgpuLayer`, `_activeRenderer`, `enable-webgpu` prop; modify `_initChart()`, `_flushPendingData()`, `disconnectedCallback()` | Core infrastructure |
-| `LuiLineChart` | Add WebGPU-path branch in `_applyData()` using scaffold option builder | Line-specific |
-| `LuiAreaChart` | Same as `LuiLineChart` | Area-specific |
-| `LuiCandlestickChart` | Add `_maStates`, replace full recompute with `updateMAState()`, add `_resetMAStates()` on buffer trim | Candlestick-specific |
-| `buildCandlestickOption` (option builder) | Add `buildCandlestickOptionWithPrecomputedMA()` variant OR accept pre-computed `maSeriesData` param | Shared builder |
-
-**Classes that do NOT change**: `LuiBarChart`, `LuiPieChart`, `LuiScatterChart`, `LuiHeatmapChart`, `LuiTreemapChart`, `ThemeBridge`, `registerCanvasCore`, all registry files.
-
----
-
-## Recommended Build Order
-
-Build order is constrained by three dependency chains:
-
-1. **WebGPU detection must exist before any WebGPU layer code**
-2. **WebGPUDataLayer requires GPUDevice from detector**
-3. **Incremental MA update is self-contained and has no WebGPU dependency**
-
-```
-PHASE A: WebGPU Detector + Fallback Chain
-  └── WebGPUDetector.probe() with navigator.gpu → adapter → device → fallback
-  └── enable-webgpu property on BaseChartElement
-  └── _activeRenderer state + renderer-selected event
-  └── Unit test: detector returns correct renderer in Chrome/Firefox/Safari
-
-PHASE B: Incremental MA (independent of A)
-  └── MAState type + createMAState() + updateMAState()
-  └── _maStates in LuiCandlestickChart
-  └── pushData() incremental update + trim-triggered full recompute
-  └── buildCandlestickOption change to accept pre-computed MA data
-  └── Unit test: SMA(3) over [10,11,12,13,14] matches known values
-
-PHASE C: LTTB Decimation (independent of A and B)
-  └── downsampleLTTB() utility
-  └── Unit test: 1M random points → 2000 output, preserves extremes
-
-PHASE D: WebGPUDataLayer (requires A and C)
-  └── WebGPU canvas injection into #chart container
-  └── GPURenderPipeline for line chart (instanced quad per segment)
-  └── appendPoints() for streaming data intake
-  └── resize() sync with ECharts ResizeObserver
-  └── coordinate mapping via echartsInstance.convertToPixel()
-  └── destroy() — GPUDevice.destroy() + canvas removal
-
-PHASE E: BaseChartElement + Line/Area Integration (requires A, C, D)
-  └── Modify _initChart() to call WebGPUDataLayer.create() when webgpu active
-  └── Modify _flushPendingData() to route to WebGPU layer
-  └── buildLineScaffold() — option variant without series data (axes only)
-  └── LuiLineChart._applyData() WebGPU branch
-  └── LuiAreaChart._applyData() WebGPU branch
-  └── ResizeObserver sync of both layers
-
-PHASE F: Documentation + Skill File Updates
-  └── Update charts skill file with enable-webgpu attribute
-  └── Update line-chart and area-chart skill files
-  └── Update candlestick-chart skill file with incremental MA note
-  └── Bundle size guidance (WebGPU layer adds ~Xkb)
-```
-
-**Critical path**: A → D → E. Phase B and C can be built in parallel with A. Phase F follows everything.
 
 ---
 
 ## Data Flow
 
-### WebGPU Streaming Flow (Line/Area)
+### End-to-End Pipeline
 
 ```
-consumer: chart.pushData([timestamp, value])
-    │
-    ▼
-BaseChartElement._pendingData.push(point)
-    │  (RAF coalescing — multiple calls per frame batched)
-    ▼
-_flushPendingData() [RAF callback]
-    │
-    ├── _activeRenderer === 'webgpu'
-    │       │
-    │       ├── _webgpuLayer.appendPoints(newPoints)
-    │       │       GPUQueue.writeBuffer() → GPU memory
-    │       │       requestAnimationFrame (WebGPU render pass)
-    │       │
-    │       └── _circularBuffer.push(newPoints)
-    │               IF length > 10000:
-    │                   decimated = downsampleLTTB(buffer, 2000)
-    │                   _chart.setOption({ series: [{ data: decimated }] })
-    │                   [ECharts only gets decimated data — safe setOption, no appendData]
-    │
-    └── _activeRenderer === 'canvas'
-            │
-            └── (existing appendData path — unchanged)
+skill/SKILL.md                    (6KB)
+skill/skills/accordion/SKILL.md   (6.5KB)
+skill/skills/area-chart/SKILL.md  (5.5KB)
+  ... (30 more sub-skills)
+skill/skills/treemap-chart/SKILL.md (4.6KB)
+        |
+        |  pnpm knowledge:compile
+        |  - fs.readdir({ recursive: true })
+        |  - filter *.SKILL.md, sort paths
+        |  - strip YAML frontmatter
+        |  - XML-escape content
+        |  - wrap in <skill name="…"> blocks
+        v
+skill/lit-ui-knowledge.xml        (~225KB estimated)
+        |
+        |  pnpm knowledge:render
+        |  - readFile → split('\n')
+        |  - derive canvas height (lines × 10px)
+        |  - createCanvas(1500, height)
+        |  - fillRect white → fillText each line at 8pt Courier New
+        |  - canvas.toBuffer('image/png') → writeFile
+        v
+skill/lit-ui-knowledge.png        (~800KB–2MB estimated)
 ```
 
-### Moving Average Streaming Flow (Candlestick)
+### Key Data Flows
 
-```
-consumer: chart.pushData({ label, ohlc: [o,c,l,h], volume })
-    │
-    ▼
-LuiCandlestickChart.pushData() override
-    │
-    ├── _ohlcBuffer.push(bar)
-    │
-    ├── FOR EACH _maState:
-    │       updateMAState(state, bar.ohlc[1])   // O(1)
-    │       state.values.push(newMAValue)
-    │
-    ├── IF _ohlcBuffer.length > maxPoints:
-    │       trim buffer
-    │       _resetMAStates()  // full recompute from trimmed buffer — O(maxPoints)
-    │
-    └── scheduleFlush() [RAF]
-            │
-            ▼
-        _renderWithMA()
-            │
-            └── buildCandlestickOptionWithPrecomputedMA()
-                    _chart.setOption(option, { lazyUpdate: true })
-```
+1. **Skill files to XML:** Pure string transformation — no Markdown parsing, no AST. The XML wrapper is minimal (`<skill name>` tags). Content is XML-escaped (`&`, `<`, `>`) to prevent malformed XML from embedded code examples that use `<` in TypeScript generics or Markdown code blocks.
+
+2. **XML to PNG:** The XML is treated as plain text for rendering. No XML parsing in the renderer — just `split('\n')` and `fillText`. This keeps the renderer simple and eliminates an XML-parser dependency.
+
+3. **CLI skill injection (existing, no changes):** `injectOverviewSkills()` and `injectComponentSkills()` in `packages/cli/src/utils/inject-skills.ts` call `fs.cp(sourceDir, targetDir, { recursive: true })`. Since `lit-ui-knowledge.xml` and `lit-ui-knowledge.png` live inside `skill/`, they are automatically included in every future `lit-ui init` skill installation — no changes to `inject-skills.ts` are needed.
+
+4. **CLI npm publish (existing, minimal change):** `packages/cli/package.json` declares `"files": ["dist", "skill"]`. The `skill/` directory inside the CLI package is a maintained copy of the root `skill/` tree. Maintainers must copy the generated XML and PNG into `packages/cli/skill/` before publishing a new CLI version, the same process as updating skill files today.
 
 ---
 
 ## Integration Points
 
-### External Integration
+### Existing Code That Is NOT Modified
 
-| Integration | Pattern | Notes |
-|-------------|---------|-------|
-| WebGPU API | `navigator.gpu.requestAdapter()` async probe | Must be inside `firstUpdated()` — never at module load (crashes SSR) |
-| ECharts coordinate API | `echartsInstance.convertToPixel()` | Used by WebGPU layer to map data coords to canvas pixels after axis layout |
-| ECharts DataZoom events | `echartsInstance.on('datazoom', handler)` | WebGPU layer re-renders on zoom/pan to match ECharts axis viewport |
+| Component | Why Untouched |
+|-----------|---------------|
+| `skill/SKILL.md` | Source file — compiler reads it, does not write it |
+| `skill/skills/*/SKILL.md` | Source files — compiler reads them, does not write them |
+| `packages/cli/src/utils/inject-skills.ts` | Already copies full `skill/` tree recursively — new files automatically included |
+| `packages/cli/src/utils/detect-ai-platform.ts` | No connection to this pipeline |
+| `packages/cli/tsup.config.ts` | `"files": ["dist", "skill"]` already covers new artifacts in the CLI package |
+| All `packages/*/` component packages | No connection |
+| `apps/docs/` | No connection |
+
+### New Files
+
+| File | Status | Purpose |
+|------|--------|---------|
+| `scripts/compile-knowledge.ts` | NEW | Walk `skill/` tree, emit `lit-ui-knowledge.xml` |
+| `scripts/render-knowledge-image.ts` | NEW | Read XML, emit `lit-ui-knowledge.png` via node-canvas |
+| `skill/lit-ui-knowledge.xml` | NEW (generated) | Intermediate artifact, git-committed |
+| `skill/lit-ui-knowledge.png` | NEW (generated) | Final output image, git-committed |
+
+### Modified Files
+
+| File | Change |
+|------|--------|
+| `package.json` (root) | Add `knowledge:compile`, `knowledge:render`, `knowledge:build` scripts |
+| `packages/cli/skill/` directory | Copy new XML and PNG artifacts here before CLI publish (same process as updating other skill files) |
 
 ### Internal Boundaries
 
 | Boundary | Communication | Notes |
 |----------|---------------|-------|
-| `BaseChartElement` ↔ `WebGPUDataLayer` | Direct method calls (`appendPoints`, `resize`, `destroy`) | WebGPUDataLayer is owned by BaseChartElement, not a Lit element |
-| `WebGPUDataLayer` ↔ ECharts | `convertToPixel` read-only | WebGPU reads axis mapping from ECharts; never writes to ECharts |
-| `LuiCandlestickChart` ↔ `MAState` | Direct import, no events | Incremental MA is a pure computation helper, no side effects |
-| `_flushPendingData` ↔ `WebGPUDataLayer` | `_webgpuLayer.appendPoints()` | Only called inside RAF callback — no concurrent access |
+| Compiler → Renderer | File system (XML artifact at `skill/lit-ui-knowledge.xml`) | No direct code dependency between the two scripts |
+| Skill files → Compiler | `fs.readFile()` — read-only | Compiler treats skill files as immutable text sources |
+| Renderer → node-canvas | Canvas 2D API (`createCanvas`, `fillText`, `toBuffer`) | Renderer depends on `canvas` npm package (Cairo native dependency) |
+| Renderer → `skill/` | `fs.writeFile()` — write-only output | Output lands directly in the canonical `skill/` directory |
+
+---
+
+## Renderer Library Decision
+
+**Recommended: `canvas` (node-canvas, Automattic/node-canvas) — HIGH confidence.**
+
+`node-canvas` is a Cairo-backed Canvas 2D API implementation for Node.js. It is the most widely adopted headless canvas library, with prebuilt binaries for macOS/Linux/Windows shipped via npm (no manual Cairo installation needed for common platforms).
+
+**Why node-canvas over alternatives:**
+
+| Option | Verdict | Reason |
+|--------|---------|--------|
+| `canvas` (node-canvas) | RECOMMENDED | Full Canvas 2D API, `registerFont()` for bundled fonts, `canvas.toBuffer('image/png')` for synchronous PNG output, prebuilt binaries on all major platforms. |
+| `pureimage` | ACCEPTABLE fallback | Pure JS (no Cairo), TypeScript, actively maintained (0.4.x). Self-documented as "not fast." For infrequent one-off generation that doesn't matter. The output quality for text may be lower due to software rasterization. |
+| `@napi-rs/canvas` | Overkill | Adds emoji support, not needed here. Heavier fork of node-canvas. |
+| `text-to-image` / `ultimate-text-to-image` | Too simple | Built on node-canvas but hide the Canvas 2D API behind limited option objects. Less control over line-by-line rendering layout. |
+| Puppeteer / Playwright | Wrong tool | Browser automation for HTML-to-image is ~10x the complexity and ships ~1GB of Chromium. Never appropriate for rendering XML text to a PNG. |
+| `sharp` | Not for text | Image transformation library (resize, crop, format). No text-drawing API. |
+
+**Font strategy:** Use `registerFont()` with a bundled `.ttf` monospace font stored in `scripts/assets/` (e.g., `Courier_New.ttf` or JetBrains Mono). This guarantees consistent output across macOS, Linux CI, and Windows regardless of system fonts installed. The font file is a one-time addition and does not affect any published package.
+
+As a simpler fallback if bundling a font file is undesirable for v10.1 scope: `ctx.font = '8pt "Courier New"'` relies on the system having Courier New (standard on macOS and Windows; available on most Ubuntu CI images via the `ttf-mscorefonts-installer` package). This is acceptable for maintainer-only tooling.
+
+**Installation (root dev dependency only):**
+```bash
+pnpm add canvas --save-dev
+# node-canvas requires Cairo at compile time on Linux:
+# Ubuntu CI: sudo apt-get install libcairo2-dev libjpeg-dev libpango1.0-dev libgif-dev
+# macOS: brew install pkg-config cairo pango libpng jpeg giflib librsvg pixman
+# Windows: prebuilt binary ships with npm — no extra steps required
+```
+
+`canvas` is a root `devDependency` only. It is NOT added to any published package (`packages/cli`, `@lit-ui/*`). This keeps the published CLI zero-native-dependency for end users.
+
+---
+
+## Build Order
+
+The correct sequence for this milestone implementation:
+
+1. **Write `scripts/compile-knowledge.ts`** — the XML compiler. No new npm dependencies required (uses Node.js built-in `fs/promises`). Test by running it and opening `skill/lit-ui-knowledge.xml` to verify structure and content. Verify that all 33 skill files appear, frontmatter is stripped, and XML is valid.
+
+2. **Install `canvas` as root dev dependency** — required only for the renderer script. Run: `pnpm add canvas --save-dev`.
+
+3. **Write `scripts/render-knowledge-image.ts`** — the image renderer. Depends on `canvas` npm package and the XML file produced by step 1. Test by running it and inspecting `skill/lit-ui-knowledge.png` for readability, line density, and correct dimensions.
+
+4. **Wire `package.json` scripts** — add `knowledge:compile`, `knowledge:render`, `knowledge:build` to the root `package.json`.
+
+5. **Run `pnpm knowledge:build`** — generates both `skill/lit-ui-knowledge.xml` and `skill/lit-ui-knowledge.png`. Verify the PNG opens correctly, text is readable at 8pt, width is 1500px, height is unbounded.
+
+6. **Commit generated artifacts** — both XML and PNG are committed to `skill/`. They must be in git so they are available immediately after `git clone` and are picked up by `injectOverviewSkills()` without a build step by the consumer.
+
+7. **Sync `packages/cli/skill/`** — copy the two new files into `packages/cli/skill/` alongside the existing skill files. This mirrors the existing process maintainers use when updating skill files before a CLI publish.
 
 ---
 
 ## Anti-Patterns
 
-### Anti-Pattern 1: Running WebGPU Probe at Module Load
+### Anti-Pattern 1: Hardcoding the Skill File List in the Compiler
 
-**What:** `const capability = await WebGPUDetector.probe()` at the top level of `base-chart-element.ts`
-**Why bad:** Module execution happens during SSR import. `navigator.gpu` does not exist in Node.js, crashing the SSR environment.
-**Instead:** Run probe inside `firstUpdated()`, guarded by `isServer`. This matches the existing pattern for `echarts.init()`.
+**What people do:** List all 33 skill file paths explicitly in `compile-knowledge.ts`.
+**Why it's wrong:** Every new component added in a future milestone (v11.0, v12.0, ...) requires a manual update to the compiler. This creates the same class of maintenance debt as registry.json becoming stale — it will eventually be missed.
+**Do this instead:** Use `fs.readdir({ recursive: true })` filtered to `SKILL.md` files. Sort for deterministic output. The compiler automatically picks up new skills with zero maintenance cost.
 
-### Anti-Pattern 2: Letting ECharts Hold 1M Points in appendData Mode
+### Anti-Pattern 2: Building the Pipeline into the CLI Package
 
-**What:** Keeping the existing `appendData` path for Line/Area after WebGPU is enabled, letting ECharts accumulate 1M points.
-**Why bad:** ECharts' Canvas 2D renderer re-paints the entire polyline on every update. At 1M points, each RAF is a 30-100ms Canvas operation. Interaction (zoom/pan) becomes unusable.
-**Instead:** Route data to WebGPU layer. ECharts gets only decimated scaffold data (2K points) for axis computation. ECharts remains fast; WebGPU renders the full dataset at GPU speed.
+**What people do:** Add compiler and renderer as new commands in `packages/cli/src/commands/`, shipping them in the published CLI binary.
+**Why it's wrong:** Image generation is a maintainer operation, not a consumer operation. Shipping it in the CLI binary adds `canvas` (a native Cairo dependency) to every user's `npx lit-ui` invocation — breaking it on systems without Cairo. The `scripts/` directory has the right precedent.
+**Do this instead:** Standalone scripts in `scripts/`. Wire via root `package.json` scripts. Only maintainers run `pnpm knowledge:build`.
 
-### Anti-Pattern 3: Full MA Recomputation on Every Streaming Flush
+### Anti-Pattern 3: Adding `canvas` to Any Published Package
 
-**What:** Calling the existing `_computeSMA` / `_computeEMA` over the full `_ohlcBuffer` array on every `_flushBarUpdates()` call.
-**Why bad:** O(N * M) where N = buffer size, M = number of MA configs. At 50K bars with 3 MA lines, each RAF does 150K floating-point operations before even calling `setOption`.
-**Instead:** Maintain `MAState` per config. Each new bar costs O(1) per MA. Full recompute only on buffer trim.
+**What people do:** Add `canvas` to `packages/cli/dependencies` or `packages/cli/devDependencies`.
+**Why it's wrong:** Cairo is a native system dependency. Any consumer who runs `npx lit-ui` or installs `@lit-ui/cli` would need Cairo installed, which breaks the "zero system dependencies" DX the CLI currently provides.
+**Do this instead:** `canvas` is a root-level `devDependency` only. It never appears in any published package's `dependencies` or `devDependencies`.
 
-### Anti-Pattern 4: Creating a New GPUDevice Per Chart Instance
+### Anti-Pattern 4: Not Committing Generated Artifacts
 
-**What:** `WebGPUDataLayer.create()` calls `navigator.gpu.requestAdapter()` + `adapter.requestDevice()` each time.
-**Why bad:** Browsers limit concurrent WebGPU devices (similar to WebGL context limit of ~16). Each `requestDevice()` call also has async overhead (~50ms).
-**Instead:** Share a single `GPUDevice` across all chart instances on the page via a module-level singleton. The pattern used by ChartGPU: `{ adapter, device }` shared across instances. Individual chart render pipelines are separate, but the device is reused.
+**What people do:** Add `skill/lit-ui-knowledge.xml` and `skill/lit-ui-knowledge.png` to `.gitignore` because they are generated files.
+**Why it's wrong:** The skill installer and CLI publish pipeline copy the `skill/` directory as-is. If the generated files are not committed, consumers who run `lit-ui init` would not receive them, and the CI would need to run `pnpm knowledge:build` as a mandatory pre-publish step — complexity that does not currently exist.
+**Do this instead:** Commit the generated artifacts. Treat them the same as compiled `dist/` files that are committed for direct use. Document in `CONTRIBUTING.md` that running `pnpm knowledge:build` is required after modifying any skill file.
 
-### Anti-Pattern 5: Using WebGPU Without Axes Fallback for Non-Data Content
+### Anti-Pattern 5: Using Puppeteer/Playwright for Image Rendering
 
-**What:** Replacing ECharts entirely with WebGPU for all rendering including axes, labels, and tooltips.
-**Why bad:** Rendering text and UI controls in WebGPU requires significant custom code (text atlas, font rasterization, event hit detection). ECharts provides all of this battle-tested.
-**Instead:** Keep the layered canvas architecture. ECharts renders UI; WebGPU renders data pixels.
+**What people do:** Render the XML as styled HTML in a headless browser, then screenshot it to PNG.
+**Why it's wrong:** Puppeteer/Playwright binaries are 300MB–1GB. They require a display server or virtual framebuffer in Linux CI. Browser version mismatches cause flaky output across developer machines. The output spec (white bg, 8pt monospace, condensed, 1500px wide) is achievable with `node-canvas` in ~50 lines.
+**Do this instead:** `node-canvas` with direct `fillText()` rendering. No browser needed.
+
+### Anti-Pattern 6: Rendering Without XML Escaping
+
+**What people do:** Insert skill file content directly into XML tags without escaping.
+**Why it's wrong:** Skill files contain TypeScript generics (`Array<string>`), JSX/Markdown (`<lui-button>`), and comparisons (`a < b`). These `<` and `>` characters will produce malformed XML, breaking any XML parser that later reads the output.
+**Do this instead:** Run the skill file content through an XML escape function (`&` → `&amp;`, `<` → `&lt;`, `>` → `&gt;`) before wrapping in `<skill>` tags. The renderer then reads the escaped XML as plain text — it does not need to unescape because it renders the raw file content line by line.
 
 ---
 
 ## Scaling Considerations
 
-| Concern | At 100K points | At 1M points | At 10M points |
-|---------|----------------|--------------|---------------|
-| ECharts Canvas path | Fine (~60fps) | Sluggish (<15fps) | Unusable (<1fps) |
-| WebGPU data layer | Fine (trivial) | Fine (~60fps) | May need LTTB + level-of-detail |
-| JS heap (typed array) | ~0.4MB | ~4MB | ~40MB — watch GC |
-| MA computation (O(1)/tick) | Negligible | Negligible | Negligible |
-| Decimation (LTTB) | Not needed | 1M→2K in <10ms | Consider wasm |
+This is a maintainer-only tool, not a user-facing service. The only relevant scale concern is generation time and output file size.
+
+| Concern | Current (~224KB XML, ~4,400 lines) | At 2x Content (~450KB) |
+|---------|-----------------------------------|-------------------------|
+| Compile time (walk + XML emit) | Under 100ms | Under 200ms |
+| Canvas height at 10px/line | ~44,400px for 4,440 lines | ~88,000px |
+| node-canvas render time | Under 5 seconds | Under 10 seconds |
+| PNG file size | Estimated 800KB–2MB | Estimated 2–4MB |
+| JS heap for canvas buffer | ~67MB for 1500×44400 canvas | ~134MB for 1500×88000 |
+
+The 44,000px canvas height at current content volume is large but within `node-canvas` and Cairo limits (both support canvases taller than 32,767px). If skill content ever exceeds ~10,000 lines, split the output into multiple PNG pages — but this is not a v10.1 concern.
 
 ---
 
 ## Sources
 
-- [ECharts appendData vs setOption conflict (GitHub #12327)](https://github.com/apache/echarts/issues/12327) — HIGH confidence, confirms data wipe on setOption after appendData
-- [ECharts real-time performance bug (GitHub #21075)](https://github.com/apache/echarts/issues/21075) — MEDIUM confidence, 80K samples at 10fps ceiling
-- [ECharts streaming and scheduling (DeepWiki)](https://deepwiki.com/apache/echarts/2.4-streaming-and-scheduling) — MEDIUM confidence, internal scheduler documented
-- [ECharts features page — TypedArray, appendData](https://echarts.apache.org/en/feature.html) — HIGH confidence, official docs
-- [WebGPU with Canvas 2D sync pattern (GitHub Gist, Greggman)](https://gist.github.com/greggman/6eddf8a75ca99ba4533f75ffa624c5ea) — HIGH confidence, canonical two-canvas pattern
-- [WebGL text + Canvas 2D overlay (WebGL2Fundamentals)](https://webgl2fundamentals.org/webgl/lessons/webgl-text-canvas2d.html) — HIGH confidence, established layering pattern
-- [WebGPU browser support — all major browsers (web.dev)](https://web.dev/blog/webgpu-supported-major-browsers) — HIGH confidence, official announcement
-- [WebGPU browser support (caniuse)](https://caniuse.com/webgpu) — HIGH confidence, current compatibility table
-- [MDN: navigator.gpu.requestAdapter()](https://developer.mozilla.org/en-US/docs/Web/API/GPU/requestAdapter) — HIGH confidence, official API docs
-- [ChartGPU — WebGPU charting library (HN)](https://news.ycombinator.com/item?id=46693978) — MEDIUM confidence, real-world 1M+ WebGPU chart implementation
-- [ChartGPU GitHub](https://github.com/ChartGPU/ChartGPU) — MEDIUM confidence, architecture reference for WebGPU chart rendering
-- [EMA incremental formula reference](https://medium.com/@elinneon/real-time-calculation-of-exponential-moving-averages-with-boost-accumulators-in-c-8b462c086476) — MEDIUM confidence, O(1) EMA pattern
+- [Automattic/node-canvas GitHub](https://github.com/Automattic/node-canvas) — Canvas 2D API, `registerFont()`, `toBuffer('image/png')` (HIGH confidence — official repository)
+- [canvas npm page](https://www.npmjs.com/package/canvas) — install instructions, Cairo system dependency, prebuilt binary availability (HIGH confidence — official npm)
+- [pureimage npm page](https://www.npmjs.com/package/pureimage) — pure JS fallback, 0.4.x TypeScript rewrite, "not meant to be fast" documented limitation (MEDIUM confidence — npm page)
+- Existing `packages/cli/src/utils/inject-skills.ts` — source-verified: copies full `skill/` tree recursively, new files are automatically included (HIGH confidence — direct code inspection)
+- Existing `packages/cli/package.json` `"files": ["dist", "skill"]` — source-verified: CLI bundles `skill/` directory, covering new artifacts without changes (HIGH confidence — direct code inspection)
+- Existing `scripts/install-skill.mjs` — source-verified: establishes the pattern for standalone developer scripts in `scripts/` directory (HIGH confidence — direct code inspection)
+- Node.js v25.3.0 TypeScript stripping — confirmed installed version via `node --version`; `--experimental-strip-types` available since Node 22.6+ (HIGH confidence — direct verification)
 
 ---
 
-*Architecture research for: @lit-ui/charts v10.0 — WebGPU rendering layer, 1M+ streaming, incremental MA*
+*Architecture research for: LitUI v10.1 Component Knowledge Image Generation*
 *Researched: 2026-03-01*
