@@ -129,4 +129,4 @@ Plans:
 | 105. Canvas/Font Foundation | v10.1 | 1/1 | Complete | 2026-03-02 |
 | 106. XML Compiler | v10.1 | 1/1 | Complete | 2026-03-02 |
 | 107. PNG Renderer | v10.1 | 1/1 | Complete | 2026-03-02 |
-| 108. Wiring & Distribution | 1/1 | Complete   | 2026-03-02 | - |
+| 108. Wiring & Distribution | 1/1 | Complete    | 2026-03-02 | - |
