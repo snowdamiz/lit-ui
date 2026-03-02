@@ -18,16 +18,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-01)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** v10.1 — Component Knowledge Image (Phase 106: XML Compiler, next)
+**Current focus:** v10.1 — Component Knowledge Image (Phase 107: PNG Renderer, next)
 
 ## Current Position
 
-Phase: 105 of 108 (Canvas/Font Foundation) — COMPLETE
+Phase: 106 of 108 (XML Compiler) — COMPLETE
 Plan: 01/01 complete
-Status: Phase 105 done — ready for Phase 106
-Last activity: 2026-03-02 — Phase 105 plan 01 executed; @napi-rs/canvas installed, JetBrains Mono TTF bundled, all four canvas/font assertions pass
+Status: Phase 106 done — ready for Phase 107
+Last activity: 2026-03-02 — Phase 106 plan 01 executed; scripts/compile-knowledge.ts written, skill/lit-ui-knowledge.xml generated (33 skills, 227 sections)
 
-Progress: [██████████████████████████░░░░] ~97%
+Progress: [███████████████████████████░░░] ~98%
 
 ## Accumulated Context
 
@@ -42,6 +42,9 @@ Progress: [███████████████████████
 - v10.1 (roadmap): Phase 106 (XML compiler) is independent of canvas — can execute in parallel with Phase 105 or before it; pure Node.js fs/promises
 - v10.1 (105-01): Font registered as 'JetBrainsMono' (no space) — consistent naming for Phase 107 renderer's ctx.font strings
 - v10.1 (105-01): Monospace invariant confirmed at exact 0.0 diff (i=W=4.8px) — font not falling back to system sans-serif
+- v10.1 (106-01): xmlEscape replaces & first — prevents double-encoding sequences like &amp;lt; from content that already has &lt;
+- v10.1 (106-01): Section extraction uses lookahead split /^(?=## )/m — preserves ## prefix so title extraction works
+- v10.1 (106-01): Check 6 heuristic (description:) false positive on toast code examples — actual frontmatter stripping confirmed correct
 
 ### Architecture Notes
 
@@ -57,6 +60,7 @@ Progress: [███████████████████████
 - v10.0 complete: 7 phases (98-104) archived to .planning/milestones/v10.0-ROADMAP.md
 - v10.1 roadmap created 2026-03-01: 4 phases (105-108) — canvas foundation, XML compiler, PNG renderer, wiring
 - v10.1 Phase 105 complete 2026-03-02: canvas/font foundation validated
+- v10.1 Phase 106 complete 2026-03-02: XML compiler written; skill/lit-ui-knowledge.xml generated (33 skills, 227 sections)
 
 ### Blockers/Concerns
 
@@ -83,4 +87,4 @@ None — Phase 105 font path resolution concern resolved: `fileURLToPath(import.
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-03-02 — Phase 105-01 complete. @napi-rs/canvas installed, JetBrains Mono TTF bundled, all four assertions PASS. Ready for Phase 106 (XML compiler).*
+*Last updated: 2026-03-02 — Phase 106-01 complete. scripts/compile-knowledge.ts written, skill/lit-ui-knowledge.xml generated with 33 skills and 227 sections. Ready for Phase 107 (PNG renderer).*

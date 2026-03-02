@@ -9,11 +9,11 @@ Requirements for v10.1 — Component Knowledge Image milestone.
 
 ### XML Compiler
 
-- [ ] **XMLC-01**: Developer can run `pnpm knowledge:compile` to produce `skill/lit-ui-knowledge.xml` from all skill files
-- [ ] **XMLC-02**: XML output includes all skill files with YAML frontmatter stripped and each file wrapped in `<skill name="...">` element
-- [ ] **XMLC-03**: XML content is properly escaped — TypeScript generics, element names, and comparison operators (`<`, `>`, `&`) are entity-encoded
-- [ ] **XMLC-04**: XML uses section-level `<section title="...">` sub-elements for structured AI querying
-- [ ] **XMLC-05**: XML ordering is deterministic — router skill first, sub-skills sorted alphabetically
+- [x] **XMLC-01**: Developer can run `pnpm knowledge:compile` to produce `skill/lit-ui-knowledge.xml` from all skill files
+- [x] **XMLC-02**: XML output includes all skill files with YAML frontmatter stripped and each file wrapped in `<skill name="...">` element
+- [x] **XMLC-03**: XML content is properly escaped — TypeScript generics, element names, and comparison operators (`<`, `>`, `&`) are entity-encoded
+- [x] **XMLC-04**: XML uses section-level `<section title="...">` sub-elements for structured AI querying
+- [x] **XMLC-05**: XML ordering is deterministic — router skill first, sub-skills sorted alphabetically
 
 ### PNG Renderer
 
@@ -54,11 +54,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| XMLC-01 | Phase 106 | Pending |
-| XMLC-02 | Phase 106 | Pending |
-| XMLC-03 | Phase 106 | Pending |
-| XMLC-04 | Phase 106 | Pending |
-| XMLC-05 | Phase 106 | Pending |
+| XMLC-01 | Phase 106 | Complete |
+| XMLC-02 | Phase 106 | Complete |
+| XMLC-03 | Phase 106 | Complete |
+| XMLC-04 | Phase 106 | Complete |
+| XMLC-05 | Phase 106 | Complete |
 | PNGR-01 | Phase 107 | Pending |
 | PNGR-02 | Phase 107 | Pending |
 | PNGR-03 | Phase 107 | Pending |
