@@ -73,6 +73,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 - Mapped to phases: 13
 - Unmapped: 0 ✓
 
+**Phase 105 note:** No requirements are directly assigned to Phase 105 (Canvas/Font Foundation). This phase is a de-risking foundation that validates `@napi-rs/canvas` install and JetBrains Mono font registration before renderer implementation. PNGR-02 depends on work done in Phase 105 but is delivered and verified in Phase 107.
+
 ---
 *Requirements defined: 2026-03-01*
-*Last updated: 2026-03-01 after initial definition*
+*Last updated: 2026-03-01 — Traceability confirmed after roadmap creation. All 13 requirements mapped.*
