@@ -25,7 +25,7 @@ See: .planning/PROJECT.md (updated 2026-03-01)
 Phase: 104-update-code-example-blocks-for-all-chart-types-they-are-not-accurate-most-are-displaying-html-for-all-tabs
 Plan: 02 complete — ScatterChartPage, HeatmapChartPage, CandlestickChartPage, TreemapChartPage ExampleBlock props updated with per-framework code strings (HTML/React/Vue/Svelte). Heatmap shows all 3 property assignments; Candlestick includes OHLC order warning and omits enable-webgpu; Treemap shows hierarchical children shape.
 Status: Phase 104 in progress (Plan 02 of N done)
-Last activity: 2026-03-01 — 104-02 complete: Scatter, Heatmap, Candlestick, Treemap chart pages now have 4 distinct per-framework ExampleBlock code strings
+Last activity: 2026-03-02 - Completed quick task 6: All the charts in dark mode have chart lines that are way too bright. Improve this.
 
 ## Accumulated Context
 
@@ -108,6 +108,17 @@ Last activity: 2026-03-01 — 104-02 complete: Scatter, Heatmap, Candlestick, Tr
 
 - Phase 101 (WebGPU data layer): ChartGPU Shadow DOM compatibility not confirmed — build minimal prototype at Phase 101 start before committing to full integration. Fallback: raw WebGPU + custom WGSL shaders. (Plan 01 done — ChartGPU installed; Plans 02/03 will prototype.)
 - Phase 101 (ChartGPU): Color config API not fully documented — research before theme wiring. If insufficient, accept init-time CSS token wiring only; full dark mode toggling deferred to v10.1.
+
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 1 | Deploy latest changes to npm | 2026-02-23 | — | [1-deploy-latest-changes-to-npm](./quick/1-deploy-latest-changes-to-npm/) |
+| 2 | Fix dark mode chart colors and ScatterGL module errors | 2026-02-24 | — | [2-fix-dark-mode-chart-colors-and-scatterg](./quick/2-fix-dark-mode-chart-colors-and-scatterg/) |
+| 3 | Match ChartGPU canvas background to page background | 2026-02-24 | — | [3-match-chartgpu-canvas-background-to-pag](./quick/3-match-chartgpu-canvas-background-to-pag/) |
+| 4 | Deploy latest changes to npm | 2026-02-24 | — | [4-deploy-latest-changes-to-npm](./quick/4-deploy-latest-changes-to-npm/) |
+| 5 | Publish lit-ui-charts with README to npm | 2026-02-24 | — | [5-publish-lit-ui-charts-with-readme-to-np](./quick/5-publish-lit-ui-charts-with-readme-to-np/) |
+| 6 | All the charts in dark mode have chart lines that are way too bright. Improve this. | 2026-03-02 | 42fc747 | [6-all-the-charts-in-dark-mode-have-chart-l](./quick/6-all-the-charts-in-dark-mode-have-chart-l/) |
 
 ### Tech Debt (carried forward)
 - 30 CLI tests need update for CSS variable naming change (--lui-* -> --ui-*)
