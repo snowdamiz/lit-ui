@@ -10,6 +10,15 @@ Now with **dual distribution** (copy-source or npm), **SSR support** via Declara
 
 Developers can use polished, accessible UI components in any framework without lock-in — one component library that works everywhere.
 
+## Current Milestone: v10.1 Component Knowledge Image
+
+**Goal:** Compile all LitUI component system knowledge into a single XML file and programmatically render it as a condensed reference image for AI tooling.
+
+**Target features:**
+- XML knowledge file aggregated from all skill files, component APIs, and usage docs
+- Programmatic image generation: white background, 8pt monospace font, condensed (no extra whitespace), max 1500px wide, unlimited height
+- Output saved to `skill/`
+
 ## Current State (v10.0)
 
 - ~117,000+ lines TypeScript/CSS/TSX across packages and apps (v10.0 added +1,327/-43 in @lit-ui/charts)
@@ -116,6 +125,9 @@ Developers can use polished, accessible UI components in any framework without l
 ### Active
 
 - [ ] Calendar heatmap mode (`mode="calendar"` on lui-heatmap-chart) — deferred from v9.0 (PERF-02)
+- [ ] XML knowledge file compiled from all 22 skill files and component documentation — v10.1
+- [ ] Programmatic image renderer producing white-bg, 8pt font, condensed XML image ≤1500px wide — v10.1
+- [ ] Knowledge image saved to `skill/` directory — v10.1
 
 ### Deferred
 
@@ -285,4 +297,4 @@ Developers can use polished, accessible UI components in any framework without l
 - **v10.0 WebGPU Charts** (2026-03-02): WebGPU two-layer canvas for Line/Area/Candlestick (ChartGPU 0.3.2, auto-detected, shared GPUDevice singleton), 1M+ point streaming with Float32Array ring buffers + LTTB decimation + dispose+reinit at maxPoints, O(1) incremental SMA/EMA moving average state machine for Candlestick, per-framework ExampleBlock code for all 8 chart types, and complete docs/skill coverage
 
 ---
-*Last updated: 2026-03-02 after v10.0 milestone*
+*Last updated: 2026-03-01 after v10.1 milestone start*
