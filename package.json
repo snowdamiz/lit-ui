@@ -18,7 +18,10 @@
     "lint": "pnpm -r run lint",
     "changeset": "changeset",
     "version": "changeset version",
-    "ci:publish": "pnpm build:packages && changeset publish --access public"
+    "ci:publish": "pnpm build:packages && changeset publish --access public",
+    "knowledge:compile": "node --experimental-strip-types scripts/compile-knowledge.ts",
+    "knowledge:render": "node --experimental-strip-types scripts/render-knowledge-image.ts",
+    "knowledge:build": "pnpm run knowledge:compile && pnpm run knowledge:render"
   },
   "keywords": [
     "lit",
