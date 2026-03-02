@@ -15,7 +15,7 @@ const PNG_PATH = path.join(__dirname, '..', 'skill', 'lit-ui-knowledge.png')
 
 // ── Layout constants (validated in Phase 105) ─────────────────────────────────
 const CANVAS_WIDTH = 1500
-const FONT_SIZE = 8
+const FONT_SIZE = 10
 const LINE_HEIGHT = FONT_SIZE * 1.5  // 12px — validated in Phase 105
 const PADDING = 20
 const SEPARATOR_HEIGHT = LINE_HEIGHT * 2  // rule line + label line
@@ -62,7 +62,7 @@ function parseSkills(xml: string): SkillData[] {
       const sectionContent = decodeEntities(sectionMatch[2] ?? '')
 
       content.push(`### ${sectionTitle}`)
-      const lines = sectionContent.split('\n')
+      const lines = sectionContent.split('\n').filter(l => l.trim() !== '')
       for (const line of lines) {
         content.push(line)
       }
