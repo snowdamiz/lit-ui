@@ -68,7 +68,7 @@ Full phase details archived to `.planning/milestones/v10.0-ROADMAP.md`
 **Plans**: 1 plan
 
 Plans:
-- [ ] 105-01-PLAN.md — Install @napi-rs/canvas, bundle JetBrains Mono TTF, write and run four-assertion validation script
+- [x] 105-01-PLAN.md — Install @napi-rs/canvas, bundle JetBrains Mono TTF, write and run four-assertion validation script
 
 ### Phase 106: XML Compiler
 **Goal**: Developer can compile all skill files into a single, well-structured XML knowledge document
@@ -83,7 +83,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 106-01-PLAN.md — Implement compile-knowledge.ts and validate XML output (33 skills, entity-encoded, deterministic)
+- [x] 106-01-PLAN.md — Implement compile-knowledge.ts and validate XML output (33 skills, entity-encoded, deterministic)
 
 ### Phase 107: PNG Renderer
 **Goal**: Developer can render the compiled XML knowledge document as a condensed monospace PNG image
@@ -98,7 +98,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 107-01-PLAN.md — Implement render-knowledge-image.ts: XML parser, entity decoder, two-pass layout, skill separators, produce skill/lit-ui-knowledge.png
+- [x] 107-01-PLAN.md — Implement render-knowledge-image.ts: XML parser, entity decoder, two-pass layout, skill separators, produce skill/lit-ui-knowledge.png
 
 ### Phase 108: Wiring & Distribution
 **Goal**: Both generated artifacts are producible by a single command and permanently available to CLI consumers
@@ -108,10 +108,10 @@ Plans:
   1. Root `package.json` has three script entries: `knowledge:compile` runs the XML compiler, `knowledge:render` runs the PNG renderer, and `knowledge:build` runs both in sequence
   2. Both `skill/lit-ui-knowledge.xml` and `skill/lit-ui-knowledge.png` are committed to git and appear in the repository at the `skill/` path
   3. Both artifacts are present in `packages/cli/skill/` so they are automatically included in CLI npm publishes via the existing `"files": ["dist", "skill"]` entry
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 108-01: TBD
+- [ ] 108-01-PLAN.md — Add three knowledge:* scripts to root package.json and verify all WIRE requirements
 
 ## Progress
 
@@ -128,5 +128,5 @@ Plans:
 | 104. Update Code Example Blocks | v10.0 | 2/2 | Complete | 2026-03-01 |
 | 105. Canvas/Font Foundation | v10.1 | 1/1 | Complete | 2026-03-02 |
 | 106. XML Compiler | v10.1 | 1/1 | Complete | 2026-03-02 |
-| 107. PNG Renderer | 1/1 | Complete    | 2026-03-02 | - |
-| 108. Wiring & Distribution | v10.1 | 0/TBD | Not started | - |
+| 107. PNG Renderer | v10.1 | 1/1 | Complete | 2026-03-02 |
+| 108. Wiring & Distribution | v10.1 | 0/1 | Not started | - |
