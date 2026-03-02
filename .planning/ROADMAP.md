@@ -95,10 +95,10 @@ Plans:
   3. PNG height is the exact height needed to contain all content — no truncation, no excess whitespace — confirmed by the two-pass measurement approach
   4. All entity sequences from the XML source (`&amp;`, `&lt;`, `&gt;`) are decoded to their display characters before rendering, so TypeScript code in the image shows `<T>` not `&lt;T&gt;`
   5. A thin horizontal rule and component name label appear between each skill section in the PNG, making sections visually navigable
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 107-01: TBD
+- [ ] 107-01-PLAN.md — Implement render-knowledge-image.ts: XML parser, entity decoder, two-pass layout, skill separators, produce skill/lit-ui-knowledge.png
 
 ### Phase 108: Wiring & Distribution
 **Goal**: Both generated artifacts are producible by a single command and permanently available to CLI consumers
@@ -127,6 +127,6 @@ Plans:
 | 103. Candlestick WebGPU + Docs + Skills | v10.0 | 3/3 | Complete | 2026-03-01 |
 | 104. Update Code Example Blocks | v10.0 | 2/2 | Complete | 2026-03-01 |
 | 105. Canvas/Font Foundation | v10.1 | 1/1 | Complete | 2026-03-02 |
-| 106. XML Compiler | 1/1 | Complete    | 2026-03-02 | - |
-| 107. PNG Renderer | v10.1 | 0/TBD | Not started | - |
+| 106. XML Compiler | v10.1 | 1/1 | Complete | 2026-03-02 |
+| 107. PNG Renderer | v10.1 | 0/1 | Not started | - |
 | 108. Wiring & Distribution | v10.1 | 0/TBD | Not started | - |
