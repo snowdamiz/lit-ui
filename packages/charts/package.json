@@ -1,6 +1,6 @@
 {
   "name": "@lit-ui/charts",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "High-performance chart components with WebGL rendering, real-time streaming, and CSS token theming built with Lit and ECharts",
   "author": "",
   "license": "MIT",
