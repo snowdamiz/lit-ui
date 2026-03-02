@@ -46,17 +46,17 @@
     "@lit-ui/core": "^1.0.0"
   },
   "dependencies": {
-    "@floating-ui/dom": "^1.7.4",
+    "@floating-ui/dom": "^1.7.5",
     "@lit/task": "^1.0.3",
-    "@tanstack/lit-virtual": "^3.13.2"
+    "@tanstack/lit-virtual": "^3.13.20"
   },
   "devDependencies": {
     "@lit-ui/core": "workspace:*",
     "@lit-ui/typescript-config": "workspace:*",
     "@lit-ui/vite-config": "workspace:*",
-    "@tailwindcss/vite": "^4.1.18",
+    "@tailwindcss/vite": "^4.2.1",
     "lit": "^3.3.2",
-    "tailwindcss": "^4.1.18",
+    "tailwindcss": "^4.2.1",
     "typescript": "^5.9.3",
     "vite": "^7.3.1",
     "vite-plugin-dts": "^4.5.4"
