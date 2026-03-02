@@ -53,6 +53,25 @@
   --color-card: oklch(0.12 0 0);
 }
 
+/* Chart token dark mode overrides — muted variants for dark backgrounds */
+.dark {
+  --ui-chart-color-1: #60a5fa;  /* blue-400 — softer than blue-500 on dark bg */
+  --ui-chart-color-2: #a78bfa;  /* violet-400 */
+  --ui-chart-color-3: #34d399;  /* emerald-400 */
+  --ui-chart-color-4: #fbbf24;  /* amber-400 */
+  --ui-chart-color-5: #f87171;  /* red-400 */
+  --ui-chart-color-6: #22d3ee;  /* cyan-400 */
+  --ui-chart-color-7: #fb923c;  /* orange-400 */
+  --ui-chart-color-8: #a3e635;  /* lime-400 */
+  --ui-chart-grid-line: #374151;      /* gray-700 — subtle grid on dark bg */
+  --ui-chart-axis-label: #9ca3af;     /* gray-400 — readable but not harsh */
+  --ui-chart-axis-line: #4b5563;      /* gray-600 */
+  --ui-chart-tooltip-bg: #1f2937;     /* gray-800 */
+  --ui-chart-tooltip-border: #374151; /* gray-700 */
+  --ui-chart-tooltip-text: #f9fafb;   /* gray-50 */
+  --ui-chart-legend-text: #d1d5db;    /* gray-300 */
+}
+
 html {
   scroll-behavior: smooth;
 }
