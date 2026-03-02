@@ -80,10 +80,10 @@ Plans:
   3. All TypeScript generics, HTML element names, and comparison operators in skill file content are entity-encoded (`<` → `&lt;`, `>` → `&gt;`, `&` → `&amp;`) so the XML file is well-formed
   4. Router skill appears first in document order; all sub-skills follow in deterministic alphabetical order — running the compiler twice produces byte-identical output
   5. Each skill element contains `<section title="...">` sub-elements matching the skill file's markdown heading structure
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 106-01: TBD
+- [ ] 106-01-PLAN.md — Implement compile-knowledge.ts and validate XML output (33 skills, entity-encoded, deterministic)
 
 ### Phase 107: PNG Renderer
 **Goal**: Developer can render the compiled XML knowledge document as a condensed monospace PNG image
@@ -126,7 +126,7 @@ Plans:
 | 102. Docs + Skills Update | v10.0 | 3/3 | Complete | 2026-03-01 |
 | 103. Candlestick WebGPU + Docs + Skills | v10.0 | 3/3 | Complete | 2026-03-01 |
 | 104. Update Code Example Blocks | v10.0 | 2/2 | Complete | 2026-03-01 |
-| 105. Canvas/Font Foundation | 1/1 | Complete    | 2026-03-02 | - |
-| 106. XML Compiler | v10.1 | 0/TBD | Not started | - |
+| 105. Canvas/Font Foundation | v10.1 | 1/1 | Complete | 2026-03-02 |
+| 106. XML Compiler | v10.1 | 0/1 | Not started | - |
 | 107. PNG Renderer | v10.1 | 0/TBD | Not started | - |
 | 108. Wiring & Distribution | v10.1 | 0/TBD | Not started | - |
