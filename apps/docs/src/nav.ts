@@ -63,7 +63,6 @@ export const navigation: NavSection[] = [
       { title: "Pie Chart", href: "/charts/pie-chart" },
       { title: "Scatter Chart", href: "/charts/scatter-chart" },
       { title: "Heatmap Chart", href: "/charts/heatmap-chart" },
-      { title: "Candlestick Chart", href: "/charts/candlestick-chart" },
       { title: "Treemap Chart", href: "/charts/treemap-chart" },
     ],
   },

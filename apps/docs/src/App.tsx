@@ -36,7 +36,6 @@ import { BarChartPage } from './pages/charts/BarChartPage'
 import { PieChartPage } from './pages/charts/PieChartPage'
 import { ScatterChartPage } from './pages/charts/ScatterChartPage'
 import { HeatmapChartPage } from './pages/charts/HeatmapChartPage'
-import { CandlestickChartPage } from './pages/charts/CandlestickChartPage'
 import { TreemapChartPage } from './pages/charts/TreemapChartPage'
 
 export default function App() {
@@ -93,7 +92,6 @@ export default function App() {
             <Route path="charts/pie-chart" element={<PieChartPage />} />
             <Route path="charts/scatter-chart" element={<ScatterChartPage />} />
             <Route path="charts/heatmap-chart" element={<HeatmapChartPage />} />
-            <Route path="charts/candlestick-chart" element={<CandlestickChartPage />} />
             <Route path="charts/treemap-chart" element={<TreemapChartPage />} />
 
             {/* Catch-all for undefined routes */}

@@ -290,7 +290,7 @@ export function HeatmapChartPage() {
         <div className="divider-fade mb-8" />
         <PrevNextNav
           prev={{ title: 'Scatter Chart', href: '/charts/scatter-chart' }}
-          next={{ title: 'Candlestick Chart', href: '/charts/candlestick-chart' }}
+          next={{ title: 'Treemap Chart', href: '/charts/treemap-chart' }}
         />
       </div>
     </FrameworkProvider>

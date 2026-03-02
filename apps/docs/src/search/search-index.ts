@@ -354,15 +354,6 @@ export const searchIndex: SearchEntry[] = [
     headings: ['Examples', 'Weekly Activity Heatmap', 'API Reference', 'Props', 'CSS Custom Properties'],
   },
   {
-    title: 'Candlestick Chart',
-    section: 'Charts',
-    href: '/charts/candlestick-chart',
-    keywords:
-      'candlestick chart OHLC open high low close financial stock trading price ' +
-      'ECharts lui-candlestick-chart CSS custom properties data visualization candle',
-    headings: ['Examples', '5-Day OHLC Candlestick', 'API Reference', 'Props', 'CSS Custom Properties'],
-  },
-  {
     title: 'Treemap Chart',
     section: 'Charts',
     href: '/charts/treemap-chart',

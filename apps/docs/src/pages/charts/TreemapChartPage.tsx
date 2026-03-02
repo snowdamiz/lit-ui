@@ -330,7 +330,7 @@ export function TreemapChartPage() {
         {/* Navigation */}
         <div className="divider-fade mb-8" />
         <PrevNextNav
-          prev={{ title: 'Candlestick Chart', href: '/charts/candlestick-chart' }}
+          prev={{ title: 'Heatmap Chart', href: '/charts/heatmap-chart' }}
           next={{ title: 'Theme Configurator', href: '/configurator' }}
         />
       </div>
