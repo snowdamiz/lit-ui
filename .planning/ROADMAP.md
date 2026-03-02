@@ -49,7 +49,7 @@ Full phase details archived to `.planning/milestones/v10.0-ROADMAP.md`
 
 **Milestone Goal:** Compile all LitUI component knowledge into a single XML file and programmatically render it as a condensed reference image for AI tooling.
 
-- [ ] **Phase 105: Canvas/Font Foundation** - Install @napi-rs/canvas, register JetBrains Mono TTF, validate font metrics, build two-pass layout skeleton
+- [x] **Phase 105: Canvas/Font Foundation** - Install @napi-rs/canvas, register JetBrains Mono TTF, validate font metrics, build two-pass layout skeleton (completed 2026-03-02)
 - [ ] **Phase 106: XML Compiler** - Build scripts/compile-knowledge.ts producing skill/lit-ui-knowledge.xml from all skill files
 - [ ] **Phase 107: PNG Renderer** - Build scripts/render-knowledge-image.ts producing skill/lit-ui-knowledge.png from compiled XML
 - [ ] **Phase 108: Wiring & Distribution** - Wire package.json scripts, commit artifacts, sync to CLI
@@ -126,7 +126,7 @@ Plans:
 | 102. Docs + Skills Update | v10.0 | 3/3 | Complete | 2026-03-01 |
 | 103. Candlestick WebGPU + Docs + Skills | v10.0 | 3/3 | Complete | 2026-03-01 |
 | 104. Update Code Example Blocks | v10.0 | 2/2 | Complete | 2026-03-01 |
-| 105. Canvas/Font Foundation | v10.1 | 0/1 | Not started | - |
+| 105. Canvas/Font Foundation | 1/1 | Complete   | 2026-03-02 | - |
 | 106. XML Compiler | v10.1 | 0/TBD | Not started | - |
 | 107. PNG Renderer | v10.1 | 0/TBD | Not started | - |
 | 108. Wiring & Distribution | v10.1 | 0/TBD | Not started | - |

@@ -2,13 +2,13 @@
 gsd_state_version: 1.0
 milestone: v10.1
 milestone_name: Component Knowledge Image
-status: roadmap_created
-last_updated: "2026-03-01T00:00:00Z"
+status: in_progress
+last_updated: "2026-03-02T05:08:44Z"
 progress:
   total_phases: 108
-  completed_phases: 104
-  total_plans: 271
-  completed_plans: 271
+  completed_phases: 105
+  total_plans: 272
+  completed_plans: 272
 ---
 
 # Project State: LitUI
@@ -18,16 +18,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-01)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** v10.1 — Component Knowledge Image (Phase 105: Canvas/Font Foundation)
+**Current focus:** v10.1 — Component Knowledge Image (Phase 106: XML Compiler, next)
 
 ## Current Position
 
-Phase: 105 of 108 (Canvas/Font Foundation)
-Plan: — (not yet planned)
-Status: Ready to plan
-Last activity: 2026-03-01 — v10.1 roadmap created, phases 105-108 defined
+Phase: 105 of 108 (Canvas/Font Foundation) — COMPLETE
+Plan: 01/01 complete
+Status: Phase 105 done — ready for Phase 106
+Last activity: 2026-03-02 — Phase 105 plan 01 executed; @napi-rs/canvas installed, JetBrains Mono TTF bundled, all four canvas/font assertions pass
 
-Progress: [██████████████████████████░░░░] ~96%
+Progress: [██████████████████████████░░░░] ~97%
 
 ## Accumulated Context
 
@@ -40,6 +40,8 @@ Progress: [███████████████████████
 - v10.1 (roadmap): Phase 105 is a zero-requirement foundation phase — its sole purpose is de-risking PNGR-02 and all renderer work by validating font registration and two-pass layout before any content code is written
 - v10.1 (roadmap): Use `GlobalFonts.registerFromPath()` only — NOT `GlobalFonts.register(buffer)` (confirmed memory aliasing bug #1006 Feb 2025)
 - v10.1 (roadmap): Phase 106 (XML compiler) is independent of canvas — can execute in parallel with Phase 105 or before it; pure Node.js fs/promises
+- v10.1 (105-01): Font registered as 'JetBrainsMono' (no space) — consistent naming for Phase 107 renderer's ctx.font strings
+- v10.1 (105-01): Monospace invariant confirmed at exact 0.0 diff (i=W=4.8px) — font not falling back to system sans-serif
 
 ### Architecture Notes
 
@@ -47,15 +49,18 @@ Progress: [███████████████████████
 - v10.1: `@napi-rs/canvas` (Skia, pre-built binaries) — NOT `node-canvas` (Cairo, system dependencies, font registration bugs on Linux)
 - v10.1: Generated artifacts (`skill/lit-ui-knowledge.xml`, `skill/lit-ui-knowledge.png`) committed to git; picked up automatically by existing `injectOverviewSkills()` and CLI `"files": ["dist", "skill"]`
 - v10.1: Two-pass render — probe canvas (1500x1) measures total line count → compute height → create final canvas at exact height
+- v10.1 (105-01): ESM font path pattern: `const __filename = fileURLToPath(import.meta.url); path.join(path.dirname(__filename), 'fonts', 'JetBrainsMono-Regular.ttf')`
+- v10.1 (105-01): Canvas font string format: `'8px JetBrainsMono'` (size + family name, no quotes around family)
 
 ### Roadmap Evolution
 
 - v10.0 complete: 7 phases (98-104) archived to .planning/milestones/v10.0-ROADMAP.md
 - v10.1 roadmap created 2026-03-01: 4 phases (105-108) — canvas foundation, XML compiler, PNG renderer, wiring
+- v10.1 Phase 105 complete 2026-03-02: canvas/font foundation validated
 
 ### Blockers/Concerns
 
-- Phase 105: Font path resolution when script runs from different cwd values in pnpm monorepo — use `fileURLToPath(import.meta.url)` for absolute path; verify empirically at Phase 105 start (not a research gap, just needs a quick runtime check)
+None — Phase 105 font path resolution concern resolved: `fileURLToPath(import.meta.url)` works correctly.
 
 ### TODOs
 *None.*
@@ -78,4 +83,4 @@ Progress: [███████████████████████
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-03-01 — v10.1 roadmap created. Phases 105-108 defined. Ready to plan Phase 105.*
+*Last updated: 2026-03-02 — Phase 105-01 complete. @napi-rs/canvas installed, JetBrains Mono TTF bundled, all four assertions PASS. Ready for Phase 106 (XML compiler).*
