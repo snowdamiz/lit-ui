@@ -104,6 +104,18 @@ None — no external service configuration required.
 - `LuiCandlestickChart` can call `this.readChartToken('--ui-chart-color-2')` to resolve default MA colors
 - `buildCandlestickOption` is ready to accept pre-computed `maValueArrays` and `resolvedMAColors` from the streaming state machine
 
+## Self-Check: PASSED
+
+- FOUND: packages/charts/src/shared/candlestick-option-builder.ts
+- FOUND: packages/charts/src/base/base-chart-element.ts
+- FOUND: .planning/phases/99-incremental-moving-average-state-machine/99-02-SUMMARY.md
+- FOUND: eb9346c (feat: MAConfig type + option builder changes)
+- FOUND: e250639 (feat: readChartToken() on BaseChartElement)
+- Build: pnpm --filter @lit-ui/charts run build exits 0 (built in 5.07s)
+- Compiled .d.ts: MAConfig has `color?: string` and `showType?: boolean`
+- Compiled .d.ts: CandlestickOptionProps has `maValueArrays` and `resolvedMAColors`
+- Compiled .d.ts: BaseChartElement has `protected readChartToken(name: string): string`
+
 ---
 *Phase: 99-incremental-moving-average-state-machine*
 *Completed: 2026-03-01*

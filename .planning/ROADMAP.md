@@ -171,5 +171,5 @@ Plans:
 **Plans:** 2/2 plans complete
 
 Plans:
-- [ ] 104-01-PLAN.md — Fix ExampleBlock code strings for Line, Area, Bar, and Pie chart pages
-- [ ] 104-02-PLAN.md — Fix ExampleBlock code strings for Scatter, Heatmap, Candlestick, and Treemap chart pages
+- [x] 104-01-PLAN.md — Fix ExampleBlock code strings for Line, Area, Bar, and Pie chart pages
+- [x] 104-02-PLAN.md — Fix ExampleBlock code strings for Scatter, Heatmap, Candlestick, and Treemap chart pages

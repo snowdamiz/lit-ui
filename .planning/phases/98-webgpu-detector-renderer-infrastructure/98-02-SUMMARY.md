@@ -77,7 +77,7 @@ Each task was committed atomically:
 1. **Task 1: Add WebGPU detection to BaseChartElement** - `04a16fc` (feat)
 2. **Task 2: Export RendererTier from package index** - `c3e5c27` (feat)
 
-**Plan metadata:** (docs commit follows)
+**Plan metadata:** `ce3fd2c` (docs: complete plan)
 
 ## Files Created/Modified
 - `packages/charts/src/base/base-chart-element.ts` - Added import, enableWebGpu property, renderer field, _detectRenderer() method, updated firstUpdated()
@@ -108,6 +108,15 @@ None - no external service configuration required.
 - Phase 101's WebGPU canvas layer can override `_detectRenderer()` to customize detection behavior
 - All 8 concrete chart classes inherit the detection automatically without modification
 - `RendererTier` is publicly consumable via `import type { RendererTier } from '@lit-ui/charts'`
+
+## Self-Check: PASSED
+
+- FOUND: packages/charts/src/base/base-chart-element.ts
+- FOUND: packages/charts/src/index.ts
+- FOUND: .planning/phases/98-webgpu-detector-renderer-infrastructure/98-02-SUMMARY.md
+- FOUND: commit 04a16fc (Task 1 — WebGPU detection in BaseChartElement)
+- FOUND: commit c3e5c27 (Task 2 — RendererTier export)
+- FOUND: commit ce3fd2c (docs — metadata commit)
 
 ---
 *Phase: 98-webgpu-detector-renderer-infrastructure*
