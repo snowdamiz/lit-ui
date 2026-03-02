@@ -18,16 +18,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-01)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** v10.1 — Component Knowledge Image (Phase 107: PNG Renderer, next)
+**Current focus:** v10.1 — Component Knowledge Image (Phase 107: PNG Renderer, complete — Phase 108: Wiring, next)
 
 ## Current Position
 
-Phase: 106 of 108 (XML Compiler) — COMPLETE
+Phase: 107 of 108 (PNG Renderer) — COMPLETE
 Plan: 01/01 complete
-Status: Phase 106 done — ready for Phase 107
-Last activity: 2026-03-02 — Phase 106 plan 01 executed; scripts/compile-knowledge.ts written, skill/lit-ui-knowledge.xml generated (33 skills, 227 sections)
+Status: Phase 107 done — ready for Phase 108
+Last activity: 2026-03-02 — Phase 107 plan 01 executed; scripts/render-knowledge-image.ts written, skill/lit-ui-knowledge.png generated (1500x50524px, 8.7MB, 33 skills)
 
-Progress: [███████████████████████████░░░] ~98%
+Progress: [████████████████████████████░░] ~99%
 
 ## Accumulated Context
 
@@ -45,6 +45,8 @@ Progress: [███████████████████████
 - v10.1 (106-01): xmlEscape replaces & first — prevents double-encoding sequences like &amp;lt; from content that already has &lt;
 - v10.1 (106-01): Section extraction uses lookahead split /^(?=## )/m — preserves ## prefix so title extraction works
 - v10.1 (106-01): Check 6 heuristic (description:) false positive on toast code examples — actual frontmatter stripping confirmed correct
+- v10.1 (107-01): measureAndRender() shared probe/render pattern with boolean flag — y accumulation bit-for-bit identical between passes (PNG height: 50524px)
+- v10.1 (107-01): decodeEntities called on skill name, section title, and section content — all three data paths decoded before rendering; 463 entity sequences in XML decoded correctly
 
 ### Architecture Notes
 
@@ -61,6 +63,7 @@ Progress: [███████████████████████
 - v10.1 roadmap created 2026-03-01: 4 phases (105-108) — canvas foundation, XML compiler, PNG renderer, wiring
 - v10.1 Phase 105 complete 2026-03-02: canvas/font foundation validated
 - v10.1 Phase 106 complete 2026-03-02: XML compiler written; skill/lit-ui-knowledge.xml generated (33 skills, 227 sections)
+- v10.1 Phase 107 complete 2026-03-02: PNG renderer written; skill/lit-ui-knowledge.png generated (1500x50524px, 8.7MB, 33 skills rendered)
 
 ### Blockers/Concerns
 
@@ -87,4 +90,4 @@ None — Phase 105 font path resolution concern resolved: `fileURLToPath(import.
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-03-02 — Phase 106-01 complete. scripts/compile-knowledge.ts written, skill/lit-ui-knowledge.xml generated with 33 skills and 227 sections. Ready for Phase 107 (PNG renderer).*
+*Last updated: 2026-03-02 — Phase 107-01 complete. scripts/render-knowledge-image.ts written, skill/lit-ui-knowledge.png generated (1500x50524px, 8.7MB, 33 skills, 32 separators). Ready for Phase 108 (wiring).*

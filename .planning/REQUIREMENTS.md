@@ -17,11 +17,11 @@ Requirements for v10.1 — Component Knowledge Image milestone.
 
 ### PNG Renderer
 
-- [ ] **PNGR-01**: Developer can run `pnpm knowledge:render` to produce `skill/lit-ui-knowledge.png` from the compiled XML file
-- [ ] **PNGR-02**: PNG renders with white background, black text, bundled JetBrains Mono 8pt monospace font, ≤1500px wide
-- [ ] **PNGR-03**: PNG height is dynamically calculated via two-pass measurement — probe canvas first, create final canvas at exact computed height
-- [ ] **PNGR-04**: XML entity sequences (`&amp;`, `&lt;`, `&gt;`) are decoded to display characters before `fillText()` rendering
-- [ ] **PNGR-05**: Component separator lines (thin horizontal rule + component name label) appear between each skill section
+- [x] **PNGR-01**: Developer can run `pnpm knowledge:render` to produce `skill/lit-ui-knowledge.png` from the compiled XML file
+- [x] **PNGR-02**: PNG renders with white background, black text, bundled JetBrains Mono 8pt monospace font, ≤1500px wide
+- [x] **PNGR-03**: PNG height is dynamically calculated via two-pass measurement — probe canvas first, create final canvas at exact computed height
+- [x] **PNGR-04**: XML entity sequences (`&amp;`, `&lt;`, `&gt;`) are decoded to display characters before `fillText()` rendering
+- [x] **PNGR-05**: Component separator lines (thin horizontal rule + component name label) appear between each skill section
 
 ### Wiring & Distribution
 
@@ -59,11 +59,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | XMLC-03 | Phase 106 | Complete |
 | XMLC-04 | Phase 106 | Complete |
 | XMLC-05 | Phase 106 | Complete |
-| PNGR-01 | Phase 107 | Pending |
-| PNGR-02 | Phase 107 | Pending |
-| PNGR-03 | Phase 107 | Pending |
-| PNGR-04 | Phase 107 | Pending |
-| PNGR-05 | Phase 107 | Pending |
+| PNGR-01 | Phase 107 | Complete |
+| PNGR-02 | Phase 107 | Complete |
+| PNGR-03 | Phase 107 | Complete |
+| PNGR-04 | Phase 107 | Complete |
+| PNGR-05 | Phase 107 | Complete |
 | WIRE-01 | Phase 108 | Pending |
 | WIRE-02 | Phase 108 | Pending |
 | WIRE-03 | Phase 108 | Pending |
