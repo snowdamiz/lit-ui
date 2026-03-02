@@ -25,9 +25,9 @@ Requirements for v10.1 — Component Knowledge Image milestone.
 
 ### Wiring & Distribution
 
-- [ ] **WIRE-01**: Root `package.json` includes `knowledge:compile`, `knowledge:render`, and `knowledge:build` scripts
-- [ ] **WIRE-02**: Both generated artifacts (`skill/lit-ui-knowledge.xml` and `skill/lit-ui-knowledge.png`) are committed to git
-- [ ] **WIRE-03**: Artifacts are present in `packages/cli/skill/` for automatic inclusion in CLI distribution
+- [x] **WIRE-01**: Root `package.json` includes `knowledge:compile`, `knowledge:render`, and `knowledge:build` scripts
+- [x] **WIRE-02**: Both generated artifacts (`skill/lit-ui-knowledge.xml` and `skill/lit-ui-knowledge.png`) are committed to git
+- [x] **WIRE-03**: Artifacts are present in `packages/cli/skill/` for automatic inclusion in CLI distribution
 
 ## Future Requirements
 
@@ -64,9 +64,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PNGR-03 | Phase 107 | Complete |
 | PNGR-04 | Phase 107 | Complete |
 | PNGR-05 | Phase 107 | Complete |
-| WIRE-01 | Phase 108 | Pending |
-| WIRE-02 | Phase 108 | Pending |
-| WIRE-03 | Phase 108 | Pending |
+| WIRE-01 | Phase 108 | Complete |
+| WIRE-02 | Phase 108 | Complete |
+| WIRE-03 | Phase 108 | Complete |
 
 **Coverage:**
 - v10.1 requirements: 13 total

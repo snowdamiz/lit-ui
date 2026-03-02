@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Component Knowledge Image
 status: unknown
-last_updated: "2026-03-02T05:51:47.610Z"
+last_updated: "2026-03-02T06:03:31Z"
 progress:
   total_phases: 67
   completed_phases: 67
-  total_plans: 236
-  completed_plans: 236
+  total_plans: 237
+  completed_plans: 237
 ---
 
 # Project State: LitUI
@@ -18,16 +18,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-01)
 
 **Core value:** Developers can use polished, accessible UI components in any framework without lock-in
-**Current focus:** v10.1 — Component Knowledge Image (Phase 107: PNG Renderer, complete — Phase 108: Wiring, next)
+**Current focus:** v10.1 — Component Knowledge Image COMPLETE (all 4 phases done)
 
 ## Current Position
 
-Phase: 107 of 108 (PNG Renderer) — COMPLETE
+Phase: 108 of 108 (Wiring Distribution) — COMPLETE
 Plan: 01/01 complete
-Status: Phase 107 done — ready for Phase 108
-Last activity: 2026-03-02 — Phase 107 plan 01 executed; scripts/render-knowledge-image.ts written, skill/lit-ui-knowledge.png generated (1500x50524px, 8.7MB, 33 skills)
+Status: v10.1 milestone complete — all XMLC-*, PNGR-*, and WIRE-* requirements satisfied
+Last activity: 2026-03-02 — Phase 108 plan 01 executed; three knowledge:* npm scripts added to root package.json; all WIRE requirements verified
 
-Progress: [████████████████████████████░░] ~99%
+Progress: [█████████████████████████████░] 100%
 
 ## Accumulated Context
 
@@ -47,6 +47,7 @@ Progress: [███████████████████████
 - v10.1 (106-01): Check 6 heuristic (description:) false positive on toast code examples — actual frontmatter stripping confirmed correct
 - v10.1 (107-01): measureAndRender() shared probe/render pattern with boolean flag — y accumulation bit-for-bit identical between passes (PNG height: 50524px)
 - v10.1 (107-01): decodeEntities called on skill name, section title, and section content — all three data paths decoded before rendering; 463 entity sequences in XML decoded correctly
+- v10.1 (108-01): Phase 108 is purely wiring — WIRE-02 and WIRE-03 already satisfied from Phases 106/107; only npm script entries needed in root package.json
 
 ### Architecture Notes
 
@@ -64,6 +65,7 @@ Progress: [███████████████████████
 - v10.1 Phase 105 complete 2026-03-02: canvas/font foundation validated
 - v10.1 Phase 106 complete 2026-03-02: XML compiler written; skill/lit-ui-knowledge.xml generated (33 skills, 227 sections)
 - v10.1 Phase 107 complete 2026-03-02: PNG renderer written; skill/lit-ui-knowledge.png generated (1500x50524px, 8.7MB, 33 skills rendered)
+- v10.1 Phase 108 complete 2026-03-02: knowledge:* npm scripts wired; v10.1 milestone complete
 
 ### Blockers/Concerns
 
@@ -90,4 +92,4 @@ None — Phase 105 font path resolution concern resolved: `fileURLToPath(import.
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-03-02 — Phase 107-01 complete. scripts/render-knowledge-image.ts written, skill/lit-ui-knowledge.png generated (1500x50524px, 8.7MB, 33 skills, 32 separators). Ready for Phase 108 (wiring).*
+*Last updated: 2026-03-02 — Phase 108-01 complete. knowledge:compile, knowledge:render, knowledge:build scripts added to root package.json. All WIRE-01/02/03 requirements verified. v10.1 milestone complete.*
