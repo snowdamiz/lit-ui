@@ -127,6 +127,6 @@ Plans:
 | 103. Candlestick WebGPU + Docs + Skills | v10.0 | 3/3 | Complete | 2026-03-01 |
 | 104. Update Code Example Blocks | v10.0 | 2/2 | Complete | 2026-03-01 |
 | 105. Canvas/Font Foundation | v10.1 | 1/1 | Complete | 2026-03-02 |
-| 106. XML Compiler | 1/1 | Complete   | 2026-03-02 | - |
+| 106. XML Compiler | 1/1 | Complete    | 2026-03-02 | - |
 | 107. PNG Renderer | v10.1 | 0/TBD | Not started | - |
 | 108. Wiring & Distribution | v10.1 | 0/TBD | Not started | - |
