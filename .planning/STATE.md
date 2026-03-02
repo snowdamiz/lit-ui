@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: WebGPU Charts
 status: unknown
-last_updated: "2026-03-01T21:23:59.894Z"
+last_updated: "2026-03-01T21:33:00Z"
 progress:
   total_phases: 71
   completed_phases: 71
@@ -123,7 +123,8 @@ Last activity: 2026-03-01 — 104-02 complete: Scatter, Heatmap, Candlestick, Tr
 | quick-003 | Split components skill into 18 individual per-component skills based on docs pages | - | 2026-02-27 |
 | quick-004 | Deploy latest changes to npm — publish @lit-ui/charts@1.0.0 | 2m 54s | 2026-03-01 |
 | quick-005 | Publish @lit-ui/charts with README to npm — @lit-ui/charts@1.0.1 | ~4m | 2026-03-01 |
+| quick-006 | Dark mode chart color tokens — muted -400 Tailwind variants for all 8 series colors + grid/axis/tooltip/legend | <1m | 2026-03-01 |
 
 ---
 *State initialized: 2026-02-02*
-*Last updated: 2026-03-01 — quick-005 complete: @lit-ui/charts@1.0.1 published to npm with README; awaiting human verification at npmjs.com/package/@lit-ui/charts.*
+*Last updated: 2026-03-01 — quick-006 complete: 16 --ui-chart-* CSS token overrides added in .dark block; chart series now use muted -400 Tailwind shades on dark backgrounds.*
